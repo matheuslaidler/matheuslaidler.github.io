@@ -1,12 +1,12 @@
 ---
-layout: post
 title: Desvendando a Forense Digital
 description: Conhecendo a computação forense
 tags: ["Forense digital", "Análise Forense", "Esteganografia", "Criptografia", "Ferramentas Forense"]
-categories: ["ForensicWay"]
+categories: ["Forensic Trail"]
 pin: true
-date: 2023-08-20T18:29:10+02:00
+date: 2023-08-20 18:29:10 +02:00
 author: matheus
+comments: true
 ---
 
 # Computação Forense à primeira vista

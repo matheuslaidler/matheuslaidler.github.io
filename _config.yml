@@ -79,7 +79,7 @@ pageviews:
 #     light  - Use the light color scheme
 #     dark   - Use the dark color scheme
 #
-theme_mode: dark # [light | dark]
+theme_mode: dark # [light | dark] - deixar vazio para poder ter a opção dos dois - está bugado e não clicável por algum motivo. I'll fix later
 
 # The CDN endpoint for images.
 # Notice that once it is assigned, the CDN url
