@@ -1,0 +1,534 @@
+---
+layout: compress
+---
+
+<!doctype html>
+
+{% include origin-type.html %}
+
+{% include lang.html %}
+
+{% if site.theme_mode %}
+  {% capture prefer_mode %}data-mode="{{ site.theme_mode }}"{% endcapture %}
+{% endif %}
+
+
+
+<!-- `site.alt_lang` can specify a language different from the UI -->
+<html lang="{{ page.lang | default: site.alt_lang | default: site.lang }}" {{ prefer_mode }}>
+
+
+
+  {% include head.html %}
+
+
+
+<!-- menu desktop/mobile - matheus laidler: creditos> matheuslaidler.github.io -->
+<nav id="cssmenu">
+  <table width="auto" border="0" align="left"> 
+    <tbody>
+     <tr>  
+      <td>
+        <a href="/" title="matheuslaidler" target="_parent">
+				  <img width="75%" top="1.285vh" left="15vh" align="left" border="0" src="{{ "/assets/img/menu/matheuslaidler.gif" | absURL }}"/></a>
+      </td> 
+      </tbody>
+    </table> 
+  <div class="menu-icon">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </div>
+  <ul>
+    <li><a href="https://matheuslaidler.github.io/" target="_parent">Início</a></li>
+    <li class="active"><a href="{{ site.baseurl }}" target="_parent">Blog</a></li>
+    <li><a href="https://matheuslaidler.github.io/Cryptool/" target="_parent">Cryptool</a> <!-- tool --></li>
+    <li class="has-sub">
+    <a href="#pages" data-toggle="dropdown">Páginas</a>
+    <ul>
+      <li><a href="https://matheuslaidler.gitbook.io/" target="_blank">Rascunhos ⿻</a></li> <!-- articles/drafts/sketches -->
+      <li><a href="https://github.com/matheuslaidler" target="_blank">Github ⿻</a></li>
+      <!-- <li><a href="https://road2tech.github.io/" target="_blank">Road2Tech ⿻</a></li> <-- projeto1 -->
+      <!-- <li><a href="https://wayofsec.github.io/" target="_blank">WayOfSec ⿻</a></li> <-- projeto2 -->
+      <li><a href="https://youtube.com/@matheuslaidler" target="_blank">Youtube ⿻</a></li> <!-- projeto3 -->
+    </ul>
+      </li>
+      <li class="has-sub">
+      <a href="#donates" data-toggle="dropdown">Doação ❤</a> <!-- donates -->
+      <ul>
+        <li><a href="https://github.com/sponsors/matheuslaidler" target="_blank" title="Github Sponsor">Github Sponsor ⿻</a></li>
+        <li class="has-sub">
+          <a href="https://www.paypal.com/donate/?hosted_button_id=SJYYS28HZPU9A" title="Paypal">PayPal</a>
+            <!-- my paypal links: 
+            https://www.paypal.com/donate/?hosted_button_id=SJYYS28HZPU9A
+            https://www.paypal.com/donate/?hosted_button_id=55KGKSTYDTDCS
+            -->
+      <ul><center><!-- paypal pop-up -->
+      <div id="donate-button-container">
+        <div id="donate-button" ></div>
+        <script src="https://www.paypalobjects.com/donate/sdk/donate-sdk.js" charset="UTF-8"></script>
+        <script>
+        PayPal.Donation.Button({
+        env:'production',
+        hosted_button_id:'55KGKSTYDTDCS',
+        image: {
+        src:'https://www.paypalobjects.com/pt_BR/BR/i/btn/btn_donateCC_LG.gif',
+        alt:'Faça doações com o botão do PayPal',
+        title:'PayPal - Doação segura !',
+        }
+        }).render('#donate-button');
+        </script>
+      </div>
+      </center></ul>
+      </li>
+      </ul>
+    </li>
+      <li class="has-sub">
+        <a href="#pt-br" target="_parent" data-toggle="dropdown"  target="_parent">
+          <img class="idioma" src="{{ site.baseurl }}/assets/img/btns/portuguese.png" title="portuguese"/></a> <!-- {{ "images/btns/portuguese.png" | absURL }} -->
+          <ul>
+            <li>
+              <a href="https://medium.com/@matheuslaidler" target="_blank">
+                <img class="idioma" src="{{ site.baseurl }}/assets/img/btns/english.png" title="english"/></a>
+            </li>
+          </ul>
+      </li>
+  </nav>
+
+<style>
+  /*MENU DE OPÇÕES*/
+
+  #cssmenu {
+	width: auto;
+	position: sticky;
+	display: inherit;
+	justify-content: center;
+	align-items: center;
+	height: 8vh;
+	background: linear-gradient(to bottom, #32323a, #141414);
+	border-bottom: 0.5vh solid #73ffe8; /*borda azul 73ffe8 - 51b5a4*/
+	top: 0;
+	z-index: 9999;
+}
+
+#cssmenu ul {
+  list-style: none;  /*tirando indicação - bolinha - de cada botão*/
+  display: flex;
+
+}
+
+#cssmenu > ul > li {
+  position: relative;
+}
+
+#cssmenu a {
+  display: inline-block;
+  padding: 0.75vh 7.5vh; /*botão largura*/
+  line-height: 6vh; /*botão altura*/
+  color: #fff;
+  text-decoration: none;
+  font-size: 12px;
+  text-align: center;
+
+}
+
+
+/*arredondamento dos cantos superiores dos botoes usados*/
+#cssmenu > ul > li > a {
+  border-radius: 10px 10px 0 0;
+}
+
+#cssmenu > ul > li:hover:after { /*seta*/
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  border-left: 10px solid transparent; 
+  border-right: 10px solid transparent;
+  border-bottom: 5px solid #51b5a4;
+  margin-left: -10px;
+}
+
+#cssmenu > ul > li.active > a {
+  box-shadow: inset 0 0 3px rgba(0, 1, 0, 0.45);
+  background: linear-gradient(to bottom, #26262c 0%, rgba(0, 1, 0, 0.45) 100%); /*qnd botao esta ativo - pagina atual - clicado*/
+}
+
+#cssmenu > ul > li:hover > a {
+  background: linear-gradient(to bottom, #26262c 0%, #070707 100%);
+  box-shadow: inset 0 -0.85px 8.5px #73ffe8; /*efeito de dentro qnd mouse sobre o botão*/
+}
+
+/*github-style hugo theme -> botão para modo dark/light - tirar a seta -> html: <li class="no-arrow"> */
+#cssmenu > ul > li.no-arrow:hover:after {
+  content: none;
+}
+
+#cssmenu .has-sub {
+  z-index: 9999;
+}
+
+#cssmenu .has-sub:hover > ul {
+  display: block;
+}
+
+#cssmenu .has-sub ul {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  padding: 0;
+  margin: 0;
+}
+
+#cssmenu .has-sub ul li a {
+  display: block;
+  padding: 3.5vh; /*tamanho submenu*/
+  font-size: 12px;
+  line-height: 100%;
+  color: #fcfcfc;
+  background: #51b5a4;
+}
+
+#cssmenu .has-sub ul li a:hover {
+  background: #73ffe89f;
+}
+
+.idioma {
+  position: relative;
+  top: 0.105vh;
+  width: auto;
+  height: 2.45vh;
+}
+
+/* Estilos para telas menores -> Logo no menu de tablets */
+@media (max-width: 1280px) {
+
+
+/*  Menu Hamburguer */
+@media screen and (max-width: 980px) {
+  #cssmenu {
+	  position: sticky;
+	  top: 0;
+	  z-index: 9999;
+  }
+
+  #cssmenu ul.open {
+	display: block !important;
+  }
+
+  #cssmenu ul ul {
+	display: none;
+	position: relative;
+	padding: 0;
+	margin: 0;
+  }
+
+  #cssmenu .has-sub.active ul {
+	display: block;
+  }
+
+  #cssmenu ul li {
+	display: block;
+	width: 100%;
+	position: relative;
+  }
+
+  #cssmenu > ul > li > a {
+	display: block;
+	width: 100%;
+	border-bottom: 1px solid #ebebeb;
+	padding: 12px 20px;
+	line-height: 1.7em;
+  }
+
+  #cssmenu ul ul li a {
+	padding: 12px 50px;
+	line-height: 1.7em;
+  }
+
+  #cssmenu .has-sub > a {
+	position: relative;
+  }
+
+  #cssmenu .submenu-button {
+	display: block;
+	position: relative;
+	right: auto;
+	top: 0;
+	z-index: 2;
+	background: #32323aa2;
+	width: 20vh;
+	height: 20vh;
+	cursor: pointer;
+  }
+
+  #cssmenu .submenu-button:after {
+	content: "";
+	display: block;
+	position: absolute;
+	right: 10vh;
+	top: 18vh;
+	border: 6vh solid transparent;
+	border-top-color: #fff;
+  }
+
+  #cssmenu .submenu-button.active:after {
+	top: 20vh;
+	border: 5vh solid transparent;
+	border-left-color: #fff;
+  }
+
+  /* Esconde o menu */
+  #cssmenu ul {
+	display: none;
+  }
+
+  #cssmenu > ul.open {
+	max-height: 500vh;
+  }
+
+  /* Estilos para o ícone do hambúrguer */
+  #cssmenu .menu-icon {
+	cursor: pointer;
+	display: inline-block;
+	position: center; /*absolute p voltar ao canto*/
+	width: 3vh;
+	height: 3vh;
+  }
+
+  #cssmenu .menu-icon .bar {
+	display: block;
+	width: 100%;
+	height: 0.5vh;
+	background-color: #73ffe8;
+	border-radius: 3vh;
+	transition: all 0.2s ease-in-out;
+  }
+
+  #cssmenu .menu-icon .bar+.bar {
+	margin-top: 0.45vh;
+  }
+
+  /* Estilos para o menu aberto */
+  #cssmenu ul.open {
+	display: block;
+	position: absolute;
+	top: 15.55vh;
+	right: 0;
+	left: 0;
+	background-color: #141414cb;
+	border-top: 13.5px solid #73ffe8;
+	padding: 0.2vh;
+	padding-top: 0;
+	min-height: 135vh;
+	z-index: 9999;
+  }
+
+  #cssmenu ul.open li a {
+	display: inline-flexbox;
+	padding: 2.5vh;
+	line-height: 15px;
+	font-size: 13px;
+	color: #fff;
+	margin-top: 0;
+  }
+
+  /* Ajuste para collapsible menus */
+  #cssmenu ul.open ul {
+	position: static;
+  }
+
+  #cssmenu .has-sub > a::after {
+	  content: "";
+	  position: absolute;
+	  top: 50%;	bottom: 0;
+	  right: 20px;
+	  transform: translateY(-50%);
+	  border: 5px solid transparent;
+	  border-top-color: #fff;
+	}
+	
+	#cssmenu .has-sub.active > a::after {
+	  transform: translateY(-50%) rotate(180deg);
+	}
+}
+
+  
+/* estilo para telas menores - pockets phones? até 280p*/
+
+@media (max-width: 280px) {
+
+  #cssmenu > ul {
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.35s ease-out;
+  }
+
+  #cssmenu ul li {
+	display: block;
+	width: 100%;
+  }
+
+  #cssmenu > ul > li > a {
+	display: block;
+	width: 100%;
+	border-bottom: 1px solid #ebebeb;
+	padding: 12vh 20vh;
+	line-height: 1.7em;
+  }
+
+  #cssmenu ul ul li a {
+	padding: 12px 50px;
+	line-height: 1.7em;
+  }
+
+
+  #cssmenu ul ul {
+	transition: max-height 0.35s ease-out;
+  }
+
+
+} 
+}
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() { //DOMContentLoaded add now that I'm using as a Imported JS file
+  
+  // Get the current page URL
+  //var currentPageUrl = window.location.href;
+  // Find the corresponding menu item and mark it as active
+  //var menuItems = document.querySelectorAll('#cssmenu li');
+  //menuItems.forEach(function(item) {
+  //    var link = item.querySelector('a');
+  //    if (link && link.getAttribute('href') === currentPageUrl) {
+  //        item.classList.add('active');
+  //    }
+  //});
+
+  // Get the hamburger icon, menu list, and submenu buttons
+  const hamburger = document.querySelector('.menu-icon');
+  const menuList = document.querySelector('#cssmenu ul');
+  const submenuButtons = document.querySelectorAll('#cssmenu .has-sub > a');
+
+  // Add event listener to the hamburger icon
+  hamburger.addEventListener('click', function() {
+    // Toggle the 'open' class to show/hide the menu
+    menuList.classList.toggle('open');
+  });
+
+  // Add event listeners to the submenu buttons
+  submenuButtons.forEach(function(button) {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      const parentLi = button.parentNode;
+      const submenu = parentLi.querySelector('ul');
+
+      // Check if menu is in mobile mode
+      if (window.innerWidth < 980) {
+        // Toggle the active class for the clicked submenu
+        parentLi.classList.toggle('active');
+
+        // Toggle the display of the submenu
+        submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+      }
+    });
+  });
+
+  // Close submenus when clicking outside the menu
+  document.addEventListener('click', function(e) {
+    const target = e.target;
+
+    // Check if the clicked element is inside the menu
+    if (!menuList.contains(target) && !hamburger.contains(target)) {
+      // Close all submenus
+      document.querySelectorAll('.has-sub.active').forEach(function(element) {
+        element.classList.remove('active');
+
+        // Hide the submenu
+        const submenu = element.querySelector('ul');
+        submenu.style.display = 'none';
+      });
+
+      // Hide the menu
+      menuList.classList.remove('open');
+    }
+  });
+});
+
+
+</script>
+
+<!-- fim do menu de matheus laidler -->
+
+
+  <body>
+    {% include sidebar.html lang=lang %}
+
+    <div id="main-wrapper" class="d-flex justify-content-center">
+      <div class="container d-flex flex-column px-xxl-5">
+        {% include topbar.html lang=lang %}
+
+        <div class="row flex-grow-1">
+          <main aria-label="Main Content" class="col-12 col-lg-11 col-xl-9 px-md-4">
+            {% if layout.refactor or layout.layout == 'default' %}
+              {% include refactor-content.html content=content lang=lang %}
+            {% else %}
+              {{ content }}
+            {% endif %}
+          </main>
+
+          <!-- panel -->
+          <aside aria-label="Panel" id="panel-wrapper" class="col-xl-3 ps-2 mb-5 text-muted">
+            <div class="access">
+              {% include_cached update-list.html lang=lang %}
+              {% include_cached trending-tags.html lang=lang %}
+            </div>
+
+            {% for _include in layout.panel_includes %}
+              {% assign _include_path = _include | append: '.html' %}
+              {% include {{ _include_path }} lang=lang %}
+            {% endfor %}
+          </aside>
+        </div>
+
+        <div class="row">
+          <!-- tail -->
+          <div id="tail-wrapper" class="col-12 col-lg-11 col-xl-9 px-md-4">
+            {% for _include in layout.tail_includes %}
+              {% assign _include_path = _include | append: '.html' %}
+              {% include {{ _include_path }} lang=lang %}
+            {% endfor %}
+
+            {% include_cached footer.html lang=lang %}
+          </div>
+        </div>
+
+        {% include_cached search-results.html lang=lang %}
+      </div>
+
+      <aside aria-label="Scroll to Top">
+        <button id="back-to-top" type="button" class="btn btn-lg btn-box-shadow">
+          <i class="fas fa-angle-up"></i>
+        </button>
+      </aside>
+    </div>
+
+    <div id="mask"></div>
+
+    {% if site.pwa.enabled %}
+      {% include_cached notification.html lang=lang %}
+    {% endif %}
+
+    <!-- JavaScripts -->
+
+    {% include js-selector.html lang=lang %}
+
+    {% if page.mermaid %}
+      {% include mermaid.html %}
+    {% endif %}
+
+    {% include_cached search-loader.html lang=lang %}
+  </body>
+</html>
