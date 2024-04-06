@@ -29,8 +29,8 @@ layout: compress
     <tbody>
      <tr>  
       <td>
-        <a href="/" title="matheuslaidler" target="_parent">
-				  <img width="75%" top="1.285vh" left="15vh" align="left" border="0" src="{{ "/assets/img/menu/matheuslaidler.gif" | absURL }}"/></a>
+        <a href="/" title="matheuslaidler" target="_parent"> <!--   width="75%" top="1.285vh" left="15vh" align-self="left" border="0"  -->
+				  <img class="logotipo" src="{{ "/assets/img/menu/matheuslaidler.gif" | absURL }}"/></a>
       </td> 
       </tbody>
     </table> 
@@ -40,23 +40,27 @@ layout: compress
     <span class="bar"></span>
   </div>
   <ul>
-    <li><a href="https://matheuslaidler.github.io/" target="_parent">Início</a></li>
-    <li class="active"><a href="{{ site.baseurl }}" target="_parent">Blog</a></li>
+    <li class="active"><a href="{{ site.baseurl }}" target="_parent">Acervo</a></li>
+    <li><a href="{{ site.baseurl }}/projetos" target="_parent">Projetos</a></li>
     <li><a href="https://matheuslaidler.github.io/Cryptool/" target="_parent">Cryptool</a> <!-- tool --></li>
     <li class="has-sub">
     <a href="#pages" data-toggle="dropdown">Páginas</a>
     <ul>
-      <li><a href="https://matheuslaidler.gitbook.io/" target="_blank">Rascunhos ⿻</a></li> <!-- articles/drafts/sketches -->
-      <li><a href="https://github.com/matheuslaidler" target="_blank">Github ⿻</a></li>
-      <!-- <li><a href="https://road2tech.github.io/" target="_blank">Road2Tech ⿻</a></li> <-- projeto1 -->
-      <!-- <li><a href="https://wayofsec.github.io/" target="_blank">WayOfSec ⿻</a></li> <-- projeto2 -->
-      <li><a href="https://youtube.com/@matheuslaidler" target="_blank">Youtube ⿻</a></li> <!-- projeto3 -->
+      <li><a href="https://github.com/matheuslaidler" target="_blank">Github</a></li>
+      <li><a href="https://matheuslaidler.gitbook.io/" target="_blank">Rascunhos</a></li> <!-- gitbook - drafts - documentos testes lançados -->
+      <li><a href="https://youtube.com/@matheuslaidler" target="_blank">Youtube</a></li>
+      <li><a href="https://instagram.com/matheuslaidler" target="_blank">Instagram</a></li>
+      <!--<li><a href="https://facebook.com/matheus.laidler" target="_blank">Facebook</a></li>-->
+      <!--<li><a href="https://twitter.com/matheuslaidler" target="_blank">Twitter/X</a></li>-->
+      <!--<li><a href="https://linkedin.com/in/laidlervidal" target="_blank">LinkedIn</a></li>-->
+      <!--<li><a href="https://road2tech.github.io/" target="_blank">Road2Tech ⿻</a></li>-->
+      <!--<li><a href="https://wayofsec.github.io/" target="_blank">WayOfSec ⿻</a></li>-->
     </ul>
       </li>
       <li class="has-sub">
-      <a href="#donates" data-toggle="dropdown">Doação ❤</a> <!-- donates -->
+      <a href="#donates" data-toggle="dropdown">Doação</a> <!-- donates❤ -->
       <ul>
-        <li><a href="https://github.com/sponsors/matheuslaidler" target="_blank" title="Github Sponsor">Github Sponsor ⿻</a></li>
+        <li><a href="https://github.com/sponsors/matheuslaidler" target="_blank" title="Github Sponsor">Github Sponsor</a></li>
         <li class="has-sub">
           <a href="https://www.paypal.com/donate/?hosted_button_id=SJYYS28HZPU9A" title="Paypal">PayPal</a>
             <!-- my paypal links: 
@@ -159,11 +163,6 @@ layout: compress
   box-shadow: inset 0 -0.85px 8.5px #73ffe8; /*efeito de dentro qnd mouse sobre o botão*/
 }
 
-/*github-style hugo theme -> botão para modo dark/light - tirar a seta -> html: <li class="no-arrow"> */
-#cssmenu > ul > li.no-arrow:hover:after {
-  content: none;
-}
-
 #cssmenu .has-sub {
   z-index: 9999;
 }
@@ -195,11 +194,22 @@ layout: compress
   background: #73ffe89f;
 }
 
+.logotipo {
+  width: 65%;
+  height: auto;
+  top: 1.285vh;
+  left: 10vh;
+  align-self: left;
+  margin-top: -1.75vh;
+  border: 0;
+}
+
 .idioma {
   position: relative;
   top: 0.105vh;
   width: auto;
   height: 2.45vh;
+  margin-top: -0.75vh;
 }
 
 /* Estilos para telas menores -> Logo no menu de tablets */
@@ -289,13 +299,22 @@ layout: compress
 	max-height: 500vh;
   }
 
+  #cssmenu .logotipo {
+
+	width: 65%;
+  padding: 0;
+	position: center;
+  margin-top: -1.75vh;
+  }
+  
   /* Estilos para o ícone do hambúrguer */
   #cssmenu .menu-icon {
 	cursor: pointer;
-	display: inline-block;
-	position: center; /*absolute p voltar ao canto*/
+	position: absolute; /*absolute p voltar ao canto  // center // */
 	width: 3vh;
 	height: 3vh;
+  margin-top: 2.5vh;
+  margin-left: 2vh;
   }
 
   #cssmenu .menu-icon .bar {
