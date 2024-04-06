@@ -1,12 +1,11 @@
 ---
-layout: post
 title: Invadindo rede wifi na prática
-description: Mostrando como invadi a rede wifi de uma vizinha da minha mãe
+description: Mostrando como hackeei a rede wifi de uma vizinha da minha mãe
 tags: ["Wifi Hacking", "Shell Script", "Brute Force"]
-categories: ["SecLab"]
+categories: ["SecLab", "Way Of Security"]
 pin: true
 draft: true
-date: 2023-08-25T08:19:12+02:00
+date: 2023-08-25 08:19:12 +02:00
 author: Matheus Laidler
 ---
 
