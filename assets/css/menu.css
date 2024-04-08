@@ -1,0 +1,311 @@
+/*MENU DE OPÇÕES*/
+
+#cssmenu {
+	width: auto;
+	position: sticky;
+	display: inherit;
+	justify-content: center;
+	align-items: center;
+	height: 8vh;
+	background: linear-gradient(to bottom, #32323a, #141414);
+	border-bottom: 0.5vh solid #73ffe8; /*borda azul 73ffe8 - 51b5a4*/
+	top: 0;
+	z-index: 9999;
+}
+
+#cssmenu ul {
+  list-style: none;  /*tirando indicação - bolinha - de cada botão*/
+  display: flex;
+
+}
+
+#cssmenu > ul > li {
+  position: relative;
+}
+
+#cssmenu a {
+  display: inline-block;
+  padding: 0.75vh 7.5vh; /*botão largura*/
+  line-height: 6vh; /*botão altura*/
+  color: #fff;
+  text-decoration: none;
+  font-size: 12px;
+  text-align: center;
+
+}
+
+
+/*arredondamento dos cantos superiores dos botoes usados*/
+#cssmenu > ul > li > a {
+  border-radius: 10px 10px 0 0;
+}
+
+#cssmenu > ul > li:hover:after { /*seta*/
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  border-left: 10px solid transparent; 
+  border-right: 10px solid transparent;
+  border-bottom: 5px solid #51b5a4;
+  margin-left: -10px;
+}
+
+#cssmenu > ul > li.active > a {
+  box-shadow: inset 0 0 3px rgba(0, 1, 0, 0.45);
+  background: linear-gradient(to bottom, #26262c 0%, rgba(0, 1, 0, 0.45) 100%); /*qnd botao esta ativo - pagina atual - clicado*/
+}
+
+#cssmenu > ul > li:hover > a {
+  background: linear-gradient(to bottom, #26262c 0%, #070707 100%);
+  box-shadow: inset 0 -0.85px 8.5px #73ffe8; /*efeito de dentro qnd mouse sobre o botão*/
+}
+
+#cssmenu .has-sub {
+  z-index: 9999;
+}
+
+#cssmenu .has-sub:hover > ul {
+  display: block;
+}
+
+#cssmenu .has-sub ul {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  padding: 0;
+  margin: 0;
+}
+
+#cssmenu .has-sub ul li a {
+  display: block;
+  padding: 3.5vh; /*tamanho submenu*/
+  font-size: 12px;
+  line-height: 100%;
+  color: #fcfcfc;
+  background: #51b5a4;
+}
+
+#cssmenu .has-sub ul li a:hover {
+  background: #73ffe89f;
+}
+
+.logotipo {
+  width: 65%;
+  height: auto;
+  top: 1.285vh;
+  left: 10vh;
+  align-self: left;
+  margin-top: -1.75vh;
+  border: 0;
+}
+
+.idioma {
+  position: relative;
+  top: 0.105vh;
+  width: auto;
+  height: 2.45vh;
+  margin-top: -0.75vh;
+}
+
+/* Estilos para telas menores -> Logo no menu de tablets */
+@media (max-width: 1280px) {
+
+
+/*  Menu Hamburguer */
+@media screen and (max-width: 980px) {
+  #cssmenu {
+	  position: sticky;
+	  top: 0;
+	  z-index: 9999;
+  }
+
+  #cssmenu ul.open {
+	display: block !important;
+  }
+
+  #cssmenu ul ul {
+	display: none;
+	position: relative;
+	padding: 0;
+	margin: 0;
+  }
+
+  #cssmenu .has-sub.active ul {
+	display: block;
+  }
+
+  #cssmenu ul li {
+	display: block;
+	width: 100%;
+	position: relative;
+  }
+
+  #cssmenu > ul > li > a {
+	display: block;
+	width: 100%;
+	border-bottom: 1px solid #ebebeb;
+	padding: 12px 20px;
+	line-height: 1.7em;
+  }
+
+  #cssmenu ul ul li a {
+	padding: 12px 50px;
+	line-height: 1.7em;
+  }
+
+  #cssmenu .has-sub > a {
+	position: relative;
+  }
+
+  #cssmenu .submenu-button {
+	display: block;
+	position: relative;
+	right: auto;
+	top: 0;
+	z-index: 2;
+	background: #32323aa2;
+	width: 20vh;
+	height: 20vh;
+	cursor: pointer;
+  }
+
+  #cssmenu .submenu-button:after {
+	content: "";
+	display: block;
+	position: absolute;
+	right: 10vh;
+	top: 18vh;
+	border: 6vh solid transparent;
+	border-top-color: #fff;
+  }
+
+  #cssmenu .submenu-button.active:after {
+	top: 20vh;
+	border: 5vh solid transparent;
+	border-left-color: #fff;
+  }
+
+  /* Esconde o menu */
+  #cssmenu ul {
+	display: none;
+  }
+
+  #cssmenu > ul.open {
+	max-height: 500vh;
+  }
+
+  #cssmenu .logotipo {
+
+	width: 65%;
+  padding: 0;
+	position: center;
+  margin-top: -1.75vh;
+  }
+  
+  /* Estilos para o ícone do hambúrguer */
+  #cssmenu .menu-icon {
+	cursor: pointer;
+	position: absolute; /*absolute p voltar ao canto  // center // */
+	width: 3vh;
+	height: 3vh;
+  margin-top: 2.5vh;
+  margin-left: 2vh;
+  }
+
+  #cssmenu .menu-icon .bar {
+	display: block;
+	width: 100%;
+	height: 0.5vh;
+	background-color: #73ffe8;
+	border-radius: 3vh;
+	transition: all 0.2s ease-in-out;
+  }
+
+  #cssmenu .menu-icon .bar+.bar {
+	margin-top: 0.45vh;
+  }
+
+  /* Estilos para o menu aberto */
+  #cssmenu ul.open {
+	display: block;
+	position: absolute;
+	top: 7.5725vh;
+	right: 0;
+	left: 0;
+	background-color: #141414cb;
+	border-top: 3.5px solid #73ffe8;
+	padding: 0.2vh;
+	padding-top: 0;
+	min-height: 135vh;
+	z-index: 9999;
+  }
+
+  #cssmenu ul.open li a {
+	display: inline-flexbox;
+	padding: 2.5vh;
+	line-height: 15px;
+	font-size: 13px;
+	color: #fff;
+	margin-top: 0;
+  }
+
+  /* Ajuste para collapsible menus */
+  #cssmenu ul.open ul {
+	position: static;
+  }
+
+  #cssmenu .has-sub > a::after {
+	  content: "";
+	  position: absolute;
+	  top: 50%;	bottom: 0;
+	  right: 20px;
+	  transform: translateY(-50%);
+	  border: 5px solid transparent;
+	  border-top-color: #fff;
+	}
+	
+	#cssmenu .has-sub.active > a::after {
+	  transform: translateY(-50%) rotate(180deg);
+	}
+}
+
+  
+/* estilo para telas menores - pockets phones? até 280p*/
+
+@media (max-width: 280px) {
+
+  #cssmenu > ul {
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.35s ease-out;
+  }
+
+  #cssmenu ul li {
+	display: block;
+	width: 100%;
+  }
+
+  #cssmenu > ul > li > a {
+	display: block;
+	width: 100%;
+	border-bottom: 1px solid #ebebeb;
+	padding: 12vh 20vh;
+	line-height: 1.7em;
+  }
+
+  #cssmenu ul ul li a {
+	padding: 12px 50px;
+	line-height: 1.7em;
+  }
+
+
+  #cssmenu ul ul {
+	transition: max-height 0.35s ease-out;
+  }
+
+
+} 
+}
