@@ -23,7 +23,7 @@ description: >- # used by seo meta and the atom feed
 
 # Fill in the protocol & hostname for your site.
 # e.g. 'https://username.github.io', note that it does not end with a '/'.
-url: "https://matheuslaidler.github.io/blog/"
+url: "https://matheuslaidler.github.io/"
 
 github:
   username: matheuslaidler # change to your github username
@@ -100,7 +100,7 @@ toc: true
 
 comments:
   # Global switch for the post comment system. Keeping it empty means disabled.
-  provider: # [disqus | utterances | giscus]
+  provider: disqus # [disqus | utterances | giscus]
   # The provider options are as follows:
   disqus:
     shortname: matheuslaidler-github-io # fill with the Disqus shortname. › https://help.disqus.com/en/articles/1717111-what-s-a-shortname

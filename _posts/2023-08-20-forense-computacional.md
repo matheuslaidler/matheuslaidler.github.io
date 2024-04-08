@@ -1,11 +1,10 @@
 ---
 title: Desvendando a Forense Digital
 description: Conhecendo a computação forense
-tags: ["Forense digital", "Análise Forense", "Esteganografia", "Criptografia", "Ferramentas Forense"]
-categories: ["Forensic Trail"]
-pin: false
-date: 2023-08-20 18:29:10 +02:00
 author: matheus
+tags: ["Forense digital", "Análise Forense", "Recovery","Esteganografia", "Criptografia", "Ferramentas Forense"]
+categories: ["Forensic Trail", "Computação Forense"]
+pin: false
 comments: true
 ---
 

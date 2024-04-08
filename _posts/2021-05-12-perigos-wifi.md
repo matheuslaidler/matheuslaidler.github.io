@@ -1,11 +1,10 @@
 ---
 title: Desvendando os perigos em uma WiFi
 description: Compreenda os principais riscos e perigos ocultos de uma rede WiFi
-tags: ["Redes", "WiFi", "Hacking"]
-categories: ["Way Of Security"]
-pin: true
-draft: false
 author: matheus
+tags: ["Redes", "WiFi", "Hacking"]
+categories: ["WayOfSec", "Cibersegurança"]
+pin: false
 comments: true
 ---
 # Além do Sinal: Conhecendo os principais perigos de uma rede wireless

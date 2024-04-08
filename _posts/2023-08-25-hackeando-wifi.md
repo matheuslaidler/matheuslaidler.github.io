@@ -1,15 +1,14 @@
 ---
 title: Invadindo rede wifi na prática
 description: Mostrando como hackeei a rede wifi de uma vizinha da minha mãe
-tags: ["Wifi Hacking", "Shell Script", "Brute Force"]
-categories: ["SecLab", "Way Of Security"]
-pin: true
-draft: true
-date: 2023-08-25 08:19:12 +02:00
 author: matheus
+tags: ["Wifi Hacking", "Shell Script", "Brute Force"]
+categories: ["WayOfSec", "SecLab"]
+pin: true
+comments: true
 ---
 
-# Hackeando redes sem fio na prática
+# Hackeando redes WiFi
 
 Neste artigo vou mostrar para vocês como funciona na prática a invasão de uma rede wireless, e como foi minhas primeiras experiências hackeando redes wifi reais.
 
@@ -22,14 +21,14 @@ Nesta postagem será esperado algumas explicações mais _práticas_ - com as fe
 >*Vale já esclarecer que o intuito deste tópico é totalmente educativo e não me responsabilizo por nenhum ato de terceiro.* 
 
 
-# Como pude invadir a rede da minha vizinha
+## Como invadi a rede da minha vizinha
 
 > *Deixo* claro *também que, apesar dos pesares, nenhum ato de intenção malígna foi feito e a* operadora *em questão já atualizou sua forma de padronização de credenciais. Por este motivo resolvi repostar sobre esta falha protocolar, visto que muitos usuários ainda podem estar utilizando e ficando vulneráveis e precisam se atentar a isso.*
 
-## Contextualização
+# Contextualização
 Ambientificação de wifi hacking na prática & achando vulnerabilidade em redes wireless de uma operadora famosa.
 
-### Detectando erro uma grande operadora.
+## Detecção do erro da operadora.
 
  Em uma experiência passada, descobri uma vulnerabilidade significativa em uma grande operadora de internet. Eles estavam usando um modelo padrão de credencial fraco para suas redes Wi-Fi. A consistência desse padrão tornou-se aparente ao observar os modems da mesma operadora em várias residências de familiares.
 
@@ -37,7 +36,7 @@ Ambientificação de wifi hacking na prática & achando vulnerabilidade em redes
 
  Felizmente, essa história tem um final positivo. Acredito que a operadora reconheceu a falha e melhorou, pois seu padrão de credenciais foi atualizado nos meus modems atuais, aumentando a segurança para seus usuários até certo ponto. Isso destaca a importância da segurança cibernética e da constante evolução para proteger contra ameaças emergentes. Se não sabe quais riscos sua rede invadida te trás, fiz um post sobre isso.
 
-### Pincelada geral na conexão wireless
+# Entendendo Conexão Wireless
 
  Imagine a conexão de uma wifi como uma conversa animada em uma festa. Seu dispositivo é como um convidado procurando alguém para conversar e/ou dançar. Ele pode simplesmente começar a “gritar” no espaço, perguntando: *“Tem alguém de bobeira aí?”*. Isso é semelhante ao seu dispositivo procurando por redes Wi-Fi disponíveis.
 
@@ -53,7 +52,7 @@ Ambientificação de wifi hacking na prática & achando vulnerabilidade em redes
 
  > Quando você termina de usar a internet, é como se seu dispositivo estivesse se despedindo e saindo da festa. O roteador nota que seu dispositivo “saiu da conversa” e encerra a conexão. Lembre-se, tudo isso acontece em milésimos de segundo. 
 
-### Pincelada sobre wifi hacking em geral
+# Conheça wifi hacking
 
  O hacking de Wi-Fi é um tópico complexo que envolve uma compreensão profunda das redes sem fio e dos protocolos de segurança. Acho importante resumir ao menos os conceitos-chave.
 
@@ -71,9 +70,12 @@ Ambientificação de wifi hacking na prática & achando vulnerabilidade em redes
 
  - *Agora, mãos a obra*
 
+# Mão na Massa no Hacking
+
+Vamos começar com o conteúdo prática, mas ainda explicando algumas coisas.
 > Todo o processo foi feito dentro de um mesmo diretório
 
-# Fase de Reconhecimento
+## Fase de Reconhecimento
 
  A fase de reconhecimento acaba sendo muito de ficar monitorando as redes alheias, seus comportamentos, possíveis vulnerabilidades aparente e anotando as informações dos alvos.
 
@@ -84,7 +86,7 @@ Ambientificação de wifi hacking na prática & achando vulnerabilidade em redes
  Foi assim que veio crescendo a ideia de tentar criar um script que faz a wordlist perfeita para essas redes, apenas como teste, até porque o trabalho de uma wordlist grande e ficaz já foi reduzido sozinho. De uma determinada forma, a identificação do padrão de login/senha da rede faz parte de uma análise de reconhecimento também, acredito eu. Neste documento não apenas teremos o "passo a passo", como também mostraremos uma criação de shellscript para fazer a wordlist de qualquer rede vulnerável.
 
 
-### Arquivo de informações
+### Anotação de informações
  Criando documento para salvar informação útil dos alvos
 
 ```bash
@@ -150,7 +152,7 @@ sudo airodump-ng --essid < nomeWiFi > -w < nomeArquivo > < interfacemon >
  **Importante** não esquecer de colocar as informações, como o BSSID do(s) alvo(s), no documento e **abrir uma sessão/aba no terminal para a próxima etapa**.
 
 
-# Fase de Testes de Invasão e Exploração
+## Fase de Testes de Invasão e Exploração
 
  Nem todas as redes vão seguir os padrões de credenciais que estamos trabalhando nesta publicação, até porque a empresa que utilizava esta regra já alterou para uma mais forte. Porém, ainda podemos ter pessoas q usam um padrão aproximado e vamos explorar isso nesta etapa. Vamos precisar reforçar uma comunicação com algum dispositivo dentro da rede alvo, para capturarmos o 'handshake' de autenticação. Assim, vamos poder testar nossa wordlist e concluir com o ataque, podendo ser feito várias vezes com várias wordlists caso não siga este padrão, mas sim outro. Alguns podem ter wordlists que salvam várias senhas que era padrões de modem para ir testando, o que não garante nada mas que pode ser feito.
  
@@ -205,7 +207,7 @@ echo "Arquivo salvo como wl"
  Ao abrir o script (`chmod +x < nome do script >` + `./< nome do script >`) e digitar o nome da rede alvo, ele te retornará o arquivo `wl` feito.
  Agora podemos passar para a real fase de exploração, uma vez que já temos uma wordlist pronta para o uso.
 
-### Quebrando a senha da rede sem fio alvo
+## Quebrando a senha da rede sem fio alvo
 
  Com tudo pronto podemos partir pro ataque com o aircrack.
 
@@ -219,11 +221,11 @@ sudo aircrack-ng -a2 -e < "ESSID_Rede" > < "NomeArquivoCap*" > -w < wordlist >
  - [x] KLANU_2G1Z672U:325G672U [ESSID:PASSWD]
 
 
-# Fase de pós-exploração de uma situação real (alerta de perígo)
+## Fase de pós-exploração de uma situação real (alerta de perígo)
  Nessa etapa temos os reais problemas de alguém dentro de um ambiente restrito. Imagine que temos um espião de uma empresa rival dentro da sala de reunião da sua empresa? ouvindo e gravando tudo? ou pior, se está fazendo parte de uma reunião de emergência da sua empresa que você não está presente, e faz parecer que você o colocou como uma peça importante para ditar como certas coisas serão feitas... pois é, seria um desastre, né?
 
  Uma pessoa na sua rede wifi pode estar entre sua conexão e a do roteador, pode estar entre sua conexão e a de algum servidor, pode até mesmo fazer modificação no DNS local para alterar a página oficial de uma rede social para uma página fake dele (isto é, fazer com que o endereço original 'twitter.com' / ou 'x.com' seja redirecionado para a página falsa dele).
 
-  São, em geral, problemas que você poderá sofrer ao utilizar redes wifi públicas alheias. O atacante pode se tornar o 'homem no meio' de toda a comunicação e isso pode ser bem prejudicial. Além de poder acessar bizarrices na sua rede privada. 
+ São, em geral, problemas que você poderá sofrer ao utilizar redes wifi públicas alheias. O atacante pode se tornar o 'homem no meio' de toda a comunicação e isso pode ser bem prejudicial. Além de poder acessar bizarrices na sua rede privada. 
   
-  Se quiser saber mais sobre os perigos de uma invasão a uma rede wifi, tenho uma publicação feita exclusivamente sobre isso e também dando dicas de como se proteger. [WayOfSec: Perigos de uma rede wireless](../perigos-wifi)
+ Se quiser saber mais sobre os perigos de uma invasão a uma rede wifi, tenho uma publicação feita exclusivamente sobre isso e também dando dicas de como se proteger. [WayOfSec: Perigos de uma rede wireless](../perigos-wifi)
