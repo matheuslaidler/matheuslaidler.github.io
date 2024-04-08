@@ -10,9 +10,9 @@ comments: true
 
 # Hackeando redes WiFi
 
-Neste artigo vou mostrar para vocês como funciona na prática a invasão de uma rede wireless, e como foi minhas primeiras experiências hackeando redes wifi reais.
+Neste artigo vou mostrar para vocês como funciona na prática a invasão de uma rede wireless, e como foi minha experiência hackeando uma rede wifi real que não faz parte de uma "lab" pessoal ou familiar.
 
-É ideal que você já saiba o básico de redes wireless, como funcionam os protocolos e conceitos, pois eles não serão explicados aprofundadamente nesta publicação. Futuramente, teremos em breve uma postagem específica que correrá por toda essa base de forma detalhada, porém explicaremos sobre alguns conceitos básicos por aqui para entendimento geral - por exemplo, como funciona a conexão em uma wifi.
+É legal que você já saiba o básico de redes wireless, como funcionam os protocolos e conceitos, pois eles ainda não serão tão bem aprofundados nesta publicação, podendo até pular para a parte prática se necessário. Porém, explicaremos sobre alguns conceitos básicos anteriormente para entendimento geral - por exemplo, como funciona a conexão em uma wifi.
 
 ### O que esperar desta publicação
 
