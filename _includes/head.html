@@ -88,8 +88,8 @@
 
   <link rel="stylesheet" href="{{ '/assets/css/:THEME.css' | replace: ':THEME', site.theme | relative_url }}">
 
-  <!-- menu -->
-  <link rel="stylesheet" href="assets/css/menu.css">
+  <!-- menu global css -->
+  <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/menu.css">
 
   {% if site.toc and page.toc %}
     <link rel="stylesheet" href="{{ site.data.origin[type].toc.css | relative_url }}">
@@ -105,8 +105,8 @@
   {% endif %}
 
   <!-- JavaScript -->
-  <!-- menu -->
-  <script src="assets/js/menu.js"></script>
+  <!-- menu global js -->
+  <script src="{{ site.baseurl }}/assets/js/menu.js"></script>
   {% unless site.theme_mode %}
     {% include mode-toggle.html %}
   {% endunless %}
