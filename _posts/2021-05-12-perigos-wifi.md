@@ -20,8 +20,12 @@ comments: true
 
 ### Sobre o que será apresentado
 
-Você já se perguntou como é fácil invadir uma rede wireless? Você sabe quais são os riscos de usar uma rede wifi de terceiros ou então o perigo de ter credenciais fracas na sua própria rede? 
+Você já se perguntou como é fácil invadir uma rede wireless? 
+
+Você sabe quais são os riscos de usar uma rede wifi de terceiros ou então o perigo de ter credenciais fracas na sua própria rede? 
+
 Quer saber como funciona a proteção e a invasão em redes WEP e WPA-PSK, e quais são os perigos que você pode enfrentar se alguém conseguir acesso à sua rede sem a sua permissão? 
+
 Quer ver algumas dicas de como se proteger e evitar que seus dados sejam roubados ou manipulados por hackers mal-intencionados?
 
 Nesta postagem falaremos exatamente sobre isso. Você sairá compreendendo os Perigos das Redes Wireless. 
@@ -34,7 +38,7 @@ As redes wireless usam diferentes protocolos de segurança para criptografar os 
 
 ### Minha primeira invasão a uma WIFI
 
-Entre 2019 e 2020 eu percebi um possível padrão nas credenciais que vinham com o modem roteador de uma operadora grande e isso me fez criar um script para testar essa minha teoria. Assim, sempre que alguém próximo utilizava uma rede com as credenciais padrões desta operadora, eu verificava se a senha estava dentro do resultado da wordlist provinda do script q fiz para força bruta. O padrão era real, sempre me retornava uma wordlist que uma das opções era certeira na credencial da rede com padrão de fábrica. Em outras palavras, quando a análise combinatória era feita de acordo com o padrão que eu detectei, entre os resultados gerados sempre estaria a senha correta da rede e isso acarretava em um ataque eficaz ao usar o arquivo com aircrack, ao testar todas as possibilidades presentes no arquivo. Fui publicar com finalidade acadêmica e meu script precisou ser tirado do ar pós recebimento de uma notificação para retirada do repositório do github - eu também acabei vacilando por ter deixado o nome da empresa sair junto. Hoje ela não utiliza mais o mesmo padrão, mas ainda temos muitos usuários que estão utilizando esta configuração antiga e minha vizinha é um exemplo - Até por isso que precisei retirar meu script do ar (fiz um vídeo específico e um post sobre isso. O vídeo será postado futuramente e a postagem em revisão). 
+Em meados de 2020 eu percebi um possível padrão nas credenciais que vinham com o modem roteador de uma operadora grande e isso me fez criar um script para testar essa minha teoria. Assim, sempre que alguém próximo utilizava uma rede com as credenciais padrões desta operadora, eu verificava se a senha estava dentro do resultado da wordlist provinda do script q fiz para força bruta. O padrão era real, sempre me retornava uma wordlist que uma das opções era certeira na credencial da rede com padrão de fábrica. Em outras palavras, quando a análise combinatória era feita de acordo com o padrão que eu detectei, entre os resultados gerados sempre estaria a senha correta da rede e isso acarretava em um ataque eficaz ao usar o arquivo com aircrack, ao testar todas as possibilidades presentes no arquivo. Fui publicar com finalidade acadêmica e meu script precisou ser tirado do ar pós recebimento de uma notificação para retirada do repositório do github - eu também acabei vacilando por ter deixado o nome da empresa sair junto. Hoje ela não utiliza mais o mesmo padrão, mas ainda temos muitos usuários que estão utilizando esta configuração antiga e minha vizinha é um exemplo - Até por isso que precisei retirar meu script do ar (fiz um vídeo específico e um post sobre isso. O vídeo será postado futuramente e a postagem em revisão). 
 
 >Para saber mais sobre toda a parte prática por trás, acesse a postagem> [SecLab: Hackeando rede wireless](../hackeando-wifi)
 
@@ -48,11 +52,11 @@ Afinal, o que de ruim pode mesmo acontecer se alguém entrar na sua rede privada
 
 Bom... se um invasor conseguir se conectar à sua rede wireless, ele pode fazer várias coisas maliciosas, como:
 
+ - Fazer um ataque de ARP Spoofing/Poisonning, que consiste em enganar os dispositivos da rede sobre qual é o endereço físico / MAC (Media Access Control) do roteador, fazendo com que eles enviem os dados para o invasor em vez do roteador. Assim, ele pode controlar todo o tráfego da rede e assim fazer um MITM.
+ 
+ - Fazer um ataque de MITM (Man In The Middle), que consiste em interceptar os dados que você envia e recebe pela rede, podendo ler, modificar ou bloquear as informações - inclusive podendo fazer o envenenamento de DNS. Por exemplo, ele pode conseguir forma de ver quais sites você visita, quais mensagens você envia ou recebe, quais arquivos você baixa ou compartilha, etc (tá aí a importância da criptografia).
+ 
  - Fazer um ataque de DNS Spoofing/Poisonning, que consiste em alterar o endereço IP (Internet Protocol) associado a um nome de domínio no DNS (Domain Name System) local da rede, fazendo com que os dispositivos da rede acessem um site falso em vez do verdadeiro. Por exemplo, ele pode fazer com que você acesse um site falso do seu banco, que tem a mesma aparência do original, mas que na verdade é uma armadilha para capturar seus dados bancários com phishing (pois é, neste caso não adianta saber que é o link original).
-	
- - Fazer um ataque de MITM (Man In The Middle), que consiste em interceptar os dados que você envia e recebe pela rede, podendo ler, modificar ou bloquear as informações. Por exemplo, ele pode ver quais sites você visita, quais senhas você digita, quais mensagens você envia ou recebe, quais arquivos você baixa ou compartilha, etc (tá aí a importância da criptografia).
-	
- - Fazer um ataque de ARP Spoofing/Poisonning, que consiste em enganar os dispositivos da rede sobre qual é o endereço físico / MAC (Media Access Control) do roteador, fazendo com que eles enviem os dados para o invasor em vez do roteador. Assim, ele pode controlar todo o tráfego da rede e fazer o mesmo que no ataque de MITM.
 	
  - Fazer um SSL Stripping, que se resume no invasor removendo a criptografia SSL/TLS do tráfego da vítima, permitindo que ele leia e manipule o tráfego.
 	
