@@ -17,11 +17,7 @@ layout: compress
 <!-- `site.alt_lang` can specify a language different from the UI -->
 <html lang="{{ page.lang | default: site.alt_lang | default: site.lang }}" {{ prefer_mode }}>
 
-
-
   {% include head.html %}
-
-
 
 <!-- menu desktop/mobile - matheus laidler: creditos> matheuslaidler.github.io -->
 <nav id="cssmenu">
@@ -334,11 +330,11 @@ layout: compress
   #cssmenu ul.open {
 	display: block;
 	position: absolute;
-	top: 15.55vh;
+	top: 7.5725vh;
 	right: 0;
 	left: 0;
 	background-color: #141414cb;
-	border-top: 13.5px solid #73ffe8;
+	border-top: 3.5px solid #73ffe8;
 	padding: 0.2vh;
 	padding-top: 0;
 	min-height: 135vh;
@@ -416,15 +412,15 @@ layout: compress
     document.addEventListener('DOMContentLoaded', function() { //DOMContentLoaded add now that I'm using as a Imported JS file
   
   // Get the current page URL
-  //var currentPageUrl = window.location.href;
+  var currentPageUrl = window.location.href;
   // Find the corresponding menu item and mark it as active
-  //var menuItems = document.querySelectorAll('#cssmenu li');
-  //menuItems.forEach(function(item) {
-  //    var link = item.querySelector('a');
-  //    if (link && link.getAttribute('href') === currentPageUrl) {
-  //        item.classList.add('active');
-  //    }
-  //});
+  var menuItems = document.querySelectorAll('#cssmenu li');
+  menuItems.forEach(function(item) {
+      var link = item.querySelector('a');
+      if (link && link.getAttribute('href') === currentPageUrl) {
+          item.classList.add('active');
+      }
+  });
 
   // Get the hamburger icon, menu list, and submenu buttons
   const hamburger = document.querySelector('.menu-icon');
