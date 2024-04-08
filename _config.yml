@@ -110,7 +110,7 @@ comments:
     issue_term: # < url | pathname | title | ...>
   # Giscus options › https://giscus.app
   giscus:
-    repo: # <gh-username>/<repo>
+    repo: matheuslaidler/matheuslaidler.github.io # <gh-username>/<repo>
     repo_id:
     category:
     category_id:
