@@ -7,7 +7,7 @@
         {%- capture avatar_url -%}
           {% include img-url.html src=site.avatar %}
         {%- endcapture -%}
-          <img src="{{- avatar_url -}}" width="112" height="112" alt="avatar" onerror="this.style.display='none'">
+        <img src="{{- avatar_url -}}" width="112" height="112" alt="avatar" onerror="this.style.display='none'">
       {%- endif -%}
     </a>
 
@@ -44,7 +44,6 @@
 
   <div class="sidebar-bottom d-flex flex-wrap  align-items-center w-100">
     {% unless site.theme_mode %}
-    <span class="icon-border"></span>
       <button type="button" class="mode-toggle btn" aria-label="Switch Mode">
         <i class="fas fa-adjust"></i>
       </button>

@@ -16,10 +16,10 @@ timezone: America/Sao_Paulo
 
 title: Acervo de TI # the main title
 
-tagline: Blog pessoal de estudo para partilhar conhecimento sem fins lucrativos. # it will display as the sub-title
+tagline: Compartilharmento de estudos com finalidades acadêmica e não lucrativa. # it will display as the sub-title
 
 description: >- # used by seo meta and the atom feed
-  Projeto de Divulgação Científica.
+  Projeto de Divulgação Científica da Computação.
 
 # Fill in the protocol & hostname for your site.
 # e.g. 'https://username.github.io', note that it does not end with a '/'.
@@ -79,7 +79,7 @@ pageviews:
 #     light  - Use the light color scheme
 #     dark   - Use the dark color scheme
 #
-theme_mode: dark # [light | dark] - deixar vazio para poder ter a opção dos dois - está bugado e não clicável por algum motivo. I'll fix later
+theme_mode: # [light | dark] - deixar vazio para poder ter a opção dos dois - está bugado e não clicável por algum motivo. I'll fix later
 
 # The CDN endpoint for images.
 # Notice that once it is assigned, the CDN url

@@ -1,69 +1,83 @@
-# Acervo de Tecnologia e Segurança da Informação
+<!-- markdownlint-disable-next-line -->
+<div align="center">
 
-## 👋 😎 Boas vindas ao meu projeto pessoal! 
-###### Conteúdo que visa conscientizar e auxiliar no processo de aprendizado de milhares de entusiastas e estudantes sobre tecnologia e segurança da informação.
+  <!-- markdownlint-disable-next-line -->
+  # Chirpy Jekyll Theme
 
-### Apresentação
+  A minimal, responsive, and feature-rich Jekyll theme for technical writing.
 
- Este `acervo` é um compilado destes materiais como uma livraria pública e gratuita que visa conscientizar e auxiliar no processo de aprendizado de estudantes sobre TI, desde programação, segurança da informação e computação forense. Uma ramificação deste projeto é o canal do youtube com vídeos e aulas práticas e teóricas. 
- 
-### Criação
+  [![Gem Version](https://img.shields.io/gem/v/jekyll-theme-chirpy?color=brightgreen)][gem]&nbsp;
+  [![CI](https://github.com/cotes2020/jekyll-theme-chirpy/actions/workflows/ci.yml/badge.svg?branch=master&event=push)][ci]&nbsp;
+  [![Codacy Badge](https://app.codacy.com/project/badge/Grade/4e556876a3c54d5e8f2d2857c4f43894)][codacy]&nbsp;
+  [![GitHub license](https://img.shields.io/github/license/cotes2020/jekyll-theme-chirpy.svg)][license]&nbsp;
+  [![996.icu](https://img.shields.io/badge/link-996.icu-%23FF4D5B.svg)](https://996.icu)
 
- Os artigos são frutos dos meus estudos na área de tecnologia e hacking. O projeto é uma junção dos meus projetos passados de divulgação científica: Way of Security e Road 2 Technology, com a adição do estudo de forense junto.
+  [**Live Demo** →][demo]
 
-### Nota
- Embora eu me esforce para fornecer informações precisas e úteis sobre tecnologia e segurança da informação, é importante notar que não posso ser responsabilizado por ações tomadas por terceiros com base nas informações que compartilho. Recomendo sempre que os leitores usem as informações fornecidas com discernimento e responsabilidade. Repudio quaisquer atos anti-éticos e tais atitudes não serão incentivadas pelo projeto Acervo de TI e nem por seu proprietário. Vale ressaltar que o trabalho é divulgação de material de estudo SEM fim lucrativo, tendo única e exclusivamente a finalidade acadêmica.
+  [![Devices Mockup](https://chirpy-img.netlify.app/commons/devices-mockup.png)][demo]
 
-# Mais sobre as Ramificações de Projetos
+</div>
 
-### Road2Tech
+## Features
 
-<i>"Projeto pessoal de estudo sobre tecnologia e segurança da informação."</i>
+- Dark / Light Theme Mode
+- Localized UI language
+- Pinned Posts on Home Page
+- Hierarchical Categories
+- Trending Tags
+- Table of Contents
+- Last Modified Date
+- Syntax Highlighting
+- Mathematical Expressions
+- Mermaid Diagrams & Flowcharts
+- Dark / Light Mode Images
+- Embed Videos
+- Disqus / Giscus / Utterances Comments
+- Built-in Search
+- Atom Feeds
+- PWA
+- Google Analytics / GoatCounter
+- SEO & Performance Optimization
 
-A ideia do projeto vem de criar um portal sobre o mundo da tecnologia e hacking, com finalidade acadêmica, enquanto eu estudo desenvolvendo meus próprios materiais e compartilhando-os. 
+## Documentation
 
-Assim, acabo permitindo que qualquer entusiasta possa ter acesso a informação e, assim, crescer junto comigo nessa jornada de aprendizado.
-Este portal foi feito inteiramente como uma fonte de estudo, contribuíndo para o meu aprendizado e para os demais interessados em aprender e revisar.
-Perfeito para quem busca materiais voltados para a área de computação/tecnologia.
+To learn how to use, develop, and upgrade the project, please refer to the [Wiki][wiki].
 
-```console
-$ hello world!
-```
+## Contributing
 
-### WayOfSec
+Contributions (_pull requests_, _issues_, and _discussions_) are what make the open-source community such an amazing place
+to learn, inspire, and create. Any contributions you make are greatly appreciated.
+For details, see the "[Contributing Guidelines][contribute-guide]".
 
-<i>"Projeto pessoal de estudo sobre segurança da informação."</i>
+## Credits
 
-A ideia do projeto vem de criar um portal sobre o mundo de hacking, com finalidade acadêmica, enquanto eu estudo desenvolvendo meus próprios materiais e compartilhando-os. 
+### Contributors
 
-Assim, acabo permitindo que qualquer entusiasta possa ter acesso a informação e, assim, crescer junto comigo nessa jornada de aprendizado.
-Este portal foi feito inteiramente como uma fonte de estudo, contribuíndo para o meu aprendizado e para os demais interessados em aprender e revisar.
-Perfeito para quem busca materiais voltados para a área de cibersegurança.
+Thanks to [all the contributors][contributors] involved in the development of the project!
 
-```console
-$ hack the world!
-```
+[![all-contributors](https://contrib.rocks/image?repo=cotes2020/jekyll-theme-chirpy&columns=16)][contributors]
+<sub> —— Made with [contrib.rocks](https://contrib.rocks)</sub>
 
-### ForensicTrail
+### Third-Party Assets
 
-Novo projeto que surgiu atualmente para add a sessão de forense digital no acervo.
+This project is built on the [Jekyll][jekyllrb] ecosystem and some [great libraries][lib], and is developed using [VS Code][vscode] as well as tools provided by [JetBrains][jetbrains] under a non-commercial open-source software license.
 
-```console
-$ track the world!
-```
-    
-## Tema do projeto
+The avatar and favicon for the project's website are from [ClipartMAX][clipartmax].
 
- O tema utilizado é oficialmente o *Chirpy* e todos os créditos aos envolvidos. Porém, precisei fazer modificações para se adequar aos meus gostos e ter suporte ao meu menu global para meus projetos front-end.
- 
-  - link do tema oficial: [Chirpy](https://github.com/cotes2020/jekyll-theme-chirpy)
-  - link do tema template para uso direto: [ChirpyStarter](https://github.com/cotes2020/chirpy-starter)
-  - link do tema modificado por mim: [ChirpyModified](https://github.com/matheuslaidler/chirpy-modified/)
+## License
 
-## Créditos e licença
+This project is published under [MIT License][license].
 
-  - Matheus laidler
-  - Cotes *(Theme)*
-
-![GitHub license](https://img.shields.io/github/license/cotes2020/chirpy-starter.svg?color=blue)
- 
+[gem]: https://rubygems.org/gems/jekyll-theme-chirpy
+[ci]: https://github.com/cotes2020/jekyll-theme-chirpy/actions/workflows/ci.yml?query=event%3Apush+branch%3Amaster
+[codacy]: https://app.codacy.com/gh/cotes2020/jekyll-theme-chirpy/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade
+[license]: https://github.com/cotes2020/jekyll-theme-chirpy/blob/master/LICENSE
+[jekyllrb]: https://jekyllrb.com/
+[clipartmax]: https://www.clipartmax.com/middle/m2i8b1m2K9Z5m2K9_ant-clipart-childrens-ant-cute/
+[demo]: https://cotes2020.github.io/chirpy-demo/
+[wiki]: https://github.com/cotes2020/jekyll-theme-chirpy/wiki
+[contribute-guide]: https://github.com/cotes2020/jekyll-theme-chirpy/blob/master/docs/CONTRIBUTING.md
+[contributors]: https://github.com/cotes2020/jekyll-theme-chirpy/graphs/contributors
+[lib]: https://github.com/cotes2020/chirpy-static-assets
+[vscode]: https://code.visualstudio.com/
+[jetbrains]: https://www.jetbrains.com/?from=jekyll-theme-chirpy
