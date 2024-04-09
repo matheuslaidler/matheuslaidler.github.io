@@ -3,6 +3,8 @@
 ## 👋 😎 Boas vindas ao meu projeto pessoal! 
 ###### Conteúdo que visa conscientizar e auxiliar no processo de aprendizado de milhares de entusiastas e estudantes sobre tecnologia e segurança da informação.
 
+![previa_5 1](https://github.com/matheuslaidler/matheuslaidler.github.io/assets/76860503/60b7af31-e279-477b-a67c-df7303f7b362)
+
 ### Apresentação
 
  Este `acervo` é um compilado destes materiais como uma livraria pública e gratuita que visa conscientizar e auxiliar no processo de aprendizado de estudantes sobre TI, desde programação, segurança da informação e computação forense. Uma ramificação deste projeto é o canal do youtube com vídeos e aulas práticas e teóricas. 
@@ -42,6 +44,17 @@ Perfeito para quem busca materiais voltados para a área de cibersegurança.
 
 ```console
 $ hack the world!
+```
+
+### SecLab
+
+<i>"Projeto laboratorial de hacking prático."</i>
+
+A ideia do projeto vem de criar um portal a prática do mundo hacking, com finalidade acadêmica, enquanto eu estudo desenvolvendo meus próprios materiais e compartilhando-os. 
+
+
+```console
+$ the world was hacked!
 ```
 
 ### ForensicTrail
