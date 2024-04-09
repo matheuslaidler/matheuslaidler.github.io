@@ -18,7 +18,7 @@ Usar video no seu post?
 	border-bottom: 0.35vh solid #73ffe8;
     border-top: 0.35vh solid #73ffe8;
 }
-
+/*mobile-sidebar-profile*/
 .profile-wrapper {
     padding: 1.85vh;
 }
@@ -32,7 +32,7 @@ Usar video no seu post?
 	    border-bottom: 0.35vh solid #73ffe8;
         border-top: 0.35vh solid #73ffe8;
     }
-
+/*mobile-sidebar-profile*/
     .profile-wrapper {
         /*display: none;*/
         /*overflow: hidden;*/
