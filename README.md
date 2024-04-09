@@ -3,7 +3,8 @@
 ## 👋 😎 Boas vindas ao meu projeto pessoal! 
 ###### Conteúdo que visa conscientizar e auxiliar no processo de aprendizado de milhares de entusiastas e estudantes sobre tecnologia e segurança da informação.
 
-![previa_5 1](https://github.com/matheuslaidler/matheuslaidler.github.io/assets/76860503/60b7af31-e279-477b-a67c-df7303f7b362)
+
+
 
 ### Apresentação
 
@@ -67,16 +68,32 @@ $ track the world!
     
 ## Tema do projeto
 
- O tema utilizado é oficialmente o *Chirpy* e todos os créditos aos envolvidos. Porém, precisei fazer modificações para se adequar aos meus gostos e ter suporte ao meu menu global para meus projetos front-end.
+ O tema que criei, na realidade, é basicamente um fork de um existente muito bom em termo de funcionalidade e praticidade. 
+ 
+![previa_0](https://github.com/matheuslaidler/matheuslaidler.github.io/assets/76860503/e80c77d1-847d-4594-a785-cfebacc80a6d)
+
+ 
+ O tema base utilizado é oficialmente o *Chirpy* e deixo aqui todos os créditos aos envolvidos. Entretando, precisei fazer algumas modificações para se adequar aos meus gostos e ter suporte ao meu menu global. Sim, terei outras páginas em outros repositórios como um site grande que não se resumiria a apenas o blog de postagem.
+
+ ![previa_1](https://github.com/matheuslaidler/matheuslaidler.github.io/assets/76860503/46c93b7a-c034-453b-9629-c71b6a30c1bf)
+
+Algumas 'features' novas foram sendo implementadas por mim também, como, por exemplo, a compatibilidade de um vídeo interno e mudança de tema light/dark no mobile.
+Pelo meu menu global temos agora a mudança de tema que assim, quem usa mobile terá a possibilidade de usar o tema claro também.
+
+![previa_4](https://github.com/matheuslaidler/matheuslaidler.github.io/assets/76860503/57a31c10-43ba-45d2-b9ee-3f183b691938)
+
+![previa_5 3](https://github.com/matheuslaidler/matheuslaidler.github.io/assets/76860503/c32698bb-255e-48eb-bc29-c3cf0318522a)
+![previa_5 1](https://github.com/matheuslaidler/matheuslaidler.github.io/assets/76860503/60b7af31-e279-477b-a67c-df7303f7b362)
+ 
  
   - link do tema oficial: [Chirpy](https://github.com/cotes2020/jekyll-theme-chirpy)
   - link do tema template para uso direto: [ChirpyStarter](https://github.com/cotes2020/chirpy-starter)
   - link do tema modificado por mim: [ChirpyModified](https://github.com/matheuslaidler/chirpy-modified/)
 
-## Créditos e licença
 
+
+## Criador & Licença
   - Matheus laidler
-  - Cotes *(Theme)*
-
+    
 ![GitHub license](https://img.shields.io/github/license/cotes2020/chirpy-starter.svg?color=blue)
  
