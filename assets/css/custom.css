@@ -11,16 +11,21 @@ Usar video no seu post?
 
 */
 
-/*arrumando resolução e borda pro tema*/
+/*arrumando video em resolução e borda pro tema*/
 .videoPost {
 	width: 85vh;
     height: 50vh;
 	border-bottom: 0.35vh solid #73ffe8;
     border-top: 0.35vh solid #73ffe8;
 }
-/*arrumando para mobiles e tablets*/
-@media screen and (max-width: 980px) {
 
+.profile-wrapper {
+    padding: 1.85vh;
+}
+
+
+/*arrumando video para mobiles e tablets*/
+@media screen and (max-width: 980px) {
     .videoPost {
         width: 40vh;
         height: 23.5vh;
@@ -28,4 +33,9 @@ Usar video no seu post?
         border-top: 0.35vh solid #73ffe8;
     }
 
+    .profile-wrapper {
+        /*display: none;*/
+        /*overflow: hidden;*/
+        padding: 3vh 0;
+    }
 }
