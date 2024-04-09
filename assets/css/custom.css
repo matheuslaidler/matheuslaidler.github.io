@@ -23,6 +23,16 @@ Usar video no seu post?
     padding: 1.85vh;
 }
 
+/*switch theme MenuButton*/
+.theme {
+    width: auto;
+    margin-top: 1.5vh;
+    color: #73ffe8;
+    background-color: rgba(245, 245, 245, 0);
+    border: none;
+    display: none; /*decidi colocar 'none' para não ter dois botões que mude o tema em desktop, mas tendo para mobile se precisar.
+    I've decided to add the SwitchTheme Button on my personal menu just when on Mobile*/
+}
 
 /*arrumando video para mobiles e tablets*/
 @media screen and (max-width: 980px) {
@@ -38,4 +48,10 @@ Usar video no seu post?
         /*overflow: hidden;*/
         padding: 3vh 0;
     }
+/*switch theme MobileMenuButton*/
+.theme {
+    position: center;
+    margin-left: 22.25vh;
+    display: inline-flex;
+}
 }
