@@ -32,7 +32,7 @@ html {
 /* -- code snippets -- */
 
 %code-snippet-bg {
-  background-color: var(--highlight-bg-color);
+  background-color: var(--highlight-bg-color); /*var(--highlight-bg-color)*/
 }
 
 %code-snippet-padding {
@@ -41,7 +41,7 @@ html {
 }
 
 .highlighter-rouge {
-  color: var(--highlighter-rouge-color);
+  color: #009db2; /*var(--highlighter-rouge-color)*/
   margin-top: 0.5rem;
   margin-bottom: 1.2em; /* Override BS Inline-code style */
 }
@@ -85,7 +85,7 @@ html {
 
   .lineno {
     text-align: right;
-    color: var(--highlight-lineno-color);
+    color: #73ffe8; /*var(--highlight-lineno-color)*/
     -webkit-user-select: none;
     -moz-user-select: none;
     -o-user-select: none;
@@ -98,19 +98,19 @@ code {
   -webkit-hyphens: none;
   -ms-hyphens: none;
   hyphens: none;
-  color: var(--code-color);
+  color: var(--code-color); /*var(--code-color) - original*/
 
   &.highlighter-rouge {
     font-size: $code-font-size;
     padding: 3px 5px;
     word-break: break-word;
     border-radius: 4px;
-    background-color: var(--inline-code-bg);
+    background-color: var(--inline-code-bg); /*var(--inline-code-bg)*/
   }
 
   &.filepath {
     background-color: inherit;
-    color: var(--filepath-text-color);
+    color: #73ffad; /*var(--filepath-text-color)*/
     font-weight: 600;
     padding: 0;
   }
@@ -196,7 +196,7 @@ div {
     i {
       font-size: 1rem;
       width: $code-icon-width;
-      color: var(--code-header-icon-color);
+      color: var(--code-header-text-color); /*var(--code-header-icon-color)*/
 
       &.small {
         font-size: 70%;
@@ -213,7 +213,7 @@ div {
       content: attr(data-label-text);
       font-size: 0.85rem;
       font-weight: 600;
-      color: var(--code-header-text-color);
+      color: var(--code-header-text-color); /*var(--code-header-text-color)  /  #73ffad*/
     }
   }
 
@@ -229,16 +229,16 @@ div {
     background-color: inherit;
 
     i {
-      color: var(--code-header-icon-color);
+      color: var(--code-header-icon-color); /*var(--code-header-icon-color)*/
     }
 
     &[timeout] {
       &:hover {
-        border-color: var(--clipboard-checked-color);
+        border-color: var(--clipboard-checked-color); /*var(--clipboard-checked-color)*/
       }
 
       i {
-        color: var(--clipboard-checked-color);
+        color: var(--clipboard-checked-color); /*var(--clipboard-checked-color)*/
       }
     }
 
@@ -247,10 +247,10 @@ div {
     }
 
     &:not([timeout]):hover {
-      background-color: rgba(128, 128, 128, 0.37);
+      background-color: var(--code-header-text-color); /*rgba(128, 128, 128, 0.37)*/
 
       i {
-        color: white;
+        color: #73ffe8; /*white*/
       }
     }
   }
@@ -276,11 +276,11 @@ div {
         width: $code-dot-size;
         height: $code-dot-size;
         border-radius: 50%;
-        background-color: var(--code-header-muted-color);
+        background-color: red; /*var(--code-header-muted-color)*/
         box-shadow: ($code-dot-size + $code-dot-gap) 0 0
-            var(--code-header-muted-color),
+          rgb(255, 174, 0),
           ($code-dot-size + $code-dot-gap) * 2 0 0
-            var(--code-header-muted-color);
+          #73ff7f;
       }
 
       span {

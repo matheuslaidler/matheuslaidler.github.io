@@ -116,11 +116,11 @@ header {
 .share-mastodon {
   /* See: https://github.com/justinribeiro/share-to-mastodon#properties */
   --wc-stm-font-family: $font-family-base;
-  --wc-stm-dialog-background-color: var(--card-bg);
+  --wc-stm-dialog-background-color: var(--card-bg); /*var(--card-bg)*/
   --wc-stm-form-button-border: 1px solid var(--btn-border-color);
   --wc-stm-form-submit-background-color: var(--sidebar-btn-bg);
   --wc-stm-form-cancel-background-color: var(--sidebar-btn-bg);
-  --wc-stm-form-button-background-color-hover: #007bff;
+  --wc-stm-form-button-background-color-hover: #007bff; /*007bff*/
   --wc-stm-form-button-color-hover: white;
 
   font-size: 1rem;
