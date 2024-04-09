@@ -3,8 +3,8 @@ title: Invadindo rede wifi na prática
 description: Mostrando como hackeei a rede wifi de uma vizinha da minha mãe
 author: matheus
 tags: ["Wifi Hacking", "Shell Script", "Brute Force"]
-categories: ["WayOfSec", "SecLab"]
-pin: true
+categories: ["SecLab", "Hacking"]
+pin: false
 comments: true
 ---
 
@@ -20,6 +20,17 @@ Nesta postagem será esperado algumas explicações mais _práticas_ - com as fe
 
 >*Vale já esclarecer que o intuito deste tópico é totalmente educativo e não me responsabilizo por nenhum ato de terceiro.* 
 
+
+### Vídeo Prático
+Segure um vídeo prático de tudo que será falado aqui neste post de parte prática.
+
+<video width="720" controls="controls">
+  <source src="/assets/videos/wifiHacking.mp4">
+</video>
+
+Segue o documento escrito para entender melhor o que está rolando no vídeo e o contexto por trás...
+
+> O vídeo não pôde ser upado no youtube por questões das diretrizes, mesmo sendo de finalidade acadêmica, a detecção e penalidade ocorreu por se tratar de uma situação de rede real estar sendo "invadida" por exploração de um padrão também real de credencial utilizado.
 
 ## Como invadi a rede da minha vizinha
 
