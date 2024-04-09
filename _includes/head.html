@@ -88,8 +88,11 @@
 
   <link rel="stylesheet" href="{{ '/assets/css/:THEME.css' | replace: ':THEME', site.theme | relative_url }}">
 
-  <!-- menu global css -->
+  <!-- matheus laidler menu global css -->
   <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/menu.css">
+
+  <!-- matheus laidler custom css -->
+  <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/custom.css">
 
   {% if site.toc and page.toc %}
     <link rel="stylesheet" href="{{ site.data.origin[type].toc.css | relative_url }}">

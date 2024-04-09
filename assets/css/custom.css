@@ -1,0 +1,31 @@
+/*custom css para coisas pessoais: matheus laidler*/
+
+/*
+parte css para vídeos nos posts: 
+criado para vídeos colocados diretamente no diretório, sem ser externo de alguma plataforma
+
+Usar video no seu post?
+<video class="videoPost" controls="controls">
+  <source src="/assets/videos/nome_do_video.mp4">
+</video>
+
+*/
+
+/*arrumando resolução e borda pro tema*/
+.videoPost {
+	width: 85vh;
+    height: 50vh;
+	border-bottom: 0.35vh solid #73ffe8;
+    border-top: 0.35vh solid #73ffe8;
+}
+/*arrumando para mobiles e tablets*/
+@media screen and (max-width: 980px) {
+
+    .videoPost {
+        width: 40vh;
+        height: 23.5vh;
+	    border-bottom: 0.35vh solid #73ffe8;
+        border-top: 0.35vh solid #73ffe8;
+    }
+
+}

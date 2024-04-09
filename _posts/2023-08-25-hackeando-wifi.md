@@ -24,7 +24,7 @@ Nesta postagem será esperado algumas explicações mais _práticas_ - com as fe
 ### Vídeo Prático
 Segure um vídeo prático de tudo que será falado aqui neste post de parte prática.
 
-<video width="720" controls="controls">
+<video class="videoPost" controls="controls">
   <source src="/assets/videos/wifiHacking.mp4">
 </video>
 
