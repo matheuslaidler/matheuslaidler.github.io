@@ -20,12 +20,12 @@ O NetWars é uma ótima oportunidade para estudantes, profissionais e entusiasta
 
 ## Resolução n00bs
 
-{% content-ref url="level-1-10.md" %}
-[level-1-10.md](level-1-10.md)
+{% content-ref url="writeup.md" %}
+[writeup.md](writeup.md)
 {% endcontent-ref %}
 
-{% content-ref url="level-10-15.md" %}
-[level-10-15.md](level-10-15.md)
+{% content-ref url="broken-reference" %}
+[Broken link](broken-reference)
 {% endcontent-ref %}
 
 #### Segue uma das resoluções em vídeo;
