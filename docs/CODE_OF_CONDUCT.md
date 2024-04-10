@@ -3,9 +3,14 @@
 - [PT-BR](#regra-para-o-blog)
 - [EN-US](#blog-code-of-conduct)
 
+
+![comments](https://github.com/matheuslaidler/matheuslaidler.github.io/assets/76860503/6ab2a7db-d25b-46af-896d-2de2b0e59f18)
+
+
 # Regra para o Blog
 
 Nosso projeto sobre estudo de tecnologia, Acervo de TI, também acaba por ser um blog com aba de comunidade, com comentários e reações. Portanto, é ideal que tenhamos um codigo de conduta e não apenas pensar na regra sobre não copiar as publicações oficiais - pode tê-las como base para criar uma nova.
+
 
 
 ## Nosso Compromisso
