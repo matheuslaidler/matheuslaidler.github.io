@@ -1,10 +1,10 @@
-# Acervo de Tecnologia e Segurança da Informação
+# 👋 😎
+- [Portuguese](#pt-br)
+- [English](#en-us)
 
-## 👋 😎 Boas vindas ao meu projeto pessoal! 
+## Acervo de Tecnologia e Segurança da Informação  
 ###### Conteúdo que visa conscientizar e auxiliar no processo de aprendizado de milhares de entusiastas e estudantes sobre tecnologia e segurança da informação.
-
-
-
+# pt-br
 
 ### Apresentação
 
@@ -17,9 +17,9 @@
 ### Nota
  Embora eu me esforce para fornecer informações precisas e úteis sobre tecnologia e segurança da informação, é importante notar que não posso ser responsabilizado por ações tomadas por terceiros com base nas informações que compartilho. Recomendo sempre que os leitores usem as informações fornecidas com discernimento e responsabilidade. Repudio quaisquer atos anti-éticos e tais atitudes não serão incentivadas pelo projeto Acervo de TI e nem por seu proprietário. Vale ressaltar que o trabalho é divulgação de material de estudo SEM fim lucrativo, tendo única e exclusivamente a finalidade acadêmica.
 
-# Mais sobre as Ramificações de Projetos
+### Mais sobre as Ramificações de Projetos
 
-### Road2Tech
+#### Road2Tech
 
 <i>"Projeto pessoal de estudo sobre tecnologia e segurança da informação."</i>
 
@@ -33,7 +33,7 @@ Perfeito para quem busca materiais voltados para a área de computação/tecnolo
 $ hello world!
 ```
 
-### WayOfSec
+#### WayOfSec
 
 <i>"Projeto pessoal de estudo sobre segurança da informação."</i>
 
@@ -47,7 +47,7 @@ Perfeito para quem busca materiais voltados para a área de cibersegurança.
 $ hack the world!
 ```
 
-### SecLab
+#### SecLab
 
 <i>"Projeto laboratorial de hacking prático."</i>
 
@@ -65,7 +65,7 @@ Novo projeto que surgiu atualmente para add a sessão de forense digital no acer
 ```console
 $ track the world!
 ```
-    
+
 ## Tema do projeto
 
  O tema que criei, na realidade, é basicamente um fork de um existente muito bom em termo de funcionalidade e praticidade. 
@@ -91,9 +91,37 @@ Pelo meu menu global temos agora a mudança de tema que assim, quem usa mobile t
   - link do tema modificado por mim: [ChirpyModified](https://github.com/matheuslaidler/chirpy-modified/)
 
 
+# en-us
 
-## Criador & Licença
+### Presentation
+
+This `collection` is a compilation of these materials like a public and free library that aims to raise awareness and assist in the learning process of students about IT, from programming, information security to forensic computing. A branch of this project is the YouTube channel with practical and theoretical videos and lessons.
+
+### Creation
+
+The articles are the result of my studies in the area of technology and hacking. The project is a junction of my past scientific dissemination projects: Way of Security and Road 2 Technology, with the addition of forensic study.
+
+### Note
+Although I strive to provide accurate and useful information about technology and information security, it is important to note that I cannot be held responsible for actions taken by third parties based on the information I share. I always recommend that readers use the information provided with discernment and responsibility. I repudiate any unethical acts and such attitudes will not be encouraged by the IT Collection project or its owner. It is worth mentioning that the work is the dissemination of study material WITHOUT a profitable end, having exclusively academic purposes.
+
+  -  *My english docs will be post on Medium instead of here*
+
+### Project Theme
+
+The theme I created is actually a fork of an existing one that is very good in terms of functionality and practicality.
+
+The base theme used is officially *Chirpy* and I leave all credits to those involved here. However, I needed to make some modifications to suit my tastes and support my global menu. Yes, I will have other pages in other repositories like a large site that would not be limited to just the blog post.
+
+Some new 'features' were also implemented by me, such as, for example, compatibility with an internal video and change of light/dark theme on mobile.
+Through my global menu we now have the theme change so that, those who use mobile will have the possibility to use the light theme as well.
+
+# Criador/Creator & Licença/License
   - Matheus laidler
     
 ![GitHub license](https://img.shields.io/github/license/cotes2020/chirpy-starter.svg?color=blue)
+
+# Donate / Doação
+You can support me with [GithubSponsor](https://github.com/sponsors/matheuslaidler) or [Paypal](https://www.paypal.com/donate/?hosted_button_id=SJYYS28HZPU9A) :D
+
+Você pode me ajudar doando pelo [Github](https://github.com/sponsors/matheuslaidler) ou [Paypal](https://www.paypal.com/donate/?hosted_button_id=SJYYS28HZPU9A) :D
  
