@@ -77,8 +77,7 @@ $ track the world!
 
  ![previa_1](https://github.com/matheuslaidler/matheuslaidler.github.io/assets/76860503/46c93b7a-c034-453b-9629-c71b6a30c1bf)
 
-Algumas 'features' novas foram sendo implementadas por mim também, como, por exemplo, a compatibilidade de um vídeo interno e mudança de tema light/dark no mobile.
-Pelo meu menu global temos agora a mudança de tema que assim, quem usa mobile terá a possibilidade de usar o tema claro também.
+Algumas 'features' novas foram sendo implementadas por mim também, como, por exemplo, a compatibilidade de um vídeo interno e mudança de tema light/dark no meu menu global em mobile.
 
 ![previa_4](https://github.com/matheuslaidler/matheuslaidler.github.io/assets/76860503/57a31c10-43ba-45d2-b9ee-3f183b691938)
 
@@ -112,8 +111,7 @@ The theme I created is actually a fork of an existing one that is very good in t
 
 The base theme used is officially *Chirpy* and I leave all credits to those involved here. However, I needed to make some modifications to suit my tastes and support my global menu. Yes, I will have other pages in other repositories like a large site that would not be limited to just the blog post.
 
-Some new 'features' were also implemented by me, such as, for example, compatibility with an internal video and change of light/dark theme on mobile.
-Through my global menu we now have the theme change so that, those who use mobile will have the possibility to use the light theme as well.
+Some new 'features' were also implemented by me, such as, for example, compatibility with an internal video and change of light/dark theme on mobile through my global menu.
 
 # Criador/Creator & Licença/License
   - Matheus laidler
