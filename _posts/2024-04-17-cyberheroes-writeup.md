@@ -1,16 +1,8 @@
 ---
-title: CyberHeroes - Desafio hacker [TryHackMe]
-description: 'Resolvendo Máquina do TryHackMe em português'
-author: matheus
-tags: ["tryhackme", "WriteUps"]
-categories: ["SecLab", "Hacking"]
-pin: false
-comments: true
+description: 'TryHackMe WriteUp: Super Heroes Machine'
 ---
 
 # 🏆 CyberHeroes — Writeup
-> Want to be a part of the elite club of CyberHeroes? Prove your merit by finding a way to log in!
-
 
 Uma vez que a máquina é iniciada e me manda o IP necessário para brincar, já começo rodando um NMAP, mas confesso que acabei nem usando pq enquanto eu esperava o scan ir em todas as portas eu ja ia investigando por fora. No final das contas não me foi útil.
 
@@ -76,5 +68,3 @@ flag{edb0be532c540b1a150c3a7e85d2466e}\
 \
 Até quis continuar investigando mais, para ver outras formas de concluir, mas minha VM acabou crashando e eu desisti.\
 \
-
-> Meu perfil na plataforma: https://tryhackme.com/p/laidler
