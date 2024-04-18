@@ -8,7 +8,8 @@ pin: false
 comments: true
 ---
 
-# 🏆 CyberHeroes — Writeup
+# 🏆 CyberHeroes — Writeup em Português
+### Resolução desafio hacker fácil do TryHackMe
 > Want to be a part of the elite club of CyberHeroes? Prove your merit by finding a way to log in!
 > Quer fazer parte do clube de elite dos CyberHeroes? Prove seu mérito encontrando uma maneira de fazer login!
 
