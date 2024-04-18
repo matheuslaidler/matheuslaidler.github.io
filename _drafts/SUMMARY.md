@@ -69,6 +69,7 @@
   * [🚩 portswigger](wayofsec/desafios-hacker-writeups/portswigger.md)
   * [🚩 TryHackMe](wayofsec/desafios-hacker-writeups/tryhackme/README.md)
     * [🏆 WriteUps](wayofsec/desafios-hacker-writeups/tryhackme/writeups.md)
+    * [🏆 CyberHeroes — Writeup](wayofsec/desafios-hacker-writeups/tryhackme/cyberheroes-writeup.md)
     * [👑 Site](https://tryhackme.com/)
   * [🚩 HackTheBox](wayofsec/desafios-hacker-writeups/hackthebox/README.md)
     * [🏆 WriteUps](wayofsec/desafios-hacker-writeups/hackthebox/writeups.md)
