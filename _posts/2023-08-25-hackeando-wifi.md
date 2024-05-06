@@ -12,7 +12,7 @@ comments: true
 
 Neste artigo vou mostrar para vocês como funciona na prática a invasão de uma rede wireless, e como foi minha experiência hackeando uma rede wifi real que não faz parte de uma "lab" pessoal ou familiar.
 
-É legal que você já saiba o básico de redes wireless, como funcionam os protocolos e conceitos, pois eles ainda não serão tão bem aprofundados nesta publicação, podendo até pular para a parte prática se necessário. Porém, explicaremos sobre alguns conceitos básicos anteriormente para entendimento geral - por exemplo, como funciona a conexão em uma wifi.
+Talvez seja legal que você já saiba o básico de redes wireless, pois eles ainda não serão tão bem aprofundados nesta publicação, sendo assim podendo até pular para a parte prática se necessário. Porém, não deixarei de explicar sobre alguns conceitos básicos anteriormente para entendimento geral - por exemplo, como funciona - por cima - a conexão em uma wifi.
 
 ### O que esperar desta publicação
 
@@ -20,6 +20,12 @@ Nesta postagem será esperado algumas explicações mais _práticas_ - com as fe
 
 >*Vale já esclarecer que o intuito deste tópico é totalmente educativo e não me responsabilizo por nenhum ato de terceiro.* 
 
+### Notificação para retirada do conteúdo
+Quando descobri a falha de credencial padrão nas redes dessa operadora grande, fiquei um tempo para saber se não era coisa da minha cabeça e testei em várias redes de familiares e, inclusive, de uma vizinha. Assim, depois de um ano, finalmente criei um repositório no github que mostrava esta problemática e servindo como uma boa forma de alertar sobre a importância da configuração correta de sua rede interna. Nesse projeto acabava sendo possível criar uma lista de senha que sempre teria a certa dentre elas para um ataque de força bruta bem feito (nesta postagem veremos a criação dessa funcionalidade também). Ao se passar um ano e pouco do repositório no ar, recebi uma notificação em nome da empresa para a retirada do conteúdo e assim foi feito. Agora estamos fazendo toda uma publicação sobre sem deixar parecer o nome da empresa em algum momento (erro cometido anteriormente). Atualização de 2024: O meu plano mais atual com eles fez a troca de modem e o padrão está bem mais forte e sem a mesma falha que tinha antes, mas um motivo para poder estar expondo isso. Ainda podemos ter muitos usuários com um modem antigo. 
+
+![notificação](https://github.com/matheuslaidler/matheuslaidler.github.io/assets/76860503/f95e47d0-df9a-414e-8008-145ee3108f78)
+
+No decorrer desta postagem será melhor explorado sobre como foi reconhecido esta falha e como explorar ela.
 
 ### Vídeo Prático
 Segure um vídeo prático de tudo que será falado aqui neste post de parte prática.
@@ -31,6 +37,7 @@ Segure um vídeo prático de tudo que será falado aqui neste post de parte prá
 Segue o documento escrito para entender melhor o que está rolando no vídeo e o contexto por trás...
 
 > O vídeo não pôde ser upado no youtube por questões das diretrizes, mesmo sendo de finalidade acadêmica, a detecção e penalidade ocorreu por se tratar de uma situação de rede real estar sendo "invadida" por exploração de um padrão também real de credencial utilizado.
+> Em breve, no youtube, farei um vídeo detalhado e mais mainstream para conscientização mais abrangente.
 
 ## Como invadi a rede da minha vizinha
 
