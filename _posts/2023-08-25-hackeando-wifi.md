@@ -21,11 +21,17 @@ Nesta postagem será esperado algumas explicações mais _práticas_ - com as fe
 >*Vale já esclarecer que o intuito deste tópico é totalmente educativo e não me responsabilizo por nenhum ato de terceiro.* 
 
 ### Notificação para retirada do conteúdo
-Quando descobri a falha de credencial padrão nas redes dessa operadora grande, fiquei um tempo para saber se não era coisa da minha cabeça e testei em várias redes de familiares e, inclusive, de uma vizinha. Assim, depois de um ano, finalmente criei um repositório no github que mostrava esta problemática e servindo como uma boa forma de alertar sobre a importância da configuração correta de sua rede interna. Nesse projeto acabava sendo possível criar uma lista de senha que sempre teria a certa dentre elas para um ataque de força bruta bem feito (nesta postagem veremos a criação dessa funcionalidade também). Ao se passar um ano e pouco do repositório no ar, recebi uma notificação em nome da empresa para a retirada do conteúdo e assim foi feito. Agora estamos fazendo toda uma publicação sobre sem deixar parecer o nome da empresa em algum momento (erro cometido anteriormente). Atualização de 2024: O meu plano mais atual com eles fez a troca de modem e o padrão está bem mais forte e sem a mesma falha que tinha antes, mas um motivo para poder estar expondo isso. Ainda podemos ter muitos usuários com um modem antigo. 
+Quando descobri a falha de credencial padrão nas redes dessa operadora grande, fiquei um tempo para saber se não era coisa da minha cabeça e testei em várias redes de familiares e, inclusive, de uma vizinha. 
+
+Assim, depois de um ano, finalmente criei um repositório no github que mostrava esta problemática e servindo como uma boa forma de alertar sobre a importância da configuração correta de sua rede interna. Nesse projeto acabava sendo possível criar uma lista de senha que sempre teria a certa dentre elas para um ataque de força bruta bem feito (nesta postagem veremos a criação dessa funcionalidade também). 
+
+Ao se passar um ano e pouco do repositório no ar, recebi uma notificação em nome da empresa para a retirada do conteúdo e assim foi feito. Agora, estou fazendo toda uma publicação sobre sem deixar aparecer o nome da empresa em algum momento, um erro cometido anteriormente. 
+
+Atualização de 2024: O meu plano mais atual com eles fez a troca de modem e o padrão está bem mais forte e sem a mesma falha que tinha antes, mas um motivo para poder estar expondo isso. Ainda podemos ter muitos usuários com um modem antigo. 
 
 ![notificação](https://github.com/matheuslaidler/matheuslaidler.github.io/assets/76860503/f95e47d0-df9a-414e-8008-145ee3108f78)
 
-No decorrer desta postagem será melhor explorado sobre como foi reconhecido esta falha e como explorar ela.
+No decorrer desta postagem será melhor explorado sobre como a falha foi reconhecida e como explorá-la.
 
 ### Vídeo Prático
 Segure um vídeo prático de tudo que será falado aqui neste post de parte prática.
