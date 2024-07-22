@@ -44,7 +44,8 @@ A falha foi causada por um erro crítico na atualização do módulo Sensor do F
 
 Em programação, um ponteiro é como um endereço que você guarda para saber onde algo está localizado. Vamos dar uma passada, com exemplo, sobre ponteiros:
 
-<img title="" src="file:///home/matthew/Downloads/png-transparent-pointer-computer-programming-variable-programming-language-c-programming-language-angle-text-rectangle-removebg-preview.png" alt="png-transparent-pointer-computer-programming-variable-programming-language-c-programming-language-angle-text-rectangle-removebg-preview.png" data-align="center" width="340">
+![image](https://github.com/user-attachments/assets/9ca0b21c-02fc-4b39-aee2-461c9b44881a)
+
 
 Imagine que um ponteiro é como um atalho que você guarda para saber onde uma variável está localizada na memória do computador. Esse atalho permite que você acesse e modifique o valor da variável diretamente, sem precisar se preocupar com onde exatamente ela está armazenada.
 
@@ -100,14 +101,11 @@ struct Data {
 };
 
 int main() {
-    // Criando um ponteiro para a estrutura Data
     Data* data_ptr = new Data();
 
-    // Inicializando os membros da estrutura
     data_ptr->x = 10;
     data_ptr->y = 20;
 
-    // Acessando e exibindo os valores através do ponteiro - atalho
     std::cout << "Valor de x: " << data_ptr->x << std::endl;
     std::cout << "Valor de y: " << data_ptr->y << std::endl;
 
@@ -118,7 +116,6 @@ int main() {
         std::cout << "Ponteiro é nulo." << std::endl;
     }
 
-    // Liberando a memória alocada
     delete data_ptr;
     data_ptr = nullptr;
 
@@ -216,8 +213,6 @@ Ponteiro é válido.
   return 0;
   }
   ```
-
-##### a
 
 ### Impacto nos Sistemas
 
