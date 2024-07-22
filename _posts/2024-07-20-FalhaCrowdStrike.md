@@ -1,5 +1,3 @@
-# 
-
 ---
 
 title: O update que fez a CrowdStrike parar o mundo
