@@ -1,5 +1,4 @@
 ---
-
 title: O update que fez a CrowdStrike parar o mundo
 description: 'Entenda e reflita sobre o incidente da empresa, ao atualizar o Falcon, que respingou no mundo todo'
 author: matheus
@@ -67,6 +66,40 @@ struct Data {
 };
 
 int main() {
+    Data* data_ptr = new Data();  // Criando um ponteiro para Data
+    data_ptr->x = 10;             // Inicializando x
+    data_ptr->y = 20;             // Inicializando y
+
+    std::cout << "Valor de x: " << data_ptr->x << std::endl;
+    std::cout << "Valor de y: " << data_ptr->y << std::endl;
+
+    delete data_ptr;              // Liberando memória
+    return 0;
+}
+```
+
+##### Saída Esperada
+
+```
+Valor de x: 10
+Valor de y: 20
+```
+
+Nesse exemplo, criamos uma estrutura chamada `Data` e um ponteiro `data_ptr` que age como um atalho para uma instância dessa estrutura. Inicializamos os valores dos membros da estrutura e os acessamos através do ponteiro (atalho). Entretanto, não verificamos se o ponteiro é válido antes de usá-lo. Por fim, liberamos a memória alocada.
+
+Devemos entender que o erro ocorreu porque o código da atualização não verificou se o ponteiro estava nulo antes de tentar acessar a memória, resultando em uma falha crítica.
+
+##### Código completo com verificação de validade
+
+```cpp
+#include <iostream>
+
+struct Data {
+    int x;
+    int y;
+};
+
+int main() {
     // Criando um ponteiro para a estrutura Data
     Data* data_ptr = new Data();
 
@@ -101,11 +134,90 @@ Valor de y: 20
 Ponteiro é válido.
 ```
 
-Nesse exemplo, criamos uma estrutura chamada `Data` e um ponteiro `data_ptr` que age como um atalho para uma instância dessa estrutura. Inicializamos os valores dos membros da estrutura e os acessamos através do ponteiro (atalho). Verificamos se o ponteiro é válido antes de usá-lo e, por fim, liberamos a memória alocada.
+##### Entendendo o código por partes - Passo a Passo
 
+- Inclusão da **Biblioteca**
+  
+  ```cpp
+  #include <iostream>
+  ```
+  
+  Importamos a biblioteca `iostream` para permitir o uso de `std::cout` e `std::endl` para saída de texto.
 
+- **Definição da Estrutura `Data`**
+  
+  ```cpp
+  struct Data {
+      int x;
+      int y;
+  };
+  ```
+  
+  Definimos uma estrutura `Data` que contém dois membros inteiros, `x` e `y`.
 
-O erro ocorreu porque o código da atualização não verificou se o ponteiro estava nulo antes de tentar acessar a memória, resultando em uma falha crítica.
+- **Função `main`**
+  
+  ```cpp
+  int main() {
+  ```
+  
+  Início da função principal, onde o programa começa a execução.
+
+- **Criação de um Ponteiro para `Data`**
+  
+  ```cpp
+  Data* data_ptr = new Data();
+  ```
+  
+  Criamos um ponteiro `data_ptr` que aponta para uma nova instância da estrutura `Data` alocada dinamicamente na memória.
+
+- **Inicialização dos Membros da Estrutura**
+  
+  ```cpp
+  data_ptr->x = 10;
+  data_ptr->y = 20;
+  ```
+  
+  Atribuímos os valores `10` e `20` aos membros `x` e `y` da estrutura `Data` através do ponteiro.
+
+- **Exibição dos Valores**
+  
+  ```cpp
+  std::cout << "Valor de x: " << data_ptr->x << std::endl;
+  std::cout << "Valor de y: " << data_ptr->y << std::endl;
+  ```
+  
+  Usamos `std::cout` para exibir os valores de `x` e `y` acessados através do ponteiro.
+
+- **Verificação do Ponteiro** adicionada
+  
+  ```cpp
+  if (data_ptr != nullptr) {
+      std::cout << "Ponteiro (atalho) é válido." << std::endl;
+  } else {
+      std::cout << "Ponteiro (atalho) é nulo." << std::endl;
+  }
+  ```
+  
+  Verificamos se o ponteiro `data_ptr` não é nulo antes de usá-lo. Se for válido, imprimimos uma mensagem apropriada.
+
+- **Liberação da Memória**
+  
+  ```cpp
+  delete data_ptr;
+  data_ptr = nullptr;
+  ```
+  
+  Liberamos a memória alocada para `data_ptr` e definimos o ponteiro como `nullptr` para evitar acessos futuros inválidos.
+
+- **Finalizando a função `main`**
+  
+  ```cpp
+  return 0;
+  }
+  ```
+
+##### a
 
 ### Impacto nos Sistemas
 
@@ -140,7 +252,7 @@ Após a falha, a CrowdStrike implementou as seguintes soluções:
 
 As comparações entre Windows e Linux também são simplistas e enganosas. O Linux enfrentou recentemente um incidente envolvendo um backdoor, que foi rapidamente resolvido devido à natureza open-source do código, permitindo que a comunidade detectasse e corrigisse a falha. Isso não significa que Linux ou Windows sejam infalíveis, nem que seja um melhor que o outro e nem que um é mais propício a dar problemas de grande porte que o outro, mas pode destacar a importância da transparência e colaboração do código aberto. O backdoor foi uma engenharia social que quase deu certo e na prática não afetou praticamente ninguém. 
 
-Dentro de publicações que tentam descredibilizar o Windows e respomsabilidar a Microsoft pelo incidente do Falcon, muito foi usado como carta de 'ataque' a linux esta situação do backdoor, como se fosse uma comparação viável. Essa parte do backdoor do linux, na época, furou a bolha e muitos até hoje não sabem direito o que aconteceu e como tudo se desenrolou. Por mais que seja uma severidade crítica de base score 10 (CVE-2024-3094), até por cenários que poderiam surgir a partir daquilo em determinadas situações, a 'exploitability score' foi de 3.9 e isso diz muito sobre como baixo foi o risco prático disso, e os usuários finais nem precisaram se preocupar tal qual os usuários de windows com o acontecimento que estamos falando neste 'artigo'. 
+Dentro de publicações que tentam descredibilizar o Windows e responsabilizar a Microsoft pelo incidente do Falcon, muito foi usado como carta de 'ataque' a linux esta situação do backdoor, como se fosse uma comparação viável. Essa parte do backdoor do linux, na época, furou a bolha e muitos até hoje não sabem direito o que aconteceu e como tudo se desenrolou. Por mais que seja uma severidade crítica de base score 10 (CVE-2024-3094), até por cenários que poderiam surgir a partir daquilo em determinadas situações, a 'exploitability score' foi de 3.9 e isso diz muito sobre como baixo foi o risco prático disso, e os usuários finais nem precisaram se preocupar tal qual os usuários de windows com o acontecimento que estamos falando neste 'artigo'. 
 
 Enfim, windows e sistemas que usam kernel linux são excelentes ferramentas e tem seus altos e baixos, essa briguinha de rede social numa situação séria dessas pode trazer muita desinformação, até em relação a cibersegurança.
 
