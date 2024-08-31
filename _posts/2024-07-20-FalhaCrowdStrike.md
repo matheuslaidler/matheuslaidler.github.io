@@ -3,7 +3,7 @@ title: O update que fez a CrowdStrike parar o mundo
 description: 'Entenda e reflita sobre o incidente da empresa, ao atualizar o Falcon, que respingou no mundo todo'
 author: matheus
 tags: ["CrowdStrike", "Microsoft", "Falcon","Programação"]
-categories: ["Cibersegurança", "Sistema Operacional"]
+categories: ["Way of Security", "Sistema Operacional"]
 pin: false
 comments: true
 
@@ -45,7 +45,6 @@ A falha foi causada por um erro crítico na atualização do módulo Sensor do F
 Em programação, um ponteiro é como um endereço que você guarda para saber onde algo está localizado. Vamos dar uma passada, com exemplo, sobre ponteiros:
 
 ![image](https://github.com/user-attachments/assets/9ca0b21c-02fc-4b39-aee2-461c9b44881a)
-
 
 Imagine que um ponteiro é como um atalho que você guarda para saber onde uma variável está localizada na memória do computador. Esse atalho permite que você acesse e modifique o valor da variável diretamente, sem precisar se preocupar com onde exatamente ela está armazenada.
 
