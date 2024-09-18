@@ -1,4 +1,4 @@
-```yaml
+---
 title: Conhecendo o Modelo OSI
 description: 'Resumo introdutório sobre o modelo OSI'
 author: matheus
@@ -6,7 +6,7 @@ tags: ["Redes"]
 categories: ["Road2Tech", "Redes de Computadores"]
 pin: false
 comments: true
-```
+---
 
 # 🥞 Redes: Modelo OSI à primeira vista
 
