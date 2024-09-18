@@ -18,7 +18,7 @@ O modelo OSI (Open Systems Interconnection) é uma estrutura teórica que **defi
 
 Esse modelo é dividido em sete camadas, cada uma com funções específicas e independentes, desde a camada física até a camada de aplicação. Cada camada é responsável por tratar de uma parte específica da comunicação de dados, tornando a troca de informações mais eficiente.
 
-<img title="" src="file:///run/user/1000/doc/d89c0f4f/modeloOSI-removebg-preview.png" alt="modeloOSI-removebg-preview.png" data-align="center" width="466">
+<img title="" src="../assets/img/content/modeloOSI.png" alt="modeloOSI.png" data-align="center" width="466">
 
 O modelo OSI é importante porque fornece uma base conceitual para o projeto e implementação de redes de computadores. Ele ajuda a identificar as funções e responsabilidades de cada camada, permitindo que os desenvolvedores possam criar soluções mais eficientes e compatíveis com diferentes sistemas.
 
