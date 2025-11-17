@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Use ubuntu-latest ao invés de ubuntu-24.04
+    runs-on: ubuntu-22.04  # Use ubuntu-22.04 que ainda é suportado
 
     steps:
       - name: Checkout
