@@ -1,3 +1,14 @@
+---
+title: Tunnel - Desafio Hacker [HackingClub]
+description: 'Resolvendo máquina nível médio da Hacking Club sobre HTTP/2 cleartext (h2c) request smuggling, RCE e Docker escape'
+author: matheus
+tags: ["hackingclub", "WriteUps", "RCE", "request smuggling", "docker escape"]
+categories: ["SecLab", "Hacking"]
+pin: false
+comments: true
+
+---
+
 # 📝 Writeup: Tunnel (HackingClub Machine) - Matheus Laidler
 
 ## HTTP/2 Cleartext Tunnel (h2c), Nginx Bypass, Node Inspector RCE e Docker Escape
