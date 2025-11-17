@@ -80,7 +80,7 @@ ffuf -c -u http://172.16.3.113:8000/FUZZ \
 
 A descrição da máquina menciona **"HTTP/2 tunneling"**, indicando vulnerabilidade de **Request Smuggling** via HTTP/2 Cleartext (h2c).
 
-## 4. h2c Smuggling — HTTP/2 Cleartext Upgrade Bypass
+## 4. HTTP/2 Cleartext Upgrade Bypass - h2c Smuggling
 
 ### 4.1 Conceitos fundamentais
 
@@ -154,14 +154,20 @@ O Spring Boot Actuator fornece endpoints de monitoramento e gestão que **nunca 
 
 ```bash
 # Instalação da ferramenta python [github]
-# clone do repositório feito em /home/matheus/tools/
+# clone do repositório feito para /home/matheus/tools/h2csmuggler 
+cd tools #entrando na minha pasta tools dentro da home | se não tiver essa pasta crie com o "mkdir tools"
+git clone https://github.com/BishopFox/h2csmuggler
+cd h2csmuggler
+pip3 install h2
+#pip3 install h2 --break-system-packages
+#pip3 install -r requirements.txt -> caso tenha o arquivo (nesse caso n precisa ter, apenas fzr com 'h2' direto)
+python3 ./h2csmuggler.py -h
+
 # Configurando alias para execução global
-
 nano ~/.bashrc
-
 # Adicionar no final do arquivo:
 alias h2csmuggler='python3 ~/tools/h2csmuggler/h2csmuggler.py'
-
+# Aplicando atalho
 source ~/.bashrc
 ```
 
@@ -209,7 +215,7 @@ Ao analisar o JSON retornado do `/env` (utilizando um formatter para melhor legi
 **🚩 PRIMEIRA FLAG ENCONTRADA:**
 
 ```text
-hackingclub{c71b3ebb3e25f3c8304d9010a1c3765742309a3f}
+hackingclub{c71b3ebb3e25f3c8304d90***************309a3f}
 ```
 
 <img width="800" alt="image" src="https://github.com/user-attachments/assets/c05b08ba-cc27-4adc-9fb2-f205fe80af69" />
@@ -740,7 +746,7 @@ cat root.txt
 **🚩 SEGUNDA FLAG ENCONTRADA:**
 
 ```text
-hackingclub{d349c11e22a06b34d04e5835b9b85c2216a0d302}
+hackingclub{d349c11e22a06b34d04e58***************6a0d302}
 ```
 
 ## 15. Análise do ambiente pós-exploração
@@ -950,8 +956,8 @@ Este cenário demonstra uma **cadeia crítica** onde múltiplas vulnerabilidades
 
 **Flags capturadas:**
 
-1. `hackingclub{c71b3ebb3e25f3c8304d9010a1c3765742309a3f}` (via /actuator/env)  
-2. `hackingclub{d349c11e22a06b34d04e5835b9b85c2216a0d302}` (via Docker escape)
+1. `hackingclub{c71b3ebb3e25f3c8304d90***************309a3f}` (via /actuator/env)  
+2. `hackingclub{d349c11e22a06b34d04e58***************6a0d302}` (via Docker escape)
 
 **Técnicas utilizadas:**
 
@@ -962,3 +968,5 @@ Este cenário demonstra uma **cadeia crítica** onde múltiplas vulnerabilidades
 - Host filesystem mounting
 
 <img width="800" alt="image" src="https://github.com/user-attachments/assets/f0667214-3a4e-4ad9-b792-0d97287fb8ca" />
+
+###### Nota: Mantive apenas visivel em foto uma flag (primeira), mas mantive a escrita levemente censurada no texto, agora já para a segunda flag nem imagem coloquei para estimula-los a botar a mão na massa.
