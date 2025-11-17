@@ -1,0 +1,36 @@
+# Workflow para build do Jekyll com instalação manual do Ruby
+name: Build and Test
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Use ubuntu-latest ao invés de ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Usar action oficial para setup do Ruby (mais confiável)
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1.4'
+          bundler-cache: true  # Automaticamente roda bundle install e faz cache
+
+      # Build do site Jekyll
+      - name: Build site
+        run: bundle exec jekyll build
+        env:
+          JEKYLL_ENV: production
+
+      # Opcional: Upload do artifact para debug
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jekyll-build
+          path: _site/

@@ -1,0 +1,62 @@
+# Workflow para ubuntu-24.04 com instalação manual do Ruby
+name: Build with manual Ruby install
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Instalar dependências para compilar Ruby
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libssl-dev libreadline-dev zlib1g-dev git curl
+
+      # Instalar ruby-build
+      - name: Install ruby-build
+        run: |
+          git clone https://github.com/rbenv/ruby-build.git ~/ruby-build
+          sudo ~/ruby-build/install.sh
+
+      # Criar diretório e instalar Ruby
+      - name: Install Ruby 3.1.4
+        run: |
+          sudo mkdir -p /opt/hostedtoolcache/Ruby/3.1.4/x64
+          sudo ruby-build 3.1.4 /opt/hostedtoolcache/Ruby/3.1.4/x64
+          sudo touch /opt/hostedtoolcache/Ruby/3.1.4/x64.complete
+          
+      # Adicionar Ruby ao PATH
+      - name: Add Ruby to PATH
+        run: echo "/opt/hostedtoolcache/Ruby/3.1.4/x64/bin" >> $GITHUB_PATH
+
+      # Verificar instalação do Ruby
+      - name: Verify Ruby installation
+        run: |
+          ruby --version
+          which ruby
+
+      # Instalar Bundler e dependências
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle install
+
+      # Build do site
+      - name: Build site
+        run: bundle exec jekyll build
+        env:
+          JEKYLL_ENV: production
+
+      # Upload do artifact
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jekyll-build-manual
+          path: _site/
