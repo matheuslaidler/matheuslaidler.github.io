@@ -15,7 +15,7 @@ Introdução geral para a área tecnológica de forense computacional.
 
 A computação forense é uma área da ciência da computação que se dedica a investigar e analisar dados digitais com o objetivo de encontrar evidências ou informações relevantes para casos judiciais, criminais ou administrativos. A computação forense envolve diversas etapas, desde a aquisição de imagem dos dispositivos de armazenamento até a recuperação de arquivos apagados ou ocultos. Neste texto, vamos explicar um pouco mais sobre cada uma dessas etapas e como elas podem ajudar a solucionar crimes ou problemas envolvendo dados digitais.
 
-# Tópcicos e etapas importantes
+# Tópicos e etapas importantes
 
 Vamos passar um pente fino para clarear e apresentar sobre alguns tópicos importantes desta área da tecnologia investigativa
 
@@ -29,7 +29,33 @@ O hashing de arquivos é uma técnica que permite gerar um código único para c
 
 Por exemplo, se um arquivo tem o hash 1234567890abcdef, e uma letra for mudada no arquivo, o hash será outro, como 0987654321fedcba. Assim, o hashing permite verificar se um arquivo foi modificado ou não, comparando os hashes antes e depois da cópia. 
 
-Nesse sentido, o `hashing` também pode ser usado para identificar arquivos duplicados ou maliciosos. 
+### Principais algoritmos de hash:
+
+**MD5 (Message Digest 5)**:
+- Produz hash de 128 bits (32 caracteres hexadecimais)
+- Rápido mas considerado criptograficamente quebrado
+- Vulnerável a ataques de colisão
+- Ainda usado para verificação de integridade simples
+
+**SHA-1 (Secure Hash Algorithm 1)**:
+- Produz hash de 160 bits (40 caracteres hexadecimais)
+- Mais seguro que MD5, mas também comprometido
+- Sendo gradualmente substituído
+
+**SHA-256 (parte da família SHA-2)**:
+- Produz hash de 256 bits (64 caracteres hexadecimais)
+- Atualmente considerado seguro
+- Amplamente usado em blockchain e criptomoedas
+- Recomendado para investigações forenses atuais
+
+**SHA-3 (Keccak)**:
+- Última geração, mais resistente a ataques
+- Variações de 224, 256, 384 e 512 bits
+- Futuro da criptografia hash
+
+Nesse sentido, o `hashing` também pode ser usado para identificar arquivos duplicados ou maliciosos.
+
+**Cadeia de Custódia (Chain of Custody)**: É fundamental manter um registro detalhado de todos os hashes gerados e quando foram criados, garantindo que as evidências não foram adulteradas durante a investigação. 
 
 >Outra ocasião que utiliza-se de hashing é em armazenamento de senhas em banco de dados. 
 >Não seria prudente armazenas dados sensíveis de forma aberta e sem proteção.
@@ -80,6 +106,164 @@ Algumas das ferramentas mais conhecidas e utilizadas na computação forense par
 
  >**Atenção**: Tentativas excessivas de recuperação e/ou uso incorreto de ferramentas para recuperação de dados dos discos rígidos, sistemas RAID, pendrives e várias outras mídias de armazenamento de dados, podem agravar o problema nas mídias físicas. 
  >Portanto, o **conhecimento de cada ferramenta** para um determinado trabalho e cenário **é crucial para evitar danos adicionais aos dispositivos de armazenamento durante a recuperação de dados**.
+
+## Live Forensics vs Dead Forensics
+
+### Live Forensics (Forense ao Vivo)
+
+**Definição**: Análise realizada em sistemas que permanecem ligados e operacionais durante a investigação.
+
+**Vantagens**:
+- Captura dados voláteis (memória RAM, processos ativos)
+- Observa atividades maliciosas em tempo real
+- Preserva estados de sessões ativas
+- Permite análise de conexões de rede ativas
+
+**Desvantagens**:
+- Pode alterar evidências durante a coleta
+- Sistemas podem ser comprometidos durante a análise
+- Requer especialistas experientes
+
+**Ferramentas comuns**:
+- **Volatility**: Análise de memória RAM
+- **YARA**: Detecção de malware
+- **OSQuery**: Consultas em tempo real do sistema
+
+### Dead Forensics (Forense Post-Mortem)
+
+**Definição**: Análise realizada em sistemas desligados ou em cópias forenses dos dados.
+
+**Vantagens**:
+- Evidências não são alteradas durante análise
+- Ambiente controlado e estável
+- Permite análise profunda e meticulosa
+- Melhor para documentação legal
+
+**Desvantagens**:
+- Perda de dados voláteis
+- Impossibilidade de observar atividades dinâmicas
+- Pode demorar para obter resultados
+
+**Quando usar cada abordagem**:
+- **Live**: Ataques em andamento, sistemas críticos que não podem ser desligados
+- **Dead**: Investigações detalhadas, casos judiciais, análise de malware
+
+## Forense Mobile
+
+A computação forense móvel é uma área especializada que lida com a extração e análise de dados de dispositivos móveis como smartphones e tablets.
+
+### Desafios únicos:
+
+**Criptografia avançada**: Dispositivos modernos usam criptografia de hardware forte
+**Variedade de sistemas**: iOS, Android, Windows Phone, cada um com suas peculiaridades
+**Bloqueios de tela**: PINs, senhas, biometria, padrões
+**Atualizações constantes**: Sistemas e aplicações mudam frequentemente
+**Dados na nuvem**: Sincronização automática com serviços online
+
+### Métodos de extração:
+
+**Extração Lógica**:
+- Dados acessíveis através da interface normal do dispositivo
+- Limitada pelos controles de acesso do sistema
+- Menos invasiva, mais rápida
+
+**Extração Física**:
+- Cópia bit-a-bit completa da memória
+- Requer root/jailbreak ou exploits
+- Mais dados, incluindo arquivos deletados
+
+**Extração de Sistema de Arquivos**:
+- Acesso direto ao sistema de arquivos
+- Meio termo entre lógica e física
+
+### Ferramentas especializadas:
+- **Cellebrite UFED**: Padrão da indústria para extração móvel
+- **Oxygen Detective Suite**: Análise forense de dispositivos móveis
+- **XRY**: Extração e análise de telefones celulares
+- **MSAB**: Mobile forensics e análise
+
+## Forense em Nuvem (Cloud Forensics)
+
+Com a migração massiva para a nuvem, a forense digital precisou se adaptar aos novos desafios dos ambientes distribuídos.
+
+### Características da nuvem que impactam a forense:
+
+**Distribuição geográfica**: Dados podem estar em múltiplos data centers
+**Virtualização**: Instâncias podem ser criadas e destruídas rapidamente
+**Elasticidade**: Recursos mudam dinamicamente
+**Multi-tenancy**: Múltiplos clientes compartilham infraestrutura
+**Jurisdições diferentes**: Leis variam entre países
+
+### Tipos de forense em nuvem:
+
+**Software-as-a-Service (SaaS)**:
+- Gmail, Office 365, Salesforce
+- Foco em logs de aplicação e dados de usuário
+
+**Platform-as-a-Service (PaaS)**:
+- Google App Engine, Heroku
+- Análise de código e configurações de aplicação
+
+**Infrastructure-as-a-Service (IaaS)**:
+- AWS, Azure, Google Cloud
+- Snapshots de VMs, logs de sistema, network flows
+
+### Ferramentas e técnicas:
+
+**AWS**: CloudTrail, VPC Flow Logs, S3 access logs
+**Azure**: Activity Log, NSG Flow Logs, Storage Analytics
+**Google Cloud**: Cloud Logging, VPC Flow Logs, Access Transparency
+**Ferramentas terceiras**: CloudFringe, Magnet AXIOM Cloud
+
+### Desafios legais e técnicos:
+
+- **Cadeia de custódia** em ambientes distribuídos
+- **Volatilidade** dos dados em infraestrutura elástica
+- **Acesso limitado** a logs e dados do provedor
+- **Jurisdições múltiplas** e leis conflitantes
+
+## Anti-Forensics
+
+Anti-forensics são técnicas e ferramentas utilizadas para impedir, dificultar ou enganar investigações forenses. É importante que analistas forenses conheçam essas técnicas para melhor combatê-las.
+
+### Categorias de anti-forensics:
+
+**Ocultação de dados**:
+- Esteganografia (dados escondidos em imagens, áudios)
+- Partições ocultas
+- Sistemas de arquivos alternativos
+
+**Destruição de evidências**:
+- Sobrescrita segura de dados
+- Destruição física de mídias
+- Utilização de ferramentas como DBAN, Eraser
+
+**Ofuscação**:
+- Criptografia forte
+- Nomes de arquivos enganosos
+- Timestamps falsificados
+
+**Técnicas de detecção de análise**:
+- Detecção de máquinas virtuais
+- Verificação de ferramentas forenses em execução
+- Comportamento diferente quando em análise
+
+### Contramedidas para investigadores:
+
+**Documentação rigorosa**: Registrar todos os passos da investigação
+**Múltiplas ferramentas**: Usar diferentes software para validação cruzada
+**Análise de metadados**: Verificar inconsistências temporais
+**Análise comportamental**: Identificar padrões suspeitos
+**Forense de rede**: Capturar comunicações antes da criptografia
+
+### Ferramentas comuns de anti-forensics:
+
+- **BleachBit**: Limpeza segura de dados
+- **CCleaner**: Remoção de traces
+- **TrueCrypt/VeraCrypt**: Criptografia forte
+- **Timestomp**: Modificação de timestamps
+
+**Considerações éticas**: Investigadores devem conhecer anti-forensics para defesa, não para obstrução da justiça.
 
 ### Sobre HD e SSD
 

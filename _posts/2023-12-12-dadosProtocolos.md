@@ -16,7 +16,28 @@ As redes de computadores desempenham um papel crucial na conectividade e comunic
 
 ## Protocolos de Transporte na Internet: TCP e UDP
 
-A camada de transporte na Internet desempenha um papel vital no transporte de mensagens entre aplicações cliente e servidor. Dois protocolos principais, TCP e UDP, são fundamentais nesse contexto. O TCP oferece serviços orientados à conexão, garantindo a entrega de mensagens e controle de fluxo. Em contraste, o UDP é não orientado à conexão, sendo mais econômico, mas sem garantias de confiabilidade ou controle de fluxo. *(2)*;
+A camada de transporte na Internet desempenha um papel vital no transporte de mensagens entre aplicações cliente e servidor. Dois protocolos principais, TCP e UDP, são fundamentais nesse contexto. 
+
+### Fatores de escolha entre TCP e UDP:
+
+**Latência**: UDP tem menor latência por não precisar estabelecer conexão
+**Confiabilidade**: TCP garante entrega e ordem, UDP não
+**Overhead**: TCP tem maior overhead devido aos controles
+**Tempo real**: UDP é preferível para aplicações que precisam de resposta imediata
+
+O TCP oferece serviços orientados à conexão, garantindo a entrega de mensagens e controle de fluxo. Em contraste, o UDP é não orientado à conexão, sendo mais econômico, mas sem garantias de confiabilidade ou controle de fluxo. *(2)*
+
+### Controles avançados do TCP:
+
+**Flow Control**: Mecanismo que impede que o remetente sobrecarregue o receptor
+- Usa janela deslizante (sliding window)
+- Receptor anuncia tamanho da janela disponível
+- Remetente ajusta velocidade de envio
+
+**Congestion Control**: Evita congestionamento na rede
+- Slow Start: Começa devagar e aumenta exponencialmente
+- Congestion Avoidance: Crescimento linear após limite
+- Fast Recovery: Recuperação rápida de perdas
 
 Tendo em mente o que falamos, como o UDP ser "mais rápido" que o TCP, mas sem confiabilidade de entrega, veremos como / onde esses protocolos são utilizados;
 
@@ -73,6 +94,64 @@ Alguns exemplos adicionais de protocolos de rede que operam sobre udp:
    - **Descrição:** O Syslog é usado para enviar mensagens de log de dispositivos de rede para um servidor de log. A natureza sem conexão do UDP permite um envio rápido de mensagens, embora não garanta a entrega.
 
 Vale lembrar que, embora o UDP seja mais leve que o TCP, ele não oferece garantias de entrega ou ordenação de pacotes, sendo mais adequado para casos em que a perda ocasional de pacotes é **aceitável**.
+
+## Protocolos Modernos e Evoluções
+
+### QUIC (Quick UDP Internet Connections)
+
+**QUIC** representa uma evolução significativa baseada em UDP mas com características avançadas:
+
+- **Multiplexing sem bloqueio**: Múltiplas streams independentes
+- **Criptografia integrada**: TLS 1.3 por padrão
+- **Conexão rápida**: 0-RTT para reconexões
+- **Migração de conexão**: Sobrevive a mudanças de rede
+
+### HTTP/3 e gRPC
+
+**HTTP/3**: Nova versão do HTTP baseada em QUIC
+- Melhor performance em redes instáveis
+- Menor latência de conexão
+- Resistência a head-of-line blocking
+
+**gRPC**: Framework de RPC moderno
+- Baseado em HTTP/2
+- Protocol Buffers para serialização
+- Suporte a streaming bidirecional
+- Ideal para microserviços
+
+### Protocolos de Segurança
+
+**TLS (Transport Layer Security)**:
+- Substituto do SSL
+- Criptografia em nível de transporte
+- Autenticação de servidores
+- Integridade dos dados
+
+**IPSec (Internet Protocol Security)**:
+- Segurança em nível de rede
+- VPNs corporativas
+- Autenticação e criptografia
+- Modos tunnel e transport
+
+### QoS (Quality of Service)
+
+**Conceitos fundamentais**:
+- **Bandwidth**: Largura de banda garantida
+- **Latency**: Atraso máximo tolerado
+- **Jitter**: Variação na latência
+- **Packet Loss**: Taxa máxima de perda aceitável
+
+**Técnicas de QoS**:
+- **Traffic Shaping**: Controle de taxa de tráfego
+- **Packet Prioritization**: Priorização de pacotes
+- **DSCP Marking**: Marcação de pacotes para classificação
+- **Queue Management**: Gerenciamento de filas
+
+**Aplicações práticas**:
+- Videoconferências requerem baixa latência
+- Streaming precisa de bandwidth consistente
+- Jogos online necessitam baixo jitter
+- Aplicações críticas precisam de prioridade alta
 
 ## Impactos na Escolha do Protocolo de Transporte
 

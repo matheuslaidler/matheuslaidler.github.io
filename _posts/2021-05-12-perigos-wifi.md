@@ -34,7 +34,29 @@ Nesta postagem falaremos exatamente sobre isso. Você sairá compreendendo os Pe
 
 ## Breve explicação sobre a segurança e os protocolos
 
-As redes wireless usam diferentes protocolos de segurança para criptografar os dados que são transmitidos entre os dispositivos e o roteador. Os mais comuns são o WEP (Wired Equivalent Privacy) e o WPA-PSK (Wi-Fi Protected Access Pre-Shared Key). O WEP é um protocolo antigo e muito vulnerável, que pode ser facilmente quebrado por programas que capturam os pacotes de dados e descobrem a chave de criptografia. O WPA - WPA2 ou WPA3 - é um protocolo mais moderno e seguro, que usa um algoritmo mais complexo para gerar a chave de criptografia, que muda a cada conexão. No entanto, também pode ser invadido se o usuário escolher uma senha padrão ou fraca, já que pode ser descoberta por programas que testam milhares de combinações possíveis até encontrar a correta. Esse método é chamado de brute force (força bruta) e o arquivo que armazena as senhas geralmente é chamado de wordlist. Inclusive, foi assim que invadi a rede WiFi de uma vizinha utilizando o pacote aircrack e gerando uma wordlist com crunch. 
+As redes wireless usam diferentes protocolos de segurança para criptografar os dados que são transmitidos entre os dispositivos e o roteador. 
+
+### Evolução dos protocolos de segurança:
+
+**WEP (Wired Equivalent Privacy)**: Protocolo antigo e extremamente vulnerável, quebrado em questão de minutos com ferramentas simples. Deve ser evitado a todo custo.
+
+**WPA/WPA2-PSK (Wi-Fi Protected Access)**: Melhoria significativa sobre o WEP, mas ainda vulnerável a ataques de força bruta com senhas fracas. O WPA2, lançado em 2004, ainda é amplamente usado.
+
+**WPA3 (Wi-Fi Protected Access 3)**: Protocolo mais recente (2018) que oferece:
+- Proteção contra ataques offline de força bruta
+- Autenticação mais segura com SAE (Simultaneous Authentication of Equals)
+- Criptografia individualizada em redes públicas
+- Melhor proteção para dispositivos IoT
+
+### WiFi 6 e WiFi 6E - Novas considerções:
+
+**WiFi 6 (802.11ax)** e **WiFi 6E** trouxeram não apenas melhor performance, mas também:
+- Segurança aprimorada por padrão
+- Melhor gerenciamento de banda (6E opera em 6GHz)
+- Redução de interferências
+- **Atenção**: Maior alcance pode significar maior superfície de ataque
+
+O WPA - WPA2 ou WPA3 - é um protocolo mais moderno e seguro, que usa um algoritmo mais complexo para gerar a chave de criptografia, que muda a cada conexão. No entanto, WPA2 ainda pode ser invadido se o usuário escolher uma senha padrão ou fraca, já que pode ser descoberta por programas que testam milhares de combinações possíveis até encontrar a correta. Esse método é chamado de brute force (força bruta) e o arquivo que armazena as senhas geralmente é chamado de wordlist. Inclusive, foi assim que invadi a rede WiFi de uma vizinha utilizando o pacote aircrack e gerando uma wordlist com crunch. 
 
 ### Minha primeira invasão a uma WIFI
 
@@ -61,6 +83,19 @@ Bom... se um invasor conseguir se conectar à sua rede wireless, ele pode fazer 
  - Fazer um SSL Stripping, que se resume no invasor removendo a criptografia SSL/TLS do tráfego da vítima, permitindo que ele leia e manipule o tráfego.
 	
  - Fazer um Rogue Access Point, que se resume no invasor criar um ponto de acesso Wi-Fi falso para interceptar o tráfego dos usuários.
+
+ - **Evil Twin Attack**: Ataque mais sofisticado onde o invasor cria uma rede WiFi idêntica à legítima (mesmo nome, segurança similar), mas com sinal mais forte. Quando vítimas se conectam ao Evil Twin:
+   - Todo tráfego passa pelo atacante
+   - Páginas de login falsas podem ser apresentadas
+   - Certificados SSL podem ser falsificados
+   - **Prevenção**: Verificar sempre o nome exato da rede e certificados SSL
+
+ - **WPS PIN Attack**: Exploração da funcionalidade WPS (Wi-Fi Protected Setup) que usa PINs de 8 dígitos. Na verdade, são apenas 7 dígitos + 1 checksum, reduzindo para ~11.000 combinações possíveis:
+   - Ataques de força bruta em WPS podem quebrar em horas
+   - Mesmo redes WPA2 fortes ficam vulneráveis se WPS estiver ativo
+   - **Solução**: Desabilitar WPS completamente no roteador
+
+ - **Karma Attack**: Dispositivos procuram automaticamente por redes conhecidas. O atacante responde a todas essas solicitações, fazendo o dispositivo se conectar achando que é uma rede confiável.
 	
  . Um bônus que podemos falar sobre ataques é de um em que não necessariamente o atacante estará já com acesso garantido em sua rede, mas apenas alcance a mesma. Este ataque é chamado de DeAuth e neste caso se resume em te derrubar da rede, fazendo sua conexão cair e te forçando a reconectar, mas pode ser feito de forma que você não de reconecte por muito tempo. Este ataque pode ser uma etapa importante para um wifi hacking, que para poder capturar o que chamamos de handshake é preciso esperar alguém se conectar ou forçando uma vítima a cair e voltar rapidamente com desautenticação. As explicações mais técnicas estarão em outra publicação, mas resumidamente este ataque fica enviando pacotes de dissociação/desautenticação para desconectar dispositivos da rede wireless.
  
@@ -77,11 +112,23 @@ Como você pode ver, esses ataques podem causar sérios danos à sua privacidade
 
 * Evite dar acesso a sua rede para qualquer um, isso também pode ser um problema. Ainda mais se sua rede tiver um alcance até a rua ou estabelecimentos, por exemplo. (Se possível ter uma rede separada para visitantes)
 	
-* Usar um protocolo de segurança adequado para sua rede wireless. Evite usar o WEP, que é muito fraco e fácil de quebrar sem precisar de wordlist. Prefira usar o WPA2-PSK, que é mais forte e difícil de invadir. Se possível, use a WPA3, que é a versão mais recente e avançada da criptografia wireless.
+* Usar um protocolo de segurança adequado para sua rede wireless. Evite usar o WEP, que é muito fraco e fácil de quebrar sem precisar de wordlist. Prefira usar o WPA2-PSK, que é mais forte e difícil de invadir. **Se possível, use a WPA3**, que é a versão mais recente e avançada da criptografia wireless com proteção contra ataques offline.
 	
+* **Sobre VPNs - Entenda as diferenças**:
+  - **VPNs Corporativas**: Conectam funcionários à rede da empresa com segurança robusta
+  - **VPNs Comerciais**: Serviços pagos para privacidade (ProtonVPN, NordVPN, etc.)
+  - **VPNs Gratuitas**: Cuidado! Muitas vendem seus dados ou têm segurança questionável
+  - **Recomendação**: Use sempre VPN em redes públicas, prefira serviços pagos confiáveis
+
 * Evite redes wireless públicas. Não use redes wifi públicas sem proteção, se você precisar usar uma rede wifi pública, como em um café, em um hotel ou em um aeroporto, ao menos use uma VPN (Virtual Private Network) para criptografar seus dados e impedir que eles sejam interceptados por terceiros - ProtonVPN tem versão gratuita. Também evite acessar sites sensíveis ou fazer transações financeiras nessas redes.
-	
-* Ative o filtro de endereços MAC no seu roteador. O MAC é um código único que identifica cada dispositivo que se conecta à rede wireless. Com o filtro ativado, você pode permitir ou bloquear o acesso de determinados dispositivos à sua rede, aumentando o controle e a segurança.
+
+* **Ferramentas de Análise WiFi para Administradores**:
+  - **WiFi Analyzer** (Android/Windows): Visualiza redes próximas, canais ocupados
+  - **inSSIDer**: Análise profissional de redes WiFi
+  - **Wireshark**: Captura e análise de pacotes de rede
+  - **Kismet**: Detector de redes wireless e dispositivos
+  
+* Ative o filtro de endereços MAC no seu roteador. O MAC é um código único que identifica cada dispositivo que se conecta à rede wireless. Com o filtro ativado, você pode permitir ou bloquear o acesso de determinados dispositivos à sua rede, aumentando o controle e a segurança. **Atenção**: MAC addresses podem ser falsificados (spoofing), não é proteção absoluta.
 	
 * Para ficar mais tranquilo, pode tentar verificar a tabela ARP para verificar se os IP's e os endereços MACs estão certos e não com algum duplicado, como um endereço físico para 2 IPs diferentes.
 	
@@ -106,8 +153,33 @@ Ative o filtro de endereços MAC no roteador para controlar o acesso à rede e v
 
 Escolha senhas fortes e complexas para sua rede wireless e mude-as periodicamente. Mantenha um antivírus atualizado e um firewall ativo no seu dispositivo e use a autenticação de dois fatores sempre que possível.
 
-Por fim, verifique a segurança dos sites que você acessa, procurando por um cadeado ou “https” na barra de endereço. Desconfie de sites que solicitam informações sensíveis ou oferecem ofertas muito boas para serem verdadeiras. A segurança online é uma prática contínua e requer vigilância constante.
+Por fim, verifique a segurança dos sites que você acessa, procurando por um cadeado ou "https" na barra de endereço. Desconfie de sites que solicitam informações sensíveis ou oferecem ofertas muito boas para serem verdadeiras. A segurança online é uma prática contínua e requer vigilância constante.
 
+## Checklist de Segurança WiFi
+
+### Para sua rede doméstica:
+- [ ] **Protocolo**: WPA3 ou pelo menos WPA2
+- [ ] **Senha**: Complexa, única, com 16+ caracteres
+- [ ] **WPS**: Desabilitado completamente
+- [ ] **Firmware**: Atualizado regularmente
+- [ ] **SSID**: Nome único (não padrão do fabricante)
+- [ ] **Rede de convidados**: Separada da rede principal
+- [ ] **Filtro MAC**: Ativado para dispositivos conhecidos
+- [ ] **Administração remota**: Desabilitada
+
+### Para redes públicas:
+- [ ] **VPN**: Sempre ativa antes de conectar
+- [ ] **HTTPS**: Verificar em todos os sites
+- [ ] **Bluetooth**: Desabilitado quando não necessário
+- [ ] **Compartilhamento**: Desativar compartilhamento de arquivos
+- [ ] **Firewall**: Ativado no dispositivo
+- [ ] **Transações financeiras**: Evitar ou usar dados móveis
+
+### Monitoramento e manutenção:
+- [ ] **Dispositivos conectados**: Verificar mensalmente
+- [ ] **Logs do roteador**: Revisar atividades suspeitas
+- [ ] **Senhas**: Trocar a cada 3-6 meses
+- [ ] **Backup das configurações**: Manter cópia segura
 
 ## Considerações finais
 

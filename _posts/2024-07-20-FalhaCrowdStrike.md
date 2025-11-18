@@ -15,7 +15,28 @@ Recentemente, os Estados Unidos enfrentaram os famosos "apagões cibernéticos" 
 
 ## Contexto e o que aconteceu
 
-A CrowdStrike é uma empresa de cibersegurança conhecida por seu software de Endpoint Detection and Response (EDR) chamado Falcon. EDR é uma tecnologia usada para monitorar e responder a ameaças nos endpoints, como computadores e dispositivos móveis. Em uma atualização recente, uma falha crítica ocorreu, causando interrupções significativas.
+A CrowdStrike é uma empresa de cibersegurança conhecida por seu software de Endpoint Detection and Response (EDR) chamado Falcon. 
+
+### Entendendo EDR (Endpoint Detection and Response)
+
+**O que é um EDR?**
+EDR é uma tecnologia de segurança que monitora continuamente endpoints (computadores, servidores, dispositivos móveis) para detectar e responder a ameaças cibernéticas.
+
+**Componentes principais de um EDR**:
+1. **Coleta de dados**: Monitora atividades em tempo real
+2. **Análise comportamental**: Detecta padrões suspeitos
+3. **Detecção de ameaças**: Identifica malware e ataques
+4. **Resposta automatizada**: Ações de contenção e remediação
+5. **Forense digital**: Investigação de incidentes
+
+**Por que EDRs operam no kernel?**
+- Acesso total ao sistema operacional
+- Monitoramento de processos sistemáticos
+- Proteção contra rootkits
+- Interceptação de chamadas de sistema
+- Visibilidade completa de atividades
+
+Em uma atualização recente, uma falha crítica ocorreu, causando interrupções significativas.
 
 ## Detalhes Técnicos do Incidente
 
@@ -26,11 +47,47 @@ A CrowdStrike é uma empresa de cibersegurança conhecida por seu software de En
 
 ### Como Funciona um Sistema Operacional
 
-Para compreender o impacto da falha, é fundamental entender o funcionamento de um sistema operacional (SO). O SO atua como um intermediário entre o hardware e os aplicativos, gerenciando recursos como CPU, memória e dispositivos de entrada/saída. O nível de kernel, onde ocorrem as operações mais críticas, gerencia:
+Para compreender o impacto da falha, é fundamental entender o funcionamento de um sistema operacional (SO). O SO atua como um intermediário entre o hardware e os aplicativos, gerenciando recursos como CPU, memória e dispositivos de entrada/saída. 
+
+#### Kernel Space vs User Space
+
+**User Space (Espaço do Usuário)**:
+- Onde aplicativos normais executam
+- Acesso limitado aos recursos do sistema
+- Falhas não derrubam o sistema
+- Isolamento de segurança
+
+**Kernel Space (Espaço do Kernel)**:
+- Onde o núcleo do SO executa
+- Acesso irrestrito a todos os recursos
+- Controla hardware diretamente
+- **Falhas podem derrubar todo o sistema**
+
+O nível de kernel, onde ocorrem as operações mais críticas, gerencia:
 
 - **Gerenciamento de Processos:** Controla a execução e alocação de tempo da CPU.
 - **Gerenciamento de Memória:** Aloca e libera memória, evitando interferências entre processos.
 - **Gerenciamento de Dispositivos:** Facilita a comunicação entre aplicativos e hardware.
+
+### Blue Screen of Death (BSOD)
+
+**O que é BSOD?**
+O BSOD é um erro crítico que ocorre quando o Windows encontra um problema que não consegue resolver, forçando o sistema a parar completamente para evitar danos.
+
+**Causas comuns**:
+- Drivers com defeito (como no caso CrowdStrike)
+- Hardware defeituoso
+- Corrupção de memória
+- Sobrecarga do sistema
+- Conflitos de software
+
+**Impactos específicos do incidente CrowdStrike**:
+- **Aeroportos**: Voos cancelados, check-in manual
+- **Hospitais**: Sistemas de prontuário eletrônico offline
+- **Bancos**: ATMs e sistemas de pagamento inoperantes
+- **Mídia**: Estações de TV fora do ar
+- **Supermercados**: Sistemas de PDV não funcionais
+- **Transportes**: Sistemas de trânsito público afetados
 
 ### Interações com o Kernel
 

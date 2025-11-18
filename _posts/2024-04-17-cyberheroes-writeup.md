@@ -60,7 +60,16 @@ No entanto, antes disso, decidi olhar primeiro através da ferramenta de desenvo
 
 ![Desktop View](https://files.gitbook.com/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FbQv9wabgPnNw9BmnSoN6%2Fuploads%2Fe5eUZ7f5PgwQZk9egQk1%2Fimage.png?alt=media&token=e3a32b8d-f680-4b93-b569-52e7e07636f6){: .dark .w-80 .shadow .rounded-10 w='1212' h='668' }
 
-Isso me fez pensar que poderia se tratar de uma autenticação local. Fui até o código fonte e encontrei no JavaScript o login, porém com a senha invertida de trás para frente. Reverti a string via terminal mesmo com o comando `rev`.
+Isso me fez pensar que poderia se tratar de uma autenticação local. Fui até o código fonte e encontrei no JavaScript o login, porém com a senha invertida de trás para frente. Reverti a string via terminal usando o comando `rev`.
+
+**Sobre o comando `rev`**: É um utilitário Unix/Linux que inverte a ordem dos caracteres em cada linha de entrada. Muito útil para casos como este onde strings estão invertidas como ofuscação básica.
+
+```bash
+# Sintaxe básica
+echo "texto" | rev        # Inverte "texto" para "otxet"
+rev arquivo.txt           # Inverte cada linha do arquivo
+echo "olleh" | rev        # Resultado: "hello"
+```
 
 ![Desktop View](https://files.gitbook.com/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FbQv9wabgPnNw9BmnSoN6%2Fuploads%2FhW5h5uKjtL9qp2NO9KMa%2Fimage.png?alt=media&token=01873c5e-7689-46c5-8251-c91c4ac6de61){: .dark .w-80 .shadow .rounded-10 w='1212' h='668' }
 
@@ -74,6 +83,37 @@ Isso resultou em: _SuperSecret@12345_
 
 Credenciais **h3ck3rBoi:SuperSecret@12345**
 
+### Ferramentas de Desenvolvedor - Análise Avançada
+
+Durante esta investigação, as ferramentas de desenvolvedor do browser foram fundamentais:
+
+**Aba Network (Rede)**:
+- Monitora todas as requisições HTTP/HTTPS
+- Mostra métodos, status codes, headers
+- **Observação importante**: Não houve requisições ao tentar o login
+
+**Aba Sources (Fontes)**:
+- Acesso a todos os arquivos JavaScript, CSS, HTML
+- Permite busca global por strings
+- Debugging e breakpoints
+- **Dica**: Use Ctrl+Shift+F para buscar em todos os arquivos
+
+**Aba Console**:
+- Execução de JavaScript em tempo real
+- Debug de erros e testes rápidos
+- **Uso prático**: `document.getElementById('password').value` para ver valores
+
+**Aba Application/Storage**:
+- LocalStorage, SessionStorage, Cookies
+- IndexedDB e WebSQL
+- Service Workers e Cache
+
+**Teclas úteis para CTFs**:
+- `F12`: Abrir DevTools
+- `Ctrl+U`: View Source
+- `Ctrl+Shift+I`: Inspector
+- `Ctrl+Shift+C`: Element selector
+
 Ao tentar logar...
 
 Pronto!
@@ -86,5 +126,66 @@ Ao fazer o login, temos a resposta... super fácil!!
 ```txt
 flag{edb0be532c540b1a150c3a7e85d2466e}
 ```
+
+## Lições Aprendidas
+
+Este CTF, apesar de simples, ensinou várias lições importantes:
+
+### Metodologia de Investigação
+
+1. **Enumeração sistemática**: Sempre começar com nmap, mesmo que depois não seja necessário
+2. **Análise manual primeiro**: Navegar pelo site antes de partir para ferramentas automatizadas
+3. **Código fonte é fundamental**: View source deve ser sempre o segundo passo
+4. **Network monitoring**: Sempre observar se requisições estão sendo feitas
+
+### Técnicas Específicas
+
+**Autenticação Client-Side**:
+- É sempre insegura
+- Fácil de contornar com análise de código
+- Comum em CTFs iniciantes
+
+**Ofuscação Básica**:
+- Strings invertidas são muito comuns
+- Base64, ROT13, hexadecimal também frequentes
+- Sempre teste transformações simples primeiro
+
+### Dicas para CTFs Similares
+
+**Padrões comuns de ofuscação**:
+```javascript
+// String invertida (como neste caso)
+password = "54321@terceSrepuS".split('').reverse().join('');
+
+// Base64
+password = atob("U3VwZXJTZWNyZXRAMTIzNDU=");
+
+// ROT13
+password = rot13("FhcreFreerg@12345");
+
+// Hexadecimal
+password = Buffer.from('537570657253656372657440313233343', 'hex').toString();
+```
+
+**Ferramentas úteis online**:
+- CyberChef: "Swiss army knife" para decodificação
+- Base64decode.org: Para Base64
+- rot13.com: Para ROT13
+- Hex to ASCII converters
+
+**Automatização com scripts**:
+```bash
+# Script rápido para testar transformações comuns
+echo "string_suspeita" | rev                    # Invertida
+echo "string_suspeita" | base64 -d              # Base64
+echo "string_suspeita" | tr 'A-Za-z' 'N-ZA-Mn-za-m'  # ROT13
+```
+
+### Mindset para CTFs
+
+1. **Simplicidade primeiro**: A solução mais simples é frequentemente a correta
+2. **Documentação**: Sempre anotar o que já foi testado
+3. **Persistência**: Não desistir após primeira tentativa
+4. **Lateral thinking**: Pensar fora da caixa quando métodos convencionais falham
 
 > Meu perfil na plataforma: https://tryhackme.com/p/laidler

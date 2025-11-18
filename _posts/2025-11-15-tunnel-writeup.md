@@ -150,6 +150,42 @@ Isso permite acessar endpoints críticos do **Spring Boot Actuator** que estavam
 **Por que o Actuator é crítico:**
 O Spring Boot Actuator fornece endpoints de monitoramento e gestão que **nunca deveriam ser expostos publicamente**. São destinados apenas para administração interna e debugging.
 
+### Entendendo o Spring Boot Actuator
+
+**O que é o Spring Boot Actuator?**
+É um módulo que adiciona funcionalidades de produção-ready para aplicações Spring Boot, incluindo métricas, health checks, e informações sobre a aplicação.
+
+**Endpoints críticos comuns:**
+- `/actuator/health` - Status de saúde da aplicação
+- `/actuator/info` - Informações da aplicação
+- `/actuator/metrics` - Métricas de performance
+- `/actuator/env` - Variáveis de ambiente
+- `/actuator/configprops` - Propriedades de configuração
+- `/actuator/beans` - Beans do Spring Context
+- `/actuator/mappings` - Mapeamentos de endpoints
+- `/actuator/heapdump` - Dump da memória heap
+- `/actuator/threaddump` - Dump das threads
+- `/actuator/loggers` - Configuração de logs
+
+**Por que é perigoso expor publicamente:**
+1. **Vazamento de informações sensíveis**
+2. **Credenciais em variáveis de ambiente**
+3. **Detalhes da arquitetura interna**
+4. **Possível manipulação de configurações**
+5. **DoS através de operações custosas**
+
+**Configuração segura:**
+```yaml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info  # Apenas endpoints seguros
+  endpoint:
+    health:
+      show-details: never   # Não mostrar detalhes sensíveis
+```
+
 Recomendo a leitura da publicação [Analisando o heapdump do Spring Boot Actuator](https://blog.crowsec.com.br/conhecendo-o-heapdump/) do blog da Crowsec
 
 ## 5. Exploração com h2csmuggler
