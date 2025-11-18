@@ -1,6 +1,6 @@
 ---
 title: Tunnel - Desafio Hacker [HackingClub]
-description: 'Resolvendo máquina nível médio da Hacking Club sobre HTTP/2 cleartext (h2c) request smuggling, RCE e Docker escape'
+description: 'Resolvendo máquina nível médio da Hacking Club sobre h2c request smuggling, RCE e Docker escape'
 author: matheus
 tags: ["hackingclub", "WriteUps", "RCE", "request smuggling", "docker escape"]
 categories: ["SecLab", "Hacking"]
@@ -13,7 +13,7 @@ comments: true
 
 ### HTTP/2 Cleartext Tunnel (h2c), Nginx Bypass, Node Inspector RCE e Docker Escape
 
-Eu fiz esse desafio em meu ambiente de trabalho com Windows 11 via WSL. Utilizei tanto o terminal do windows - com meu kali sem interface gráfica -, como também abusei do WSL2 que me permite utilizar o Kali com interface gráfica via container. Em outras palavras, tudo foi realizado dentro de um Kali Linux com ambiente já configurar e ferramentas complementares instaladas. Se faz necessário já ter conhecimento prévio em determinadas coisas como Linux/Bash, Redes (ex: protocolo HTTP), Fuzzing, Docker e JavaScript para resolver esta máquina.
+Eu fiz esse desafio em meu ambiente de trabalho com Windows 11 via WSL. Utilizei tanto o terminal do windows - com meu kali sem interface gráfica -, como também abusei do WSL2 que me permite utilizar o Kali com interface gráfica via container. Em outras palavras, tudo foi realizado dentro de um ambiente já configurado e com ferramentas complementares instaladas. Se faz necessário já ter conhecimento prévio em determinadas coisas como Linux/Bash, Redes - como protocolo HTTP -, Fuzzing, Docker, JAVA e JavaScript para resolver esta máquina.
 
 ## 1. Enumeração Inicial e Fuzzing
 
