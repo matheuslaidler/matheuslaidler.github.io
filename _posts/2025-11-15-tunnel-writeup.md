@@ -150,6 +150,8 @@ Isso permite acessar endpoints críticos do **Spring Boot Actuator** que estavam
 **Por que o Actuator é crítico:**
 O Spring Boot Actuator fornece endpoints de monitoramento e gestão que **nunca deveriam ser expostos publicamente**. São destinados apenas para administração interna e debugging.
 
+Recomendo a leitura da publicação [Analisando o heapdump do Spring Boot Actuator](https://blog.crowsec.com.br/conhecendo-o-heapdump/) do blog da Crowsec
+
 ## 5. Exploração com h2csmuggler
 
 Documentação recomendada: [h2c Smuggling: Request Smuggling Via HTTP/2 Cleartext (h2c)](https://bishopfox.com/blog/h2c-smuggling-request)
@@ -214,9 +216,9 @@ Se formos ao final do arquivo poderemos identificar o JSON que esperamos do /env
 
 <img width="800" alt="image" src="https://github.com/user-attachments/assets/aba4d6c3-4061-4527-8219-5b175216c2c8" />
 
-Ao analisar o JSON retornado do `/env` (utilizando um formatter para melhor legibilidade), identificamos:
+Ao analisar o JSON retornado do `/env` (utilizando um formatter para melhor legibilidade), identificamos
 
-**🚩 PRIMEIRA FLAG ENCONTRADA:**
+**🚩 A PRIMEIRA FLAG ENCONTRADA:**
 
 ```text
 hackingclub{c71b3ebb3e25f3c8304d90***************309a3f}
@@ -276,19 +278,23 @@ CDP **nunca deve ser exposto publicamente** pois permite execução de código a
 
 ## 7. Explorando o modo debug do Node.js
 
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/804f407a-ad91-45d9-a59d-ebfaf4d86ed5" />
+
 ### 7.1 Primeiro teste HTTP normal
+
+Utilizando o Postman, com proxy já configurada para testar, vamos selecionar não apenas a opção WebSocket como também HTTP :
+
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/ab46653e-c951-49eb-af92-f829429a53a3" />
 
 ```bash
 GET http://172.16.3.113:8000/admin/internal-web-socket-endpoint/
 ```
 
-**Retorno:**
+**Retorno (mesmo de browser):**
 
 ```text
 WebSocket request was expected
 ```
-
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/804f407a-ad91-45d9-a59d-ebfaf4d86ed5" />
 
 **Análise:**
 
@@ -297,13 +303,7 @@ WebSocket request was expected
 
 ### 7.2 Tentando conexão WebSocket
 
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/814ab118-bb9c-494e-9ea3-37beadae9520" />
-
-Utilizando o Postman para testar, vamos criar não apenas para WebSocket como também para HTTP :
-
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/ab46653e-c951-49eb-af92-f829429a53a3" />
-
-**Testando WebSocket direto:**
+**Testando WebSocket:**
 
 ```text
 ws://172.16.3.113:8000/admin/internal-web-socket-endpoint/
@@ -317,9 +317,11 @@ Unexpected server response: 400
 
 <img width="800" alt="image" src="https://github.com/user-attachments/assets/d1646138-3ed5-4d08-812d-a6fa3a577c14" />
 
-**Conclusão:** Não é o WebSocket principal — falta descobrir o caminho correto.
+**Conclusão:** Não é o WebSocket principal, falta descobrir o caminho correto.
 
 ## 8. Descobrindo WebSocket real via DevTools API
+
+<img width="800" alt="image" src="https://opengraph.githubassets.com/c539d7ae204980d72d2ab4a76bba47985d3c60faa939bf12f27b1a09388d1fff/ChromeDevTools/devtools-protocol" />
 
 ### 8.1 Como funciona o Node.js Inspector
 
@@ -395,7 +397,7 @@ Consultando a [documentação oficial](https://chromedevtools.github.io/devtools
 }
 ```
 
-Conseguimos descobrir que é necessário na estrutura o "params", assim sendo, teremos que identificar não apenas um método como algum parâmetro para o mesmo, então devemos voltar para a documentação oficial e pesquisar e identificá-los.
+Conseguimos descobrir que é necessário na estrutura o "params", assim sendo, teremos que identificar não apenas um método como algum parâmetro para o mesmo, então devemos voltar para a documentação oficial, pesquisar e identificá-los.
 
 **Método aparentemente crítico para RCE identificado:**
 **`Runtime.evaluate`** indica permitir execução de JavaScript arbitrário.
@@ -976,3 +978,10 @@ Este cenário demonstra uma **cadeia crítica** onde múltiplas vulnerabilidades
 <img width="800" alt="image" src="https://github.com/user-attachments/assets/f0667214-3a4e-4ad9-b792-0d97287fb8ca" />
 
 ###### Nota: Mantive apenas visivel em foto uma flag (primeira), não tenho intenção de dar cola.
+
+Referências:
+ - [Hacktricks](https://book.hacktricks.wiki/pt/index.html)
+ - [BishopFox](https://bishopfox.com/)
+ - [Crowsec](https://blog.crowsec.com.br/)
+ - [Chrome DevTools](https://chromedevtools.github.io/)
+ - [Hacking Club](https://app.hackingclub.com/training/training-machines/176)
