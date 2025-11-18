@@ -9,9 +9,11 @@ comments: true
 
 ---
 
-# 📝 Writeup: Tunnel (HackingClub Machine) - Matheus Laidler
+# 📝 Writeup: Tunnel (HackingClub Machine)
 
-## HTTP/2 Cleartext Tunnel (h2c), Nginx Bypass, Node Inspector RCE e Docker Escape
+### HTTP/2 Cleartext Tunnel (h2c), Nginx Bypass, Node Inspector RCE e Docker Escape
+
+Eu fiz esse desafio em meu ambiente de trabalho com Windows 11 via WSL. Utilizei tanto o terminal do windows - com meu kali sem interface gráfica -, como também abusei do WSL2 que me permite utilizar o Kali com interface gráfica via container. Em outras palavras, tudo foi realizado dentro de um Kali Linux com ambiente já configurar e ferramentas complementares instaladas. Se faz necessário já ter conhecimento prévio em determinadas coisas como Linux/Bash, Redes (ex: protocolo HTTP), Fuzzing, Docker e JavaScript para resolver esta máquina.
 
 ## 1. Enumeração Inicial e Fuzzing
 
