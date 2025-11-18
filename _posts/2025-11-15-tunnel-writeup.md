@@ -973,4 +973,4 @@ Este cenário demonstra uma **cadeia crítica** onde múltiplas vulnerabilidades
 
 <img width="800" alt="image" src="https://github.com/user-attachments/assets/f0667214-3a4e-4ad9-b792-0d97287fb8ca" />
 
-###### Nota: Mantive apenas visivel em foto uma flag (primeira), mas mantive a escrita levemente censurada no texto, agora já para a segunda flag nem imagem coloquei para estimula-los a botar a mão na massa.
+###### Nota: Mantive apenas visivel em foto uma flag (primeira), não tenho intenção de dar cola.
