@@ -911,7 +911,7 @@ server:
 6. **Container privilegiado** → Docker escape via mount de filesystem
 7. **Host compromise** → Acesso root completo ao sistema hospedeiro via SSH
 
-### 16.2 Mitigações recomendadas
+### 16.2 Mitigações rápidas
 
 #### 16.2.1 HTTP/2 Cleartext (h2c)
 
@@ -919,7 +919,7 @@ server:
 - Configurar Nginx para rejeitar headers de upgrade H2C  
 - Implementar validação rigorosa de protocolos no proxy
 
-**Exemplo de configuração segura Nginx:**
+**Exemplo de configuração Nginx:**
 
 ```nginx
 # ────────────────────────────────────────────────
@@ -984,36 +984,50 @@ server {
 
 ```
 
- - Este código ainda não está 100%, mas já resolve essa situação atual
-
 #### 16.2.2 Spring Boot Actuator
 
 ```yaml
+# application-prod.yml - Configuração segura para produção
 management:
   endpoints:
     web:
       exposure:
-        include: "health,info"  # Apenas endpoints seguros
+        include: "health,info"    # Apenas endpoints não-sensíveis
+      base-path: "/management"   # Caminho não-óbvio
+    jmx:
+      exposure:
+        exclude: "*"             # Desabilita JMX completamente
   endpoint:
     health:
-      show-details: never
+      show-details: never       # Nunca expor detalhes internos
+    info:
+      enabled: true
   security:
-    enabled: true  # Autenticação obrigatória
+    enabled: true             # Autenticação obrigatória
   server:
-    port: 8081  # Porta administrativa SEPARADA
+    port: 8081                # Porta administrativa SEPARADA
+    address: 127.0.0.1        # Apenas loopback
 ```
 
 #### 16.2.3 Node.js DevTools
 
 ```javascript
-// Nunca expor debugging em produção
-if (process.env.NODE_ENV !== 'production') {
-  require('inspector').open(9229, 'localhost', false);
-}
+// Configuração segura para debugging
+const enableDebug = () => {
+  const isDev = process.env.NODE_ENV === 'development';
+  const debugFlag = process.env.DEBUG_MODE === 'true';
+  const isLocal = process.env.HOSTNAME === 'localhost';
+  
+  // Múltiplas verificações de segurança
+  if (isDev && debugFlag && isLocal) {
+    require('inspector').open(9229, '127.0.0.1', false);
+    console.warn('[DEBUG] Inspector habilitado em modo desenvolvimento');
+  }
+};
 
-// Ou verificação mais rigorosa
-if (process.env.DEBUG_MODE === 'true' && process.env.NODE_ENV === 'development') {
-  require('inspector').open(9229, '127.0.0.1', false);
+// Nunca expor em produção
+if (process.env.NODE_ENV !== 'production') {
+  enableDebug();
 }
 ```
 
@@ -1133,7 +1147,7 @@ networks:
 
 ```
 
-**Dockerfile seguro:**
+**Dockerfile:**
 
 ```dockerfile
 FROM node:18-alpine
@@ -1192,7 +1206,7 @@ Este cenário demonstra uma **cadeia crítica** onde múltiplas vulnerabilidades
 - **Debugging habilitado em produção**
 - **Container com privilégios excessivos**
 
-**Cada vulnerabilidade individualmente seria séria, mas combinadas resultaram em comprometimento total do ambiente.**
+**Cada vulnerabilidade individualmente já fica ruim, elas combinadas resultaram em comprometimento total do ambiente.**
 
 **Lições aprendidas:**
 
@@ -1221,24 +1235,595 @@ Este cenário demonstra uma **cadeia crítica** onde múltiplas vulnerabilidades
 - Privileged Container Escape / Container Breakout via Host Filesystem Mount / Rootfs Access
 - SSH Authorized Keys Injection / SSH Key Injection Persistence / Privilege Escalation & Host Persistence
 
-<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/f0667214-3a4e-4ad9-b792-0d97287fb8ca" />
-
-###### Nota: Mantive apenas visivel em foto uma flag (primeira), não tenho intenção de dar cola.
-
-Referências:
+**Referências Principais**
  - [Hacktricks](https://book.hacktricks.wiki/pt/index.html)
  - [BishopFox](https://bishopfox.com/)
  - [Crowsec](https://blog.crowsec.com.br/)
  - [Chrome DevTools](https://chromedevtools.github.io/)
  - [Hacking Club](https://app.hackingclub.com/training/training-machines/176)
 
+**Referências Adicionais**
 
-### 16.5 Extra: 
+- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
+- [Docker Security Best Practices](https://docs.docker.com/engine/security/)
+- [Nginx Security Headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers)
+- [Spring Boot Security](https://spring.io/projects/spring-security)
+- [Node.js Security Checklist](https://blog.risingstack.com/node-js-security-checklist/)
+- [Container Security Guide](https://kubernetes.io/docs/concepts/security/)
 
-#### Nginx config robusto (mais seguro)
+<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/f0667214-3a4e-4ad9-b792-0d97287fb8ca" />
 
- ```nginx
- # nginx.conf (trecho para incluir no bloco 'http { ... }' ou como arquivo único)
+###### Nota: Mantive apenas visivel em foto uma flag (primeira), não tenho intenção de dar cola.
+
+### 17 [EXTRA] Códigos/Configurações mais seguros(as)/robustos(as)
+  
+  Em mitigação mostramos formas de deixar as configurações e códigos da aplicação atual mais seguras. Porém, ainda elas não estão necessariamente 100% confiáveis, entretando já ajuda a mitigar as falhas da forma como exploramos.
+  Segue os arquivos ainda mais robustos:
+
+ - Aviso: Essa seção EXTRA foi feita com auxílio de IA e não foi revisada em sua totalidade
+
+#### 17.1 - A) Spring Boot
+
+```yaml
+# application-production.yml - Configuração robusta para produção
+server:
+  port: 8080
+  address: 0.0.0.0
+  
+  # Desabilita HTTP/2 completamente (evita h2c smuggling)
+  http2:
+    enabled: false
+  
+  # Configurações de segurança do servidor
+  ssl:
+    enabled: true  # HTTPS obrigatório em produção
+  
+  # Timeouts para evitar DoS
+  connection-timeout: 20s
+  
+spring:
+  profiles:
+    active: production
+  
+  # Desabilita banner e informações desnecessárias
+  main:
+    banner-mode: off
+  
+  # Configuração de logging segura
+  logging:
+    level:
+      org.springframework.web: WARN
+      org.springframework.security: WARN
+    pattern:
+      console: "%d{HH:mm:ss.SSS} [%thread] %-5level - %msg%n"
+
+# Configuração robusta do Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health"  # Apenas health endpoint
+      base-path: "/internal/monitoring"  # Caminho não-óbvio
+      
+    # Desabilita todos os endpoints JMX
+    jmx:
+      exposure:
+        exclude: "*"
+  
+  endpoint:
+    health:
+      show-details: never  # Nunca mostrar detalhes internos
+      show-components: never
+      
+  # Servidor de management em porta separada e localhost apenas
+  server:
+    port: 9090
+    address: 127.0.0.1  # Apenas localhost
+    
+  # Métricas desabilitadas (evita vazamento de informações)
+  metrics:
+    enabled: false
+
+# Configurações de segurança adicionais
+security:
+  headers:
+    frame: true  # X-Frame-Options
+    content-type: true  # X-Content-Type-Options
+    xss: true  # X-XSS-Protection
+```
+
+ - Desabilitação de HTTP/2, HTTPS obrigatório
+ - Actuator em porta separada (localhost apenas)
+ - Logging seguro, timeouts, métricas desabilitadas
+
+#### 17.2 - B) Node.js
+
+```javascript
+// server-secure.js - Servidor Node.js com configurações robustas
+const http = require('http');
+const url = require('url');
+const crypto = require('crypto');
+
+class SecureNodeServer {
+  constructor() {
+    this.debugEnabled = false;
+    this.validateEnvironment();
+    this.setupSecurity();
+  }
+
+  validateEnvironment() {
+    // Múltiplas verificações para habilitar debug
+    const env = process.env.NODE_ENV;
+    const debugFlag = process.env.DEBUG_MODE;
+    const allowedHosts = ['localhost', '127.0.0.1'];
+    const hostname = require('os').hostname();
+
+    // Debug apenas em desenvolvimento local
+    if (env === 'development' && 
+        debugFlag === 'true' && 
+        allowedHosts.includes(hostname)) {
+      
+      console.warn('[SECURITY] Debug mode enabled - DEV ONLY');
+      this.enableDebug();
+    } else {
+      console.info('[SECURITY] Debug disabled for security');
+    }
+  }
+
+  enableDebug() {
+    try {
+      // Bind apenas para localhost, porta alta
+      require('inspector').open(9229, '127.0.0.1', false);
+      this.debugEnabled = true;
+    } catch (error) {
+      console.error('[ERROR] Failed to enable debug:', error.message);
+    }
+  }
+
+  setupSecurity() {
+    // Remove headers perigosos
+    process.on('uncaughtException', (error) => {
+      console.error('[FATAL] Uncaught exception:', error);
+      process.exit(1);
+    });
+
+    // Timeout para requests
+    this.requestTimeout = 30000; // 30 segundos
+
+    // Rate limiting simples
+    this.rateLimiter = new Map();
+  }
+
+  validateRequest(req) {
+    const clientIP = req.connection.remoteAddress;
+    const now = Date.now();
+    
+    // Rate limiting: máximo 10 requests por minuto por IP
+    if (!this.rateLimiter.has(clientIP)) {
+      this.rateLimiter.set(clientIP, []);
+    }
+    
+    const requests = this.rateLimiter.get(clientIP);
+    const recentRequests = requests.filter(time => now - time < 60000);
+    
+    if (recentRequests.length >= 10) {
+      return { valid: false, reason: 'Rate limit exceeded' };
+    }
+    
+    recentRequests.push(now);
+    this.rateLimiter.set(clientIP, recentRequests);
+    
+    return { valid: true };
+  }
+
+  createServer() {
+    return http.createServer((req, res) => {
+      // Timeout para cada request
+      req.setTimeout(this.requestTimeout, () => {
+        res.writeHead(408, { 'Content-Type': 'text/plain' });
+        res.end('Request Timeout');
+      });
+
+      // Validação de request
+      const validation = this.validateRequest(req);
+      if (!validation.valid) {
+        res.writeHead(429, { 'Content-Type': 'text/plain' });
+        res.end('Too Many Requests');
+        return;
+      }
+
+      // Headers de segurança
+      res.setHeader('X-Frame-Options', 'DENY');
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('X-XSS-Protection', '1; mode=block');
+      
+      // Processar request de forma segura
+      this.handleRequest(req, res);
+    });
+  }
+
+  handleRequest(req, res) {
+    const parsedUrl = url.parse(req.url);
+    
+    // Apenas métodos seguros
+    if (!['GET', 'POST'].includes(req.method)) {
+      res.writeHead(405, { 'Content-Type': 'text/plain' });
+      res.end('Method Not Allowed');
+      return;
+    }
+
+    // Log de acesso (sem informações sensíveis)
+    const timestamp = new Date().toISOString();
+    const clientIP = req.connection.remoteAddress;
+    console.log(`[${timestamp}] ${req.method} ${parsedUrl.pathname} - ${clientIP}`);
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ 
+      status: 'secure',
+      timestamp: timestamp,
+      debug: this.debugEnabled 
+    }));
+  }
+
+  start(port = 8000) {
+    const server = this.createServer();
+    
+    server.listen(port, '0.0.0.0', () => {
+      console.log(`[INFO] Secure server running on port ${port}`);
+      console.log(`[INFO] Debug mode: ${this.debugEnabled ? 'ENABLED' : 'DISABLED'}`);
+    });
+
+    // Graceful shutdown
+    process.on('SIGTERM', () => {
+      console.log('[INFO] SIGTERM received, shutting down gracefully');
+      server.close(() => {
+        console.log('[INFO] Server closed');
+        process.exit(0);
+      });
+    });
+  }
+}
+
+// Inicialização segura
+if (require.main === module) {
+  const server = new SecureNodeServer();
+  server.start();
+}
+
+module.exports = SecureNodeServer;
+```
+
+ - Classe SecureNodeServer com validação de ambiente
+ - Rate limiting, headers de segurança
+ - Graceful shutdown, debug apenas em desenvolvimento
+
+#### 17.3 - C) Docker Compose (Cfg-Produção)
+
+```yaml
+# docker-compose.production.yml - Configuração robusta para produção
+version: "3.8"
+
+services:
+  # ================================
+  # BACKEND SPRING BOOT (SEGURO)
+  # ================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.production
+      args:
+        - BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+        - VCS_REF=$(git rev-parse --short HEAD)
+    
+    restart: unless-stopped
+    
+    environment:
+      - SPRING_PROFILES_ACTIVE=production
+      - JAVA_OPTS=-Xmx512m -Xms256m -XX:+UseG1GC
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/appdb
+      - SPRING_DATASOURCE_USERNAME=appuser
+      - SPRING_DATASOURCE_PASSWORD_FILE=/run/secrets/db_password
+      
+    # ================================
+    # HARDENING DE SEGURANÇA
+    # ================================
+    security_opt:
+      - no-new-privileges:true     # Impede escalação de privilégios
+      - seccomp:unconfined         # Profile de syscalls restritivo
+    
+    cap_drop:
+      - ALL                        # Remove TODAS as capabilities
+    cap_add:
+      - SETUID                     # Apenas para mudança de usuário
+      - SETGID                     # Apenas para mudança de grupo
+    
+    read_only: true                # Sistema de arquivos somente leitura
+    
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=100m  # Temp directory seguro
+      - /var/log:rw,noexec,nosuid,nodev,size=50m
+    
+    volumes:
+      - ./backend/logs:/app/logs:rw  # Logs em volume específico
+    
+    user: "1001:1001"              # Usuário não-root específico
+    
+    # ================================
+    # RECURSOS E LIMITES
+    # ================================
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"              # Máximo 1 CPU
+          memory: 512M             # Máximo 512MB RAM
+        reservations:
+          cpus: "0.25"             # Reserva mínima
+          memory: 256M
+    
+    # ================================
+    # REDE ISOLADA
+    # ================================
+    networks:
+      - backend-network
+    
+    # ================================
+    # HEALTHCHECK
+    # ================================
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/internal/monitoring/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    secrets:
+      - db_password
+
+  # ================================
+  # PROXY NGINX (SEGURO)
+  # ================================
+  proxy:
+    build:
+      context: ./proxy
+      dockerfile: Dockerfile.production
+    
+    restart: unless-stopped
+    
+    ports:
+      - "443:443"                  # HTTPS apenas
+      - "80:80"                    # Redirect para HTTPS
+    
+    environment:
+      - NGINX_WORKER_PROCESSES=auto
+      - NGINX_WORKER_CONNECTIONS=1024
+    
+    # ================================
+    # HARDENING DE SEGURANÇA
+    # ================================
+    security_opt:
+      - no-new-privileges:true
+    
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE          # Para bind em portas 80/443
+      - CHOWN                     # Para gerenciar certificados
+    
+    read_only: true
+    
+    tmpfs:
+      - /var/cache/nginx:rw,noexec,nosuid,nodev,size=50m
+      - /var/run:rw,noexec,nosuid,nodev,size=10m
+    
+    volumes:
+      - ./proxy/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./proxy/ssl:/etc/ssl/certs:ro  # Certificados SSL
+      - ./proxy/logs:/var/log/nginx:rw
+    
+    user: "1002:1002"
+    
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+        reservations:
+          cpus: "0.1"
+          memory: 64M
+    
+    networks:
+      - frontend-network
+      - backend-network
+    
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  # ================================
+  # BANCO DE DADOS (SEGURO)
+  # ================================
+  db:
+    image: postgres:15-alpine
+    
+    restart: unless-stopped
+    
+    environment:
+      - POSTGRES_DB=appdb
+      - POSTGRES_USER=appuser
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+      - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256
+    
+    security_opt:
+      - no-new-privileges:true
+    
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETUID
+      - SETGID
+      - DAC_OVERRIDE
+    
+    read_only: true
+    
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=100m
+      - /run:rw,noexec,nosuid,nodev,size=10m
+    
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    
+    user: "999:999"  # postgres user
+    
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+    
+    networks:
+      - backend-network
+    
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U appuser -d appdb"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    
+    secrets:
+      - db_password
+
+# ================================
+# REDES ISOLADAS
+# ================================
+networks:
+  frontend-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: "frontend-br"
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.1.0/24
+  
+  backend-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: "backend-br"
+    internal: true  # Sem acesso à internet
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.2.0/24
+
+# ================================
+# VOLUMES PERSISTENTES
+# ================================
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/postgres
+
+# ================================
+# SECRETS (DOCKER SWARM)
+# ================================
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+```
+
+ - Hardening completo (no-new-privileges, capabilities mínimas)
+ - Redes isoladas, healthchecks, secrets
+ - Filesystem read-only, usuários não-root
+
+#### 17.4 - D) Dockerfile de Produção (Multistage Build)
+
+```dockerfile
+# Dockerfile.production - Build multistage para Spring Boot
+# ================================
+# STAGE 1: BUILD
+# ================================
+FROM eclipse-temurin:17-jdk-alpine AS builder
+
+# Usuário para build (não-root)
+RUN addgroup -g 1001 -S builder && \
+    adduser -S builder -u 1001 -G builder
+
+USER builder
+WORKDIR /app
+
+# Copy apenas arquivos necessários para build
+COPY --chown=builder:builder pom.xml ./
+COPY --chown=builder:builder src ./src/
+
+# Build da aplicação
+RUN ./mvnw clean package -DskipTests && \
+    mv target/*.jar app.jar
+
+# ================================
+# STAGE 2: RUNTIME SEGURO
+# ================================
+FROM eclipse-temurin:17-jre-alpine AS runtime
+
+# Instalar apenas pacotes essenciais
+RUN apk add --no-cache \
+    curl \
+    tzdata && \
+    rm -rf /var/cache/apk/*
+
+# Criar usuário específico para aplicação
+RUN addgroup -g 1001 -S appgroup && \
+    adduser -S appuser -u 1001 -G appgroup
+
+# Estrutura de diretórios
+RUN mkdir -p /app/logs && \
+    mkdir -p /app/temp && \
+    chown -R appuser:appgroup /app
+
+# Copy da aplicação do stage anterior
+COPY --from=builder --chown=appuser:appgroup /app/app.jar /app/app.jar
+
+# Copy de arquivos de configuração
+COPY --chown=appuser:appgroup application-production.yml /app/
+COPY --chown=appuser:appgroup logback-spring.xml /app/
+
+USER appuser
+WORKDIR /app
+
+# Configurações JVM otimizadas e seguras
+ENV JAVA_OPTS="-Xmx512m -Xms256m \
+               -XX:+UseG1GC \
+               -XX:+UseStringDeduplication \
+               -XX:+DisableExplicitGC \
+               -Djava.security.egd=file:/dev/./urandom \
+               -Dspring.profiles.active=production \
+               -Djava.awt.headless=true"
+
+# Porta não-privilegiada
+EXPOSE 8080
+
+# Health check interno
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8080/internal/monitoring/health || exit 1
+
+# Entrypoint seguro
+ENTRYPOINT ["java"] 
+CMD ["-jar", "/app/app.jar"]
+```
+
+ - Build em estágios separados
+ - JVM otimizada, healthcheck interno
+ - Usuário específico, configurações de segurança
+
+#### 17.5 - E) Nginx (cfg)
+```nginx
+# nginx.conf (trecho para incluir no bloco 'http { ... }' ou como arquivo único)
 # ------------------------------------------------------------
 # CONTEXTO http: variáveis, maps e regras globais para mitigações
 # ------------------------------------------------------------
@@ -1408,7 +1993,11 @@ server {
 # ------------------------------------------------------------
 # FIM do arquivo
 # ------------------------------------------------------------
+```
 
- ```
-
- ###### 
+ - Proteção contra H2C smuggling (if ($http_upgrade ~* "h2c"))
+ - Rate limiting global e por endpoint
+ - Headers de segurança (HSTS, CSP, X-Frame-Options)
+ - Validação rigorosa de protocolos e upgrades
+ - Timeouts e buffers configurados
+ - WebSocket controlado apenas onde necessário
