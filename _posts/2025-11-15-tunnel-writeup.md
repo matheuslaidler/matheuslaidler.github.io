@@ -19,12 +19,12 @@ Eu fiz esse desafio em meu ambiente de trabalho com Windows 11 via WSL. Utilizei
 
 ### 1.1 Scan de portas
 
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/47dffbac-2eea-4c65-b6b7-f51d8582842b" />
+<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/47dffbac-2eea-4c65-b6b7-f51d8582842b" />
 
 ```bash
 nmap -sV 172.16.3.113
 ```
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/3f824288-3cf3-486d-b3c8-f9a9ce516e10" />
+<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/3f824288-3cf3-486d-b3c8-f9a9ce516e10" />
 
 ```bash
 rustscan -a 172.16.3.113
@@ -43,7 +43,7 @@ ffuf -c -u http://172.16.3.113:8000/FUZZ \
      -w ~/SecLists/Discovery/Web-Content/raft-large-words.txt -t 150
 ```
 
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/bcbd33eb-7cc2-4fab-8487-f15b40896f62" />
+<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/bcbd33eb-7cc2-4fab-8487-f15b40896f62" />
 
 **Descobertas importantes:**
 
@@ -52,7 +52,7 @@ ffuf -c -u http://172.16.3.113:8000/FUZZ \
 /actuator   → 403 Forbidden
 ```
 
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/c0539110-3f00-4079-82d6-18a82da77a50" />
+<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/c0539110-3f00-4079-82d6-18a82da77a50" />
 
 **Análise técnica:**
 A presença de "*Whitelabel Error Page*" e o diretório "*actuator*" indica **Spring Boot Framework**. Esta identificação nos permite usar wordlists específicas para enumerar endpoints do Spring Boot Actuator.
@@ -61,7 +61,7 @@ A presença de "*Whitelabel Error Page*" e o diretório "*actuator*" indica **Sp
 
 ### 2.1 Wordlist especializada
 
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/a953fe73-eb8f-4604-88cd-0c11afac6b24" />
+<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/a953fe73-eb8f-4604-88cd-0c11afac6b24" />
 
 ```bash
 ffuf -c -u http://172.16.3.113:8000/FUZZ \
@@ -128,7 +128,7 @@ cliente → nginx (HTTP/1.1 proxy) → backend (Spring Boot + h2c support)
    - Nginx não consegue mais inspecionar/filtrar requisições
    - Todas as regras de proxy_pass são ignoradas
 
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/1ab35a7c-a8c2-4924-a00b-7fc576e06535" />
+<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/1ab35a7c-a8c2-4924-a00b-7fc576e06535" />
 
 ### 4.4 Implicações de segurança do bypass
 
@@ -179,7 +179,7 @@ source ~/.bashrc
 
 ### 5.2 Testando vulnerabilidade
 
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/5cab71a2-5ca7-4906-8373-effa398878f3" />
+<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/5cab71a2-5ca7-4906-8373-effa398878f3" />
 
 ```bash
 h2csmuggler -x http://172.16.3.113:8000 --test
@@ -208,13 +208,13 @@ h2csmuggler -x http://172.16.3.113:8000 http://backend/actuator
 h2csmuggler -x http://172.16.3.113:8000 http://backend/actuator/env
 ```
 
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/dd25fd9f-4122-4d15-9d60-81496f98a51a" />
+<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/dd25fd9f-4122-4d15-9d60-81496f98a51a" />
 
 Se formos ao final do arquivo poderemos identificar o JSON que esperamos do /env
 
 ## 6. Informações sensíveis encontradas no /actuator/env
 
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/aba4d6c3-4061-4527-8219-5b175216c2c8" />
+<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/aba4d6c3-4061-4527-8219-5b175216c2c8" />
 
 Ao analisar o JSON retornado do `/env` (utilizando um formatter para melhor legibilidade), identificamos
 
@@ -224,7 +224,7 @@ Ao analisar o JSON retornado do `/env` (utilizando um formatter para melhor legi
 hackingclub{c71b3ebb3e25f3c8304d90***************309a3f}
 ```
 
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/c05b08ba-cc27-4adc-9fb2-f205fe80af69" />
+<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/c05b08ba-cc27-4adc-9fb2-f205fe80af69" />
 
  - Não se acostume com a flag estando visível na imagem acima, a próxima você terá que botar a mão na massa para achar!
 
@@ -248,7 +248,7 @@ Juntando o que encontramos anteriormente com esse json podemos identificar/mapea
 /admin/internal-web-socket-endpoint
 ```
 
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/6d4ff368-01bd-44a9-a930-c6800edf0530" />
+<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/6d4ff368-01bd-44a9-a930-c6800edf0530" />
 
 ### 6.2 Chrome DevTools Protocol (CDP) - Contexto técnico
 
@@ -278,13 +278,13 @@ CDP **nunca deve ser exposto publicamente** pois permite execução de código a
 
 ## 7. Explorando o modo debug do Node.js
 
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/804f407a-ad91-45d9-a59d-ebfaf4d86ed5" />
+<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/804f407a-ad91-45d9-a59d-ebfaf4d86ed5" />
 
 ### 7.1 Primeiro teste HTTP normal
 
 Utilizando o Postman, com proxy já configurada para testar, vamos selecionar não apenas a opção WebSocket como também HTTP :
 
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/ab46653e-c951-49eb-af92-f829429a53a3" />
+<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/ab46653e-c951-49eb-af92-f829429a53a3" />
 
 ```bash
 GET http://172.16.3.113:8000/admin/internal-web-socket-endpoint/
@@ -315,13 +315,13 @@ ws://172.16.3.113:8000/admin/internal-web-socket-endpoint/
 Unexpected server response: 400
 ```
 
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/d1646138-3ed5-4d08-812d-a6fa3a577c14" />
+<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/d1646138-3ed5-4d08-812d-a6fa3a577c14" />
 
 **Conclusão:** Não é o WebSocket principal, falta descobrir o caminho correto.
 
 ## 8. Descobrindo WebSocket real via DevTools API
 
-<img width="800" alt="image" src="https://opengraph.githubassets.com/c539d7ae204980d72d2ab4a76bba47985d3c60faa939bf12f27b1a09388d1fff/ChromeDevTools/devtools-protocol" />
+<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://opengraph.githubassets.com/c539d7ae204980d72d2ab4a76bba47985d3c60faa939bf12f27b1a09388d1fff/ChromeDevTools/devtools-protocol" />
 
 ### 8.1 Como funciona o Node.js Inspector
 
@@ -362,7 +362,7 @@ A URL do WebSocket debug usa a raiz + ID. Como estamos acessando via `/admin/int
 ws://172.16.3.113:8000/admin/internal-web-socket-endpoint/7efa5220-45c7-44c2-b367-d9068de778bd
 ```
 
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/d47d4b67-07eb-4888-acef-3f69381a0b8a" />
+<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/d47d4b67-07eb-4888-acef-3f69381a0b8a" />
 
 **✅ Conexão WebSocket aceita com sucesso no Postman.**
 
@@ -376,7 +376,7 @@ ws://172.16.3.113:8000/admin/internal-web-socket-endpoint/7efa5220-45c7-44c2-b36
 {}
 ```
 
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/cd232c50-857d-4829-98e9-13b4f6232048" />
+<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/cd232c50-857d-4829-98e9-13b4f6232048" />
 
 **Erros obtidos:**
 
@@ -959,7 +959,7 @@ Este cenário demonstra uma **cadeia crítica** onde múltiplas vulnerabilidades
 
 ---
 
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/31368014-08f4-4943-a1d6-521341f4c673" />
+<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/31368014-08f4-4943-a1d6-521341f4c673" />
 
 
 **Flags capturadas:**
@@ -975,7 +975,7 @@ Este cenário demonstra uma **cadeia crítica** onde múltiplas vulnerabilidades
 - Docker privilege escalation
 - Host filesystem mounting
 
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/f0667214-3a4e-4ad9-b792-0d97287fb8ca" />
+<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/f0667214-3a4e-4ad9-b792-0d97287fb8ca" />
 
 ###### Nota: Mantive apenas visivel em foto uma flag (primeira), não tenho intenção de dar cola.
 
