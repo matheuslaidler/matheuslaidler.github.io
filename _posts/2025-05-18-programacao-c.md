@@ -2,6 +2,7 @@
 title: "Programação C/C++ - Guia Completo"
 description: "Jornada completa pela programação C baseada na experiência pessoal que tive na UFRJ em 2021"
 date: 2025-05-18 12:00:00 -0300
+last_modified_at: 2025-11-18 20:00:40 -0300
 categories: [road2tech,development]
 tags: [c, programming, programacao, guia, complete-guide, gcc, unix, linux, matematica, decimal, c++]
 pin: false
@@ -1468,3 +1469,4 @@ A programação é uma jornada contínua de descoberta e aperfeiçoamento. Este 
 - Jan Lukasiewicz - Pela notação polonesa
 
 - Doug McIlroy e Ken Thompson - Pelos UNIX pipes
+
