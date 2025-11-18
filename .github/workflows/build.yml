@@ -1,11 +1,12 @@
-# Workflow para build do Jekyll com instalação manual do Ruby
+# Workflow para build e teste (apenas PRs)
 name: Build and Test
 
 on:
-  push:
-    branches: ["main"]
+  #push:
+  #  branches: ["main"]
   pull_request:
     branches: ["main"]
+  # Removido push para evitar conflito com jekyll.yml
 
 jobs:
   build:
