@@ -1,14 +1,14 @@
 ---
 title: "Programação C/C++ - Guia Completo"
 description: "Jornada completa pela programação C baseada na experiência pessoal que tive na UFRJ em 2021"
-date: 2025-11-18 12:00:00 -0300
+date: 2025-05-18 12:00:00 -0300
 categories: [road2tech,development]
 tags: [c, programming, programacao, guia, complete-guide, gcc, unix, linux, matematica, decimal, c++]
-pin: true
+pin: false
 math: true
 ---
 
-# Programação C/C++ - Guia Completo e Definitivo
+# Desbravando C: Programação de Forma Didática
 
 > Documentação completa e definitiva baseada na experiência prática de laboratório e redação na UFRJ. Do ambiente de desenvolvimento até conceitos avançados, preservando o estilo didático e explicações claras que fizeram desta jornada uma experiência única de aprendizado.
 
@@ -1466,4 +1466,5 @@ A programação é uma jornada contínua de descoberta e aperfeiçoamento. Este 
 - Professor e colegas da UFRJ - CMT1-CMT012-14733
 - Comunidade Unix/Linux - Pela cultura de ferramentas e filosofia
 - Jan Lukasiewicz - Pela notação polonesa
+
 - Doug McIlroy e Ken Thompson - Pelos UNIX pipes
