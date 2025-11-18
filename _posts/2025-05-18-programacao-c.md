@@ -143,7 +143,7 @@ Pense assim: C te ensina como a casa é construída (fundação, estrutura), C++
 
 ### Antes de Prosseguir
 
-Este guia foi criado a partir de aulas reais da UFRJ, mantendo o estilo didático único que me ajudou pode ajudar muitos estudantes. As explicações usam analogias do dia a dia porque conceitos abstratos ficam mais fáceis quando comparamos com coisas familiares. Juntei minhas anotações, programas e pesquisas da época com as explicações e anotações do meu professor. Eu mesmo vou continuar utilizando este documento para estudo.
+Este guia foi criado a partir de aulas reais da UFRJ, mantendo o estilo didático único que me ajudou e também pode ajudar muitos estudantes. As explicações usam analogias do dia a dia porque conceitos abstratos ficam mais fáceis quando comparamos com coisas familiares. Juntei minhas anotações, programas e pesquisas da época com as explicações e anotações do meu professor. Eu mesmo vou continuar utilizando este documento para estudo.
 
 Não tenha pressa. Cada seção constrói sobre a anterior. Se algo não fizer sentido, volte e releia - é completamente normal precisar de várias leituras para absorver conceitos novos.
 
@@ -1469,5 +1469,6 @@ A programação é uma jornada contínua de descoberta e aperfeiçoamento. Este 
 - Jan Lukasiewicz - Pela notação polonesa
 
 - Doug McIlroy e Ken Thompson - Pelos UNIX pipes
+
 
 
