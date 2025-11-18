@@ -150,6 +150,8 @@ O Spring Boot Actuator fornece endpoints de monitoramento e gestão que **nunca 
 
 ## 5. Exploração com h2csmuggler
 
+Documentação recomendada: [h2c Smuggling: Request Smuggling Via HTTP/2 Cleartext (h2c)](https://bishopfox.com/blog/h2c-smuggling-request)
+
 ### 5.1 Instalação e configuração
 
 ```bash
@@ -219,6 +221,8 @@ hackingclub{c71b3ebb3e25f3c8304d90***************309a3f}
 ```
 
 <img width="800" alt="image" src="https://github.com/user-attachments/assets/c05b08ba-cc27-4adc-9fb2-f205fe80af69" />
+
+ - Não se acostume com a flag estando visível na imagem acima, a próxima você terá que botar a mão na massa para achar!
 
 ### 6.1 Endpoints importantes descobertos
 
@@ -377,7 +381,7 @@ ws://172.16.3.113:8000/admin/internal-web-socket-endpoint/7efa5220-45c7-44c2-b36
 
 ### 9.2 Estrutura correta do Chrome DevTools Protocol
 
-Consultando a [documentação oficial](tunnel/https://chromedevtools.github.io/devtools-protocol/), a estrutura correta é:
+Consultando a [documentação oficial](https://chromedevtools.github.io/devtools-protocol/), a estrutura correta é:
 
 ```json
 {
@@ -396,7 +400,7 @@ Conseguimos descobrir que é necessário na estrutura o "params", assim sendo, t
 
 ### 9.3 Descobrindo parâmetros obrigatórios
 
-Consultando [Runtime.evaluate](tunnel/https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#method-evaluate):
+Consultando [Runtime.evaluate](https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#method-evaluate):
 
 **Parâmetro obrigatório:** `expression` (string)
 
