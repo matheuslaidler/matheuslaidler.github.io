@@ -13,7 +13,7 @@ comments: true
 
 ### HTTP/2 Cleartext Tunnel (h2c), Nginx Bypass, Node Inspector RCE e Docker Escape
 
-Eu fiz esse desafio em meu ambiente de trabalho com Windows 11 via WSL. Utilizei tanto o terminal do windows - com meu kali sem interface gráfica -, como também abusei do WSL2 que me permite utilizar o Kali com interface gráfica via container. Em outras palavras, tudo foi realizado dentro de um ambiente já configurado e com ferramentas complementares instaladas. Se faz necessário já ter conhecimento prévio em determinadas coisas como Linux/Bash, Redes - como protocolo HTTP -, Fuzzing, Docker, JAVA e JavaScript para resolver esta máquina.
+Eu fiz esse desafio em meu ambiente de trabalho com Windows 11 via WSL. Utilizei tanto o terminal do windows - com meu kali sem interface gráfica -, como também aproveitei o WSL2 que me permite executar o Kali Linux com interface gráfica utilizando a tecnologia de virtualização Hyper-V. Em outras palavras, tudo foi realizado dentro de um ambiente já configurado e com ferramentas complementares instaladas. Se faz necessário já ter conhecimento prévio em determinadas coisas como Linux/Bash, Redes - como protocolo HTTP -, Fuzzing, Docker, JAVA e JavaScript para resolver esta máquina.
 
 ## 1. Enumeração Inicial e Fuzzing
 
@@ -50,6 +50,7 @@ ffuf -c -u http://172.16.3.113:8000/FUZZ \
 ```text
 /error      → Whitelabel Error Page
 /actuator   → 403 Forbidden
+/actuators   → 403 Forbidden
 ```
 
 <img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/c0539110-3f00-4079-82d6-18a82da77a50" />
@@ -139,6 +140,9 @@ Isso permite acessar endpoints críticos do **Spring Boot Actuator** que estavam
 - **`/actuator/threaddump`** - Estado atual de todas as threads
 - **`/actuator/configprops`** - Propriedades de configuração da aplicação
 
+**Por que o Actuator é crítico:**
+O Spring Boot Actuator fornece endpoints de monitoramento e gestão que **nunca deveriam ser expostos publicamente**. São destinados apenas para administração interna e debugging.
+
 **Riscos críticos do /heapdump:**
 
 - Contém **toda a memória ativa** da aplicação Java
@@ -147,15 +151,13 @@ Isso permite acessar endpoints críticos do **Spring Boot Actuator** que estavam
 - Strings de conexão com banco de dados
 - Chaves criptográficas em memória
 
-**Por que o Actuator é crítico:**
-O Spring Boot Actuator fornece endpoints de monitoramento e gestão que **nunca deveriam ser expostos publicamente**. São destinados apenas para administração interna e debugging.
-
 ### Entendendo o Spring Boot Actuator
 
 **O que é o Spring Boot Actuator?**
 É um módulo que adiciona funcionalidades de produção-ready para aplicações Spring Boot, incluindo métricas, health checks, e informações sobre a aplicação.
 
 **Endpoints críticos comuns:**
+
 - `/actuator/health` - Status de saúde da aplicação
 - `/actuator/info` - Informações da aplicação
 - `/actuator/metrics` - Métricas de performance
@@ -168,6 +170,7 @@ O Spring Boot Actuator fornece endpoints de monitoramento e gestão que **nunca 
 - `/actuator/loggers` - Configuração de logs
 
 **Por que é perigoso expor publicamente:**
+
 1. **Vazamento de informações sensíveis**
 2. **Credenciais em variáveis de ambiente**
 3. **Detalhes da arquitetura interna**
@@ -286,9 +289,27 @@ Juntando o que encontramos anteriormente com esse json podemos identificar/mapea
 
 <img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/6d4ff368-01bd-44a9-a930-c6800edf0530" />
 
-### 6.2 Chrome DevTools Protocol (CDP) - Contexto técnico
+### 6.2 WebSocket - Conceito básico
 
-O endpoint descoberto expõe o **Chrome DevTools Protocol**, um protocolo de debugging baseado em WebSocket usado por:
+**WebSocket** é um protocolo de comunicação que estabelece uma conexão **bidirecional** e **persistente** entre cliente e servidor sobre uma única conexão TCP. Diferente do HTTP tradicional (request/response), o WebSocket permite que ambas as partes enviem dados a qualquer momento após o handshake inicial (processo de "aperto de mão" onde cliente e servidor negociam e estabelecem a conexão WebSocket).
+
+**Características principais:**
+
+- **Conexão persistente:** Uma vez estabelecida, permanece aberta
+- **Baixa latência:** Não há overhead de headers HTTP em cada mensagem  
+- **Bidirecional:** Cliente e servidor podem enviar dados simultaneamente
+- **Protocolo:** Inicia com HTTP upgrade, depois muda para `ws://` ou `wss://`
+
+**Casos de uso comuns:**
+
+- Chat em tempo real
+- Jogos online
+- Streaming de dados
+- **Debugging remoto** ← Nosso caso específico
+
+### 6.3 Chrome DevTools Protocol (CDP) - Contexto técnico
+
+O endpoint descoberto expõe o **Chrome DevTools Protocol** (CDP), um protocolo de debugging baseado em WebSocket usado por:
 
 - Chrome DevTools
 - Node.js Inspector  
@@ -335,7 +356,7 @@ WebSocket request was expected
 **Análise:**
 
 ✅ Endpoint válido  
-❌ HTTP não aceito — requer WebSocket
+❌ Requer WebSocket (HTTP não aceito)
 
 ### 7.2 Tentando conexão WebSocket
 
@@ -432,7 +453,7 @@ Consultando a [documentação oficial](https://chromedevtools.github.io/devtools
 }
 ```
 
-Conseguimos descobrir que é necessário na estrutura o "params", assim sendo, teremos que identificar não apenas um método como algum parâmetro para o mesmo, então devemos voltar para a documentação oficial, pesquisar e identificá-los.
+Detectamos "parâmetros" na estrutura, assim sendo, teremos que identificar não apenas métodos quaisquer, mas algum que tenha como parâmetro alguma função de execução para injetarmos algum código malicioso, então devemos voltar para a documentação oficial, pesquisar e identificá-los.
 
 **Método aparentemente crítico para RCE identificado:**
 **`Runtime.evaluate`** indica permitir execução de JavaScript arbitrário.
@@ -441,7 +462,19 @@ Conseguimos descobrir que é necessário na estrutura o "params", assim sendo, t
 
 Consultando [Runtime.evaluate](https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#method-evaluate):
 
+**Sobre o método `Runtime.evaluate`:**
+
+- Permite **executar código JavaScript arbitrário** no contexto do runtime alvo
+- Funciona como um "eval()" remoto através do Chrome DevTools Protocol
+- Extremamente poderoso: pode acessar APIs do Node.js, sistema de arquivos, rede, etc.
+- Originalmente criado para debugging, mas pode ser abusado para **Remote Code Execution (RCE)**
+
 **Parâmetro obrigatório:** `expression` (string)
+
+- Contém o **código JavaScript** que será executado
+- Pode ser desde expressões matemáticas simples (`2+4`) até scripts complexos
+- No contexto Node.js, permite acesso a módulos como `fs`, `child_process`, etc.
+
 
 ### 9.4 Testando execução de código
 
