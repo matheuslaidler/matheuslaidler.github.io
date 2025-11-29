@@ -3,7 +3,7 @@ title: Git Exposed - Fundamentos e Exploração
 description: 'Explorando vulnerabilidade Git Exposed, desde conceitos fundamentais até práticos via hacking club'
 author: matheus
 tags: ["hackingclub", "WriteUps", "git", "information disclosure", "source code analysis"]
-categories: ["SecLab", "Hacking"]
+categories: ["SecLab", "Hacking", "Way of Security"]
 pin: false
 comments: true
 
