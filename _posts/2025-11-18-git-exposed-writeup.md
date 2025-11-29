@@ -184,7 +184,7 @@ O próprio nmap já achou o **.git/ exposto** e a mensagem *"Removendo flag"* **
 
 **Já deu pra sacar:**
 
-O script do nmap já me entregou a vulnerabilidade de bandeja e já me falou onde encontrar a flag. Ou seja, se tem um repositório Git exposto e a mensagem do último commit é "Removendo flag", sabemos que ela já teve no código e alguém tentou "escondê-la". Só que esqueceram que Git guarda histórico de tudo, o que não seria necessariamente se não tivessem colocado o .git no servidor de produção...
+O script do nmap já me entregou a vulnerabilidade de bandeja e já me falou onde encontrar a flag. Ou seja, se tem um repositório Git exposto e a mensagem do último commit é "Removendo flag", sabemos que ela já teve no código e alguém tentou "escondê-la". Só que esqueceram que Git guarda histórico de tudo, o que não seria necessariamente um problema se não tivessem colocado o .git no servidor de produção, né...
 
 ## 4. Explorando o Git Exposed
 
@@ -473,13 +473,13 @@ CS{G1t_3Xp0s3d_4tt4ck}
 
 **Classic mistake:**
 
-O desenvolvedor só trocou a flag no echo por `[REDACTED]`, mas deixou a condicional com `Sup3rAdminT0k3n` (que nem é uma flag válida). Esqueceu que Git é tipo elefante - nunca esquece de nada. Todo mundo que baixar o repositório vai conseguir ver exatamente o que foi mudado no echo.
+O desenvolvedor só trocou a flag no echo por `[REDACTED]`, mas deixou a condicional com `Sup3rAdminT0k3n` (que nem é uma flag válida). Esqueceu que Git é tipo portal da transparência do governo - fica tudo registrado. Todo mundo que baixar o repositório vai conseguir ver exatamente o que foi mudado no echo.
 
 ## 8. Verificando a solução
 
 ### 8.1 Testando a flag
 
-Agora que temos a flag, vamos verificar que o token `Sup3rAdminT0k3n` não vai funcionar atualmente já não tem mais uma flag, mas ao capturarmos a flag do commit podemos testar na resposta da máquina. A flag pode ser falso positivo, visto que não segue os padrões das flags do hackingclub.
+Agora que temos a suposta flag, vamos verificá-la. Saber o token `Sup3rAdminT0k3n` não vai funcionar para termos certeza da flag, mas como capturamos a flag do commit podemos já testar como resposta. Até então o pensamento era de que deu certo, mas também pode ser um falso positivo, visto que não segue os padrões das flags do hackingclub.
 
 Aplicação depois e antes do último commit:
 
@@ -493,17 +493,16 @@ curl "http://10.10.0.14/?token=Sup3rAdminT0k3n"
 # Resultado: "Get the flag: CS{G1t_3Xp0s3d_4tt4ck}" 
 ```
 
-```text
-Testando na máquina hackingclub:
+**Testando na máquina do hackingclub:**
 
-Flag formato CS{***}, diferente do padrão hackingclub{****};
-Porém, realmente FUNCIONOU ✅
+ - Flag com formato diferente `CS{**}` do padrão `hackingclub{****}`;
 
-Essa máquina era da CrowSec (responsáveis pelo hackingclub) e por isso a flag tem formato diferente com CS
-```
+ - **Resultado**> Realmente FUNCIONOU!! ✅
+
+    **Motivo aparente**: Essa máquina era de treinamento da **CrowSec** (responsável pelo hackingclub) e por isso a flag tem formato diferente usando CS.
 
 **Resultado:**
-A flag `CS{G1t_3Xp0s3d_4tt4ck}` que foi encontrada no histórico de commit no Git não era falso positivo, era real. O padrão da flag era diferente por se tratar da antiga plataforma de treinamentos da CrowSec HackingClub.
+A flag `CS{G1t_3Xp0s3d_4tt4ck}` - que foi encontrada no histórico de commit no Git - **NÃO** era falso positivo, era real. O padrão da flag somente era diferente mesmo por se tratar da antiga plataforma.
 
 ✅ **Máquina resolvida! Easy peasy.**
 
@@ -690,7 +689,7 @@ git gc --prune=now --aggressive
 3. git-dumper baixou tudo
 4. `git show` revelou a flag no histórico
 
-**Lição:** Git nunca esquece de nada. Se commitou, tá lá pra sempre (a não ser que force uma limpeza). É quase como se fosse o portal da transparência, fica tudo lá e se deixar exposto vai dar ruim.
+**Lição:** Git nunca esquece de nada. Se commitou, tá lá pra sempre, a não ser que force uma limpeza.
 
 **Moralzinha:**
 
