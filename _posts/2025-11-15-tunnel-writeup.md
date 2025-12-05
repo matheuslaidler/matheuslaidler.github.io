@@ -1269,3 +1269,9 @@ Mas como todas estavam presentes, criaram um caminho direto para comprometimento
 <img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/f0667214-3a4e-4ad9-b792-0d97287fb8ca" />
 
 **Nota: Mantive apenas visivel em foto uma flag (primeira) para te fazer praticar. Em vídeo temos resolução do exercício com as flags, mas ainda é preferível que faça você mesmo, nunca esquecer. Assistir é algo passivo, em hacking só aprendemos mesmo quanto somos ativo.**
+
+#### Áudio Visual: Resolução gravada em vídeo
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Ew0WCkQvJl4?si=5pymaXYW5QR_xNGo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+ - Problema com o vídeo? então clique [aqui](https://youtu.be/Ew0WCkQvJl4) para ver diretamente do youtube.
