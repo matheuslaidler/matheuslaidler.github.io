@@ -60,3 +60,98 @@ Usar video no seu post?
     display: inline-flex;
 }
 }
+
+/* ===== ENHANCED VISUAL EFFECTS (Safe CSS Additions) ===== */
+
+/* Avatar glow on hover */
+#avatar {
+    transition: box-shadow 0.3s ease;
+}
+
+#avatar:hover {
+    box-shadow: 0 0 20px rgba(115, 255, 232, 0.4);
+}
+
+/* Nav links with cyan color on hover */
+#sidebar ul li a {
+    color: inherit;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+#sidebar ul li a:hover {
+    color: #73ffe8;
+    text-shadow: 0 0 8px rgba(115, 255, 232, 0.3);
+}
+
+/* Active nav link styling */
+#sidebar ul li.active > a {
+    color: #73ffe8;
+    border-left: 3px solid #73ffe8;
+    padding-left: 12px;
+}
+
+/* Search icon hover */
+#search-trigger {
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+#search-trigger:hover {
+    color: #73ffe8;
+    text-shadow: 0 0 10px rgba(115, 255, 232, 0.3);
+}
+
+/* Code blocks with subtle glow */
+pre {
+    border: 1px solid rgba(115, 255, 232, 0.2);
+    border-radius: 0.5rem;
+    transition: box-shadow 0.3s ease;
+}
+
+pre:hover {
+    box-shadow: 0 0 15px rgba(115, 255, 232, 0.15);
+}
+
+/* Headings with subtle color accent */
+h1, h2, h3, h4, h5, h6 {
+    transition: color 0.3s ease;
+}
+
+h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
+    color: #73ffe8;
+}
+
+/* Blockquotes with left border accent */
+blockquote {
+    border-left: 4px solid #73ffe8;
+    padding-left: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+blockquote:hover {
+    background-color: rgba(115, 255, 232, 0.05);
+}
+
+/* Links color enhancement */
+a {
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #73ffe8;
+}
+
+/* Button effects */
+.btn:hover {
+    color: #73ffe8;
+    transition: all 0.3s ease;
+}
+
+/* Topbar button styling */
+#topbar .btn-link {
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+#topbar .btn-link:hover {
+    color: #73ffe8;
+    text-shadow: 0 0 8px rgba(115, 255, 232, 0.2);
+}
