@@ -1,8 +1,8 @@
 /*custom css para coisas pessoais: matheus laidler*/
 
-/* ===== REMOVER ICON-BORDER DO BOTÃO DE TEMA ===== */
+/* ===== REMOVER ICON-BORDER DE TODOS OS BOTÕES ===== */
 
-.mode-toggle .icon-border {
+.icon-border {
   display: none !important;
 }
 
@@ -176,7 +176,6 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   position: relative;
   z-index: 50;
-  overflow-x: hidden;
 }
 
 #topbar {
@@ -283,12 +282,12 @@ tbody tr:hover {
   background-color: rgba(115, 255, 232, 0.1);
 }
 
-/* ===== PAGE BACKGROUND - COM GRADIENTE ===== */
-
+/* ===== PAGE BACKGROUND - CONTROLADO PELO JEKYLL ===== */
+/* Background já está definido corretamente no _sass/colors/typography-dark.scss 
 body {
-  background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%) !important;
+  background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
   background-attachment: fixed !important;
-}
+}*/
 
 /* ===== POST CARDS - COM TEMA ESCURO ===== */
 
@@ -559,23 +558,24 @@ body.sidebar-show #sidebar-trigger i {
 /* ===== DISQUS COMMENTS - DARK MODE STYLING ===== */
 
 html[data-mode='dark'] #disqus_thread {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 html[data-mode='dark'] .disqus-wrapper {
   background: transparent;
 }
 
-html[data-mode='dark'] iframe {
-  color-scheme: dark;
-  background: #0f1419;
+html[data-mode='dark'] .disqus-wrapper iframe {
+  color-scheme: dark !important;
 }
 
-html[data-mode='dark'] a {
-  color: #73ffe8;
+html[data-mode='dark'] #disqus_thread a,
+html[data-mode='dark'] #disqus_thread a:visited {
+  color: #73ffe8 !important;
 }
 
-html[data-mode='dark'] a:visited {
-  color: rgba(115, 255, 232, 0.7);
+/* Force text color white for Disqus content */
+html[data-mode='dark'] .post-comment {
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
