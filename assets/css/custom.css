@@ -150,6 +150,9 @@ html[data-mode='dark'] body {
 
 .sidebar-bottom {
   gap: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .sidebar-bottom .mode-toggle,
@@ -161,6 +164,12 @@ html[data-mode='dark'] body {
   border: 1px solid rgba(115, 255, 232, 0.3);
   color: rgba(115, 255, 232, 0.8);
   box-shadow: 0 0 10px rgba(115, 255, 232, 0.1);
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
 }
 
 .sidebar-bottom .mode-toggle:hover,
@@ -175,16 +184,19 @@ html[data-mode='dark'] body {
   transform: scale(1.05);
 }
 
-/* ===== TOPBAR - COM PADDING INTERNO ===== */
+/* ===== TOPBAR - FULL WIDTH COMO FOOTER ===== */
 
 #topbar-wrapper {
   border-bottom: 2px solid rgba(115, 255, 232, 0.3);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   position: relative;
   z-index: 50;
-  width: 100%;
-  max-width: 100%;
-  overflow: hidden;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+  padding: 0 max(1rem, calc((100vw - 100%) / 2));
 }
 
 #topbar {
@@ -291,8 +303,12 @@ tbody tr:hover {
   background-color: rgba(115, 255, 232, 0.1);
 }
 
-/* ===== PAGE BACKGROUND - CONTROLADO PELO JEKYLL ===== */
-/* Background já está definido corretamente no _sass/colors/typography-dark.scss 
+/* ===== PAGE BACKGROUND - GRADIENTE EM DARK MODE ===== */
+
+html[data-mode='dark'] body {
+  background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%) !important;
+  background-attachment: fixed;
+}
 body {
   background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
   background-attachment: fixed !important;
