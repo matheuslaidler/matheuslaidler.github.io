@@ -17,6 +17,8 @@ Usar video no seu post?
     height: 50vh;
 	border-bottom: 0.35vh solid #73ffe8;
     border-top: 0.35vh solid #73ffe8;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 20px rgba(115, 255, 232, 0.2);
 }
 /*mobile-sidebar-profile*/
 .profile-wrapper {
@@ -34,11 +36,51 @@ Usar video no seu post?
     I've decided to add the SwitchTheme Button on my personal menu just when on Mobile*/
 }
 
+/* ===== RESPONSIVE IMPROVEMENTS ===== */
+
+/* Desktop optimizations */
+@media (min-width: 1200px) {
+    #sidebar {
+        width: 280px;
+    }
+
+    .profile-wrapper {
+        padding: 2.5rem !important;
+        text-align: center;
+    }
+
+    #avatar {
+        margin-top: -1rem !important;
+    }
+}
+
+/* Tablet/Medium screens */
+@media (min-width: 768px) and (max-width: 1199px) {
+    #sidebar {
+        width: 240px;
+    }
+
+    .site-title {
+        font-size: 1.3rem !important;
+    }
+
+    .site-subtitle {
+        font-size: 0.8rem !important;
+    }
+
+    .videoPost {
+        width: 90%;
+        height: auto;
+        aspect-ratio: 16/9;
+    }
+}
+
 /*arrumando video para mobiles e tablets*/
 @media screen and (max-width: 980px) {
     .videoPost {
-        width: 40vh;
-        height: 23.5vh;
+        width: 90%;
+        height: auto;
+        aspect-ratio: 16/9;
 	    border-bottom: 0.35vh solid #73ffe8;
         border-top: 0.35vh solid #73ffe8;
     }
@@ -54,4 +96,124 @@ Usar video no seu post?
     margin-left: 22.25vh;
     display: inline-flex;
 }
+
+    /* Mobile sidebar improvements */
+    #sidebar {
+        position: fixed;
+        left: -100%;
+        transition: left 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        width: 100%;
+        max-width: 280px;
+        z-index: 99;
+    }
+
+    #sidebar.active {
+        left: 0;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .sidebar-toggle-btn {
+        display: block !important;
+    }
+
+    .sidebar-toggle-btn.sidebar-open i {
+        transform: rotate(180deg);
+    }
+
+    #topbar {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    #breadcrumb {
+        max-width: 50%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    pre {
+        margin-left: -1rem;
+        margin-right: -1rem;
+        border-radius: 0;
+    }
+
+    code {
+        word-break: break-all;
+    }
 }
+
+/* Small mobile phones */
+@media (max-width: 480px) {
+    .site-title {
+        font-size: 1.1rem !important;
+        margin-top: 0.75rem !important;
+    }
+
+    .site-subtitle {
+        font-size: 0.7rem !important;
+    }
+
+    #topbar-title {
+        font-size: 0.9rem !important;
+        letter-spacing: 0.3px;
+    }
+
+    #breadcrumb {
+        font-size: 0.75rem;
+        max-width: 40%;
+    }
+
+    .videoPost {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    h1 {
+        font-size: 1.5rem !important;
+    }
+
+    h2 {
+        font-size: 1.2rem !important;
+    }
+
+    h3 {
+        font-size: 1rem !important;
+    }
+
+    table {
+        font-size: 0.75rem;
+    }
+
+    pre {
+        font-size: 0.75rem;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 360px) {
+    #avatar {
+        width: 5rem !important;
+        height: 5rem !important;
+    }
+
+    .site-title {
+        font-size: 1rem !important;
+    }
+
+    .site-subtitle {
+        font-size: 0.65rem !important;
+    }
+
+    h1 {
+        font-size: 1.3rem !important;
+    }
+
+    h2 {
+        font-size: 1rem !important;
+    }
+
+    pre::after {
+        font-size: 0.5rem !important;
+    }
+}
+

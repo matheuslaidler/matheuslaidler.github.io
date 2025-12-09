@@ -1,0 +1,228 @@
+/* ===== TOPBAR CUSTOM THEME - TECH CYAN ===== */
+
+#topbar-wrapper {
+  background: linear-gradient(to bottom, #0f1419, #141420);
+  border-bottom: 2px solid rgba(115, 255, 232, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+#topbar {
+  #breadcrumb {
+    color: rgba(115, 255, 232, 0.6);
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+
+    a {
+      color: rgba(115, 255, 232, 0.8);
+      transition: all 0.3s ease;
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #73ffe8, #00ff88);
+        transition: width 0.3s ease;
+      }
+
+      &:hover {
+        color: #73ffe8;
+
+        &::after {
+          width: 100%;
+        }
+      }
+    }
+
+    span {
+      &:not(:last-child) {
+        &::after {
+          color: rgba(115, 255, 232, 0.4);
+        }
+      }
+    }
+  }
+
+  #topbar-title {
+    color: rgba(115, 255, 232, 0.9);
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  button {
+    i {
+      color: rgba(115, 255, 232, 0.7);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      font-size: 1.1rem;
+    }
+
+    &:hover i,
+    &:focus i {
+      color: #73ffe8;
+      text-shadow: 0 0 10px rgba(115, 255, 232, 0.5);
+      transform: scale(1.15);
+    }
+  }
+}
+
+/* Sidebar Toggle Button - Chevron */
+.sidebar-toggle-btn {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(115, 255, 232, 0.2), transparent);
+    transition: left 0.4s ease;
+  }
+
+  &:hover::before {
+    left: 100%;
+  }
+
+  i {
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  &:hover i {
+    transform: translateX(-3px) scale(1.2);
+  }
+
+  /* Close chevron (sidebar open) */
+  &.sidebar-open i::before {
+    content: '\f053'; /* chevron-left */
+  }
+}
+
+/* Search inputs with tech styling */
+search {
+  background: linear-gradient(135deg, 
+    rgba(115, 255, 232, 0.05),
+    rgba(0, 255, 136, 0.02));
+  border: 1px solid rgba(115, 255, 232, 0.2);
+  border-radius: 0.5rem;
+  padding: 0.3rem 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(115, 255, 232, 0.1);
+
+  &:focus-within {
+    border-color: rgba(115, 255, 232, 0.5);
+    box-shadow: 0 0 20px rgba(115, 255, 232, 0.3),
+                inset 0 0 10px rgba(115, 255, 232, 0.05);
+    background: linear-gradient(135deg, 
+      rgba(115, 255, 232, 0.1),
+      rgba(0, 255, 136, 0.05));
+  }
+
+  i {
+    color: rgba(115, 255, 232, 0.5);
+    transition: color 0.3s ease;
+  }
+
+  &:focus-within i {
+    color: #73ffe8;
+    text-shadow: 0 0 10px rgba(115, 255, 232, 0.5);
+  }
+}
+
+#search-input {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.9);
+  border: 0;
+  transition: all 0.3s ease;
+
+  &::placeholder {
+    color: rgba(115, 255, 232, 0.4);
+  }
+
+  &:focus {
+    color: rgba(255, 255, 255, 1);
+
+    &::placeholder {
+      color: rgba(115, 255, 232, 0.6);
+    }
+  }
+}
+
+#search-cancel {
+  color: rgba(115, 255, 232, 0.7);
+  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 0.9rem;
+
+  &:hover {
+    color: #73ffe8;
+    text-shadow: 0 0 10px rgba(115, 255, 232, 0.5);
+  }
+}
+
+#search-trigger {
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: rotate(20deg);
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  #topbar {
+    padding: 0.5rem 1rem;
+
+    #breadcrumb {
+      font-size: 0.8rem;
+      max-width: 40%;
+    }
+
+    #topbar-title {
+      font-size: 0.9rem;
+    }
+
+    button i {
+      font-size: 1rem;
+    }
+  }
+
+  search {
+    margin-left: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  #topbar {
+    #search-trigger {
+      margin: 0;
+    }
+
+    search {
+      display: none;
+
+      &.show-mobile {
+        display: flex;
+      }
+    }
+  }
+}
+
+/* Ensure chevron icon rotates when sidebar is open */
+@media (max-width: 1200px) {
+  .sidebar-toggle-btn {
+    i {
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                  color 0.3s ease;
+    }
+
+    &.sidebar-open i {
+      transform: rotate(180deg) scale(1.2);
+    }
+  }
+}
