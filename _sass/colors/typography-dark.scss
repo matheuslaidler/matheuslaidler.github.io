@@ -4,7 +4,7 @@
 
 @mixin dark-scheme {
   /* Framework color */
-  --main-bg: rgb(27, 27, 30);
+  --main-bg: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
   --mask-bg: rgb(68, 69, 70);
   --main-border-color: rgb(44, 45, 45);
 
@@ -37,7 +37,7 @@
   /* Sidebar */
   --site-title-color: #717070;
   --site-subtitle-color: #868686;
-  --sidebar-bg: #1e1e1e;
+  --sidebar-bg: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
   --sidebar-border-color: #292929;
   --sidebar-muted-color: #868686;
   --sidebar-active-color: rgb(255, 255, 255, 0.95);
@@ -47,7 +47,7 @@
   --avatar-border-color: rgb(206, 206, 206, 0.9);
 
   /* Topbar */
-  --topbar-bg: rgb(27, 27, 30, 0.64);
+  --topbar-bg: linear-gradient(to bottom, #0f1419, #1a1f2e);
   --topbar-text-color: var(--text-color);
   --search-border-color: rgb(55, 55, 55);
   --search-icon-color: rgb(100, 102, 105);
@@ -67,7 +67,7 @@
   --footnote-target-bg: rgb(63, 81, 181); /*rgb(63, 81, 181)*/
   --btn-share-color: #6c757d;
   --btn-share-hover-color: #73ffe8;
-  --card-bg: #1e1e1e;
+  --card-bg: linear-gradient(135deg, #0f0f15 0%, #161b27 100%);
   --card-hovor-bg: #464d51;
   --card-shadow: rgb(21, 21, 21, 0.72) 0 6px 18px 0,
     rgb(137, 135, 135, 0.24) 0 0 0 1px;

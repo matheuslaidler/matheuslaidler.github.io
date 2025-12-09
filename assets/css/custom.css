@@ -1,6 +1,12 @@
 /*custom css para coisas pessoais: matheus laidler*/
 
-/* ===== TEMA TECH CYAN - VARI¡VEIS ===== */
+/* ===== REMOVER ICON-BORDER DO BOT√ÉO DE TEMA ===== */
+
+.mode-toggle .icon-border {
+  display: none !important;
+}
+
+/* ===== TEMA TECH CYAN - VARI√ÅVEIS ===== */
 
 :root {
   --primary-cyan: #73ffe8;
@@ -134,7 +140,7 @@
   opacity: 1;
 }
 
-/* ===== SIDEBAR BOTTOM - BOT’ES/LINKS ===== */
+/* ===== SIDEBAR BOTTOM - BOTÔøΩES/LINKS ===== */
 
 .sidebar-bottom {
   gap: 0.5rem;
@@ -166,18 +172,11 @@
 /* ===== TOPBAR - COM PADDING INTERNO ===== */
 
 #topbar-wrapper {
-  background: linear-gradient(to bottom, #0f1419, #1a1f2e) !important;
   border-bottom: 2px solid rgba(115, 255, 232, 0.3);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   position: relative;
-  z-index: 100;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
-  width: 100vw;
-  padding-left: max(1rem, calc((100vw - 100%) / 2));
-  padding-right: max(1rem, calc((100vw - 100%) / 2));
+  z-index: 50;
+  overflow-x: hidden;
 }
 
 #topbar {
