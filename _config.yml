@@ -16,7 +16,7 @@ timezone: America/Sao_Paulo
 
 title: Acervo de TI # the main title
 
-tagline: Compartilharmento de estudos com finalidades acadêmica e não lucrativa. # it will display as the sub-title
+tagline: Compartilhamento de estudos em tecnologia # it will display as the sub-title
 
 description: >- # used by seo meta and the atom feed
   Projeto de Divulgação Científica da Computação.

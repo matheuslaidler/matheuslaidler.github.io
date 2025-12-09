@@ -17,6 +17,11 @@ Usar video no seu post?
     height: 50vh;
 	border-bottom: 0.35vh solid #73ffe8;
     border-top: 0.35vh solid #73ffe8;
+    transition: box-shadow 0.3s ease;
+}
+
+.videoPost:hover {
+    box-shadow: 0 0 15px rgba(115, 255, 232, 0.3);
 }
 /*mobile-sidebar-profile*/
 .profile-wrapper {
