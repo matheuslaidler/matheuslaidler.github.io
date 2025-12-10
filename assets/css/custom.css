@@ -646,19 +646,6 @@ body.sidebar-show #sidebar-trigger i {
   }
 }
 
-/* ===== DISQUS COMMENTS - DARK MODE ===== */
-/* Forçar Disqus a reconhecer como dark mode sem mostrar background sólido */
-
-html[data-mode='dark'] #disqus_thread {
-  background-image: none !important;
-  background-color: #0f1419 !important;
-  background: #0f1419 !important;
-}
-
-html[data-mode='dark'] #disqus_thread iframe {
-  background-color: transparent !important;
-}
-
 /* ===== SCROLLBARS PERSONALIZADAS - TECH THEME ===== */
 
 /* Firefox scrollbar */
