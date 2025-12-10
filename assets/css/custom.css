@@ -190,18 +190,69 @@ html[data-mode='light'] body {
   transform: scale(1.05);
 }
 
-/* ===== TOPBAR - SEMPRE COM TEMA ESCURO, SEM FUNDO VISÍVEL ===== */
+/* ===== TOPBAR - CYAN EM DARK MODE, ESCURO EM LIGHT MODE ===== */
 
-/*#topbar-wrapper {
+#topbar-wrapper {
+  overflow-x: hidden;
+}
+
+html[data-mode='dark'] #topbar-wrapper {
   border-bottom: 2px solid rgba(115, 255, 232, 0.3);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  overflow-x: hidden;
-}*/
+}
 
 #topbar {
   padding: 0.5rem 1rem;
 }
 
+/* Light mode: cores escuras para topbar */
+html[data-mode='light'] #topbar #breadcrumb {
+  color: #666666;
+}
+
+html[data-mode='light'] #topbar #breadcrumb a {
+  color: #333333;
+  transition: all 0.3s ease;
+}
+
+html[data-mode='light'] #topbar #breadcrumb a:hover {
+  color: #009db2;
+}
+
+html[data-mode='light'] #topbar #topbar-title {
+  color: #333333;
+}
+
+html[data-mode='light'] #topbar button i {
+  color: #666666;
+  transition: all 0.3s ease;
+}
+
+html[data-mode='light'] #topbar button:hover i,
+html[data-mode='light'] #topbar button:focus i {
+  color: #009db2;
+  text-shadow: none;
+  transform: scale(1.15);
+}
+
+html[data-mode='light'] #topbar search {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+
+html[data-mode='light'] #topbar search input {
+  background: transparent;
+  border: none;
+  color: #333333;
+}
+
+html[data-mode='light'] #topbar search input::placeholder {
+  color: #999999;
+}
+
+/* Dark mode: cores cyan para topbar */
 #topbar #breadcrumb {
   color: rgba(115, 255, 232, 0.6);
 }
@@ -602,6 +653,10 @@ html[data-mode='dark'] #disqus_thread {
 
 html[data-mode='dark'] #disqus_thread * {
   color: rgba(255, 255, 255, 0.85) !important;
+}
+
+html[data-mode='dark'] #layout {
+  color: white !important;
 }
 
 html[data-mode='dark'] .disqus-wrapper {
