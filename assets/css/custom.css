@@ -194,14 +194,6 @@ html[data-mode='light'] body {
 #topbar-wrapper {
   border-bottom: 2px solid rgba(115, 255, 232, 0.3);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  position: relative;
-  z-index: 50;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
-  width: 100vw;
-  padding: 0 max(1rem, calc((100vw - 100%) / 2));
   overflow-x: hidden;
 }
 
@@ -607,6 +599,10 @@ html[data-mode='dark'] #disqus_thread {
   color: rgba(255, 255, 255, 0.9) !important;
 }
 
+html[data-mode='dark'] #disqus_thread * {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
 html[data-mode='dark'] .disqus-wrapper {
   background: transparent;
 }
@@ -623,6 +619,15 @@ html[data-mode='dark'] #disqus_thread a:visited {
 /* Force text color white for Disqus content */
 html[data-mode='dark'] .post-comment {
   color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Override Disqus iframe text color */
+html[data-mode='dark'] #disqus_thread .comment {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+html[data-mode='dark'] #disqus_thread .posts-container .comment {
+  color: rgba(255, 255, 255, 0.85) !important;
 }
 
 /* ===== SCROLLBARS PERSONALIZADAS - TECH THEME ===== */
