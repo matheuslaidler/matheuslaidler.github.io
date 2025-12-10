@@ -174,7 +174,7 @@ html[data-mode='light'] body {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  z-index: 101;
+  /*z-index: 101;*/
 }
 
 .sidebar-bottom .mode-toggle:hover,
@@ -293,6 +293,7 @@ html[data-mode='light'] #topbar search input::placeholder {
   background: transparent;
   border: none;
   color: rgba(115, 255, 232, 0.9);
+  height: 0.9rem;
 }
 
 #topbar search input::placeholder {
@@ -649,14 +650,11 @@ body.sidebar-show #sidebar-trigger i {
 
 html[data-mode='dark'] #disqus_thread {
   color: rgba(255, 255, 255, 0.9) !important;
+  filter: brightness(1.2);
 }
 
 html[data-mode='dark'] #disqus_thread * {
   color: rgba(255, 255, 255, 0.85) !important;
-}
-
-html[data-mode='dark'] #layout {
-  color: white !important;
 }
 
 html[data-mode='dark'] .disqus-wrapper {
@@ -665,6 +663,7 @@ html[data-mode='dark'] .disqus-wrapper {
 
 html[data-mode='dark'] .disqus-wrapper iframe {
   color-scheme: dark !important;
+  filter: brightness(1.1);
 }
 
 html[data-mode='dark'] #disqus_thread a,
@@ -683,6 +682,24 @@ html[data-mode='dark'] #disqus_thread .comment {
 }
 
 html[data-mode='dark'] #disqus_thread .posts-container .comment {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Force Disqus body text to white in dark mode */
+html[data-mode='dark'] #disqus_thread body {
+  color: white !important;
+}
+
+/* Target specific text nodes and spans */
+html[data-mode='dark'] #disqus_thread span,
+html[data-mode='dark'] #disqus_thread div,
+html[data-mode='dark'] #disqus_thread p {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Override the specific #2a2e2e color */
+html[data-mode='dark'] #disqus_thread [style*="color: #2a2e2e"],
+html[data-mode='dark'] #disqus_thread [style*="color:#2a2e2e"] {
   color: rgba(255, 255, 255, 0.85) !important;
 }
 
