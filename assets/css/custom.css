@@ -650,10 +650,39 @@ body.sidebar-show #sidebar-trigger i {
 
 html[data-mode='dark'] #disqus_thread {
   color: rgba(255, 255, 255, 0.9) !important;
-  filter: brightness(1.2);
+  filter: brightness(1.15);
 }
 
 html[data-mode='dark'] #disqus_thread * {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Force all text in Disqus to be white/light */
+html[data-mode='dark'] #disqus_thread,
+html[data-mode='dark'] #disqus_thread body,
+html[data-mode='dark'] #disqus_thread div,
+html[data-mode='dark'] #disqus_thread span,
+html[data-mode='dark'] #disqus_thread p {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Force all links in Disqus to be cyan */
+html[data-mode='dark'] #disqus_thread a,
+html[data-mode='dark'] #disqus_thread a *,
+html[data-mode='dark'] #disqus_thread a:visited,
+html[data-mode='dark'] #disqus_thread a:hover {
+  color: #73ffe8 !important;
+  text-decoration: underline;
+}
+
+/* Force specific Disqus comment text */
+html[data-mode='dark'] #disqus_thread .dsq-comment-text,
+html[data-mode='dark'] #disqus_thread .dsq-comment-text * {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Override inline styles for text */
+html[data-mode='dark'] #disqus_thread [style*="color"] {
   color: rgba(255, 255, 255, 0.85) !important;
 }
 
@@ -663,12 +692,7 @@ html[data-mode='dark'] .disqus-wrapper {
 
 html[data-mode='dark'] .disqus-wrapper iframe {
   color-scheme: dark !important;
-  filter: brightness(1.1);
-}
-
-html[data-mode='dark'] #disqus_thread a,
-html[data-mode='dark'] #disqus_thread a:visited {
-  color: #73ffe8 !important;
+  filter: brightness(1.15);
 }
 
 /* Force text color white for Disqus content */
