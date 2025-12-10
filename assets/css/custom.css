@@ -15,12 +15,18 @@
   --dark-bg-secondary: #1a1f2e;
 }
 
-/* ===== PAGE BODY - GRADIENTE ESCURO ===== */
-/* Gradiente agora controlado por variável SCSS --main-bg em typography-dark.scss */
+/* ===== PAGE BODY - GRADIENTE ESCURO (DARK) E BRANCO (LIGHT) ===== */
+/* Garante que body funciona como cards: gradient em dark, branco em light */
 
-/* ===== SIDEBAR - BACKGROUND COM GRADIENTE (DARK MODE ONLY) ===== */
+html[data-mode='light'] body {
+  background: white !important;
+}
 
-html[data-mode='dark'] #sidebar {
+/* Dark mode usa var(--main-bg) do SCSS que já é gradient */
+
+/* ===== SIDEBAR - BACKGROUND COM GRADIENTE (SEMPRE ESCURO) ===== */
+
+#sidebar {
   background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
   border-right: 2px solid rgba(115, 255, 232, 0.3);
 }
@@ -153,7 +159,8 @@ html[data-mode='dark'] #sidebar {
 }
 
 .sidebar-bottom .mode-toggle,
-.sidebar-bottom a {
+.sidebar-bottom a,
+.sidebar-bottom button {
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   background: linear-gradient(135deg,
     rgba(115, 255, 232, 0.1),
@@ -170,7 +177,8 @@ html[data-mode='dark'] #sidebar {
 }
 
 .sidebar-bottom .mode-toggle:hover,
-.sidebar-bottom a:hover {
+.sidebar-bottom a:hover,
+.sidebar-bottom button:hover {
   color: #73ffe8;
   border-color: #73ffe8;
   box-shadow: 0 0 20px rgba(115, 255, 232, 0.4),
@@ -181,9 +189,9 @@ html[data-mode='dark'] #sidebar {
   transform: scale(1.05);
 }
 
-/* ===== TOPBAR - FULL WIDTH SEM OVERFLOW (DARK MODE ONLY) ===== */
+/* ===== TOPBAR - SEMPRE COM TEMA ESCURO, SEM FUNDO VISÍVEL ===== */
 
-html[data-mode='dark'] #topbar-wrapper {
+#topbar-wrapper {
   border-bottom: 2px solid rgba(115, 255, 232, 0.3);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   position: relative;

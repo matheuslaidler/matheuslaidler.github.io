@@ -928,7 +928,7 @@ $btn-mb: 0.5rem;
 
 #topbar-wrapper {
   height: $topbar-height;
-  background-color: var(--topbar-bg);
+  /* background-color: var(--topbar-bg); */ /* Comentado - topbar sem fundo visível */
 }
 
 #topbar {
@@ -1548,7 +1548,7 @@ search {
       margin-bottom: 1.75rem;
 
       a:not(:last-child) {
-        margin-right: $sb-btn-gap-lg;
+        /* margin-right: $sb-btn-gap-lg; */ /* Comentado - espaçamento via flexbox gap */
       }
 
       .icon-border {
