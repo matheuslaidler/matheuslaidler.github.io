@@ -18,9 +18,9 @@
 /* ===== PAGE BODY - GRADIENTE ESCURO ===== */
 /* Gradiente agora controlado por variável SCSS --main-bg em typography-dark.scss */
 
-/* ===== SIDEBAR - BACKGROUND COM GRADIENTE ===== */
+/* ===== SIDEBAR - BACKGROUND COM GRADIENTE (DARK MODE ONLY) ===== */
 
-#sidebar {
+html[data-mode='dark'] #sidebar {
   background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
   border-right: 2px solid rgba(115, 255, 232, 0.3);
 }
@@ -181,9 +181,9 @@
   transform: scale(1.05);
 }
 
-/* ===== TOPBAR - FULL WIDTH COMO FOOTER ===== */
+/* ===== TOPBAR - FULL WIDTH SEM OVERFLOW (DARK MODE ONLY) ===== */
 
-#topbar-wrapper {
+html[data-mode='dark'] #topbar-wrapper {
   border-bottom: 2px solid rgba(115, 255, 232, 0.3);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   position: relative;
@@ -194,6 +194,7 @@
   margin-right: -50vw;
   width: 100vw;
   padding: 0 max(1rem, calc((100vw - 100%) / 2));
+  overflow-x: hidden;
 }
 
 #topbar {
@@ -614,5 +615,35 @@ html[data-mode='dark'] #disqus_thread a:visited {
 /* Force text color white for Disqus content */
 html[data-mode='dark'] .post-comment {
   color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* ===== SCROLLBARS PERSONALIZADAS - TECH THEME ===== */
+
+/* Firefox scrollbar */
+html[data-mode='dark'] * {
+  scrollbar-color: rgba(115, 255, 232, 0.6) transparent;
+  scrollbar-width: thin;
+}
+
+/* Webkit scrollbars (Chrome, Safari, Edge) */
+html[data-mode='dark'] ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+html[data-mode='dark'] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html[data-mode='dark'] ::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, rgba(115, 255, 232, 0.4), rgba(0, 255, 136, 0.3));
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+html[data-mode='dark'] ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, rgba(115, 255, 232, 0.8), rgba(0, 255, 136, 0.6));
+  background-clip: padding-box;
 }
 

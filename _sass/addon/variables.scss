@@ -6,7 +6,7 @@
 
 $sidebar-width: 260px !default; /* the basic width */
 $sidebar-width-large: 300px !default; /* screen width: >= 1650px */
-$sb-btn-gap: 0.8rem !default;
+/* $sb-btn-gap: 0.8rem !default; */ /* Comentado para usar gap do flexbox em custom.css */
 $sb-btn-gap-lg: 1rem !default;
 
 /* other framework sizes */
