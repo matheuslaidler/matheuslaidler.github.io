@@ -646,67 +646,77 @@ body.sidebar-show #sidebar-trigger i {
   }
 }
 
-/* ===== DISQUS COMMENTS - DARK MODE STYLING ===== */
+/* ===== DISQUS COMMENTS - FORÇA MÁXIMA DARK MODE ===== */
 
+/* Forçar branco em TODO o container Disqus */
 html[data-mode='dark'] #disqus_thread {
-  color: rgba(255, 255, 255, 0.9) !important;
-  filter: brightness(1.15);
+  color: white !important;
+  background: transparent !important;
 }
 
-html[data-mode='dark'] #disqus_thread * {
-  color: rgba(255, 255, 255, 0.85) !important;
-}
-
-/* Force all text in Disqus to be white/light */
 html[data-mode='dark'] #disqus_thread,
+html[data-mode='dark'] #disqus_thread * {
+  color: white !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/* Forçar branco AGRESSIVAMENTE em todos os elementos */
 html[data-mode='dark'] #disqus_thread body,
 html[data-mode='dark'] #disqus_thread div,
 html[data-mode='dark'] #disqus_thread span,
-html[data-mode='dark'] #disqus_thread p {
-  color: rgba(255, 255, 255, 0.9) !important;
-}
-
-/* Force all links in Disqus to be cyan */
+html[data-mode='dark'] #disqus_thread p,
 html[data-mode='dark'] #disqus_thread a,
-html[data-mode='dark'] #disqus_thread a *,
-html[data-mode='dark'] #disqus_thread a:visited,
-html[data-mode='dark'] #disqus_thread a:hover {
+html[data-mode='dark'] #disqus_thread li,
+html[data-mode='dark'] #disqus_thread h3,
+html[data-mode='dark'] #disqus_thread h4,
+html[data-mode='dark'] #disqus_thread button,
+html[data-mode='dark'] #disqus_thread label {
+  color: white !important;
+  background-color: transparent !important;
+}
+
+/* Links ficam cyan */
+html[data-mode='dark'] #disqus_thread a {
   color: #73ffe8 !important;
-  text-decoration: underline;
 }
 
-/* Force specific Disqus comment text */
-html[data-mode='dark'] #disqus_thread .dsq-comment-text,
-html[data-mode='dark'] #disqus_thread .dsq-comment-text * {
-  color: rgba(255, 255, 255, 0.85) !important;
+html[data-mode='dark'] #disqus_thread a:visited {
+  color: #73ffe8 !important;
 }
 
-/* Override inline styles for text */
-html[data-mode='dark'] #disqus_thread [style*="color"] {
-  color: rgba(255, 255, 255, 0.85) !important;
+/* Lutar contra CSS inline do Disqus */
+html[data-mode='dark'] #disqus_thread [style] {
+  color: white !important;
 }
 
+/* Disqus wrapper */
 html[data-mode='dark'] .disqus-wrapper {
-  background: transparent;
+  background: transparent !important;
+  color: white !important;
 }
 
 html[data-mode='dark'] .disqus-wrapper iframe {
   color-scheme: dark !important;
-  filter: brightness(1.15);
 }
 
-/* Force text color white for Disqus content */
+/* Forçar brilho extra para compensar */
+html[data-mode='dark'] #disqus_thread {
+  filter: brightness(1.3) contrast(1.2);
+}
+
+/* Classes específicas do Disqus que podem ter estilos */
+html[data-mode='dark'] .dsq-comment-text,
+html[data-mode='dark'] .dsq-avatar-area,
+html[data-mode='dark'] .dsq-comment-header,
+html[data-mode='dark'] .dsq-comment-body {
+  color: white !important;
+  background: transparent !important;
+}
+
+/* Post comment */
 html[data-mode='dark'] .post-comment {
-  color: rgba(255, 255, 255, 0.9) !important;
-}
-
-/* Override Disqus iframe text color */
-html[data-mode='dark'] #disqus_thread .comment {
-  color: rgba(255, 255, 255, 0.85) !important;
-}
-
-html[data-mode='dark'] #disqus_thread .posts-container .comment {
-  color: rgba(255, 255, 255, 0.85) !important;
+  color: white !important;
 }
 
 /* Force Disqus body text to white in dark mode */
