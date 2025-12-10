@@ -647,13 +647,22 @@ body.sidebar-show #sidebar-trigger i {
 }
 
 /* ===== DISQUS COMMENTS - DARK MODE ===== */
-/* O Disqus detecta dark mode pelos colors da config e pelo fundo da página */
+/* Forçar conversão de cores para branco em dark mode */
 
 html[data-mode='dark'] #disqus_thread {
   color: white !important;
+  background: transparent !important;
 }
 
+/* Forçar branco em TODOS elementos */
 html[data-mode='dark'] #disqus_thread * {
+  color: white !important;
+}
+
+/* Override cores escuras específicas do Disqus */
+html[data-mode='dark'] #disqus_thread [style*="#2a2e2e"],
+html[data-mode='dark'] #disqus_thread [style*="#343434"],
+html[data-mode='dark'] #disqus_thread [style*="#656c7a"] {
   color: white !important;
 }
 
@@ -664,6 +673,11 @@ html[data-mode='dark'] #disqus_thread a {
 
 html[data-mode='dark'] #disqus_thread a:visited {
   color: #73ffe8 !important;
+}
+
+/* Usar filter para inverter/clarear cores escuras */
+html[data-mode='dark'] #disqus_thread {
+  filter: invert(0.15) brightness(1.2);
 }
 
 /* Force Disqus body text to white in dark mode */
