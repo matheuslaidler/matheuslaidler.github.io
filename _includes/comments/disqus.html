@@ -8,6 +8,20 @@
   var disqus_config = function () {
     this.page.url = '{{ page.url | absolute_url }}';
     this.page.identifier = '{{ page.url }}';
+    
+    // Force Disqus to use dark mode colors
+    // Detect if dark mode is active
+    const isDarkMode = document.documentElement.getAttribute('data-mode') === 'dark' ||
+                       (!document.documentElement.getAttribute('data-mode') && 
+                        window.matchMedia('(prefers-color-scheme: dark)').matches);
+    
+    if (isDarkMode) {
+      // Force dark mode colors in Disqus
+      this.colors = {
+        background: '#0f1419',
+        foreground: '#ffffff'
+      };
+    }
   };
 
   /* Lazy loading */
