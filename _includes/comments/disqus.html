@@ -8,18 +8,6 @@
   var disqus_config = function () {
     this.page.url = '{{ page.url | absolute_url }}';
     this.page.identifier = '{{ page.url }}';
-
-    // Detectar dark mode e informar ao Disqus
-    var isDarkMode = document.documentElement.getAttribute('data-mode') === 'dark' ||
-                     (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    
-    // Se estiver em dark mode, informar ao Disqus
-    if (isDarkMode) {
-      this.colors = {
-        'highlight': '#73ffe8',
-        'background': '#0f1419'
-      };
-    }
   };
 
   /* Lazy loading */
