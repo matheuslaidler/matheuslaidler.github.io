@@ -4,7 +4,7 @@
 
 @mixin dark-scheme {
   /* Framework color */
-  --main-bg: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+  --main-bg: #0f1419;
   --mask-bg: rgb(68, 69, 70);
   --main-border-color: rgb(44, 45, 45);
 
@@ -37,7 +37,7 @@
   /* Sidebar */
   --site-title-color: #717070;
   --site-subtitle-color: #868686;
-  --sidebar-bg: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+  --sidebar-bg: #0f1419;
   --sidebar-border-color: #292929;
   --sidebar-muted-color: #868686;
   --sidebar-active-color: rgb(255, 255, 255, 0.95);
