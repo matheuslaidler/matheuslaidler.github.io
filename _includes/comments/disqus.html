@@ -10,21 +10,10 @@
     this.page.identifier = '{{ page.url }}';
   };
 
-  // Detectar dark mode e preparar background
-  var isDarkMode = document.documentElement.getAttribute('data-mode') === 'dark' ||
-                   (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-  var originalBackground = '';
-
   /* Lazy loading */
   var disqus_observer = new IntersectionObserver(
     function (entries) {
       if (entries[0].isIntersecting) {
-        // Se dark mode, trocar background temporariamente
-        if (isDarkMode) {
-          originalBackground = document.body.style.background;
-          document.body.style.background = '#0f1419';
-        }
-
         (function () {
           var d = document,
             s = d.createElement('script');
@@ -32,15 +21,6 @@
           s.setAttribute('data-timestamp', +new Date());
           (d.head || d.body).appendChild(s);
         })();
-
-        // Restaurar background depois de um tempo
-        setTimeout(function() {
-          if (isDarkMode && originalBackground !== '') {
-            document.body.style.background = originalBackground;
-          } else if (isDarkMode) {
-            document.body.style.background = '';
-          }
-        }, 1000);
 
         disqus_observer.disconnect();
       }
@@ -66,5 +46,58 @@
 
   if (document.querySelector('.mode-toggle')) {
     window.addEventListener('message', reloadDisqus);
+  }
+
+  // Tentar injetar CSS no Disqus DEPOIS que carrega, com múltiplas tentativas
+  function injectDisqusCSSFix() {
+    var isDarkMode = document.documentElement.getAttribute('data-mode') === 'dark' ||
+                     (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    
+    if (!isDarkMode) return;
+
+    var attempts = 0;
+    var maxAttempts = 10;
+    
+    var checkAndInject = function() {
+      attempts++;
+      
+      var iframes = document.querySelectorAll('#disqus_thread iframe');
+      
+      for (var i = 0; i < iframes.length; i++) {
+        try {
+          var frameDoc = iframes[i].contentDocument || iframes[i].contentWindow.document;
+          if (frameDoc && frameDoc.body) {
+            // Se conseguimos acessar, injetar CSS
+            if (!frameDoc.getElementById('disqus-dark-mode-fix')) {
+              var style = frameDoc.createElement('style');
+              style.id = 'disqus-dark-mode-fix';
+              style.textContent = `
+                body { background-color: #0f1419 !important; }
+                body, div, p, span, a, li, .post-message { color: white !important; }
+              `;
+              frameDoc.head.appendChild(style);
+            }
+            return; // Sucesso, parar de tentar
+          }
+        } catch (e) {
+          // CORS ainda bloqueando, tentar novamente
+        }
+      }
+      
+      // Se não conseguiu e ainda tem tentativas, tentar novamente
+      if (attempts < maxAttempts) {
+        setTimeout(checkAndInject, 500);
+      }
+    };
+    
+    // Começar tentativas após 1 segundo
+    setTimeout(checkAndInject, 1000);
+  }
+
+  // Chamar função quando página carregar
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectDisqusCSSFix);
+  } else {
+    injectDisqusCSSFix();
   }
 </script>
