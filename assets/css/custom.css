@@ -22,6 +22,33 @@ html[data-mode='dark'] body::before {
   display: none !important;
 }
 
+/* ===== GISCUS COMMENTS STYLING ===== */
+
+/* Container do Giscus */
+.giscus {
+  max-width: 100%;
+  padding: 0 !important;
+}
+
+/* Frame do Giscus */
+.giscus-frame {
+  border: 2px solid #73ffe8 !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+}
+
+/* Dark mode - estilo do Giscus */
+html[data-mode='dark'] .giscus-frame {
+  border-color: #73ffe8 !important;
+  box-shadow: 0 0 20px rgba(115, 255, 232, 0.2);
+}
+
+/* Light mode - estilo do Giscus */
+html[data-mode='light'] .giscus-frame {
+  border-color: #00ff88 !important;
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.15);
+}
+
 /* ===== TEMA TECH CYAN - VARIÁVEIS ===== */
 
 :root {

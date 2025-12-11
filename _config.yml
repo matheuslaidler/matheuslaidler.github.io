@@ -100,7 +100,7 @@ toc: true
 
 comments:
   # Global switch for the post comment system. Keeping it empty means disabled.
-  provider: disqus # [disqus | utterances | giscus]
+  provider: giscus # [disqus | utterances | giscus]
   # The provider options are as follows:
   disqus:
     shortname: matheuslaidler-github-io # fill with the Disqus shortname. › https://help.disqus.com/en/articles/1717111-what-s-a-shortname
@@ -111,14 +111,18 @@ comments:
   # Giscus options › https://giscus.app
   giscus:
     repo: matheuslaidler/matheuslaidler.github.io # <gh-username>/<repo>
-    repo_id:
-    category:
-    category_id:
-    mapping: # optional, default to 'pathname'
-    strict: # optional, default to '0'
-    input_position: # optional, default to 'bottom'
-    lang: # optional, default to the value of `site.lang`
-    reactions_enabled: # optional, default to the value of `1`
+    repo_id: R_kgDOLqgXgg
+    category: General
+    category_id: DIC_kwDOLqgXgs4CeiUr
+    mapping: pathname # optional, default to 'pathname'
+    strict: 0 # optional, default to '0'
+    theme: dark_dimmed # optional, default to 'light'
+    input_position: bottom # optional, default to 'bottom'
+    lang: pt #pt-BR # optional, default to the value of `site.lang`
+    reactions_enabled: 1 # optional, default to the value of `1`
+    emit_metadata: 0 # optional, default to the value of `0`
+    loading: lazy # optional, default to 'lazy' ['lazy' | 'eager'] 
+    crossorigin: anonymous # optional, default to 'anonymous' ['anonymous' | 'use-credentials']
 
 # Self-hosted static assets, optional › https://github.com/cotes2020/chirpy-static-assets
 assets:
