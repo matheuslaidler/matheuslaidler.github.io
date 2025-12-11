@@ -10,19 +10,19 @@
     this.page.identifier = '{{ page.url }}';
   };
 
+  // Detectar dark mode e preparar background
+  var isDarkMode = document.documentElement.getAttribute('data-mode') === 'dark' ||
+                   (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  var originalBackground = '';
+
   /* Lazy loading */
   var disqus_observer = new IntersectionObserver(
     function (entries) {
       if (entries[0].isIntersecting) {
-        // Detectar se está em dark mode
-        var isDarkMode = document.documentElement.getAttribute('data-mode') === 'dark' ||
-                         (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-
-        // Se dark mode, trocar background temporariamente para Disqus detectar
+        // Se dark mode, trocar background temporariamente
         if (isDarkMode) {
-          var body = document.body;
-          var originalBackground = body.style.background;
-          body.style.background = '#0f1419';
+          originalBackground = document.body.style.background;
+          document.body.style.background = '#0f1419';
         }
 
         (function () {
@@ -30,16 +30,17 @@
             s = d.createElement('script');
           s.src = 'https://{{ site.comments.disqus.shortname }}.disqus.com/embed.js';
           s.setAttribute('data-timestamp', +new Date());
-          s.onload = function() {
-            // Depois que Disqus carrega, restaurar background
-            setTimeout(function() {
-              if (isDarkMode) {
-                document.body.style.background = originalBackground || '';
-              }
-            }, 500);
-          };
           (d.head || d.body).appendChild(s);
         })();
+
+        // Restaurar background depois de um tempo
+        setTimeout(function() {
+          if (isDarkMode && originalBackground !== '') {
+            document.body.style.background = originalBackground;
+          } else if (isDarkMode) {
+            document.body.style.background = '';
+          }
+        }, 1000);
 
         disqus_observer.disconnect();
       }
