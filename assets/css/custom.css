@@ -646,30 +646,6 @@ body.sidebar-show #sidebar-trigger i {
   }
 }
 
-/* ===== DISQUS COMMENTS CONTAINER ===== */
-
-/* Light mode - fundo normal */
-html[data-mode='light'] #disqus_container {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  margin-top: 2rem;
-}
-
-/* Dark mode - fundo esbranquiçado com borda cyan */
-html[data-mode='dark'] #disqus_container {
-  background: #f5f5f5;
-  padding: 1.5rem;
-  border-radius: 12px;
-  border: 2px solid #73ffe8;
-  box-shadow: 0 0 20px rgba(115, 255, 232, 0.2);
-  margin-top: 2rem;
-}
-
-html[data-mode='dark'] #disqus_container #disqus_thread {
-  color: #333;
-}
-
 /* ===== SCROLLBARS PERSONALIZADAS - TECH THEME ===== */
 
 /* Firefox scrollbar */
