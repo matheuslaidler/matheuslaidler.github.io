@@ -3,6 +3,9 @@
 
 **[Portuguese](#pt-br) | [English](#en-us)**
 
+<img width="1905" height="924" alt="image" src="https://github.com/user-attachments/assets/896d7bba-0b14-4aaa-aa40-52b0dcfcee32" />
+
+
 ## pt-br
 ### Apresentação
 
