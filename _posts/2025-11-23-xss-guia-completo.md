@@ -381,6 +381,8 @@ window.location = "http://sitemalicioso.com";
 
 Algumas aplicações usam template engines que podem ser explorados:
 
+{% raw %}
+
 ```javascript
 // Jinja2 (Python/Flask)
 {{7*'7'}} // Testa se executa (retorna 7777777)
@@ -406,6 +408,8 @@ Algumas aplicações usam template engines que podem ser explorados:
 // Angular (1.x)
 {{constructor.constructor('alert("XSS")')()}}
 ```
+
+{% endraw %}
 
 **GraphQL injection:**
 ```javascript
