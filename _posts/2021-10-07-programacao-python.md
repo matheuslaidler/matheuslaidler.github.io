@@ -25,8 +25,9 @@ math: true
 6. [Parte IV: Lógica e Problemas Clássicos](#parte-iv-lógica-e-problemas-clássicos)
 7. [Parte V: Projetos Práticos](#parte-v-projetos-práticos)
 8. [Parte VI: PyckageTools - Redes e Segurança](#parte-vi-pyckagetools---redes-e-segurança)
-9. [Parte VII: Dicas e Armadilhas Comuns](#parte-vii-dicas-e-armadilhas-comuns)
-10. [Conclusão](#conclusão)
+9. [Parte VII: Programação Avançada](#parte-vii-programação-avançada)
+10. [Parte VIII: Dicas e Armadilhas Comuns](#parte-viii-dicas-e-armadilhas-comuns)
+11. [Conclusão](#conclusão)
 
 ---
 
@@ -449,7 +450,6 @@ def valor_polinomio(a, b, c, x):
 print(media_ponderada(8, 2, 6, 3))  # 6.8 (prova com peso 2, trabalho com peso 3)
 print(valor_polinomio(1, 2, 1, 3)) # 16 (1*9 + 2*3 + 1 = 16)
 ```
-```
 
 #### Aplicações Práticas do Dia a Dia
 
@@ -537,6 +537,11 @@ def calcular_delta(a, b, c):
 def raizes(a, b, c):
     """Calcula as duas raízes da equação"""
     delta = calcular_delta(a, b, c)
+    
+    # Se delta for negativo, não existe raíz real
+    if delta < 0:
+        return None, None  # Ou poderia usar números complexos
+    
     raiz1 = (-b + delta**0.5) / (2*a)  # sqrt é raiz quadrada
     raiz2 = (-b - delta**0.5) / (2*a)
     return raiz1, raiz2
@@ -879,7 +884,6 @@ print(resultado)  # ('João', 4.2, 'Reprovado')
 ```
 
 **Perceba:** A função retorna uma tupla porque o resultado não deve ser modificado depois.
-```
 
 #### Dicionários: Dados com Significado
 
@@ -1121,7 +1125,6 @@ print(f"{vencedor} com {pontos} pontos")  # Flamengo com 32 pontos
 **A lógica:** Guardamos o melhor até agora. Para cada time, calculamos os pontos e comparamos. Se for maior, atualizamos o "melhor".
 
 </details>
-```
 
 ### Lab 7: Loops `while` - Repetição Controlada
 
@@ -1195,7 +1198,7 @@ Agora sim, o jogo:
 import random
 
 def jogar_dados(quantidade_jogadas):
-    """Simula jogadas de dado e conta sequências"""
+    """Simula jogadas de dado e retorna lista com os resultados"""
     jogadas = []
     
     for _ in range(quantidade_jogadas):
@@ -1205,19 +1208,32 @@ def jogar_dados(quantidade_jogadas):
 
 # Usando while para processar as jogadas
 def processar_jogadas(jogadas):
-    """Encontra sequências de números iguais"""
+    """
+    Conta quantas vezes um número repetiu em sequência.
+    
+    Exemplo: [1, 2, 2, 3, 3, 3, 4] tem 2 sequências:
+    - Os dois 2's seguidos
+    - Os três 3's seguidos
+    
+    Obs: Conta quando a sequência TERMINA, não quando começa.
+    """
     i = 0
     sequencias = 0
     
     while i < len(jogadas):
         if i > 0 and jogadas[i] == jogadas[i-1]:
-            # Encontrou uma sequência
+            # Elemento atual é igual ao anterior (estamos numa sequência)
+            # Agora verificamos se é o FINAL da sequência
             if i+1 >= len(jogadas) or jogadas[i] != jogadas[i+1]:
-                # A sequência terminou
+                # Acabou a lista OU o próximo é diferente = sequência terminou
                 sequencias += 1
         i += 1
     
     return sequencias
+
+# Testando:
+teste = [1, 2, 2, 3, 3, 3, 4]
+print(processar_jogadas(teste))  # 2 (duas sequências de repetição)
 ```
 
 #### Busca Linear com `while`
@@ -1258,7 +1274,6 @@ print(resultado)  # None
 ```
 
 **Por que `while` e não `for`?** Neste caso, ambos funcionariam. Mas `while` deixa explícito que estamos buscando até encontrar (ou acabar). É questão de estilo.
-```
 
 ### Lab 8: Loops `for` Avançados
 
@@ -1298,7 +1313,6 @@ print(nomes_upper)  # ['ANA', 'BRUNO', 'CARLOS']
 ```
 
 **Quando usar?** List comprehension é ótima para transformações simples. Para lógica complexa, use o loop tradicional - clareza vem primeiro!
-```
 
 #### Iterando com Múltiplas Variáveis
 
@@ -1371,7 +1385,6 @@ for palavra, contagem in freq.items():
 - `texto.lower()`: converte para minúsculas
 - `texto.split()`: separa string em lista (por espaços)
 - `dicionario.items()`: retorna pares (chave, valor) para iteração
-```
 
 ---
 
@@ -1401,7 +1414,7 @@ Linha 1 → [   4   ,   5    ,   6   ]
 Linha 2 → [   7   ,   8    ,   9   ]
 ```
 
-Para acessar o `5`, usamos `matriz[1][2]` - linha 1, coluna 1.
+Para acessar o `5`, usamos `matriz[1][1]` - linha 1, coluna 1.
 
 #### Criando Matrizes
 
@@ -1636,7 +1649,6 @@ print(f"Você digitou: {numero}")
 ```
 
 **Por que funciona?** O `while True` cria um loop "infinito", mas o `return` dentro do `try` sai da função quando consegue converter. Se der `ValueError`, o loop continua e pede novamente.
-```
 
 ---
 
@@ -2645,8 +2657,8 @@ print(string.punctuation)      # !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
 #### Aviso Importante: Ética em Segurança
 
 O PyckageTools foi criado para **fins educacionais**. Técnicas como scan de portas e brute force:
-- ✅ São legais em sistemas que você tem autorização
-- ❌ São ILEGAIS em sistemas de terceiros sem permissão
+- São legais em sistemas que você tem autorização
+- São ILEGAIS em sistemas de terceiros sem permissão
 
 Na área de segurança, usamos essas técnicas para:
 - Testar nossos próprios sistemas
@@ -2713,7 +2725,809 @@ def loading_animado():
 
 ---
 
-## Parte VII: Dicas e Armadilhas Comuns
+## Parte VII: Programação Avançada
+
+Até agora cobrimos o que considero o "essencial" de Python - o que você precisa saber pra resolver a maioria dos problemas. Mas Python tem muito mais a oferecer! Nesta parte vou apresentar conceitos mais avançados que, confesso, não vi muito nas aulas da UFRJ, mas fui aprendendo depois em projetos pessoais e cursos online.
+
+Esses conceitos não são obrigatórios pra começar a programar, mas quando você pega o jeito, eles tornam seu código muito mais elegante e poderoso. É tipo a diferença entre saber dirigir e saber fazer manobras mais avançadas - você não precisa pra ir ao mercado, mas faz diferença em situações mais complexas.
+
+### Orientação a Objetos (POO)
+
+#### O Que É POO e Por Que Importa?
+
+Até agora, programamos de forma "procedural" - escrevemos funções que recebem dados, processam e devolvem resultados. Funciona bem pra muita coisa! Mas conforme os projetos crescem, fica difícil organizar tudo.
+
+**Orientação a Objetos** é outra forma de organizar código. A ideia é agrupar **dados** e **comportamentos** relacionados em uma única estrutura chamada **classe**.
+
+**Analogia do carro:** Imagine que você está descrevendo um carro:
+- **Dados (atributos):** cor, modelo, ano, velocidade atual
+- **Comportamentos (métodos):** acelerar, frear, buzinar
+
+Em POO, criamos um "molde" de carro (classe) que define essas características. Depois, criamos carros específicos (objetos) a partir desse molde.
+
+#### Classes e Objetos
+
+**Classe** é o molde, a "receita". **Objeto** é a coisa criada a partir do molde.
+
+```python
+# Definindo uma classe (o molde)
+class Carro:
+    """Representa um carro com suas características"""
+    
+    def __init__(self, modelo, cor, ano):
+        """
+        Método especial que roda quando criamos um objeto.
+        'self' é uma referência ao próprio objeto.
+        """
+        self.modelo = modelo    # Atributo
+        self.cor = cor          # Atributo
+        self.ano = ano          # Atributo
+        self.velocidade = 0     # Começa parado
+    
+    def acelerar(self, quantidade):
+        """Método que aumenta a velocidade"""
+        self.velocidade += quantidade
+        print(f"{self.modelo} acelerou para {self.velocidade} km/h")
+    
+    def frear(self):
+        """Método que zera a velocidade"""
+        self.velocidade = 0
+        print(f"{self.modelo} parou")
+    
+    def buzinar(self):
+        """Método simples"""
+        print("BIIIII!")
+
+# Criando objetos (carros específicos)
+meu_carro = Carro("Fusca", "azul", 1970)
+carro_do_vizinho = Carro("Civic", "preto", 2020)
+
+# Usando os objetos
+print(meu_carro.modelo)        # "Fusca"
+print(meu_carro.cor)           # "azul"
+
+meu_carro.acelerar(50)         # "Fusca acelerou para 50 km/h"
+meu_carro.acelerar(30)         # "Fusca acelerou para 80 km/h"
+meu_carro.buzinar()            # "BIIIII!"
+meu_carro.frear()              # "Fusca parou"
+```
+
+**Entendendo o `self`:**
+
+Essa parte pode confundir muita gente, mas basta pensar no sentido do inglês. O `self` é como o objeto se refere a si mesmo. Quando você chama `meu_carro.acelerar(50)`, por baixo dos panos o Python faz `Carro.acelerar(meu_carro, 50)`. O `self` é automaticamente preenchido com o objeto que chamou o método.
+
+Lembro de anotar: "self = 'eu mesmo'. Quando o Fusca acelera, ele muda a velocidade DELE, não de todos os carros."
+
+#### O Método `__init__`
+
+O `__init__` é o **construtor** - roda automaticamente quando você cria um objeto. É onde você define os valores iniciais dos atributos.
+
+```python
+class Aluno:
+    def __init__(self, nome, matricula):
+        self.nome = nome
+        self.matricula = matricula
+        self.notas = []  # Lista vazia pra guardar notas
+        self.faltas = 0
+    
+    def adicionar_nota(self, nota):
+        self.notas.append(nota)
+    
+    def calcular_media(self):
+        if not self.notas:
+            return 0
+        return sum(self.notas) / len(self.notas)
+    
+    def situacao(self):
+        media = self.calcular_media()
+        if media >= 7 and self.faltas <= 10:
+            return "Aprovado"
+        elif media >= 5:
+            return "Recuperação"
+        else:
+            return "Reprovado"
+
+# Usando:
+joao = Aluno("João Silva", "2021001")
+joao.adicionar_nota(8.5)
+joao.adicionar_nota(7.0)
+joao.adicionar_nota(9.0)
+joao.faltas = 3
+
+print(f"{joao.nome}: {joao.calcular_media():.1f} - {joao.situacao()}")
+# João Silva: 8.2 - Aprovado
+```
+
+**Perceba:** Agora os dados do aluno (nome, notas, faltas) e as operações sobre ele (calcular média, ver situação) estão todos juntos. Isso facilita muito a organização quando você tem dezenas de alunos.
+
+#### Herança: Reaproveitando Código
+
+**Herança** é quando uma classe "herda" características de outra. É como dizer "um Cachorro É UM Animal, então tem tudo que animal tem, mais coisas específicas de cachorro".
+
+```python
+# Classe "pai" (ou base)
+class Animal:
+    def __init__(self, nome, idade):
+        self.nome = nome
+        self.idade = idade
+    
+    def fazer_som(self):
+        print("(som genérico)")
+    
+    def apresentar(self):
+        print(f"Sou {self.nome}, tenho {self.idade} anos")
+
+# Classe "filha" - herda de Animal
+class Cachorro(Animal):
+    def __init__(self, nome, idade, raca):
+        # Chama o __init__ da classe pai
+        super().__init__(nome, idade)
+        self.raca = raca  # Atributo específico de cachorro
+    
+    def fazer_som(self):
+        # Sobrescreve o método do pai
+        print("Au au!")
+    
+    def abanar_rabo(self):
+        # Método específico de cachorro
+        print(f"{self.nome} está abanando o rabo!")
+
+class Gato(Animal):
+    def fazer_som(self):
+        print("Miau!")
+    
+    def arranhar_sofa(self):
+        print(f"{self.nome} está destruindo o sofá...")
+
+# Usando:
+rex = Cachorro("Rex", 3, "Labrador")
+mimi = Gato("Mimi", 5)
+
+rex.apresentar()    # "Sou Rex, tenho 3 anos" (herdou de Animal)
+rex.fazer_som()     # "Au au!" (sobrescreveu)
+rex.abanar_rabo()   # "Rex está abanando o rabo!" (específico)
+
+mimi.apresentar()   # "Sou Mimi, tenho 5 anos"
+mimi.fazer_som()    # "Miau!"
+mimi.arranhar_sofa() # "Mimi está destruindo o sofá..."
+```
+
+**O `super()`:** Chama o método da classe pai. No `__init__`, usamos `super().__init__(...)` pra não precisar reescrever a inicialização que já existe na classe pai.
+
+#### Encapsulamento: Escondendo Detalhes
+
+Em Python, por convenção, atributos que começam com `_` são "privados" - não deveriam ser acessados diretamente de fora da classe.
+
+```python
+class ContaBancaria:
+    def __init__(self, titular, saldo_inicial):
+        self.titular = titular
+        self._saldo = saldo_inicial  # _ indica "privado"
+    
+    def depositar(self, valor):
+        if valor > 0:
+            self._saldo += valor
+            print(f"Depósito de R${valor}. Novo saldo: R${self._saldo}")
+        else:
+            print("Valor inválido!")
+    
+    def sacar(self, valor):
+        if valor > self._saldo:
+            print("Saldo insuficiente!")
+        elif valor <= 0:
+            print("Valor inválido!")
+        else:
+            self._saldo -= valor
+            print(f"Saque de R${valor}. Novo saldo: R${self._saldo}")
+    
+    def ver_saldo(self):
+        return self._saldo
+
+# Usando:
+conta = ContaBancaria("Matheus", 1000)
+conta.depositar(500)      # Depósito de R$500. Novo saldo: R$1500
+conta.sacar(200)          # Saque de R$200. Novo saldo: R$1300
+print(conta.ver_saldo())  # 1300
+
+# Tecnicamente dá pra acessar direto, mas não é recomendado:
+# conta._saldo = 999999  # Funciona, mas quebra a "confiança" da classe
+```
+
+**Por que isso importa?** Se todo mundo acessa `_saldo` diretamente, você não consegue colocar validações. Usando métodos como `depositar()` e `sacar()`, você garante que as regras de negócio são respeitadas.
+
+#### Métodos Especiais (Dunder Methods)
+
+Python tem métodos "mágicos" que começam e terminam com `__` (double underscore, ou "dunder"). Eles permitem que seus objetos se comportem como tipos nativos:
+
+```python
+class Vetor:
+    """Representa um vetor 2D"""
+    
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+    
+    def __str__(self):
+        """Chamado quando você faz print() ou str()"""
+        return f"Vetor({self.x}, {self.y})"
+    
+    def __repr__(self):
+        """Representação "oficial" do objeto"""
+        return f"Vetor({self.x}, {self.y})"
+    
+    def __add__(self, outro):
+        """Permite usar + entre vetores"""
+        return Vetor(self.x + outro.x, self.y + outro.y)
+    
+    def __eq__(self, outro):
+        """Permite usar == entre vetores"""
+        return self.x == outro.x and self.y == outro.y
+    
+    def __len__(self):
+        """Permite usar len() - retorna magnitude como int"""
+        return int((self.x**2 + self.y**2)**0.5)
+
+# Usando:
+v1 = Vetor(3, 4)
+v2 = Vetor(1, 2)
+
+print(v1)           # Vetor(3, 4) - usa __str__
+print(v1 + v2)      # Vetor(4, 6) - usa __add__
+print(v1 == v2)     # False - usa __eq__
+print(len(v1))      # 5 - usa __len__ (magnitude do vetor 3,4)
+```
+
+**Alguns dunder methods úteis:**
+- `__str__`: representação legível (pro usuário)
+- `__repr__`: representação técnica (pro programador)
+- `__add__`, `__sub__`, `__mul__`: operadores +, -, *
+- `__eq__`, `__lt__`, `__gt__`: comparações ==, <, >
+- `__len__`: retorna tamanho
+- `__getitem__`: permite acessar com []
+
+### Decoradores
+
+#### O Que São Decoradores?
+
+Decoradores são uma forma de "embrulhar" funções com funcionalidades extras. Parece complicado, mas é super útil.
+
+**Analogia:** Imagine que você tem um presente (a função). Um decorador é como colocar um papel de embrulho em volta - o presente continua sendo o mesmo, mas agora tem algo extra (o embrulho bonito).
+
+```python
+# Exemplo mais simples possível
+def meu_decorador(funcao):
+    def funcao_embrulhada():
+        print("Antes de executar...")
+        funcao()
+        print("Depois de executar...")
+    return funcao_embrulhada
+
+@meu_decorador
+def dizer_ola():
+    print("Olá!")
+
+# Quando chamamos dizer_ola(), na verdade executamos funcao_embrulhada()
+dizer_ola()
+# Saída:
+# Antes de executar...
+# Olá!
+# Depois de executar...
+```
+
+**O que aconteceu?** O `@meu_decorador` é "açúcar sintático" para `dizer_ola = meu_decorador(dizer_ola)`. A função original foi substituída pela versão "embrulhada".
+
+#### Decorador Prático: Medir Tempo de Execução
+
+Um uso muito comum é medir quanto tempo uma função leva:
+
+```python
+import time
+
+def medir_tempo(funcao):
+    """Decorador que mede tempo de execução"""
+    def wrapper(*args, **kwargs):
+        inicio = time.time()
+        resultado = funcao(*args, **kwargs)
+        fim = time.time()
+        print(f"{funcao.__name__} levou {fim - inicio:.4f} segundos")
+        return resultado
+    return wrapper
+
+@medir_tempo
+def funcao_lenta():
+    """Simula uma função que demora"""
+    time.sleep(1)
+    return "Pronto!"
+
+@medir_tempo
+def soma_grande(n):
+    """Soma números de 0 a n"""
+    return sum(range(n))
+
+# Testando:
+funcao_lenta()          # funcao_lenta levou 1.0012 segundos
+soma_grande(10000000)   # soma_grande levou 0.2341 segundos
+```
+
+**O `*args, **kwargs`:** Permite que o decorador funcione com qualquer função, independente de quantos argumentos ela receba.
+
+#### Decoradores com Parâmetros
+
+Às vezes você quer passar parâmetros pro decorador:
+
+```python
+def repetir(vezes):
+    """Decorador que repete a função N vezes"""
+    def decorador(funcao):
+        def wrapper(*args, **kwargs):
+            for _ in range(vezes):
+                resultado = funcao(*args, **kwargs)
+            return resultado
+        return wrapper
+    return decorador
+
+@repetir(3)
+def gritar(mensagem):
+    print(mensagem.upper())
+
+gritar("socorro")
+# SOCORRO
+# SOCORRO
+# SOCORRO
+```
+
+**Confuso?** É uma função que retorna um decorador que retorna uma função. Leva um tempo pra pegar, mas quando pega é muito útil!
+
+#### Decoradores Embutidos
+
+Python já vem com alguns decoradores úteis:
+
+```python
+class MinhaClasse:
+    contador = 0  # Atributo de classe (compartilhado)
+    
+    def __init__(self, valor):
+        self.valor = valor
+        MinhaClasse.contador += 1
+    
+    @staticmethod
+    def metodo_estatico():
+        """Não precisa de self nem cls - é só uma função dentro da classe"""
+        print("Sou um método estático!")
+    
+    @classmethod
+    def metodo_de_classe(cls):
+        """Recebe a classe (não a instância) como primeiro argumento"""
+        print(f"Total de instâncias: {cls.contador}")
+    
+    @property
+    def valor_dobrado(self):
+        """Permite acessar como atributo, mas é calculado"""
+        return self.valor * 2
+
+# Usando:
+obj = MinhaClasse(10)
+obj2 = MinhaClasse(20)
+
+MinhaClasse.metodo_estatico()   # Sou um método estático!
+MinhaClasse.metodo_de_classe()  # Total de instâncias: 2
+
+print(obj.valor_dobrado)  # 20 (acessa como atributo, não como método)
+```
+
+### Generators
+
+#### O Problema com Listas Grandes
+
+Imagine que você quer processar um arquivo com 10 milhões de linhas. Se você carregar tudo numa lista, sua memória vai explodir:
+
+```python
+# PROBLEMA: carrega TUDO na memória
+def ler_arquivo_errado(nome):
+    linhas = []
+    with open(nome) as f:
+        for linha in f:
+            linhas.append(linha)
+    return linhas  # Lista gigante na memória!
+
+# Se o arquivo tem 10GB... RIP sua RAM
+```
+
+**Generators** resolvem isso gerando um valor por vez, sem guardar tudo na memória.
+
+#### Criando um Generator
+
+Use `yield` em vez de `return`:
+
+```python
+def contar_ate(n):
+    """Generator que conta de 1 até n"""
+    i = 1
+    while i <= n:
+        yield i  # "Pausa" aqui e retorna i
+        i += 1   # Continua quando pedir o próximo
+
+# Usando:
+contador = contar_ate(5)
+
+print(next(contador))  # 1
+print(next(contador))  # 2
+print(next(contador))  # 3
+
+# Ou num for (mais comum):
+for num in contar_ate(5):
+    print(num)  # 1, 2, 3, 4, 5
+```
+
+**A diferença crucial:** Uma função normal com `return` executa tudo de uma vez. Um generator com `yield` executa até o yield, "pausa", e continua quando você pede o próximo valor.
+
+#### Generator para Arquivos Grandes
+
+```python
+def ler_arquivo_linha_a_linha(nome):
+    """Generator que lê uma linha por vez"""
+    with open(nome) as f:
+        for linha in f:
+            yield linha.strip()
+
+# Agora podemos processar arquivos ENORMES:
+for linha in ler_arquivo_linha_a_linha("arquivo_gigante.txt"):
+    # Processa uma linha por vez
+    # A memória nunca tem mais que uma linha!
+    processar(linha)
+```
+
+#### Generator Expressions
+
+Assim como temos list comprehensions, temos generator expressions:
+
+```python
+# List comprehension - cria lista na memória
+quadrados_lista = [x**2 for x in range(1000000)]
+
+# Generator expression - gera sob demanda
+quadrados_gen = (x**2 for x in range(1000000))
+
+# A diferença:
+import sys
+print(sys.getsizeof(quadrados_lista))  # ~8 MB
+print(sys.getsizeof(quadrados_gen))    # ~112 bytes (!!)
+```
+
+**Quando usar?**
+- **Lista:** quando você precisa acessar elementos múltiplas vezes ou precisa do tamanho
+- **Generator:** quando vai iterar uma vez só, especialmente com dados grandes
+
+### Async/Await: Programação Assíncrona
+
+#### O Problema da Espera
+
+Imagine um programa que faz várias requisições HTTP. Com código normal (síncrono):
+
+```python
+# Código SÍNCRONO - espera cada um terminar
+import time
+
+def buscar_dados(url):
+    print(f"Buscando {url}...")
+    time.sleep(2)  # Simula espera de rede
+    print(f"Recebi dados de {url}")
+    return f"dados de {url}"
+
+# Se chamarmos 3 vezes:
+inicio = time.time()
+buscar_dados("site1.com")
+buscar_dados("site2.com")
+buscar_dados("site3.com")
+print(f"Total: {time.time() - inicio:.1f}s")  # ~6 segundos!
+```
+
+O programa fica parado esperando cada requisição terminar. Mas enquanto espera a resposta de site1, poderia estar pedindo pro site2...
+
+#### Código Assíncrono com asyncio
+
+```python
+import asyncio
+
+async def buscar_dados_async(url):
+    """Função assíncrona - usa async def"""
+    print(f"Buscando {url}...")
+    await asyncio.sleep(2)  # "Espera" sem bloquear
+    print(f"Recebi dados de {url}")
+    return f"dados de {url}"
+
+async def main():
+    inicio = asyncio.get_event_loop().time()
+    
+    # Executa as 3 requisições "ao mesmo tempo"
+    resultados = await asyncio.gather(
+        buscar_dados_async("site1.com"),
+        buscar_dados_async("site2.com"),
+        buscar_dados_async("site3.com")
+    )
+    
+    fim = asyncio.get_event_loop().time()
+    print(f"Total: {fim - inicio:.1f}s")  # ~2 segundos!
+    return resultados
+
+# Executar:
+asyncio.run(main())
+```
+
+**Saída:**
+```
+Buscando site1.com...
+Buscando site2.com...
+Buscando site3.com...
+Recebi dados de site1.com
+Recebi dados de site2.com
+Recebi dados de site3.com
+Total: 2.0s
+```
+
+**O que aconteceu?** As três requisições começaram quase juntas. Enquanto uma esperava, as outras também estavam esperando. Quando todas terminaram (~2s), continuou.
+
+#### Entendendo async/await
+
+- **`async def`**: Define uma função assíncrona (coroutine)
+- **`await`**: "Espera" algo assíncrono terminar, mas permite que outras coisas rodem enquanto isso
+- **`asyncio.gather()`**: Executa várias coroutines "em paralelo"
+- **`asyncio.run()`**: Inicia o loop de eventos e roda a função principal
+
+**Quando usar?**
+- Requisições HTTP (web scraping, APIs)
+- Operações de I/O (arquivos, banco de dados)
+- Qualquer coisa que envolva "esperar" respostas externas
+
+**Quando NÃO usar?**
+- Cálculos pesados (CPU-bound) - async não ajuda
+- Scripts simples que não precisam de paralelismo
+
+#### Exemplo Prático: Baixar Múltiplas Páginas
+
+```python
+import asyncio
+import aiohttp  # pip install aiohttp
+
+async def baixar_pagina(session, url):
+    """Baixa uma página de forma assíncrona"""
+    try:
+        async with session.get(url) as response:
+            html = await response.text()
+            print(f"Baixei {url}: {len(html)} caracteres")
+            return html
+    except Exception as e:
+        print(f"Erro em {url}: {e}")
+        return None
+
+async def baixar_varias(urls):
+    """Baixa várias páginas ao mesmo tempo"""
+    async with aiohttp.ClientSession() as session:
+        tarefas = [baixar_pagina(session, url) for url in urls]
+        resultados = await asyncio.gather(*tarefas)
+        return resultados
+
+# Usar:
+urls = [
+    "https://python.org",
+    "https://github.com",
+    "https://stackoverflow.com"
+]
+
+# asyncio.run(baixar_varias(urls))
+```
+
+### Testes Automatizados
+
+#### Por Que Testar?
+
+Confesso que durante o curso eu não dava muita bola pra testes. "Funciona no meu computador" era o suficiente. Mas depois de quebrar a cara em projetos maiores, entendi a importância.
+
+**Analogia:** Testar é como verificar se as portas e janelas estão trancadas antes de dormir. Você pode não fazer, mas uma hora vai se arrepender.
+
+#### Testes com assert (Básico)
+
+A forma mais simples de testar:
+
+```python
+def soma(a, b):
+    return a + b
+
+def subtrair(a, b):
+    return a - b
+
+# Testes simples com assert
+assert soma(2, 3) == 5, "Erro na soma!"
+assert soma(-1, 1) == 0, "Erro com números negativos!"
+assert subtrair(10, 4) == 6, "Erro na subtração!"
+
+print("Todos os testes passaram!")
+```
+
+**Como funciona:** `assert condição, mensagem` - se a condição for False, levanta um AssertionError com a mensagem.
+
+#### unittest: Framework de Testes
+
+Python vem com o módulo `unittest` pra testes mais organizados:
+
+```python
+import unittest
+
+# Código a ser testado
+def calcular_media(notas):
+    if not notas:
+        return 0
+    return sum(notas) / len(notas)
+
+def eh_aprovado(media):
+    return media >= 7
+
+# Classe de testes
+class TestCalculos(unittest.TestCase):
+    """Testes para funções de cálculo"""
+    
+    def test_media_normal(self):
+        """Testa média com valores normais"""
+        self.assertEqual(calcular_media([7, 8, 9]), 8.0)
+    
+    def test_media_lista_vazia(self):
+        """Testa média com lista vazia"""
+        self.assertEqual(calcular_media([]), 0)
+    
+    def test_media_um_elemento(self):
+        """Testa média com um elemento"""
+        self.assertEqual(calcular_media([10]), 10)
+    
+    def test_aprovado_verdadeiro(self):
+        """Testa se 7+ é aprovado"""
+        self.assertTrue(eh_aprovado(7))
+        self.assertTrue(eh_aprovado(10))
+    
+    def test_aprovado_falso(self):
+        """Testa se <7 é reprovado"""
+        self.assertFalse(eh_aprovado(6.9))
+        self.assertFalse(eh_aprovado(0))
+
+# Executar testes
+if __name__ == "__main__":
+    unittest.main()
+```
+
+**Métodos úteis do unittest:**
+- `assertEqual(a, b)`: a == b
+- `assertNotEqual(a, b)`: a != b
+- `assertTrue(x)`: x é True
+- `assertFalse(x)`: x é False
+- `assertIn(a, b)`: a está em b
+- `assertRaises(Erro)`: verifica se levanta exceção
+
+#### pytest: Testes Mais Simples
+
+O `pytest` é uma alternativa mais moderna e com menos "cerimônia":
+
+```bash
+pip install pytest
+```
+
+```python
+# test_calculadora.py
+
+def soma(a, b):
+    return a + b
+
+def dividir(a, b):
+    if b == 0:
+        raise ValueError("Não pode dividir por zero!")
+    return a / b
+
+# Testes - funções que começam com test_
+def test_soma_positivos():
+    assert soma(2, 3) == 5
+
+def test_soma_negativos():
+    assert soma(-1, -1) == -2
+
+def test_soma_zero():
+    assert soma(0, 0) == 0
+
+def test_dividir_normal():
+    assert dividir(10, 2) == 5
+
+def test_dividir_por_zero():
+    import pytest
+    with pytest.raises(ValueError):
+        dividir(10, 0)
+```
+
+Pra rodar, basta executar `pytest` no terminal:
+
+```bash
+pytest test_calculadora.py -v
+```
+
+Saída:
+```
+test_calculadora.py::test_soma_positivos PASSED
+test_calculadora.py::test_soma_negativos PASSED
+test_calculadora.py::test_soma_zero PASSED
+test_calculadora.py::test_dividir_normal PASSED
+test_calculadora.py::test_dividir_por_zero PASSED
+
+5 passed in 0.02s
+```
+
+#### Fixtures: Preparando o Ambiente de Teste
+
+Às vezes você precisa preparar dados antes dos testes:
+
+```python
+import pytest
+
+@pytest.fixture
+def lista_alunos():
+    """Fixture que cria dados de teste"""
+    return [
+        {"nome": "Ana", "nota": 8.5},
+        {"nome": "Bruno", "nota": 6.0},
+        {"nome": "Carla", "nota": 9.0}
+    ]
+
+@pytest.fixture
+def aluno_vazio():
+    return {"nome": "", "nota": 0}
+
+def test_quantidade_alunos(lista_alunos):
+    """Usa a fixture lista_alunos"""
+    assert len(lista_alunos) == 3
+
+def test_melhor_nota(lista_alunos):
+    notas = [a["nota"] for a in lista_alunos]
+    assert max(notas) == 9.0
+
+def test_aluno_invalido(aluno_vazio):
+    assert aluno_vazio["nome"] == ""
+```
+
+**Por que fixtures?** Evita repetir código de preparação em cada teste. E se precisar mudar os dados de teste, muda só na fixture.
+
+#### TDD: Test-Driven Development
+
+Uma prática interessante é escrever os testes ANTES do código:
+
+1. Escreva um teste que falha
+2. Escreva o código mínimo pra passar
+3. Refatore se necessário
+4. Repita
+
+```python
+# 1. Primeiro, o teste (vai falhar porque a função não existe)
+def test_validar_cpf():
+    assert validar_cpf("123.456.789-09") == True
+    assert validar_cpf("111.111.111-11") == False  # CPFs repetidos são inválidos
+    assert validar_cpf("abc") == False
+
+# 2. Depois, implementa a função pra passar nos testes
+def validar_cpf(cpf):
+    # Remove pontuação
+    cpf = cpf.replace(".", "").replace("-", "")
+    
+    # Verifica tamanho
+    if len(cpf) != 11:
+        return False
+    
+    # Verifica se todos são iguais
+    if cpf == cpf[0] * 11:
+        return False
+    
+    # (implementação completa teria mais validações...)
+    return True
+```
+
+**Vantagem do TDD:** Você pensa no que a função DEVE fazer antes de como ela faz. Isso evita implementar coisas desnecessárias.
+
+---
+
+## Parte VIII: Dicas e Armadilhas Comuns
 
 Depois de passar por todos os labs e projetos, coletei os erros mais comuns que eu (e outros estudantes) cometemos. Aprender a identificar esses problemas economiza **horas** de debug!
 
@@ -3078,64 +3892,18 @@ except Exception as e:
 
 ## Conclusão
 
-Esta jornada pela programação Python cobriu desde conceitos fundamentais até projetos práticos completos. Começamos com simples funções e chegamos a desenvolver um sistema de receitas, um jogo de Campo Minado e o PyckageTools (uma ferramenta de segurança com conceitos de redes), passando por:
+Esta jornada pela programação Python cobriu desde conceitos fundamentais até projetos práticos completos. Começamos com simples funções e chegamos a desenvolver um sistema de receitas, um jogo de Campo Minado e o PyckageTools, passando por:
 
-### O Que Aprendemos
-
-**Fundamentos:**
-- Variáveis e tipos de dados dinâmicos
-- Entrada (`input()`) e saída (`print()`) de dados
-- Funções e o conceito de modularização
-- Condicionais (`if`, `elif`, `else`)
-- Loops (`for` e `while`)
-- A importância da indentação
-
-**Estruturas de Dados:**
-- Listas e seus métodos poderosos
-- Dicionários para dados estruturados
-- Tuplas imutáveis
-- Sets para operações matemáticas
-- Matrizes (listas de listas)
-
-**Programação Intermediária:**
-- Tratamento de erros com `try-except`
-- Menus interativos
-- Validação de entrada do usuário
-- List comprehensions
-
-**Lógica e Problemas Clássicos:**
-- Simulações (crescimento populacional)
-- Busca em sequências
-- Condicionais compostas
-- Filtragem de dados
-
-**Projetos Práticos:**
-- Leitura e processamento de arquivos
-- Sistema de busca de receitas
-- Jogo Campo Minado
-- Cópia profunda vs rasa com `copy`
-
-**Redes e Segurança (PyckageTools):**
-- Conceitos de sockets e comunicação em rede
-- DNS Resolver e Port Scanner
-- Validação e geração de senhas seguras
-- Módulo `string` e suas constantes
-- Ética em segurança da informação
-
-**Dicas e Armadilhas:**
-- Erros comuns de iniciantes
-- Boas práticas de código
-- Debugging básico
-
-### Filosofia de Aprendizado
-
-A abordagem didática com analogias do dia a dia e exemplos práticos torna conceitos abstratos mais acessíveis. A progressão natural do básico ao avançado, sempre com códigos funcionais, proporciona uma base sólida para qualquer programador.
-
-Python é uma linguagem que cresce com você - os mesmos conceitos básicos que aprendemos aqui são usados em análise de dados, inteligência artificial, desenvolvimento web e muito mais.
+- **Fundamentos**: Variáveis, tipos, funções, condicionais, loops, indentação
+- **Estruturas de Dados**: Listas, dicionários, tuplas, sets, matrizes
+- **Programação Intermediária**: `try-except`, menus, validação, list comprehensions
+- **Lógica e Algoritmos**: Simulações, busca, filtragem, problemas clássicos
+- **Projetos Práticos**: Leitura de arquivos, jogos, manipulação de texto
+- **Redes e Segurança**: Sockets, DNS, port scanning, gerenciamento de senhas
 
 ### Checklist do Iniciante
 
-Se você consegue fazer isso, já sabe o básico de Python:
+Se você consegue fazer tudo isso, pode se considerar com uma base sólida em Python:
 
 - [ ] Criar variáveis e fazer cálculos
 - [ ] Usar `input()` e `print()` para interagir com usuário
@@ -3149,48 +3917,33 @@ Se você consegue fazer isso, já sabe o básico de Python:
 
 ### Próximos Passos
 
-Com este guia completo, você tem:
-- **Referência técnica** para consultas
-- **Exemplos práticos** para adaptar
-- **Base sólida** para explorar bibliotecas
-- **Entendimento profundo** dos fundamentos
+Alguns recursos que me ajudaram bastante:
 
-### Recursos Adicionais
+- [Python Docs Oficial](https://docs.python.org/3/) - A documentação oficial é surpreendentemente boa
+- [PEP 8 - Style Guide](https://pep8.org/) - Pra quando quiser escrever código "bonito"
+- [Real Python](https://realpython.com/) - Tutoriais muito bem explicados
 
-- [Python Docs Oficial](https://docs.python.org/3/)
-- [PEP 8 - Style Guide](https://pep8.org/)
-- [Real Python](https://realpython.com/)
-- [Stackoverflow - Tag Python](https://stackoverflow.com/questions/tagged/python)
+### Recados Finais
 
-### Dicas Finais
+Lembro de ter anotado algumas coisas durante o curso que hoje fazem muito sentido:
 
-1. **Pratique regularmente** - Faça pequenos programas diariamente. Não precisa ser algo grandioso.
+> "Programe todo dia, nem que seja 10 minutos. É melhor pouco todo dia do que muito de vez em quando."
 
-2. **Leia as mensagens de erro** - Python é educativo até nos erros. Eles dizem exatamente o que está errado.
+> "Quando o código não funcionar, leia o erro. Sério. O Python quase sempre diz exatamente o que deu errado."
 
-3. **Entenda antes de copiar** - É tentador copiar código da internet, mas entender o que ele faz é mais valioso.
+> "Copiar código do Stack Overflow não é vergonha, mas tenta entender o que tá copiando. Se não entender agora, uma hora vai precisar."
 
-4. **Participe da comunidade** - Python tem uma das comunidades mais acolhedoras da programação.
+Acho que a maior lição que tirei desse curso foi que programação não é sobre decorar comandos - é sobre aprender a pensar de forma lógica. A sintaxe você esquece e pesquisa, a lógica fica pra sempre.
 
-5. **Pense em algoritmo** - A linguagem muda, a lógica permanece. Se você sabe pensar logicamente, qualquer linguagem fica mais fácil.
-
-6. **Escreva código legível** - Código é lido muito mais vezes do que escrito. Nomes claros e comentários ajudam você do futuro.
-
-Como sempre dizíamos nas aulas: "tamo junto" nesta jornada de aprendizado. Python é uma linguagem acessível que permite você crescer do iniciante até profissional sem precisar desaprender nada - cada conceito construi sobre o anterior.
+Como sempre dizíamos nas aulas: "tamo junto" nessa jornada. Python é uma linguagem que cresce com você - os mesmos conceitos básicos que aprendemos aqui são usados em análise de dados, IA, desenvolvimento web e muito mais.
 
 **Bons códigos e continue sempre aprendendo!** 🐍🚀
 
 ---
 
-*"A simplicidade é a sofisticação final."* - Leonardo da Vinci
+**Agradecimentos:**
 
-**Referências e Agradecimentos:**
-- Professores José Sapienza Ramos e Rodrigo Guerchon - Pela estruturação do curso
-- UFRJ - Pelo curso que inspirou este guia
-- Desec Security - Pelos conceitos de segurança usados no PyckageTools
-- Comunidade Python Brasil - Pelo material em português
-- Stack Overflow - Pela sabedoria coletiva
-- Guido van Rossum - Por criar uma linguagem tão elegante
+Aos professores José Sapienza Ramos e Rodrigo Guerchon pela estruturação do curso na UFRJ. Ao pessoal da Desec Security pelos conceitos de segurança que usei no PyckageTools. E a todos que contribuem com a comunidade Python Brasil.
 
 **Repositório do Trabalho Final:** [PyckageTools-UFRJ](https://github.com/matheuslaidler/PyckageTools-UFRJ)
 
