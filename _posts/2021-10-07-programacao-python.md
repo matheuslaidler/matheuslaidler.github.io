@@ -172,7 +172,7 @@ print(f"{nome:<10}")   # "Maria     " (10 espaços, alinhado à esquerda)
 print(f"{nome:^10}")   # "  Maria   " (10 espaços, centralizado)
 ```
 
-5. **`if __name__ == "__main__":`** - Truque para executar código apenas quando o arquivo é executado diretamente (não importado).
+5. **`if __name__ == "__main__":`** - Truque para executar código apenas quando o arquivo é executado diretamente (não importado). Explicação mais detalhada na [Parte VIII](#o-famoso-if-__name__--__main__).
 
 #### Python vs C: As Grandes Diferenças
 
@@ -2565,15 +2565,7 @@ import time
 def menu_principal():
     """Menu do programa PyckageTools"""
     print("=" * 30)
-    print("   PyckageTools - UFRJ")
-    print("=" * 30)
-    print("    Professores:")
-    print("  José Sapienza Ramos")
-    print("    Rodrigo Guerchon")
-    print("=" * 30)
-    print("       Aluno:")
-    print("    Matheus Laidler")
-    print("=" * 30)
+#.....................................#
     print("\n      MENU\n")
     print(" (a) DNS Resolver")
     print(" (b) Port Scanner")
@@ -3049,7 +3041,23 @@ funcao_lenta()          # funcao_lenta levou 1.0012 segundos
 soma_grande(10000000)   # soma_grande levou 0.2341 segundos
 ```
 
-**O `*args, **kwargs`:** Permite que o decorador funcione com qualquer função, independente de quantos argumentos ela receba.
+**Entendendo `*args` e `**kwargs`:** 
+
+Esses "nomes mágicos" permitem que uma função aceite qualquer quantidade de argumentos:
+- `*args` - captura argumentos posicionais extras como uma **tupla**
+- `**kwargs` - captura argumentos nomeados extras como um **dicionário**
+
+```python
+def funcao_flexivel(*args, **kwargs):
+    print(f"Args: {args}")      # Tupla com argumentos posicionais
+    print(f"Kwargs: {kwargs}")  # Dict com argumentos nomeados
+
+funcao_flexivel(1, 2, 3, nome="Ana", idade=25)
+# Args: (1, 2, 3)
+# Kwargs: {'nome': 'Ana', 'idade': 25}
+```
+
+No wrapper do decorador, usamos `*args, **kwargs` pra repassar qualquer argumento que a função original receba, independente de quantos sejam.
 
 #### Decoradores com Parâmetros
 
@@ -3228,6 +3236,7 @@ O programa fica parado esperando cada requisição terminar. Mas enquanto espera
 
 ```python
 import asyncio
+import time
 
 async def buscar_dados_async(url):
     """Função assíncrona - usa async def"""
@@ -3237,7 +3246,7 @@ async def buscar_dados_async(url):
     return f"dados de {url}"
 
 async def main():
-    inicio = asyncio.get_event_loop().time()
+    inicio = time.time()
     
     # Executa as 3 requisições "ao mesmo tempo"
     resultados = await asyncio.gather(
@@ -3246,7 +3255,7 @@ async def main():
         buscar_dados_async("site3.com")
     )
     
-    fim = asyncio.get_event_loop().time()
+    fim = time.time()
     print(f"Total: {fim - inicio:.1f}s")  # ~2 segundos!
     return resultados
 
@@ -3716,6 +3725,148 @@ for i in range(5):
 else:
     print("Completou!")  # Imprime (não teve break)
 ```
+
+### O Famoso `if __name__ == "__main__"`
+
+Esse é um dos trechos mais misteriosos pra quem tá começando. Você vê em quase todo código Python, mas o que diabos isso faz?
+
+**O Problema:**
+
+Imagine que você criou um arquivo `utilidades.py` com funções úteis:
+
+```python
+# utilidades.py
+def somar(a, b):
+    return a + b
+
+def multiplicar(a, b):
+    return a * b
+
+# Testando as funções:
+print(somar(2, 3))        # 5
+print(multiplicar(4, 5))  # 20
+```
+
+Agora você quer usar essas funções em outro arquivo:
+
+```python
+# meu_programa.py
+from utilidades import somar
+
+resultado = somar(10, 20)
+print(resultado)
+```
+
+**O que acontece?** Quando você roda `meu_programa.py`, os `print()` de teste do `utilidades.py` também executam! Você só queria importar as funções, não rodar os testes.
+
+**A Solução:**
+
+```python
+# utilidades.py (versão corrigida)
+def somar(a, b):
+    return a + b
+
+def multiplicar(a, b):
+    return a * b
+
+if __name__ == "__main__":
+    # Isso SÓ roda quando você executa utilidades.py diretamente
+    # Não roda quando alguém importa o arquivo
+    print("Testando as funções:")
+    print(somar(2, 3))        # 5
+    print(multiplicar(4, 5))  # 20
+```
+
+**Como funciona?** Python define uma variável especial `__name__` em todo arquivo:
+- Se você **executa o arquivo diretamente** → `__name__` vale `"__main__"`
+- Se você **importa o arquivo** → `__name__` vale o nome do arquivo (ex: `"utilidades"`)
+
+**Padrão comum em projetos:**
+
+```python
+def main():
+    """Função principal do programa"""
+    # Todo o código principal aqui
+    print("Programa iniciado!")
+    # ...
+
+if __name__ == "__main__":
+    main()
+```
+
+Isso deixa o código organizado: uma função `main()` com a lógica principal, e ela só é chamada se o arquivo for executado diretamente.
+
+**Por que isso importa?**
+1. Permite criar módulos reutilizáveis que também funcionam como scripts
+2. Evita que código de teste rode quando o arquivo é importado
+3. É o padrão da comunidade Python - outros programadores esperam esse comportamento
+
+### Funções Anônimas com Lambda
+
+Às vezes você precisa de uma função bem simples, só pra usar uma vez. Criar um `def` completo parece exagero. É aí que entra o `lambda`:
+
+```python
+# Função normal:
+def dobrar(x):
+    return x * 2
+
+# Mesma coisa com lambda:
+dobrar = lambda x: x * 2
+
+# Ambas funcionam igual:
+print(dobrar(5))  # 10
+```
+
+**Sintaxe:** `lambda argumentos: expressão`
+
+O lambda é uma função "de uma linha só". Não tem nome próprio (por isso "anônima"), não tem `return` (o resultado da expressão é retornado automaticamente), e só pode ter uma expressão.
+
+**Onde lambda brilha?** Em funções que recebem outras funções:
+
+```python
+# Ordenar lista de tuplas pelo segundo elemento
+alunos = [("Ana", 8.5), ("Bruno", 7.0), ("Carla", 9.0)]
+
+# Sem lambda (precisa criar função):
+def pegar_nota(aluno):
+    return aluno[1]
+alunos_ordenados = sorted(alunos, key=pegar_nota)
+
+# Com lambda (mais direto):
+alunos_ordenados = sorted(alunos, key=lambda x: x[1])
+print(alunos_ordenados)  # [('Bruno', 7.0), ('Ana', 8.5), ('Carla', 9.0)]
+```
+
+**Outro exemplo - filtrar números:**
+
+```python
+numeros = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+# Filtrar só os pares:
+pares = list(filter(lambda x: x % 2 == 0, numeros))
+print(pares)  # [2, 4, 6, 8, 10]
+
+# Dobrar todos:
+dobrados = list(map(lambda x: x * 2, numeros))
+print(dobrados)  # [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+```
+
+**map() e filter():**
+- `map(função, lista)` - aplica a função em cada elemento
+- `filter(função, lista)` - mantém só os elementos onde a função retorna True
+
+**Dica:** Em Python moderno, muita gente prefere list comprehensions ao invés de map/filter:
+
+```python
+# Equivalentes:
+pares = list(filter(lambda x: x % 2 == 0, numeros))
+pares = [x for x in numeros if x % 2 == 0]  # Mais Pythônico
+
+dobrados = list(map(lambda x: x * 2, numeros))
+dobrados = [x * 2 for x in numeros]  # Mais Pythônico
+```
+
+Mas lambda ainda é útil em `sorted()`, `min()`, `max()` com `key`, e em callbacks de bibliotecas.
 
 ### Dicas das Minhas Anotações Antigas
 
