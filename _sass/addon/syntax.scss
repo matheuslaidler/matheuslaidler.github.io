@@ -90,15 +90,16 @@ html {
         left: 0;
         background-color: var(--highlight-bg-color);
         z-index: 1;
-        min-width: 2.5rem;
-        max-width: 2.5rem;
-        margin-left: 0.5rem;
-        margin-right: 0.5rem;
-        padding-right: 0.25rem;
+        min-width: 3rem;
+        max-width: 3rem;
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 0.5rem;
+        padding-right: 0.75rem;
       }
 
       td:last-child {
-        padding-left: 0.5rem !important;
+        padding-left: 1rem !important;
       }
     }
   }
