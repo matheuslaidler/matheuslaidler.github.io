@@ -2,9 +2,9 @@
 title: "Guia Definitivo de Programação Python"
 description: "Jornada completa pela programação Python baseada na experiência pessoal que tive na UFRJ em 2021"
 date: 2021-10-07 12:00:00 -0300
-last_modified_at: 2025-12-17 20:00:40 -0300
+last_modified_at: 2025-12-18 01:00:00 -0300
 categories: [road2tech,development]
-tags: [python, programming, programacao, guia, complete-guide, iniciante, ufrj]
+tags: [python, programming, programacao, guia, complete-guide, iniciante, ufrj, sockets, segurança]
 pin: false
 math: true
 ---
@@ -23,7 +23,8 @@ math: true
 4. [Parte II: Estruturas de Dados](#parte-ii-estruturas-de-dados)
 5. [Parte III: Programação Intermediária](#parte-iii-programação-intermediária)
 6. [Parte IV: Projetos Práticos](#parte-iv-projetos-práticos)
-7. [Conclusão](#conclusão)
+7. [Parte V: PyckageTools - Redes e Segurança](#parte-v-pyckagetools---redes-e-segurança)
+8. [Conclusão](#conclusão)
 
 ---
 
@@ -35,7 +36,7 @@ A abordagem aqui é diferente dos manuais tradicionais - usamos analogias do dia
 
 Python é conhecida por sua sintaxe limpa e intuitiva - é quase como escrever em português com algumas palavras-chave em inglês. Diferentemente de C, que exige muita cerimônia (includes, tipos explícitos, compilação), Python é interpretada e permite que você se concentre na lógica em vez de detalhes técnicos.
 
-Queria aproveitar a introdução desta documentação para contextualizar: este material foi desenvolvido durante as aulas de COMP na UFRJ em 2020/2021. Juntei todos os scripts dos laboratórios, trabalhos e projetos pessoais que fiz durante o curso e tentei compactar neste documento. A ideia é que sirva tanto como guia de aprendizado quanto como referência para consultas futuras.
+Queria aproveitar a introdução desta documentação para contextualizar: este material foi desenvolvido durante as aulas de COMP1 na UFRJ em 2020/2021, com os professores **José Sapienza Ramos** e **Rodrigo Guerchon**. Foram eles que estruturaram os laboratórios e trabalhos que compõem este guia. Juntei todos os scripts dos labs, trabalhos e projetos pessoais que fiz durante o curso e tentei compactar neste documento. A ideia é que sirva tanto como guia de aprendizado quanto como referência para consultas futuras. Deixarei todos os arquivos do backup em um repositório no GitHub para quem tiver interesse.
 
 Este guia serve tanto para iniciantes quanto para quem quer relembrar conceitos, funcionando como uma referência completa da linguagem Python com foco prático em problemas reais.
 
@@ -109,9 +110,43 @@ if __name__ == "__main__":
 
 2. **`return`** - Devolve um valor da função. Sem `return`, a função retorna `None` (nada).
 
+```python
+# Com return - devolve um valor
+def somar(a, b):
+    return a + b
+
+resultado = somar(2, 3)  # resultado = 5
+
+# Sem return - não devolve nada útil
+def mostrar_mensagem(texto):
+    print(texto)
+    # sem return
+
+resultado = mostrar_mensagem("Olá")  # resultado = None
+```
+
+**O que é `None`?** É o "nada" do Python. Representa ausência de valor. É diferente de `0`, `""` ou `False` - é literalmente "nada aqui".
+
 3. **`print()`** - Escreve algo na tela. Em Python, `print()` é mais fácil que o `printf()` de C.
 
-4. **`f"texto {variavel}"`** - F-strings permitem inserir variáveis dentro de strings facilmente. Chamamos de "template".
+4. **`f"texto {variavel}"`** - F-strings permitem inserir variáveis dentro de strings facilmente. Chamamos de "template". É a forma mais moderna (Python 3.6+):
+
+```python
+nome = "Maria"
+idade = 25
+
+# F-string (recomendado)
+print(f"Olá, {nome}! Você tem {idade} anos.")
+
+# Formatação de números
+preco = 49.9
+print(f"Preço: R$ {preco:.2f}")  # R$ 49.90 (2 casas decimais)
+
+# Alinhamento
+print(f"{nome:>10}")   # "     Maria" (10 espaços, alinhado à direita)
+print(f"{nome:<10}")   # "Maria     " (10 espaços, alinhado à esquerda)
+print(f"{nome:^10}")   # "  Maria   " (10 espaços, centralizado)
+```
 
 5. **`if __name__ == "__main__":`** - Truque para executar código apenas quando o arquivo é executado diretamente (não importado).
 
@@ -193,11 +228,65 @@ python primeiro.py
 
 Se aparecer as mensagens, você está pronto!
 
+### Entrada e Saída Básica
+
+**`print()` - Mostrar informações na tela:**
+
+```python
+print("Olá, mundo!")           # Texto simples
+print(10 + 5)                   # Resultado de cálculo
+print("Resultado:", 10 + 5)    # Múltiplos valores separados por vírgula
+```
+
+**`input()` - Receber dados do usuário:**
+
+```python
+nome = input("Digite seu nome: ")  # Exibe mensagem e espera digitação
+print(f"Olá, {nome}!")
+
+# IMPORTANTE: input() SEMPRE retorna string!
+idade_texto = input("Sua idade: ")  # Se digitar 25, vem "25" (texto)
+idade_numero = int(idade_texto)      # Converter para número
+
+# Forma resumida:
+idade = int(input("Sua idade: "))    # Pede, converte e guarda
+```
+
+**Conversão de tipos:**
+
+| Função | O que faz | Exemplo |
+|--------|-----------|--------|
+| `int(x)` | Converte para inteiro | `int("25")` → `25` |
+| `float(x)` | Converte para decimal | `float("3.14")` → `3.14` |
+| `str(x)` | Converte para texto | `str(25)` → `"25"` |
+
 ### Ambiente Recomendado
 
 - **Editor**: VSCode, PyCharm Community ou Thonny (especial para iniciantes)
 - **Terminal**: Use `cmd` (Windows), `bash` (Linux) ou `zsh` (macOS)
 - **Gerenciador de pacotes**: `pip` (já vem com Python)
+
+### Instalando Bibliotecas Externas
+
+Python vem com muitas funcionalidades, mas às vezes precisamos de bibliotecas extras. O `pip` é o gerenciador de pacotes do Python:
+
+```bash
+# Instalar um pacote
+pip install nome_do_pacote
+
+# Exemplos comuns:
+pip install requests      # Para fazer requisições HTTP
+pip install numpy        # Para cálculos matemáticos
+pip install pandas       # Para análise de dados
+
+# Ver pacotes instalados
+pip list
+
+# Desinstalar
+pip uninstall nome_do_pacote
+```
+
+**Dica Windows:** Se `pip` não funcionar, tente `py -m pip install nome_do_pacote`.
 
 ---
 
@@ -267,6 +356,30 @@ def barco_atravessando_rio(largura_rio, velocidade_barco, velocidade_corrente):
 
 **Por que funções?** Sem elas, você teria que reescrever o cálculo toda vez. Com funções, escreve uma vez, usa infinitas vezes. É como a diferença entre decorar uma receita de bolo vs. ler a receita cada vez que faz.
 
+#### Operadores Aritméticos em Python
+
+Antes de avançar, vamos garantir que conhecemos todos os operadores:
+
+| Operador | Operação | Exemplo | Resultado |
+|----------|----------|---------|----------|
+| `+` | Adição | `5 + 3` | `8` |
+| `-` | Subtração | `5 - 3` | `2` |
+| `*` | Multiplicação | `5 * 3` | `15` |
+| `/` | Divisão | `7 / 2` | `3.5` |
+| `//` | Divisão inteira | `7 // 2` | `3` |
+| `%` | Módulo (resto) | `7 % 2` | `1` |
+| `**` | Potência | `2 ** 3` | `8` |
+
+**Divisão `/` vs `//`:**
+- `/` sempre retorna decimal: `10 / 3` = `3.333...`
+- `//` arredonda pra baixo: `10 // 3` = `3`
+
+**Operador `%` (módulo):**
+Retorna o resto da divisão. Super útil para:
+- Verificar se é par: `numero % 2 == 0`
+- Verificar divisível: `numero % 5 == 0`
+- Ciclar valores: `indice % tamanho_lista`
+
 ### Lab 2: Matemática e Manipulação de Números
 
 #### Trabalhando com Números
@@ -311,17 +424,45 @@ $$S_n = \frac{n(a_1 + a_n)}{2}$$
 ```python
 def numero_termos_pa(primeiro, ultimo, razao):
     """Calcula quantos termos tem uma PA"""
-    return (ultimo - primeiro) / razao
+    # Fórmula: n = (an - a1) / r + 1
+    return ((ultimo - primeiro) / razao) + 1
 
 def soma_pa(primeiro, ultimo, razao):
     """Calcula a soma de todos os termos da PA"""
     n = numero_termos_pa(primeiro, ultimo, razao)
     return (n * (primeiro + ultimo)) / 2
+
+# Exemplo: PA de 1 a 10 com razão 1
+# numero_termos_pa(1, 10, 1) → 10 termos
+# soma_pa(1, 10, 1) → 55
 ```
 
 #### Geometria com Módulo Math
 
-Python tem um módulo `math` para operações avançadas:
+Python tem um módulo `math` para operações matemáticas avançadas. Para usá-lo, precisamos **importar** no início do programa:
+
+```python
+import math
+
+# Constantes úteis
+print(math.pi)   # 3.141592653589793
+print(math.e)    # 2.718281828459045 (número de Euler)
+
+# Funções comuns
+math.sqrt(16)    # Raiz quadrada: 4.0
+math.pow(2, 3)   # Potência: 8.0 (igual a 2**3)
+math.ceil(3.2)   # Arredonda pra cima: 4
+math.floor(3.8)  # Arredonda pra baixo: 3
+math.fabs(-5)    # Valor absoluto: 5.0
+
+# Trigonometria (em radianos!)
+math.sin(math.pi/2)   # Seno de 90°: 1.0
+math.cos(0)           # Cosseno de 0°: 1.0
+math.radians(90)      # Converte graus para radianos
+math.degrees(math.pi) # Converte radianos para graus: 180.0
+```
+
+Agora alguns exemplos práticos:
 
 ```python
 import math
@@ -392,10 +533,35 @@ def pode_votar(idade, nacionalidade):
     if idade >= 18 and nacionalidade == "brasileira":
         return True
     return False
+```
 
-# 'and' = ambas devem ser verdadeiras
-# 'or' = pelo menos uma deve ser verdadeira
-# 'not' = inverte o resultado
+**Operadores Lógicos:**
+
+| Operador | Significado | Exemplo |
+|----------|-------------|--------|
+| `and` | Ambas verdadeiras | `True and False` → `False` |
+| `or` | Pelo menos uma | `True or False` → `True` |
+| `not` | Inverte | `not True` → `False` |
+
+**O que são booleanos?** São valores que só podem ser `True` (verdadeiro) ou `False` (falso). Toda comparação retorna um booleano:
+
+```python
+print(5 > 3)         # True
+print(10 == 10)      # True
+print("a" == "b")    # False
+print(not False)     # True
+```
+
+**Valores "falsy" em Python:** Além de `False`, alguns valores são considerados "falsos" em contextos booleanos:
+- `None`
+- `0` (zero)
+- `""` (string vazia)
+- `[]` (lista vazia)
+- `{}` (dicionário vazio)
+
+```python
+if lista:  # É equivalente a: if len(lista) > 0:
+    print("Lista tem elementos")
 ```
 
 #### Exemplo Prático: Cálculo de Impostos
@@ -525,27 +691,36 @@ print(f"{nome}: {media} - {status}")  # Maria: 7.3 - Aprovado
 
 #### Dicionários: Dados com Significado
 
-Enquanto listas usam índice numérico, dicionários usam "chaves":
+Enquanto listas usam índice numérico (posição), **dicionários** usam "chaves" (nomes). É como a diferença entre:
+- **Lista**: "Me dá o item na posição 3"
+- **Dicionário**: "Me dá o item chamado 'nome'"
 
 ```python
+# Criar dicionário com chaves e valores
 aluno = {
     "nome": "Matheus",
     "idade": 20,
     "matricula": 12345
 }
 
-# Acessar
+# Acessar valor pela chave
 print(aluno["nome"])  # "Matheus"
 
-# Adicionar
+# Adicionar novo par chave-valor
 aluno["email"] = "matheus@ufrj.br"
 
-# Verificar se existe
+# Verificar se chave existe (importante para evitar erros!)
 if "telefone" in aluno:
     print(aluno["telefone"])
 else:
     print("Telefone não registrado")
+
+# Forma segura: get() retorna None se não existir
+telefone = aluno.get("telefone")  # None, sem erro
+telefone = aluno.get("telefone", "Não informado")  # valor padrão
 ```
+
+**Por que `get()` é melhor?** Se você usar `aluno["chave_inexistente"]`, Python levanta um `KeyError` e o programa para. Com `get()`, ele retorna `None` (ou um valor padrão) sem quebrar.
 
 ---
 
@@ -625,7 +800,29 @@ for i, fruta in enumerate(frutas):
     print(f"{i}: {fruta}")
 ```
 
-**`range(n)`** cria uma sequência de números de 0 a n-1. É útil para loops.
+#### Entendendo `range()` - Gerador de Sequências
+
+`range()` cria uma sequência de números. É fundamental para loops em Python:
+
+```python
+# range(fim) - de 0 até fim-1
+for i in range(5):
+    print(i)  # 0, 1, 2, 3, 4
+
+# range(inicio, fim) - de inicio até fim-1
+for i in range(2, 6):
+    print(i)  # 2, 3, 4, 5
+
+# range(inicio, fim, passo) - com incremento personalizado
+for i in range(0, 10, 2):
+    print(i)  # 0, 2, 4, 6, 8 (de 2 em 2)
+
+# Contagem regressiva
+for i in range(5, 0, -1):
+    print(i)  # 5, 4, 3, 2, 1
+```
+
+**Dica:** `range()` não cria uma lista na memória - ele gera os números conforme necessário. Por isso é eficiente mesmo para sequências enormes.
 
 ### Lab 6: Dicionários - Estruturas Complexas
 
@@ -731,6 +928,30 @@ while contador < 5:
 **Armadilha comum:** Esquecer de atualizar a variável no `while` causa loop infinito (o programa trava). Se seu programa "congelar", provavelmente é isso!
 
 #### Exemplo Prático: Jogo de Dados
+
+Antes de ver o exemplo, precisamos conhecer o módulo `random`:
+
+**Módulo `random` - Números Aleatórios:**
+
+```python
+import random
+
+# Número inteiro aleatório entre a e b (inclusive)
+numero = random.randint(1, 6)  # Simula um dado: 1, 2, 3, 4, 5 ou 6
+
+# Escolher elemento aleatório de uma lista
+cores = ["vermelho", "azul", "verde"]
+cor = random.choice(cores)  # Uma das três
+
+# Embaralhar uma lista
+cartas = [1, 2, 3, 4, 5]
+random.shuffle(cartas)  # Modifica a lista original!
+
+# Número decimal entre 0 e 1
+chance = random.random()  # Ex: 0.7342518...
+```
+
+Agora sim, o jogo:
 
 ```python
 import random
@@ -906,6 +1127,8 @@ def melhor_volta_kart(tempos_pilotos):
     tempos_pilotos é uma lista de listas.
     Retorna (piloto, tempo, volta)
     """
+    # float('inf') é "infinito" - qualquer número real é menor
+    # Usamos como valor inicial para encontrar o mínimo
     melhor_tempo = float('inf')
     piloto_melhor = 0
     volta_melhor = 0
@@ -914,11 +1137,24 @@ def melhor_volta_kart(tempos_pilotos):
         for j, tempo in enumerate(tempos):
             if tempo < melhor_tempo:
                 melhor_tempo = tempo
-                piloto_melhor = i + 1
-                volta_melhor = j + 1
+                piloto_melhor = i + 1  # +1 porque pilotos começam em 1
+                volta_melhor = j + 1   # +1 porque voltas começam em 1
     
     return piloto_melhor, melhor_tempo, volta_melhor
+
+# Exemplo de uso:
+tempos = [
+    [65.2, 64.8, 65.5],  # Piloto 1: três voltas
+    [64.1, 64.5, 64.3],  # Piloto 2
+    [65.0, 64.2, 64.9]   # Piloto 3
+]
+
+piloto, tempo, volta = melhor_volta_kart(tempos)
+print(f"Melhor volta: Piloto {piloto}, {tempo}s na volta {volta}")
+# Resultado: Piloto 2, 64.1s na volta 1
 ```
+
+**Por que `float('inf')`?** Quando buscamos o menor valor, precisamos de um ponto de partida. Se começarmos com `0`, o primeiro tempo válido (ex: `64.5`) seria maior, e não atualizaríamos. Com "infinito", qualquer tempo real é menor.
 
 ### Lab 10: Integração - Sistema com Menu
 
@@ -1321,7 +1557,23 @@ def exibir_tabuleiro(tab):
     print("    " + "-" * 19)
 ```
 
-**`enumerate()`**: Retorna índice e valor ao mesmo tempo - muito útil para saber "em que linha estou".
+**`enumerate()`**: Retorna índice e valor ao mesmo tempo - muito útil para saber "em que linha estou". É melhor que usar `range(len(lista))`:
+
+```python
+frutas = ["maçã", "banana", "laranja"]
+
+# Forma chata:
+for i in range(len(frutas)):
+    print(f"{i}: {frutas[i]}")
+
+# Forma Pythônica:
+for i, fruta in enumerate(frutas):
+    print(f"{i}: {fruta}")
+
+# Començar de outro número:
+for i, fruta in enumerate(frutas, start=1):
+    print(f"{i}: {fruta}")  # 1, 2, 3 em vez de 0, 1, 2
+```
 
 #### Menu do Jogo
 
@@ -1349,6 +1601,368 @@ def menu_principal():
         print("Opção inválida!")
         menu_principal()
 ```
+
+---
+
+## Parte V: PyckageTools - Redes e Segurança
+
+### Trabalho Final (Prova): PyckageTools
+
+O verdadeiro trabalho final da disciplina - a prova em si - foi um projeto mais ambicioso que chamei de **PyckageTools**. Enquanto os labs focavam em conceitos isolados, aqui eu quis ir além do que foi ensinado em aula, explorando conceitos de **redes** e **segurança da informação** que estava aprendendo em cursos paralelos (como o da Desec). 
+
+Este projeto é importante não só pelo conteúdo técnico, mas por mostrar como Python permite que você combine conhecimentos de diferentes áreas rapidamente. Você não precisa entender 100% de redes para fazer coisas úteis!
+
+#### O Conceito do PyckageTools
+
+O PyckageTools é uma "caixa de ferramentas" de segurança que reúne várias funcionalidades:
+- **DNS Resolver**: Descobrir o IP de um site
+- **Port Scanner**: Verificar quais portas estão abertas
+- **Gerenciador de Senhas**: Verificar força e gerar senhas seguras
+- **FTP Brute Force**: Ataque de força bruta (para fins educacionais!)
+
+Vou explicar cada conceito novo que aparece aqui.
+
+#### Sockets: A Base da Comunicação em Rede
+
+**O que é um socket?**
+
+Pense em um socket como uma "tomada de comunicação" entre computadores. Quando você acessa um site, seu navegador cria um socket para "conversar" com o servidor do site. Cada comunicação na internet usa sockets por baixo dos panos.
+
+```python
+import socket
+
+# Criar um socket é simples:
+conexao = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+```
+
+**Entendendo os parâmetros:**
+- **`socket.AF_INET`**: Indica que vamos usar endereços IPv4 (como `192.168.1.1`)
+- **`socket.SOCK_STREAM`**: Indica que vamos usar TCP (conexão confiável, com confirmação)
+
+**Analogia:** É como ligar para alguém:
+- `AF_INET` é escolher usar telefone (e não carta ou pombo-correio)
+- `SOCK_STREAM` é escolher ligação comum (onde você sabe que a pessoa recebeu) vs SMS (onde pode perder)
+
+#### Descobrindo o IP de um Site (DNS Resolver)
+
+DNS (Domain Name System) é como uma "lista telefônica" da internet. Você sabe o nome do site (`google.com`), mas o computador precisa do "número de telefone" (IP).
+
+```python
+import socket
+
+def descobrir_ip(site):
+    """
+    Descobre o endereço IP de um site.
+    É como buscar um número na lista telefônica.
+    """
+    try:
+        ip = socket.gethostbyname(site)
+        print(f'O IP de {site} é: {ip}')
+        return ip
+    except socket.gaierror:
+        print(f'Erro: não foi possível resolver {site}')
+        return None
+
+# Testando:
+descobrir_ip("google.com")      # Algo como: 142.250.79.46
+descobrir_ip("github.com")      # Algo como: 140.82.121.3
+descobrir_ip("site-inexistente-xyz.com")  # Erro!
+```
+
+**Conceito importante:** `try-except` aqui é essencial! Se o site não existir ou houver problema de conexão, sem o tratamento de erro o programa simplesmente quebraria.
+
+#### Scan de Portas: Verificando Serviços
+
+**O que são portas?**
+
+Se o IP é como o endereço de um prédio, a porta é o número do apartamento. Cada serviço na internet usa uma porta específica:
+
+| Porta | Serviço | Para que serve |
+|-------|---------|----------------|
+| 80 | HTTP | Sites sem criptografia |
+| 443 | HTTPS | Sites seguros (com cadeado) |
+| 21 | FTP | Transferência de arquivos |
+| 22 | SSH | Acesso remoto seguro |
+| 53 | DNS | Resolução de nomes |
+| 3306 | MySQL | Banco de dados |
+| 3389 | RDP | Área de trabalho remota |
+
+**Por que verificar portas?**
+
+Em segurança da informação, saber quais portas estão abertas ajuda a entender quais serviços um servidor oferece - e potenciais vulnerabilidades.
+
+```python
+import socket
+
+def scan_portas(ip, portas=[80, 443, 21, 22, 53, 8080, 3306, 3389]):
+    """
+    Verifica quais portas estão abertas em um IP.
+    
+    Args:
+        ip: Endereço IP ou nome do site
+        portas: Lista de portas para verificar
+    """
+    print(f"Escaneando {ip}...")
+    print("Isso pode levar alguns segundos...\n")
+    
+    for porta in portas:
+        # Criar nova conexão para cada porta
+        conexao = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        
+        # Timeout de 1 segundo para não travar
+        conexao.settimeout(1)
+        
+        # connect_ex retorna 0 se conectou (porta aberta)
+        resultado = conexao.connect_ex((ip, porta))
+        
+        if resultado == 0:
+            print(f"Porta {porta}: ** ABERTA **")
+        else:
+            print(f"Porta {porta}: fechada")
+        
+        conexao.close()
+
+# Testar:
+# scan_portas("google.com")  # Vai mostrar 80 e 443 abertas
+```
+
+**Explicando `connect_ex()`:**
+- Diferente de `connect()`, não levanta exceção em caso de erro
+- Retorna 0 se conexão bem sucedida (porta aberta)
+- Retorna código de erro se falhou (porta fechada ou filtrada)
+
+**`settimeout(1)`** é importante: sem isso, o programa pode travar por muito tempo esperando uma porta que não responde.
+
+#### Gerenciando Senhas de Forma Segura
+
+O projeto também inclui funções para verificar e gerar senhas seguras:
+
+```python
+import string
+import random
+
+def verificar_senha_forte(senha):
+    """
+    Verifica se uma senha atende critérios de segurança.
+    Retorna True se forte, False se fraca.
+    """
+    # Critério 1: Mínimo de 8 caracteres
+    if len(senha) < 8:
+        print("❌ Adicione mais caracteres (mínimo 8)")
+        return False
+    
+    # Critério 2: Ter números
+    if not any(char.isdigit() for char in senha):
+        print("❌ Adicione números")
+        return False
+    
+    # Critério 3: Ter letras
+    if not any(char.isalpha() for char in senha):
+        print("❌ Adicione letras")
+        return False
+    
+    # Critério 4: Ter maiúsculas
+    if not any(char.isupper() for char in senha):
+        print("❌ Adicione letras maiúsculas")
+        return False
+    
+    # Critério 5: Ter minúsculas
+    if not any(char.islower() for char in senha):
+        print("❌ Adicione letras minúsculas")
+        return False
+    
+    # Critério 6: Ter caractere especial
+    if not any(char in string.punctuation for char in senha):
+        print("❌ Adicione caractere especial (!@#$%...)")
+        return False
+    
+    print("✅ Senha forte!")
+    return True
+```
+
+**Métodos úteis para strings:**
+- `char.isdigit()`: É um número?
+- `char.isalpha()`: É uma letra?
+- `char.isupper()`: É maiúscula?
+- `char.islower()`: É minúscula?
+- `string.punctuation`: String com todos caracteres especiais
+
+**A função `any()` - super útil!**
+
+`any(condição for item in lista)` retorna `True` se pelo menos um item atender a condição. É como perguntar: "Algum desses atende?"
+
+```python
+# Sem any():
+tem_numero = False
+for char in senha:
+    if char.isdigit():
+        tem_numero = True
+        break
+
+# Com any() (mais Pythônico):
+tem_numero = any(char.isdigit() for char in senha)
+```
+
+#### Gerando Senhas Seguras
+
+```python
+import random
+import string
+
+def gerar_senha(tamanho=16):
+    """
+    Gera uma senha aleatória forte.
+    
+    Args:
+        tamanho: Comprimento da senha (8-32 recomendado)
+    
+    Returns:
+        String com a senha gerada
+    """
+    if tamanho < 8:
+        print("Tamanho mínimo é 8 caracteres!")
+        return None
+    
+    # Conjunto de caracteres possíveis
+    caracteres = (
+        string.ascii_lowercase +  # a-z
+        string.ascii_uppercase +  # A-Z
+        string.digits +           # 0-9
+        string.punctuation        # !@#$%...
+    )
+    
+    # Gerar senha
+    senha = ''.join(random.choice(caracteres) for _ in range(tamanho))
+    
+    return senha
+
+# Testando:
+print(gerar_senha(12))  # Algo como: kP9@mL#2nXq!
+print(gerar_senha(16))  # Algo como: Hn5$vR&8mK2@pL9!
+```
+
+**`''.join(...)` explicado:**
+
+`join` junta uma lista de strings em uma só:
+```python
+letras = ['a', 'b', 'c']
+resultado = ''.join(letras)    # "abc"
+resultado = '-'.join(letras)   # "a-b-c"
+resultado = ' '.join(letras)   # "a b c"
+```
+
+#### O Menu Principal do PyckageTools
+
+```python
+import socket
+import random
+import string
+import time
+
+def menu_principal():
+    """Menu do programa PyckageTools"""
+    print("=" * 30)
+    print("   PyckageTools - UFRJ")
+    print("=" * 30)
+    print("    Professores:")
+    print("  José Sapienza Ramos")
+    print("    Rodrigo Guerchon")
+    print("=" * 30)
+    print("       Aluno:")
+    print("    Matheus Laidler")
+    print("=" * 30)
+    print("\n      MENU\n")
+    print(" (a) DNS Resolver")
+    print(" (b) Port Scanner")
+    print(" (c) Password Manager")
+    print(" (d) FTP Brute Force")
+    print(" (0) Sair\n")
+    
+    return input("> ").lower()
+
+def main():
+    """Loop principal"""
+    while True:
+        opcao = menu_principal()
+        
+        if opcao == '0':
+            print("Encerrando...")
+            break
+        elif opcao == 'a':
+            site = input("Site para resolver: ")
+            descobrir_ip(site)
+        elif opcao == 'b':
+            ip = input("IP para escanear: ")
+            scan_portas(ip)
+        elif opcao == 'c':
+            submenu_senha()
+        elif opcao == 'd':
+            print("⚠️  Use apenas em sistemas autorizados!")
+            # bruteforce_ftp() - para fins educacionais
+        else:
+            print("Opção inválida!")
+        
+        input("\nPressione Enter para continuar...")
+
+if __name__ == "__main__":
+    main()
+```
+
+#### Conceitos Importantes do Pyckage
+
+**1. Módulo `re` para Expressões Regulares**
+
+Expressões regulares (regex) são padrões para buscar texto:
+
+```python
+import re
+
+texto = "Status: 230 Login successful"
+
+# Buscar se "230" aparece no texto
+if re.search("230", texto):
+    print("Login foi bem sucedido!")
+```
+
+**2. Encoding em Sockets**
+
+Ao enviar dados por socket, precisamos converter para bytes:
+
+```python
+# Enviar string por socket
+mensagem = "Hello"
+socket.send(mensagem.encode('utf-8'))
+
+# Receber dados (vem em bytes)
+dados = socket.recv(1024)
+texto = dados.decode('utf-8')
+```
+
+**3. Constantes de `string`**
+
+O módulo `string` tem constantes úteis:
+
+```python
+import string
+
+print(string.ascii_lowercase)  # abcdefghijklmnopqrstuvwxyz
+print(string.ascii_uppercase)  # ABCDEFGHIJKLMNOPQRSTUVWXYZ
+print(string.digits)           # 0123456789
+print(string.punctuation)      # !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
+```
+
+#### Aviso Importante: Ética em Segurança
+
+O PyckageTools foi criado para **fins educacionais**. Técnicas como scan de portas e brute force:
+- ✅ São legais em sistemas que você tem autorização
+- ❌ São ILEGAIS em sistemas de terceiros sem permissão
+
+Na área de segurança, usamos essas técnicas para:
+- Testar nossos próprios sistemas
+- Participar de CTFs (Capture The Flag)
+- Trabalhar como pentester (com contrato!)
+
+Sempre aja de forma ética e dentro da lei! 🔐
 
 ### Conceitos Avançados dos Projetos
 
@@ -1559,12 +2173,13 @@ except Exception as e:
 
 ## Conclusão
 
-Esta jornada pela programação Python cobriu desde conceitos fundamentais até projetos práticos completos. Começamos com simples funções e chegamos a desenvolver um sistema de receitas e um jogo de Campo Minado, passando por:
+Esta jornada pela programação Python cobriu desde conceitos fundamentais até projetos práticos completos. Começamos com simples funções e chegamos a desenvolver um sistema de receitas, um jogo de Campo Minado e o PyckageTools (uma ferramenta de segurança com conceitos de redes), passando por:
 
 ### O Que Aprendemos
 
 **Fundamentos:**
 - Variáveis e tipos de dados dinâmicos
+- Entrada (`input()`) e saída (`print()`) de dados
 - Funções e o conceito de modularização
 - Condicionais (`if`, `elif`, `else`)
 - Loops (`for` e `while`)
@@ -1588,6 +2203,13 @@ Esta jornada pela programação Python cobriu desde conceitos fundamentais até 
 - Sistema de busca de receitas
 - Jogo Campo Minado
 - Cópia profunda vs rasa com `copy`
+
+**Redes e Segurança (PyckageTools):**
+- Conceitos de sockets e comunicação em rede
+- DNS Resolver e Port Scanner
+- Validação e geração de senhas seguras
+- Módulo `string` e suas constantes
+- Ética em segurança da informação
 
 ### Filosofia de Aprendizado
 
@@ -1633,10 +2255,14 @@ Como sempre dizíamos nas aulas: "tamo junto" nesta jornada de aprendizado. Pyth
 *"A simplicidade é a sofisticação final."* - Leonardo da Vinci
 
 **Referências e Agradecimentos:**
-- Professores da UFRJ - Pelo curso que inspirou este guia
+- Professores José Sapienza Ramos e Rodrigo Guerchon - Pela estruturação do curso
+- UFRJ - Pelo curso que inspirou este guia
+- Desec Security - Pelos conceitos de segurança usados no PyckageTools
 - Comunidade Python Brasil - Pelo material em português
 - Stack Overflow - Pela sabedoria coletiva
 - Guido van Rossum - Por criar uma linguagem tão elegante
+
+**Repositório:** Todo o código-fonte dos laboratórios e projetos está disponível no GitHub para consulta e estudo.
 
 ---
 
