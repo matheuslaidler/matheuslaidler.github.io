@@ -1,7 +1,7 @@
 ---
 title: "Guia Definitivo de Programação C/C++"
 description: "Jornada completa pela programação C baseada na experiência pessoal que tive na UFRJ em 2021"
-#date: 2025-05-18 12:00:00 -0300 #data dps da penultima revisao q fez uploadar -> ainda carece de revisão e melhorias
+date: 2022-05-18 12:00:00 -0300
 last_modified_at: 2025-11-18 20:00:40 -0300
 categories: [road2tech,development]
 tags: [c, programming, programacao, guia, complete-guide, gcc, unix, linux, matematica, decimal, c++]
@@ -69,6 +69,31 @@ int numeros[5];        // Uma prateleira com 5 caixinhas para números
 ```
 
 **Ponteiros** são como endereços postais - apontam para onde algo está na memória. Não se preocupe se parecer confuso no início, eles fazem sentido com a prática.
+
+#### Anatomia de um Programa C
+
+Antes de prosseguir, vamos entender a "cara" de um programa C básico:
+
+```c
+#include <stdio.h>    // 1. Inclusões de bibliotecas
+
+int main(void) {      // 2. Função principal - onde tudo começa
+    printf("Olá!");   // 3. Comandos (instruções)
+    return 0;         // 4. Retorno - diz "deu tudo certo"
+}                     // 5. Fechamento com chave
+```
+
+**Linha por linha:**
+
+1. **`#include <stdio.h>`** - É como pedir uma "caixa de ferramentas" emprestada. O `stdio.h` contém ferramentas para entrada/saída (como `printf` para escrever na tela). Sem isso, o computador não sabe o que é `printf`!
+
+2. **`int main(void)`** - Todo programa C precisa de uma função `main`. É o "ponto de partida" - quando você executa o programa, ele começa aqui. O `int` significa que vai retornar um número inteiro, e `void` significa que não recebe nenhuma informação de fora.
+
+3. **As chaves `{ }`** - Tudo entre as chaves pertence à função. É como os limites de uma receita.
+
+4. **`return 0;`** - Avisa ao sistema operacional: "Terminei e deu tudo certo!" (0 = sucesso, outros números = algum erro)
+
+5. **Ponto e vírgula `;`** - Cada instrução termina com `;`. É como o ponto final de uma frase. Esquecer o ponto e vírgula é um dos erros mais comuns de iniciantes!
 
 #### Conceitos Fundamentais: Alto vs Baixo Nível
 
@@ -294,6 +319,31 @@ projeto/
 └── README.md      # Documentação
 ```
 
+**O que são arquivos Header (.h)?**
+
+Arquivos `.h` (headers) são como "índices" ou "contratos". Eles declaram o que existe (funções, constantes) sem mostrar como funciona por dentro. O código real fica nos arquivos `.c`.
+
+**Por que separar?**
+- **Organização:** Fácil ver o que um módulo oferece
+- **Reutilização:** Vários arquivos `.c` podem usar o mesmo `.h`
+- **Compilação mais rápida:** Só recompila o que mudou
+
+**Exemplo prático:**
+```c
+// calculadora.h - O "contrato"
+int somar(int a, int b);      // Declara que existe uma função somar
+int multiplicar(int a, int b); // Declara que existe multiplicar
+
+// calculadora.c - A "implementação"
+#include "calculadora.h"
+int somar(int a, int b) { return a + b; }        // Aqui está o código real
+int multiplicar(int a, int b) { return a * b; }
+
+// programa.c - Quem usa
+#include "calculadora.h"  // Aspas = arquivo nosso; <> = biblioteca do sistema
+int resultado = somar(2, 3);  // Agora pode usar!
+```
+
 Agora vamos começar nossa jornada! 🚀
 
 ---
@@ -361,6 +411,16 @@ while ((c = getchar()) != EOF) {
 }
 ```
 
+**Explicando as peças novas:**
+
+- **`getchar()`** - Lê um único caractere da entrada. É como pegar uma letra de cada vez de um texto.
+
+- **`EOF`** - Significa "End Of File" (Fim do Arquivo). Quando não há mais nada para ler, `getchar()` retorna esse valor especial. É o sinal de "acabou".
+
+- **`++ndigit[...]`** - O `++` antes da variável incrementa (soma 1) antes de usar o valor. Se `ndigit[3]` vale 5, após `++ndigit[3]` ele vale 6.
+
+- **`c >= '0' && c <= '9'`** - Verifica se o caractere está entre '0' e '9'. O `&&` significa "E" (ambas condições devem ser verdadeiras).
+
 Em outras palavras, o programa pega o valor dos caracteres e os compara. É como se começasse assim: `digits= 0 0 0 0 0 0 0 0 0 0, white space = 0, other = 0`
 
 A cada espaço, quebra de linha ou tab, incrementa o 'white space'. Para cada caractere que não é número nem espaço, incrementa 'other'. Para cada dígito, incrementa a posição correspondente no array.
@@ -387,6 +447,24 @@ c = (getchar() != EOF)
 Assim, os únicos "caracteres" lidos seriam 1 ou 0 (resultados da comparação), causando contagem incorreta.
 
 **Observação importante:** Para pegar o número total de caracteres usados, podemos somar o 'other' com os números encontrados. Isso sem contar espaços e quebras de linha. Esta é uma propriedade do programa que serve para verificarmos a saída dele.
+
+#### Entendendo a Tabela ASCII
+
+Para entender o truque `c - '0'`, precisamos conhecer a **tabela ASCII**. ASCII é um padrão que associa cada caractere a um número:
+
+| Caractere | Número ASCII |
+|-----------|-------------|
+| '0' | 48 |
+| '1' | 49 |
+| '2' | 50 |
+| ... | ... |
+| '9' | 57 |
+| 'A' | 65 |
+| 'a' | 97 |
+
+Quando escrevemos `'0'` (com aspas simples), não estamos falando do número zero, mas do **caractere** '0', que vale 48 na tabela ASCII.
+
+**O truque mágico:** Se `c` contém o caractere '5' (ASCII 53), então `c - '0'` faz `53 - 48 = 5`. Transformamos o caractere no número correspondente!
 
 A natureza da tabela ASCII faz com que `c - '0'` seja sempre um número entre 0 e 9 quando c é um dígito. Observar isso prova que o statement `++ndigit[c - '0']` sempre funcionará porque o índice nunca cai fora dos limites do array, que é de zero a nove.
 
@@ -422,6 +500,20 @@ int main(void) {
 ```
 
 ### Tarefa 2: Função getline - Manipulação de Strings
+
+#### Conceito Importante: Constantes com #define
+
+Antes de mergulhar nesta tarefa, precisamos entender o `#define`. Ele cria uma **constante** - um valor que não muda durante o programa:
+
+```c
+#define MAXLINE 1000   // Define que MAXLINE vale 1000
+```
+
+**Por que usar?** Imagine que você usa o número 1000 em 50 lugares do código. Se precisar mudar para 2000, teria que alterar 50 vezes! Com `#define`, muda só em um lugar.
+
+**Convenção:** Constantes são escritas em MAIÚSCULAS para diferenciá-las de variáveis comuns.
+
+**O terminador nulo `\0`:** Toda string em C termina com um caractere especial invisível chamado "terminador nulo" (`\0`). Ele diz ao computador: "a string acaba aqui". Por isso, se você quer guardar 5 letras, precisa de espaço para 6 caracteres (5 + o `\0`).
 
 #### O Cenário Prático
 
@@ -692,6 +784,27 @@ Este processo lê caracteres consecutivos formando um número inteiro, fechando 
 
 #### Função Main - O Centro de Controle
 
+**Antes de ver o código, entenda o `switch`:**
+
+O `switch` é uma forma elegante de fazer múltiplas comparações. Em vez de vários `if-else if-else if...`, usamos:
+
+```c
+switch (variavel) {
+  case valor1:
+    // faz algo se variavel == valor1
+    break;       // IMPORTANTE: sai do switch
+  case valor2:
+    // faz algo se variavel == valor2
+    break;
+  default:
+    // faz algo se nenhum case combinou
+}
+```
+
+**`break`** é essencial! Sem ele, o código "escorre" para o próximo case. O **`default`** é o "caso contrário" - executa se nenhum case combinar.
+
+**Sobre `atoi()`:** A função `atoi()` (ASCII to Integer) converte uma string de texto em número. Por exemplo: `atoi("42")` retorna o número `42`.
+
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -782,6 +895,18 @@ O operador '&' mostra o endereço em memória onde uma variável está localizad
 IP significa "Internet Protocol". É o nome do protocolo de roteamento de redes como a Internet. Numa rede-IP, a cada computador um número de 32 bits é associado. Por exemplo, um computador na Internet poderia ter sido associado ao número 1 ou 2 ou 16909060. Qualquer número entre 0 e 2^32 - 1 bits serve.
 
 Suponha que um certo computador na Internet tenha sido associado ao número 16909060. O que se diz então é que esse computador tem endereço-IP 1.2.3.4.
+
+**Mas espera - o que é Little-Endian e Big-Endian?**
+
+Quando guardamos um número grande (que ocupa vários bytes) na memória, temos duas formas de organizá-lo:
+
+- **Big-Endian** ("ponta grande primeiro"): O byte mais significativo vem primeiro. Como escrevemos números normalmente: 1234 = mil duzentos e trinta e quatro.
+
+- **Little-Endian** ("ponta pequena primeiro"): O byte menos significativo vem primeiro. Seria como escrever 1234 de trás pra frente: 4321.
+
+**Analogia:** Imagine escrever uma data. Americanos escrevem Mês/Dia/Ano (MM/DD/YYYY), brasileiros escrevem Dia/Mês/Ano (DD/MM/YYYY). O mesmo dado, ordens diferentes!
+
+A maioria dos PCs usa Little-Endian. É importante saber disso quando você inspeciona a memória diretamente.
 
 Já sabemos que o número 16909060 é escrito na memória de um computador-little-endian como [04][03][02][01], sendo que cada grupo de colchetes representa um byte. Isso implica, portanto, que a notação de endereços-IP é big-endian. De fato, o que é chamado de "network byte order" - a convenção de que ordem usar quando dados são transmitidos via rede - é, por definição, big-endian.
 
