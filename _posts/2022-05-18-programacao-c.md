@@ -398,6 +398,21 @@ for (int i = 0; i < 10; ++i)
   ndigit[i] = 0;
 ```
 
+**Entendendo o laço `for`:**
+
+O `for` é uma estrutura de repetição (loop) com três partes:
+
+```c
+for (inicialização; condição; incremento)
+    comando;
+```
+
+1. **Inicialização** (`int i = 0`): Executa uma vez no início, criando uma variável contadora
+2. **Condição** (`i < 10`): Enquanto for verdadeira, o loop continua
+3. **Incremento** (`++i`): Executa após cada repetição
+
+Então `for (int i = 0; i < 10; ++i)` significa: "comece com i=0, enquanto i for menor que 10, execute o comando e depois some 1 em i". Isso repete o comando 10 vezes (i vai de 0 a 9).
+
 **O coração do programa - a contagem:**
 
 ```c
@@ -729,6 +744,10 @@ Para empilhar usa-se push(), para retirar usa-se pop(). O sp marca a próxima po
 
 #### Buffer de Entrada
 
+**O que é um buffer?** Um buffer é uma área de memória temporária usada para armazenar dados "em trânsito". Pense como uma sala de espera: os dados ficam ali temporariamente antes de serem processados.
+
+**Por que precisamos disso aqui?** Às vezes o programa lê um caractere a mais para saber se o número terminou (por exemplo, lê um espaço). Esse caractere extra precisa ser "devolvido" para ser lido depois. O buffer guarda esses caracteres "devolvidos".
+
 O programa usa um buffer para guardar informações temporariamente:
 
 ```c
@@ -764,6 +783,8 @@ int getop(char s[]) {
     return c; /* not a digit, not an integer */
   }
 ```
+
+**Sobre `isdigit()`:** Esta função verifica se um caractere é um dígito (0-9). Retorna um valor diferente de zero (verdadeiro) se for dígito, ou zero (falso) se não for. Precisa incluir `<ctype.h>` para usá-la.
 
 O primeiro while ignora espaços completamente. Se não é dígito, trata-se de operador. Para números multi-dígito:
 
@@ -939,6 +960,18 @@ gcc -o bytes-of-int bytes-of-int.c
 
 Esta tarefa foca numa calculadora que aceita argumentos via linha de comando, utilizando a biblioteca matemática do C.
 
+**Entendendo argc e argv:**
+
+Quando você executa um programa pelo terminal com argumentos, como `./calculadora 5 + 3`, o sistema passa essas informações para o programa através de dois parâmetros especiais:
+
+- **`argc`** (argument count): Um número que diz quantos argumentos foram passados. No exemplo `./calculadora 5 + 3`, argc seria 4 (o nome do programa conta!).
+
+- **`argv`** (argument vector): Um array contendo os argumentos como strings. No exemplo:
+  - `argv[0]` = "./calculadora"
+  - `argv[1]` = "5"
+  - `argv[2]` = "+"
+  - `argv[3]` = "3"
+
 O argv é um array de ponteiros para caracteres - essencialmente um array de strings: "argv[0], argv[1], argv[2]...". Poderíamos declarar como `char **argv` (ponteiro para ponteiro), mas `char *argv[]` é mais claro neste contexto.
 
 #### Compreendendo Arrays de Ponteiros vs Arrays Simples
@@ -1039,10 +1072,20 @@ Em outras palavras: estruturas não são como arrays, que decaem para ponteiros 
 
 #### Facilitando com typedef
 
+**O que é `typedef`?** A palavra `typedef` (type definition) cria um "apelido" para um tipo existente. É como dar um nome mais curto ou mais descritivo para algo e o utilizar como um atalho/alias.
+
+**Sintaxe:** `typedef tipo_original novo_nome;`
+
+**Exemplos simples:**
+```c
+typedef int Inteiro;           // Agora "Inteiro" é sinônimo de "int"
+typedef unsigned long ulong;   // "ulong" é mais curto que "unsigned long"
+```
+
 Para evitar repetir 'struct rational', criamos um sinônimo:
 
 ```c
-typedef struct rational Rational;
+typedef struct rational Rational;  // "Rational" agora substitui "struct rational"
 
 Rational mul(Rational r1, Rational r2) {
     Rational ret;
@@ -1144,7 +1187,20 @@ struct key table[] = {
 #define NKEYS ((sizeof table) / (sizeof table[0]) )
 ```
 
+**Entendendo o truque com `sizeof`:**
+
+O operador `sizeof` retorna o tamanho em bytes de uma variável ou tipo. O truque `sizeof table / sizeof table[0]` calcula quantos elementos há no array:
+- `sizeof table` = tamanho total do array em bytes
+- `sizeof table[0]` = tamanho de um elemento
+- Divisão = número de elementos!
+
+Isso é útil porque se adicionarmos mais keywords, o NKEYS se ajusta automaticamente.
+
 #### Funcionalidade Principal
+
+**Funções importantes usadas:**
+- **`isalpha(c)`**: Verifica se `c` é uma letra (A-Z ou a-z). Retorna verdadeiro ou falso.
+- **`strcmp(s1, s2)`**: Compara duas strings. Retorna 0 se forem iguais, negativo se s1 < s2, positivo se s1 > s2.
 
 O programa lê palavras, verifica se são alfabéticas e se estão na tabela de keywords:
 
@@ -1175,6 +1231,16 @@ Este programa lê arquivos de eventos com datas, formatando elegantemente a saí
 
 #### Técnicas Importantes
 
+**Glossário de funções usadas nesta tarefa:**
+
+| Função | O que faz |
+|--------|----------|
+| `fgets(str, n, arquivo)` | Lê uma linha do arquivo (até n-1 caracteres) |
+| `memset(ptr, valor, n)` | Preenche n bytes de memória com o valor |
+| `sscanf(str, formato, ...)` | Lê dados formatados de uma string (como scanf, mas de string) |
+| `snprintf(str, n, formato, ...)` | Escreve formatado em string (como printf, mas em string) |
+| `strlen(str)` | Retorna o tamanho da string |
+
 **memset() para limpeza:**
 ```c
 char event[MAXLINE]; 
@@ -1195,11 +1261,18 @@ Por que não usamos scanf() sem fgets() se scanf() é capaz de ler diretamente? 
 snprintf(date, sizeof date, "Dia %d de %s de %d", d, month(m), y);
 ```
 
-**Formatação condicional:**
+**Formatação condicional com operador ternário:**
 ```c
 printf("%-30s --> %-.30s%s\n", date, event, 
        strlen(event) > 30 ? "..." : "");
 ```
+
+**O operador ternário `? :`** é um "if compacto":
+```c
+condição ? valor_se_verdadeiro : valor_se_falso
+```
+
+No exemplo: se `strlen(event) > 30` for verdadeiro, usa "...", senão usa "" (vazio). É útil para expressões curtas inline.
 
 #### Diferença Fundamental: System Calls vs Library Functions
 
@@ -1228,13 +1301,23 @@ Um procedimento C é diferente de um procedimento que invoca o sistema operacion
 
 #### Criação de Processos
 
+**Glossário de tipos e funções de processos:**
+
+| Elemento | Significado |
+|----------|------------|
+| `pid_t` | Tipo especial para guardar IDs de processo (basicamente um inteiro) |
+| `fork()` | Cria uma cópia do processo atual ("clona" o programa) |
+| `getpid()` | Retorna o ID do processo atual |
+| `perror(msg)` | Imprime mensagem de erro do sistema (quando algo dá errado) |
+| `exit(n)` | Encerra o programa imediatamente com código n |
+
 ```c
 #include <stdio.h>
-#include <sys/types.h>
-#include <unistd.h>
+#include <sys/types.h>   // Define pid_t
+#include <unistd.h>      // Define fork(), getpid()
 
 int main(void){
-  pid_t pid = fork();
+  pid_t pid = fork();    // Aqui o programa se "divide em dois"!
 
   if (pid == -1) {
     printf("Erro no fork!\n");
@@ -1385,6 +1468,17 @@ int main(int argc, char *argv[]) {
 Isso cria uma pipeline equivalente a `./programa | less`.
 
 #### Conceitos de Pipes
+
+**Glossário de funções de pipes:**
+
+| Função/Constante | O que faz |
+|-----------------|----------|
+| `pipe(fd)` | Cria um "tubo" de comunicação. fd[0] = ponta de leitura, fd[1] = ponta de escrita |
+| `dup2(origem, destino)` | Faz o `destino` apontar para onde `origem` aponta (redireciona) |
+| `execl(prog, arg0, ..., NULL)` | Substitui o programa atual por outro (ex: executa "less") |
+| `wait(NULL)` | Espera um processo filho terminar |
+| `STDIN_FILENO` | Constante = 0, representa a entrada padrão |
+| `STDOUT_FILENO` | Constante = 1, representa a saída padrão |
 
 **Pipe** é um canal de comunicação unidirecional entre processos:
 - `pipe(fd)` cria dois descritores: fd[0] para leitura, fd[1] para escrita
