@@ -85,21 +85,22 @@ html {
     /* Fix line numbers overlapping code on mobile */
     @media all and (max-width: 576px) {
       td:first-child {
+        display: none; /* Hide line numbers on mobile to prevent overlap 
         display: table-cell;
         position: sticky;
         left: 0;
         background-color: var(--highlight-bg-color);
         z-index: 1;
-        min-width: 2.2rem;
-        max-width: 2.2rem;
+        min-width: 3rem;
+        max-width: 3rem;
         margin-left: 0;
         margin-right: 0;
-        padding-left: 0.25rem;
-        padding-right: 1.25rem;
+        padding-left: 0.5rem;
+        padding-right: 0.75rem;
       }
 
       td:last-child {
-        padding-left: 1.5rem !important;
+        padding-left: 1rem !important;*/
       }
     }
   }
