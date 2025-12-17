@@ -415,6 +415,18 @@ Então `for (int i = 0; i < 10; ++i)` significa: "comece com i=0, enquanto i for
 
 **O coração do programa - a contagem:**
 
+**Entendendo o `while`:**
+
+O `while` é outro tipo de loop (além do `for`). Ele repete enquanto uma condição for verdadeira:
+
+```c
+while (condição) {
+    // comandos que repetem
+}
+```
+
+A diferença do `for`: use `while` quando não sabe quantas vezes vai repetir, e `for` quando sabe (como "repita 10 vezes").
+
 ```c
 while ((c = getchar()) != EOF) {
   if (c >= '0' && c <= '9')
@@ -624,8 +636,14 @@ Em outras palavras, se você tem duas variáveis ligadas, modificar uma não sig
 #include <stdio.h>
 #define MAXLINE 1000
 
-int getln(char s[], int lim);
+int getln(char s[], int lim);  // Protótipo da função
+```
 
+**O que é um protótipo de função?** É uma "prévia" da função, declarada antes do `main`. Diz ao compilador: "essa função existe, aceita esses parâmetros e retorna esse tipo". O código real vem depois.
+
+**Por que usar?** O compilador lê de cima para baixo. Se `main` chama `getln` antes de `getln` ser definida, o compilador não sabe o que é `getln`. O protótipo resolve isso!
+
+```c
 int main(void) {
   int len; char ln[MAXLINE];
   for (int i = 1; (len = getln(ln, MAXLINE)) > 0; ++i)
@@ -719,9 +737,15 @@ Passo a passo:
 
 #### Implementação das Funções de Pilha
 
+**Conceitos importantes antes do código:**
+
+- **`void`** como tipo de retorno: Significa que a função não retorna nenhum valor. É uma função que "faz algo" mas não "devolve algo".
+
+- **Variáveis globais**: As variáveis `sp` e `val[]` abaixo estão fora de qualquer função, então são **globais** - visíveis e acessíveis por todas as funções do arquivo. Use com cuidado! Variáveis globais podem causar bugs difíceis de encontrar.
+
 ```c
-int sp = 0;  
-int val[MAXVAL];
+int sp = 0;           // Variável global: "stack pointer" (ponteiro da pilha)
+int val[MAXVAL];      // Variável global: array que armazena a pilha
 
 void push(int n) {
   if (sp < MAXVAL)
@@ -1003,7 +1027,15 @@ int main(int argc, char *argv[]) {
 
 Existem formas usuais como 'atoi()', 'strtol()' e 'strtoumax()', mas aqui aprendemos a implementar essas funções. É como aprender a fazer o motor - quando quebrar, saberemos consertar.
 
-O programa utiliza uma função interessante para este fim: `uint64_t array_to_uint64(char *s, uint64_t *u)`. É interessante ressaltar que 'uint' é 'unsigned int' que é um inteiro não sinalizado. Já o '64' é de '64 bits' mesmo.
+**Entendendo tipos "unsigned" (não sinalizados):**
+
+Números inteiros em C podem ser:
+- **Signed (com sinal)**: Guardam positivos E negativos. Um `int` de 32 bits vai de -2.147.483.648 até +2.147.483.647.
+- **Unsigned (sem sinal)**: Só guardam positivos (e zero). Um `unsigned int` de 32 bits vai de 0 até 4.294.967.295.
+
+**Quando usar unsigned?** Quando você sabe que o valor nunca será negativo (como tamanhos, contadores, endereços). Você ganha o dobro de alcance positivo!
+
+O programa utiliza uma função interessante para este fim: `uint64_t array_to_uint64(char *s, uint64_t *u)`. É interessante ressaltar que 'uint' é 'unsigned int' que é um inteiro não sinalizado. Já o '64' é de '64 bits' mesmo - permite números enormes (até 18 quintilhões!).
 
 Essa função trabalha percorrendo cada caractere da string, convertendo de caractere para dígito (`s[pos] - '0'`), verificando se é válido (< 10), e construindo o número final multiplicando por 10 e somando o novo dígito.
 
@@ -1056,13 +1088,17 @@ Para usar, declare uma variável do tipo struct. Assim você diz pro compilador:
 struct point p;    // CORRETO
 ```
 
-Isso aloca espaço na memória do tamanho da struct, chamando de 'p'. Agora podemos atribuir valores. A sintaxe para escrever um número em 'x' de struct point é: nome da região de memória onde está alocando a estrutura p1 + '.x' e o valor '= 0'. Perceba que seria impossível fazer isso sem alocarmos um espaço na memória (p1):
+Isso aloca espaço na memória do tamanho da struct, chamando de 'p'. Agora podemos atribuir valores.
+
+**O operador ponto `.`:** Para acessar um membro (campo) de uma struct, usamos o operador `.` (ponto). A sintaxe é `variavel.campo`.
 
 ```c
 struct point p1, p2;
-p1.x = 0; p1.y = 0; // Ponto Origem (0,0)
-p2.x = 1; p2.y = 1; // Ponto (1,1)
+p1.x = 0; p1.y = 0; // Ponto Origem (0,0) - acessa campos x e y de p1
+p2.x = 1; p2.y = 1; // Ponto (1,1) - acessa campos x e y de p2
 ```
+
+Pense assim: `p1.x` significa "o campo x que está dentro de p1". É como abrir uma caixa (p1) e pegar algo específico dentro dela (x).
 
 #### Diferença Crucial: Structs vs Arrays
 
@@ -1355,6 +1391,16 @@ int main(void){
 
 #### Union vs Struct
 
+**Tipos de dados em C - tamanhos comuns:**
+
+| Tipo | Tamanho típico | Alcance |
+|------|---------------|--------|
+| `char` | 1 byte | -128 a 127 (ou 0-255 se unsigned) |
+| `short int` | 2 bytes | -32.768 a 32.767 |
+| `int` | 4 bytes | ±2 bilhões |
+| `long` | 4-8 bytes | Depende do sistema |
+| `unsigned char` | 1 byte | 0 a 255 (só positivos) |
+
 Unions permitem diferentes tipos compartilharem o mesmo espaço de memória:
 
 ```c
@@ -1565,9 +1611,15 @@ int azul = cor & 0xFF;
 ```
 
 **Máscaras de bits:**
+
+**Prefixos numéricos em C:**
+- `0b` = binário (ex: `0b1010` = 10 em decimal)
+- `0x` = hexadecimal (ex: `0xFF` = 255 em decimal)
+- Sem prefixo = decimal normal
+
 ```c
-int valor = 0b11010110;
-int mascara = 0b00001111;
+int valor = 0b11010110;    // 214 em decimal, escrito em binário
+int mascara = 0b00001111;  // 15 em decimal
 int resultado = valor & mascara; // Isola 4 bits inferiores
 ```
 
