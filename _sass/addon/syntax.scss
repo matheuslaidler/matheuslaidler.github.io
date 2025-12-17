@@ -81,6 +81,26 @@ html {
         word-break: normal; /* Fixed iOS safari linenos code break */
       }
     }
+
+    /* Fix line numbers overlapping code on mobile */
+    @media all and (max-width: 576px) {
+      td:first-child {
+        display: table-cell;
+        position: sticky;
+        left: 0;
+        background-color: var(--highlight-bg-color);
+        z-index: 1;
+        min-width: 2.5rem;
+        max-width: 2.5rem;
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
+        padding-right: 0.25rem;
+      }
+
+      td:last-child {
+        padding-left: 0.5rem !important;
+      }
+    }
   }
 
   .lineno {
