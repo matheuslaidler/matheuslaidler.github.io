@@ -82,10 +82,11 @@ html {
       }
     }
 
-    /* Fix line numbers overlapping code on mobile */
-    @media all and (max-width: 576px) {
+    /* Fix line numbers overlapping code on mobile/tablet */
+    @media all and (max-width: 768px) {
       td:first-child {
-        display: none; /* Hide line numbers on mobile to prevent overlap 
+        display: none; /* Hide line numbers to prevent overlap */
+        /* - relembrando nossa ultima config caso quiser voltar -
         display: table-cell;
         position: sticky;
         left: 0;
@@ -100,7 +101,10 @@ html {
       }
 
       td:last-child {
-        padding-left: 1.75rem !important;*/
+        padding-left: 1.75rem !important;
+        /* adjust code padding^
+        }
+        */
       }
     }
   }
@@ -172,9 +176,14 @@ div[class^='language-'] {
   box-shadow: var(--language-border-color) 0 0 0 1px;
 
   .content > & {
+    @include ml-mr(0);
+
+    border-radius: $base-radius;
+    
+    /* backup code below || acabamos trocando para deixar o terminal aparecer por inteiro no mobile
     @include ml-mr(-1rem);
 
-    border-radius: 0;
+    border-radius: 0;*/
   }
 
   .highlight {
