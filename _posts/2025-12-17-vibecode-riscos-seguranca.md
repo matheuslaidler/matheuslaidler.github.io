@@ -435,9 +435,10 @@ curl --request-target /.env\ http://localhost:5173
 
 Isso é um clássico de vulnerabilidades em Windows: diferenças no tratamento de `/` vs `\` causando bypasses. O sistema de arquivos do Windows aceita ambos, mas a validação só verificava um.
 
-<img width="65%" alt="image" src="https://github.com/user-attachments/assets/3392e1ea-3634-4590-83a9-57b6794d150d" />
 
-> **Nota:** No GitHub Security Advisory dessa vulnerabilidade, há uma imagem demonstrando a exploração via Burp Suite - ferramenta comum em testes de penetração. A requisição com a barra invertida bypassa completamente a proteção `server.fs.deny` e retorna o conteúdo do arquivo `.env`.
+<img width="90%" alt="image" src="https://github.com/user-attachments/assets/3392e1ea-3634-4590-83a9-57b6794d150d" />
+
+> **Legenda:** Imagem tirada do GitHub Security Advisory dessa vulnerabilidade, nela está demonstrando a exploração via Burp Suite - ferramenta comum em testes de penetração. A requisição com a barra invertida bypassa completamente a proteção `server.fs.deny` e retorna o conteúdo do arquivo `.env`. Segue abaixo esta imagem:
 
 **Por que isso é grave pro projeto?**
 
@@ -448,7 +449,7 @@ DATABASE_URL="postgresql://postgres:gta123@localhost:5432/escola_em_foco"
 JWT_SECRET="escola_em_foco_secret_key_2024"
 ```
 
-Sim, a senha do banco de dados é **gta123**. Referência ao jogo? Provavelmente. Senha segura? Definitivamente não.
+Sim, a senha do banco de dados é **gta123**. Referência ao jogo? Provavelmente (claro que foi rsrs). Senha segura? Definitivamente não.
 
 Se alguém conseguisse ler esse arquivo:
 - Tem a senha do banco de dados (e uma senha trivial dessas, dá até pra chutar)
