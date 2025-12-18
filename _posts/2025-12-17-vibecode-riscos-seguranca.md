@@ -438,7 +438,7 @@ Isso é um clássico de vulnerabilidades em Windows: diferenças no tratamento d
 
 <img width="90%" alt="image" src="https://github.com/user-attachments/assets/3392e1ea-3634-4590-83a9-57b6794d150d" />
 
-> **Legenda:** Imagem tirada do GitHub Security Advisory dessa vulnerabilidade, nela está demonstrando a exploração via Burp Suite - ferramenta comum em testes de penetração. A requisição com a barra invertida bypassa completamente a proteção `server.fs.deny` e retorna o conteúdo do arquivo `.env`. Segue abaixo esta imagem:
+> **Legenda:** Imagem tirada do GitHub Security Advisory dessa vulnerabilidade, nela está demonstrando a exploração via Burp Suite - ferramenta comum em testes de penetração. A requisição com a barra invertida bypassa completamente a proteção `server.fs.deny` e retorna o conteúdo do arquivo `.env`.
 
 **Por que isso é grave pro projeto?**
 
