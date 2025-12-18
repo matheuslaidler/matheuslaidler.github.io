@@ -10,7 +10,7 @@ math: false
 mermaid: true
 ---
 
-# Vibe Coding: A Festa que Pode Virar Pesadelo
+# A festa dos sonhos que pode virar pesadelo
 
 > Uma análise profunda sobre os riscos de segurança em projetos gerados por IA, plataformas no-code e o fenômeno "vibe coding". Baseado em um estudo de caso real de um sistema escolar com 11 alertas de segurança detectados pelo Dependabot (4 de alta severidade) - e mais dezena de vulnerabilidades que nenhuma ferramenta encontrou. Esse caso real não é de uma escola de verdade, mas bem que poderia ser se as coisas continuarem assim. Eu mesmo que criei esse projeto na plataforma Lovable há 7 meses, e aqui vai meu relatório final - ou seja, quando falarmos neste artigo sobre dados de usuários (crianças ou professores) vazados, relaxem que estes não serão verdadeiros, o que quero mostrar é a possibilidade de ser.
 
@@ -156,7 +156,7 @@ O "Escola em Foco" é um sistema de gestão escolar criado com a plataforma **Lo
 
 Mas quando você abre o capô...
 
-### Visão Geral das Vulnerabilidades Encontradas
+### Visão geral das vulnerabilidades encontradas
 
 
 | Categoria | Quantidade | Detectadas Por |
@@ -169,7 +169,7 @@ Mas quando você abre o capô...
 
 E isso em um projeto pequeno criado há uns **7 meses** atrás e já tendo falhas sendo alertadas no segundo mês. Imagina projetos maiores ou mais antigos. O mais assustador é que as notificações do Dependabot continuam chegando - conforme novas vulnerabilidades são descobertas nas bibliotecas, mais alertas aparecem. É uma corrida que você nunca ganha se não ficar de olho.
 
-### Timeline de Descoberta das Vulnerabilidades
+### Timeline de descoberta das Vulnerabilidades
 
 Para ilustrar como as vulnerabilidades se acumulam ao longo do tempo:
 
@@ -186,7 +186,7 @@ Observe que em apenas 7 meses, o projeto acumulou 11 alertas de segurança sem q
 
 ## Vulnerabilidades nas Dependências (Supply Chain)
 
-### O Que é um Ataque de Supply Chain?
+### O que é um Ataque de Supply Chain?
 
 Antes de entrar nas vulnerabilidades específicas, preciso explicar o que é isso e por que importa.
 
@@ -234,7 +234,7 @@ Agora deixa eu explicar em detalhe as mais perigosas, porque só ver a tabela n�
 
 ---
 
-## As CVEs Mais Perigosas (Explicadas)
+## As CVEs mais perigosas (Explicadas)
 
 ### jsPDF: O PNG que Trava Tudo
 
@@ -285,7 +285,7 @@ npm ls jspdf
 
 ---
 
-### glob: Nomes de Arquivos que Executam Comandos
+### glob: Nomes de arquivos que executam comandos
 
 **CVE-2025-64756** - Severidade HIGH (CVSS 3.1: 7.5/10)
 
@@ -405,7 +405,7 @@ npm ls jws
 
 ---
 
-### Vite: Lendo Arquivos Secretos (Path Traversal)
+### Vite: Lendo arquivos Secretos (Path Traversal)
 
 **CVE-2025-62522** - Severidade MODERATE (CVSS 4.0: 6.3/10)
 
@@ -435,7 +435,7 @@ curl --request-target /.env\ http://localhost:5173
 
 Isso é um clássico de vulnerabilidades em Windows: diferenças no tratamento de `/` vs `\` causando bypasses. O sistema de arquivos do Windows aceita ambos, mas a validação só verificava um.
 
-<!-- INSERIR IMAGEM: Screenshot do Burp Suite demonstrando a exploração da vulnerabilidade CVE-2025-62522. A requisição GET /.env\ bypassa a proteção server.fs.deny e retorna o conteúdo do arquivo .env com as credenciais expostas. -->
+<img width="1593" height="616" alt="image" src="https://github.com/user-attachments/assets/3392e1ea-3634-4590-83a9-57b6794d150d" />
 
 > **Nota:** No GitHub Security Advisory dessa vulnerabilidade, há uma imagem demonstrando a exploração via Burp Suite - ferramenta comum em testes de penetração. A requisição com a barra invertida bypassa completamente a proteção `server.fs.deny` e retorna o conteúdo do arquivo `.env`.
 
@@ -556,7 +556,7 @@ Quando fui analisar o código manualmente - linha por linha, arquivo por arquivo
 
 O que vou mostrar agora é assustador. Não porque são vulnerabilidades super complexas - pelo contrário, são erros **básicos** que qualquer desenvolvedor com um mínimo de conhecimento em segurança evitaria. Mas a IA simplesmente... não evitou.
 
-### A Autenticação que Não Autentica
+### A autenticação que não autentica
 
 Vamos começar pelo mais grave. A autenticação. Aquela coisa que deveria garantir que só pessoas autorizadas acessem o sistema. No arquivo `src/contexts/AuthContext.tsx`, encontrei isso:
 
@@ -642,8 +642,6 @@ Sabe o que a IA fez pra "ajudar" os usuários? Colocou as credenciais **na próp
 
 A tela de login literalmente mostra: "Quer entrar como admin? Usa admin/admin!"
 
-<!-- INSERIR IMAGEM: Screenshot da tela de login do projeto "Escola em Foco" mostrando as credenciais de teste expostas diretamente na interface. Censurar informações sensíveis se necessário. -->
-
 Isso é o tipo de coisa que faz sentido durante desenvolvimento, num ambiente local, pra facilitar testes. Mas nunca, em hipótese alguma, deveria ir pra produção. É como deixar um post-it na porta dizendo "a chave tá embaixo do tapete".
 
 A IA não tem a noção de "isso é código de desenvolvimento" vs "isso vai pra produção". Ela gerou algo que funciona e facilita o uso - sem pensar que esse "facilitar" é exatamente o que um atacante precisa.
@@ -654,7 +652,7 @@ Enfim, por mais que possamos desconsiderar essa parte por ser algo que não iria
 
 ---
 
-### O JWT que Todo Mundo Conhece
+### O JWT que todo mundo conhece
 
 Continuando no tema de autenticação, olha só o que encontrei no `src/services/auth.service.ts`:
 
@@ -707,7 +705,7 @@ Nesse caso não tem como passar pano, o último tópico do login a gente até co
 
 ---
 
-### As Senhas que Qualquer Um Sabe
+### As senhas que qualquer um sabe
 
 Ainda no `auth.service.ts`, tem uma função de seed (popular o banco com dados iniciais):
 
@@ -864,7 +862,7 @@ O mais irônico? A vulnerabilidade do jsPDF que o Dependabot encontrou (CVE-2025
 
 ---
 
-### XSS: A Vulnerabilidade que Nunca Morre
+### XSS: A vulnerabilidade que nunca morre
 
 Já que tocamos no assunto de XSS várias vezes, vale aprofundar porque essa é uma das vulnerabilidades mais comuns e mais perigosas da web.
 
@@ -948,7 +946,7 @@ A proteção correta para os uploads envolveria:
 
 ---
 
-### Content Security Policy (CSP): A Defesa que Ninguém Configura
+### Content Security Policy (CSP): A Defesa que muitos não configuram
 
 Já que mencionei CSP como "camada extra de defesa", vale explicar o que é - porque é uma das proteções mais poderosas contra XSS, e quase ninguém usa.
 
@@ -996,7 +994,7 @@ app.use(helmet.contentSecurityPolicy({
 
 ---
 
-### CORS: Outra Configuração Esquecida
+### CORS: Outra configuração esquecida
 
 **CORS** (Cross-Origin Resource Sharing) controla quais domínios podem fazer requisições pra sua API. É outra configuração de segurança que projetos vibe coded geralmente ignoram ou configuram errado.
 
@@ -1077,7 +1075,7 @@ A diferença? A chave segura tem 128 caracteres aleatórios gerados criptografic
 
 ---
 
-### localStorage: O Cofre Sem Fechadura
+### localStorage: O cofre sem fechadura
 
 Falei brevemente sobre localStorage, mas vale aprofundar porque é um padrão que a IA adora usar - e que é perigoso.
 
@@ -1134,7 +1132,7 @@ A alternativa mais segura para tokens de autenticação é usar **cookies HttpOn
 
 ---
 
-### A Validação que Não Existe
+### A Validação que não existe
 
 Percorri o código todo procurando validações. Sabe o que encontrei? Praticamente nada.
 
@@ -1159,7 +1157,7 @@ Isso é especialmente grave em sistemas que usam Prisma ORM. O Prisma geralmente
 
 ---
 
-### Rate Limiting: A Proteção que Não Existe
+### Rate Limiting: A proteção inexistente
 
 Mencionei "sem rate limiting" várias vezes, mas nunca expliquei o que é. Então vamos lá.
 
@@ -1258,7 +1256,7 @@ Se os IDs são usados em URLs ou permissões (tipo `/class/class-1702859234567`)
 
 ---
 
-### Logs e Monitoramento: Você Nem Sabe que Foi Atacado
+### Logs e Monitoramento: Você nem sabe que foi atacado
 
 Uma ausência crítica que ninguém percebe até ser tarde demais: **logging de segurança**.
 
@@ -1292,7 +1290,7 @@ Sem logs, você está voando às cegas. Quando perceber que foi atacado, os dado
 
 ---
 
-## Afinal, Por Que a IA Gera Código Tão Inseguro?
+## Afinal, por que a IA gera Código tão Inseguro?
 
 Você deve estar se perguntando: "se a IA é tão inteligente, por que erra tanto em segurança?"
 
@@ -1317,7 +1315,7 @@ E esses são só os que foram descobertos e reportados. Quantos sistemas vulner�
 
 ---
 
-## "Mas E Se Eu Pedir Segurança no Prompt?"
+## "Mas e se eu pedir Segurança no Prompt?"
 
 Essa é a pergunta que inevitavelmente surge: "tá, mas e se eu pedir pra IA fazer o código seguro? E se eu mandar prompts específicos pedindo rate limiting, sanitização, autenticação forte?"
 
@@ -1325,7 +1323,7 @@ Essa é a pergunta que inevitavelmente surge: "tá, mas e se eu pedir pra IA faz
 
 Vou explicar por quê - e isso é crucial pra entender por que investir em segurança profissional ainda faz sentido mesmo na era da IA.
 
-### O Que Dá Pra Melhorar Via Prompt
+### O que dá pra melhorar via Prompt
 
 Primeiro, o que funciona. Se você tem conhecimento de segurança, consegue sim melhorar bastante o código gerado via prompts direcionados:
 
@@ -1340,7 +1338,7 @@ A IA vai gerar algo melhor que o padrão. Provavelmente vai usar bcrypt, vai ger
 
 Mas aqui começam os problemas.
 
-### O Problema do "Não Sei o Que Não Sei"
+### O problema do "não sei o que não sei"
 
 Pra pedir algo específico no prompt, você precisa **saber que aquilo existe**. E aí mora o paradoxo: se você já sabe o suficiente pra pedir todas as proteções necessárias, você provavelmente já tem capacidade suficiente para programar seguro sem a IA (ao menos agilizar o desenvolvimento com IA um pouco mais seguro).
 
@@ -1441,7 +1439,7 @@ Um pentester (testador de penetração) vai:
 
 **Exemplo real**: O OWASP lista no [Testing Guide](https://owasp.org/www-project-web-security-testing-guide/) mais de **90 categorias de testes** que deveriam ser feitos em uma aplicação web. Quantos desses você consegue cobrir via prompt?
 
-### O Custo Real de "Economizar" em Segurança
+### O custo real de "economizar" em segurança
 
 Vou ser direto: segurança profissional custa dinheiro. Um pentest pode custar de R$ 10.000 a R$ 100.000+ dependendo do escopo. Um especialista em AppSec (Application Security) ganha bem. Ferramentas enterprise são caras.
 
@@ -1457,7 +1455,7 @@ Segundo o [IBM Cost of a Data Breach Report 2024](https://www.ibm.com/reports/da
 
 Investir R$ 50.000 em segurança pra evitar um prejuízo de R$ 5.000.000 não é gasto - é seguro. É ROI positivo.
 
-### Então Não Dá Pra Usar IA Pra Nada de Segurança?
+### Então não dá pra usar IA pra nada de segurança?
 
 Dá sim. A IA é uma **ferramenta auxiliar** excelente:
 
@@ -1468,7 +1466,7 @@ Dá sim. A IA é uma **ferramenta auxiliar** excelente:
 
 O problema é usar IA como **substituto** de expertise, não como **complemento**.
 
-### O Que Realmente Funciona
+### O que realmente funciona
 
 Se você quer sistemas seguros de verdade, precisa combinar:
 
@@ -1485,7 +1483,7 @@ E se você não tem budget pra tudo isso? Priorize. Comece pelo OWASP Top 10. Co
 
 ---
 
-## O Padrão Que Se Repete
+## O padrão que se repete
 
 Lá no início do texto eu mostrei aquele ciclo típico do vibe coding: descreve, gera, "funcionou!", deploy, próxima feature. Agora que você viu todas essas vulnerabilidades, dá pra entender melhor por que esse ciclo é tão perigoso.
 
@@ -1506,43 +1504,43 @@ Sabe o que ainda piora a situação? projetos pequenos podem ter a capacidade de
 
 ---
 
-## Um Resumo do Estrago
+## Um resumo do estrago
 
 Vou fazer um resumão do que encontramos no projeto **Escola em Foco**:
 
 | O Que | Onde | Gravidade |
 |-------|------|-----------|
-| Login mock admin/admin | AuthContext.tsx | Crítico |
-| Credenciais expostas NA PRÓPRIA TELA de login | Login.tsx | Crítico |
-| JWT secret previsível | .env + auth.service.ts | Crítico |
-| Fallback pra "default_secret" | auth.service.ts | Crítico |
-| `.env` NÃO está no `.gitignore` | .gitignore | Crítico |
-| Senha do banco exposta (gta123) | .env | Crítico |
-| XSS via innerHTML (Stored XSS) | pdfGenerator.ts, componentes | Crítico |
-| **IDOR/BOLA em PDFs e recursos** | **URLs com IDs previsíveis** | **Alto** |
-| Senhas de seed triviais | auth.service.ts + seed-students.ts | Alto |
-| Upload de imagem sem validação (logo + perfil) | SchoolSettingsTab.tsx, ProfileSettings | Alto |
-| Cadeia de elevação de privilégio | localStorage → isAdmin | Alto |
-| Dados sensíveis no localStorage | Vários arquivos | Médio |
-| IDs previsíveis (timestamp + Math.random) | class.service.ts, attendance.service.ts | Médio |
-| Zero validação/sanitização de inputs | Todo o projeto | Médio |
-| 11 CVEs em dependências | package.json | Variado |
+| Login mock admin/admin | AuthContext.tsx | **Crítico** |
+| Credenciais expostas NA PRÓPRIA TELA de login | Login.tsx | **Crítico** |
+| JWT secret previsível | .env + auth.service.ts | **Crítico** |
+| Fallback pra "default_secret" | auth.service.ts | **Crítico** |
+| `.env` NÃO está no `.gitignore` | .gitignore | **Crítico** |
+| Senha do banco exposta (gta123) | .env | **Crítico** |
+| XSS via innerHTML (Stored XSS) | pdfGenerator.ts, componentes | **Crítico** |
+| IDOR/BOLA em PDFs e recursos | URLs com IDs previsíveis | **Alto** |
+| Senhas de seed triviais | auth.service.ts + seed-students.ts | **Alto** |
+| Upload de imagem sem validação (logo + perfil) | SchoolSettingsTab.tsx, ProfileSettings | **Alto** |
+| Cadeia de elevação de privilégio | localStorage → isAdmin | **Alto** |
+| Dados sensíveis no localStorage | Vários arquivos | **Médio** |
+| IDs previsíveis (timestamp + Math.random) | class.service.ts, attendance.service.ts | **Médio** |
+| Zero validação/sanitização de inputs | Todo o projeto | **Médio** |
+| 11 CVEs em dependências | package.json | **Variado** |
 
 **Tempo de existência do projeto:** 7 meses
 
-**Total de vulnerabilidades identificadas:** 26+ (11 CVEs + 15+ manuais, incluindo IDOR/BOLA)
+**Total de vulnerabilidades identificadas:** 26+ (11 CVEs + 15+ manuais)
 
 **Verificações de segurança:** Zero (aparentemente)
 
 **Tipo de dados:** Informações de crianças/estudantes
 
-Isso é um projeto real... que poderia estar rodando em uma escola real com dados reais de crianças reais.
+Isso é um projeto concreto... e que poderia estar rodando em uma escola real com dados reais de crianças reais.
 
 ---
 
-## Como Não Cair Nessa
+## Como não cair nessa
 
-### Pra Quem Desenvolve
+### Pra quem desenvolve
 
 **Primeira regra: nunca confie cegamente.** Código gerado por IA é um ponto de partida, não um produto final. Você precisa revisar, entender, e questionar cada linha... e é por isso que a área pode crescer ainda mais por conta dessa febre de vibe coding, vai ser tanta aplicação insegura que um profissional bom de segurança vai fazer a festa.
 
@@ -1598,7 +1596,7 @@ Se você é usuário de uma plataforma que foi criada com vibe coding:
 
 ---
 
-## Pra Finalizar
+## Para Finalizar
 
 Eu não escrevi esse artigo pra demonizar vibe coding ou IAs geradoras de código. Essas ferramentas são incríveis e democratizam o desenvolvimento de software. Mais gente pode criar coisas úteis, e isso é positivo.
 
@@ -1683,9 +1681,9 @@ Pra facilitar a leitura, especialmente pra quem não é da área técnica:
 | CVE-2025-58751 | Vite | Symlink Bypass | CWE-22, CWE-200, CWE-284 | LOW | ≥6.3.6 |
 | CVE-2025-58752 | Vite | HTML Bypass | CWE-23, CWE-200, CWE-284 | LOW | ≥6.3.6 |
 
-### Pra Estudar Mais
+### Para Estudar Mais
 
-#### Pesquisas Acadêmicas sobre Segurança em Código Gerado por IA
+#### Pesquisas acadêmicas sobre segurança em código gerado por IA
 
 - **"Asleep at the Keyboard?"** (Pearce et al., IEEE S&P 2022) - Estudo clássico que analisou 1.689 programas gerados pelo GitHub Copilot e encontrou que **aproximadamente 40% continham vulnerabilidades**. Disponível em [arXiv:2108.09293](https://arxiv.org/abs/2108.09293)
 - **"Vibe Coding in Practice"** (Waseem et al., 2025) - Análise de débito técnico e guidelines para uso sustentável. [arXiv:2512.11922](https://arxiv.org/abs/2512.11922)
