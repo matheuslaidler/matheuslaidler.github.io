@@ -1,10 +1,10 @@
 ---
-title: "Vibe Coding: Os Riscos de Segurança que Ninguém Te Conta"
+title: "Vibe Coding: Analisando riscos na prática"
 description: "Análise completa de vulnerabilidades em projetos gerados por IA e plataformas no-code/low-code - um estudo de caso real"
 date: 2025-12-17 20:00:00 -0300
 last_modified_at: 2025-12-18 12:00:00 -0300
 categories: [wayofsec,appsec]
-tags: [segurança, vulnerabilidades, vibecode, nocode, lowcode, lovable, ia, supply-chain, dependabot, cve, owasp]
+tags: [segurança, vulnerabilidades, vibecode, nocode, lowcode, lovable, ia, supply-chain, dependabot, cve, owasp, xss]
 pin: false
 math: false
 mermaid: true
@@ -435,7 +435,7 @@ curl --request-target /.env\ http://localhost:5173
 
 Isso é um clássico de vulnerabilidades em Windows: diferenças no tratamento de `/` vs `\` causando bypasses. O sistema de arquivos do Windows aceita ambos, mas a validação só verificava um.
 
-<img width="1593" height="616" alt="image" src="https://github.com/user-attachments/assets/3392e1ea-3634-4590-83a9-57b6794d150d" />
+<img width="65%" alt="image" src="https://github.com/user-attachments/assets/3392e1ea-3634-4590-83a9-57b6794d150d" />
 
 > **Nota:** No GitHub Security Advisory dessa vulnerabilidade, há uma imagem demonstrando a exploração via Burp Suite - ferramenta comum em testes de penetração. A requisição com a barra invertida bypassa completamente a proteção `server.fs.deny` e retorna o conteúdo do arquivo `.env`.
 
