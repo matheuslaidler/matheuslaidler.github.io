@@ -392,12 +392,17 @@ su robot
 
 Nossa reverse shell não tem um **PTY (Pseudo Terminal)** alocado, necessário para comandos interativos como `su`.
 
+Através de pesquisa podemos achar a cola que nos ajuda nisso:
+
+<img width="50%" alt="image" src="https://github.com/user-attachments/assets/33f7988a-a408-45c0-939d-7d8dbe427271" />
+
 ### 7.2 Upgrade da shell com Python
 
 Verificamos se Python está disponível:
 
 ```bash
 which python
+whereis python
 ```
 
 Spawning um PTY:
@@ -502,6 +507,7 @@ cd /root
 ls -la
 cat key-3-of-3.txt
 ```
+<img width="95%" alt="image" src="https://github.com/user-attachments/assets/d893332c-4669-4c0a-8e41-b5343fc2358f" />
 
 **🚩 TERCEIRA FLAG ENCONTRADA:**
 
