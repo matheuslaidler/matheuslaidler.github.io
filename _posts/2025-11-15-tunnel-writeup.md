@@ -9,7 +9,7 @@ comments: true
 
 ---
 
-# 📝 Writeup: Tunnel (HackingClub Machine)
+# Writeup: Tunnel (HackingClub Machine)
 
 ### HTTP/2 Cleartext Tunnel (h2c), Nginx Bypass, Node Inspector RCE e Docker Escape
 

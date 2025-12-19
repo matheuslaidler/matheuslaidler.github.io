@@ -9,7 +9,7 @@ comments: true
 
 ---
 
-# 📝 Writeup: Mr. Robot (TryHackMe)
+# Writeup: Mr. Robot (TryHackMe)
 
 ### WordPress Exploitation, Brute Force, Reverse Shell e Privilege Escalation via SUID
 
@@ -291,7 +291,7 @@ Após editar o arquivo (por exemplo, `archive.php` do tema TwentyFifteen):
 curl http://10.10.70.104/wp-content/themes/twentyfifteen/archive.php
 ```
 
-**Resultado:** Conexão recebida no netcat! 🎉
+**Resultado:** Conexão recebida no netcat!
 
 ```bash
 $ whoami
@@ -591,6 +591,6 @@ cat key-3-of-3.txt
 
 ---
 
-**Nota:** Esta é uma máquina excelente para iniciantes que querem praticar enumeração web, exploração de CMS e técnicas básicas de privilege escalation (escalação de privilégios). Para finalizar, deixaremos claro que a série 'Mr. Robot' é realmente altamente recomendada para quem gosta de hacking! :D
+**Nota:** Esta é uma máquina excelente para iniciar com praticas de enumeração web, exploração de CMS e técnicas básicas de privilege escalation (escalação de privilégios). Para finalizar, deixaremos claro que a série 'Mr. Robot' é realmente altamente recomendada para quem gosta de hacking! :D
 
 ---

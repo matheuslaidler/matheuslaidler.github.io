@@ -9,15 +9,14 @@ comments: true
 ---
 
 # Computação Forense à primeira vista
-Introdução geral para a área tecnológica de forense computacional.
 
-# Conhecendo a área
+Se você já se perguntou como investigadores conseguem recuperar arquivos deletados, encontrar evidências em computadores ou descobrir se um arquivo foi alterado, a resposta está na computação forense. É uma área fascinante que mistura tecnologia com investigação, e neste texto vou explicar os conceitos fundamentais pra quem está começando a se interessar pelo assunto.
 
-A computação forense é uma área da ciência da computação que se dedica a investigar e analisar dados digitais com o objetivo de encontrar evidências ou informações relevantes para casos judiciais, criminais ou administrativos. A computação forense envolve diversas etapas, desde a aquisição de imagem dos dispositivos de armazenamento até a recuperação de arquivos apagados ou ocultos. Neste texto, vamos explicar um pouco mais sobre cada uma dessas etapas e como elas podem ajudar a solucionar crimes ou problemas envolvendo dados digitais.
+## O que é e pra que serve
 
-# Tópicos e etapas importantes
+A computação forense é basicamente a ciência de investigar dados digitais. O objetivo é encontrar evidências ou informações relevantes pra casos judiciais, criminais ou até administrativos. Envolve desde copiar dados de um HD de forma que nada seja alterado, até recuperar aquele arquivo que alguém "deletou pra sempre" (spoiler: deletar não é tão permanente quanto parece).
 
-Vamos passar um pente fino para clarear e apresentar sobre alguns tópicos importantes desta área da tecnologia investigativa
+Vou passar pelos principais tópicos e etapas dessa área, explicando cada um de forma que faça sentido mesmo pra quem nunca mexeu com isso.
 
 ## Aquisição de imagem
 

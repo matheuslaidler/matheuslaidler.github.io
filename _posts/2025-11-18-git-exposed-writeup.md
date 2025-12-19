@@ -9,7 +9,7 @@ comments: true
 
 ---
 
-# 📝 Git Exposed (HackingClub Machine)
+# Git Exposed (HackingClub Machine)
 
 ### Fundamentos do Git, Versionamento e Exploração de Repositórios Expostos
 
@@ -720,6 +720,6 @@ git gc --prune=now --aggressive
 
 Resolução desta máquina documentada em vídeo, foi postado no youtube caso prefira acompanhar a resolução da máquina em áudio visual:
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/vP4L4LUKzwA?si=uB3uchNY8mWLx2b8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe width="90%" src="https://www.youtube.com/embed/vP4L4LUKzwA?si=uB3uchNY8mWLx2b8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
  - Problema com o vídeo? então clique [aqui](https://www.youtube.com/watch?v=vP4L4LUKzwA) para ver diretamente do youtube.

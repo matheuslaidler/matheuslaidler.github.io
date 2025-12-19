@@ -8,90 +8,57 @@ pin: false
 comments: true
 ---
 
-# 💬 Comunicação de dados e Protocolos
+# Comunicação de dados e Protocolos
 
-## Redes de Computadores: Uma Visão Geral
+Esse resumão foi feito com base em questões de prova da faculdade, então além de servir como material de estudo, tem as respostas das questões no final. Achei interessante compartilhar porque acaba cobrindo bastante coisa sobre protocolos de rede de forma prática.
 
-As redes de computadores desempenham um papel crucial na conectividade e comunicação modernas. Uma arquitetura comumente utilizada é o modelo em camadas, como nos modelos OSI e TCP/IP, que organiza as funcionalidades em diferentes camadas. Serviços são essenciais nesse contexto, sendo conjuntos de operações oferecidos por uma camada à camada superior, sem revelar os detalhes de implementação. Um serviço atua como uma interface entre camadas, onde a inferior é o provedor e a superior é a usuária. *(1)*
+## Redes de Computadores: Visão Geral
 
-## Protocolos de Transporte na Internet: TCP e UDP
+Quando falamos de redes de computadores, precisamos entender que tudo funciona em camadas - tanto no modelo OSI (7 camadas) quanto no TCP/IP (4 camadas). Cada camada oferece um "serviço" pra camada de cima, como se fosse uma linha de montagem onde cada estação faz seu trabalho sem precisar saber como a anterior ou a próxima funcionam.
 
-A camada de transporte na Internet desempenha um papel vital no transporte de mensagens entre aplicações cliente e servidor. Dois protocolos principais, TCP e UDP, são fundamentais nesse contexto. 
+## Os dois reis da camada de transporte: TCP e UDP
 
-### Fatores de escolha entre TCP e UDP:
+Na camada de transporte, dois protocolos dominam o jogo: TCP e UDP. A escolha entre eles depende do que você precisa.
 
-**Latência**: UDP tem menor latência por não precisar estabelecer conexão
-**Confiabilidade**: TCP garante entrega e ordem, UDP não
-**Overhead**: TCP tem maior overhead devido aos controles
-**Tempo real**: UDP é preferível para aplicações que precisam de resposta imediata
+**Quando usar TCP:** Se você precisa de confiabilidade - que os dados cheguem completos, na ordem certa, sem perda. Navegação web, email, download de arquivos... tudo isso usa TCP.
 
-O TCP oferece serviços orientados à conexão, garantindo a entrega de mensagens e controle de fluxo. Em contraste, o UDP é não orientado à conexão, sendo mais econômico, mas sem garantias de confiabilidade ou controle de fluxo. *(2)*
+**Quando usar UDP:** Se você precisa de velocidade e aceita perder um pacote ou outro. Jogos online, streaming, videochamadas... o UDP é a escolha certa.
 
-### Controles avançados do TCP:
+O TCP tem mecanismos bem interessantes pra garantir que tudo funcione:
 
-**Flow Control**: Mecanismo que impede que o remetente sobrecarregue o receptor
-- Usa janela deslizante (sliding window)
-- Receptor anuncia tamanho da janela disponível
-- Remetente ajusta velocidade de envio
+**Flow Control** é tipo um controle de velocidade. O receptor diz pro emissor "calma aí, tô sobrecarregado" através de uma janela deslizante. Assim ninguém "afoga" o outro com dados demais.
 
-**Congestion Control**: Evita congestionamento na rede
-- Slow Start: Começa devagar e aumenta exponencialmente
-- Congestion Avoidance: Crescimento linear após limite
-- Fast Recovery: Recuperação rápida de perdas
+**Congestion Control** é parecido, mas olha pra rede como um todo. O TCP começa mandando poucos dados (Slow Start), vai aumentando exponencialmente até detectar congestionamento, depois cresce de forma linear (Congestion Avoidance). Se perder pacote, reduz a velocidade drasticamente.
 
-Tendo em mente o que falamos, como o UDP ser "mais rápido" que o TCP, mas sem confiabilidade de entrega, veremos como / onde esses protocolos são utilizados;
+### Protocolos que usam TCP
 
-### TCP (Transmission Control Protocol)
+Vou listar os principais porque é bom ter essa referência na cabeça:
 
-Alguns exemplos adicionais de protocolos de rede que operam sobre tcp:
+**FTP** - Transferência de arquivos. Quando você faz upload/download via FTP, precisa que o arquivo chegue inteiro, então faz total sentido usar TCP.
 
-1. **FTP (File Transfer Protocol)**
-   - **Uso:** Transferência de arquivos entre um cliente e um servidor.
-   - **Descrição:** O FTP é comumente usado para upload e download de arquivos entre dispositivos em uma rede. Ele utiliza o TCP para garantir uma transferência confiável de dados.
-2. **SMTP (Simple Mail Transfer Protocol)**
-   - **Uso:** Envio de e-mails entre servidores de e-mail.
-   - **Descrição:** O SMTP é usado para enviar e-mails através da Internet. Ele utiliza o TCP para garantir a entrega confiável de mensagens entre servidores de e-mail.
-3. **DNS (Domain Name System)**
-   - **Uso:** Resolução de nomes de domínio para endereços IP.
-   - **Descrição:** O DNS converte nomes de domínio legíveis por humanos em endereços IP. Ele pode operar sobre UDP para consultas simples e sobre TCP para transações mais longas ou zonas de transferência.
-4. **SSH (Secure Shell)**
-   - **Uso:** Acesso remoto seguro a dispositivos.
-   - **Descrição:** O SSH fornece uma maneira segura de acessar dispositivos remotos. Ele utiliza o TCP para estabelecer uma conexão segura e criptografada para comandos e transferência de arquivos.
-5. **HTTPS (Hypertext Transfer Protocol Secure)**
-   - **Uso:** Transferência segura de dados na web.
-   - **Descrição:** O HTTPS é uma 'versão segura' do HTTP e é usado para transmitir dados de maneira segura pela web. Ele utiliza o TCP para estabelecer uma conexão segura, geralmente usando o TLS/SSL para criptografar os dados transmitidos.
-6. **POP3 (Post Office Protocol 3)**
-   - **Uso:** Recuperação de e-mails do servidor.
-   - **Descrição:** O POP3 é usado por clientes de e-mail para recuperar mensagens do servidor. Opera sobre o TCP para garantir a confiabilidade na transferência de dados.
-7. **SNMP (Simple Network Management Protocol)**
-   - **Uso:** Gerenciamento e monitoramento de dispositivos de rede.
-   - **Descrição:** O SNMP é usado para coletar informações e gerenciar dispositivos de rede. Pode operar sobre UDP para consultas simples e sobre TCP para operações mais complexas.
+**SMTP** - Envio de emails. Seu email precisa chegar no servidor, não pode se perder no meio do caminho.
 
-### UDP (User Datagram Protocol)
+**DNS** - Resolução de nomes. Na real, DNS usa os dois - UDP pra consultas rápidas (a maioria) e TCP pra transferências de zona entre servidores.
 
-Alguns exemplos adicionais de protocolos de rede que operam sobre udp:
+**SSH** - Acesso remoto seguro. Seus comandos precisam chegar na ordem certa, imagina o caos se não chegassem.
 
-1. **DNS (Domain Name System)**
-   - **Uso:** Resolução de nomes de domínio para endereços IP.
-   - **Descrição:** O DNS pode operar sobre UDP para consultas rápidas e simples. As consultas DNS são geralmente pequenas e podem se beneficiar da natureza não orientada à conexão do UDP.
-2. **DHCP (Dynamic Host Configuration Protocol)**
-   - **Uso:** Atribuição dinâmica de configuração de rede a dispositivos.
-   - **Descrição:** O DHCP utiliza o UDP para fornecer automaticamente configurações de IP e outras informações de rede a dispositivos quando se conectam a uma rede.
-3. **TFTP (Trivial File Transfer Protocol)**
-   - **Uso:** Transferência de arquivos simples.
-   - **Descrição:** O TFTP é um protocolo simples de transferência de arquivos usado para transferir arquivos entre um cliente e um servidor. Ele opera sobre o UDP devido à sua simplicidade e baixo overhead.
-4. **SNMP (Simple Network Management Protocol)**
-   - **Uso:** Gerenciamento e monitoramento de dispositivos de rede.
-   - **Descrição:** O SNMP pode operar sobre UDP para operações de consulta mais simples. A natureza sem conexão do UDP é adequada para consultas rápidas de informações de gerenciamento.
-5. **NTP (Network Time Protocol)**
-   - **Uso:** Sincronização de relógios em uma rede.
-   - **Descrição:** O NTP é usado para sincronizar relógios em dispositivos de uma rede. Ele utiliza o UDP para transmitir informações de tempo de maneira eficiente.
-6. **VoIP (Voice over Internet Protocol)**
-   - **Uso:** Transmissão de voz em chamadas pela Internet.
-   - **Descrição:** Muitas implementações de VoIP, como o protocolo SIP (Session Initiation Protocol), usam o UDP devido à sua baixa latência e à tolerância a pequenas perdas de pacotes, que são mais aceitáveis em serviços de voz em tempo real.
-7. **Syslog**
-   - **Uso:** Envio de mensagens de log em uma rede.
-   - **Descrição:** O Syslog é usado para enviar mensagens de log de dispositivos de rede para um servidor de log. A natureza sem conexão do UDP permite um envio rápido de mensagens, embora não garanta a entrega.
+**HTTPS** - Web segura. Igual ao HTTP, mas com TLS/SSL por cima criptografando tudo.
+
+**POP3** - Download de emails. Precisa da confiabilidade do TCP pra garantir que seus emails cheguem inteiros.
+
+### Protocolos que usam UDP
+
+**DNS** - Já mencionei, mas pra consultas simples o UDP resolve mais rápido.
+
+**DHCP** - Quando você conecta numa rede e recebe um IP automaticamente. Precisa ser rápido, e se perder um pacote, o dispositivo pede de novo.
+
+**TFTP** - Transferência de arquivos simplificada. Menos recursos que o FTP, usado em situações específicas como boot de rede.
+
+**NTP** - Sincronização de relógios. Se um pacote se perder, o próximo corrige de qualquer forma.
+
+**VoIP** - Chamadas de voz. Se perder um pedacinho da voz, é menos pior que ter delay. Por isso UDP com sua baixa latência ganha aqui.
+
+**Syslog** - Logs de sistema. Se perder um log, paciência - o importante é não atrasar o sistema gerando logs.
 
 Vale lembrar que, embora o UDP seja mais leve que o TCP, ele não oferece garantias de entrega ou ordenação de pacotes, sendo mais adequado para casos em que a perda ocasional de pacotes é **aceitável**.
 
