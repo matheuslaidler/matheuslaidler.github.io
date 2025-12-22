@@ -629,13 +629,13 @@ Ao fazer code review de segurança, alguns erros são recorrentes. Aqui vão alg
 
 **Assumir que framework protege tudo**: Django escapa por padrão, mas `autoescape=False` existe. Laravel tem proteção contra CSRF, mas precisa ser usada corretamente. Frameworks ajudam, mas não são mágica.
 
-## Considerações Finais
+## Considerações finais e como está alinhado com Bug Bounty
 
 Code review de segurança é uma skill que melhora com prática. Quanto mais código vulnerável você analisar, mais rápido vai reconhecer padrões. Os exercícios desse documento são um bom começo, mas o ideal é praticar com código real - projetos open source, CTFs focados em code review, ou até seu próprio código antigo (você vai se surpreender).
 
 Uma coisa que aprendi: todo desenvolvedor escreve código vulnerável às vezes. O importante é ter processos pra pegar isso antes de ir pra produção. Code review, análise estática automatizada no CI/CD, e uma cultura onde segurança é responsabilidade de todo mundo, não só do "time de segurança".
 
-E olha, code review não serve só pra quem trabalha interno numa empresa. Se você faz bug bounty, saber ler código é um diferencial absurdo. A maioria dos hunters fica só rodando nuclei, ffuf, e esperando que alguma ferramenta cuspa uma vulnerabilidade pronta. E tudo bem, ferramentas ajudam muito - mas quando todo mundo usa as mesmas ferramentas, todo mundo acha as mesmas coisas. O que sobra são as vulnerabilidades que exigem entendimento mais profundo da aplicação.
+E olha, code review não serve só pra quem trabalha interno numa empresa. Se você faz bug bounty (pesquisada por falhas de segurança em empresas através de programas de recompensas), saber ler código é um diferencial absurdo - e isso foi falado até pelo Coradi/crd0x49 (top 1 na BugHunt com +19315 pontos) em chamada no discord com a galera tentando aprender sua metodologia. A maioria dos hunters fica só rodando nuclei, ffuf, e esperando que alguma ferramenta cuspa uma vulnerabilidade pronta. E tudo bem, ferramentas ajudam muito - mas quando todo mundo usa as mesmas ferramentas, todo mundo acha as mesmas coisas. O que sobra são as vulnerabilidades que exigem entendimento mais profundo da aplicação.
 
 Já parou pra analisar os JavaScripts de uma aplicação? Muita gente ignora, mas ali tem um mapa do tesouro escondido. Endpoints internos, lógica de autenticação, parâmetros que não aparecem na interface, funções administrativas "escondidas". Às vezes um JS de uma funcionalidade esquecida - tipo aquele recurso beta que a empresa lançou há 3 anos e ninguém mais usa - ainda tá lá, exposto, chamando APIs que ninguém mais monitora. Imagina achar isso num programa do Mercado Livre ou de qualquer big tech? É o tipo de coisa que ferramenta automatizada não pega porque ela não *entende* o que tá olhando.
 
