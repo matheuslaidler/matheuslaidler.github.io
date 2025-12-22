@@ -2,7 +2,7 @@
 title: Desenvolvimento Web na Prática
 description: 'Guia Do zero ao deploy com HTML, CSS, JavaScript, PHP, MySQL, autenticação e segurança básica'
 author: matheus
-tags: ["web development", "html", "css", "javascript", "php", "mysql", "backend", "frontend", "programação", "xampp", "RCE", "sql injection", "xss", "session hijacking"]
+tags: ["web development", "html", "css", "javascript", "php", "mysql", "backend", "frontend", "programação", "xampp", "RCE", "sql injection", "XSS", "session hijacking", "CSRF"]
 categories: ["Road2Tech"]
 pin: false
 comments: true
@@ -691,7 +691,9 @@ sistema_contatos/
 
 ### Arquivos do includes/
 
-Esses são os arquivos base que serão usados por todas as páginas.
+A pasta `includes/` contém os arquivos de configuração que serão reutilizados em todas as páginas. Separar assim evita repetição de código e facilita manutenção - se precisar mudar a senha do banco, muda em um lugar só.
+
+**conexao.php** é o arquivo de conexão com o banco de dados. Usamos PDO porque é mais seguro e flexível que as funções antigas `mysql_*`. As opções `ERRMODE_EXCEPTION` faz o PHP lançar exceções em caso de erro (em vez de falhar silenciosamente), e `FETCH_ASSOC` retorna os resultados como arrays associativos.
 
 <details markdown="1">
 <summary><strong>conexao.php - Conexão com o banco</strong></summary>
@@ -721,20 +723,25 @@ try {
 
 </details>
 
+**funcoes.php** centraliza funções utilitárias usadas em várias páginas. A função `sanitizar()` limpa inputs contra XSS. A `redirecionar()` faz redirect de forma segura (com `exit` pra garantir que o código para). As funções de mensagem permitem passar feedback entre páginas via sessão. E as funções de CSRF geram e validam tokens pra proteger formulários.
+
 <details markdown="1">
 <summary><strong>funcoes.php - Funções auxiliares</strong></summary>
 
 ```php
 <?php
+// Limpa string contra XSS - converte caracteres especiais em entidades HTML
 function sanitizar($string) {
     return trim(htmlspecialchars($string, ENT_QUOTES, 'UTF-8'));
 }
 
+// Redireciona e para a execução (importante o exit!)
 function redirecionar($url) {
     header("Location: $url");
     exit;
 }
 
+// Sistema de mensagens flash - persiste entre requisições via sessão
 function mensagemSessao($tipo, $texto) {
     $_SESSION['mensagem'] = ['tipo' => $tipo, 'texto' => $texto];
 }
@@ -744,7 +751,22 @@ function exibirMensagem() {
         $msg = $_SESSION['mensagem'];
         $classe = $msg['tipo'] == 'sucesso' ? 'msg-sucesso' : 'msg-erro';
         echo "<div class='mensagem $classe'>{$msg['texto']}</div>";
-        unset($_SESSION['mensagem']);
+        unset($_SESSION['mensagem']);  // Remove após exibir (só mostra uma vez)
+    }
+}
+
+// Proteção CSRF - gera input hidden com token único
+function csrfToken() {
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return '<input type="hidden" name="csrf_token" value="' . $_SESSION['csrf_token'] . '">';
+}
+
+// Valida se o token enviado bate com o da sessão
+function validarCsrf() {
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die('Requisição inválida - token CSRF não confere');
     }
 }
 ?>
@@ -752,12 +774,14 @@ function exibirMensagem() {
 
 </details>
 
+**auth.php** é incluído no topo de todas as páginas. Ele configura a sessão de forma segura, inicia ela, carrega as dependências e define funções de autenticação. O `cookie_httponly` impede JavaScript de acessar o cookie de sessão (proteção contra roubo via XSS). O `use_strict_mode` rejeita IDs de sessão inventados pelo cliente.
+
 <details markdown="1">
 <summary><strong>auth.php - Autenticação e sessão</strong></summary>
 
 ```php
 <?php
-// Configurações de segurança da sessão (antes do session_start)
+// Configurações de segurança da sessão (ANTES do session_start)
 ini_set('session.cookie_httponly', 1);    // JS não acessa o cookie
 ini_set('session.use_strict_mode', 1);    // Rejeita IDs de sessão inválidos
 // ini_set('session.cookie_secure', 1);   // Descomentar em produção com HTTPS
@@ -766,10 +790,12 @@ session_start();
 require_once 'conexao.php';
 require_once 'funcoes.php';
 
+// Verifica se usuário está logado
 function estaLogado() {
     return isset($_SESSION['usuario_id']);
 }
 
+// Bloqueia acesso a páginas protegidas
 function exigirLogin() {
     if (!estaLogado()) {
         mensagemSessao('erro', 'Você precisa estar logado para acessar esta página.');
@@ -777,6 +803,7 @@ function exigirLogin() {
     }
 }
 
+// Retorna dados do usuário logado
 function usuarioAtual() {
     return [
         'id' => $_SESSION['usuario_id'] ?? null,
@@ -790,6 +817,8 @@ function usuarioAtual() {
 </details>
 
 ### Estilos CSS
+
+O CSS abaixo cria um visual moderno com gradiente escuro, cards com efeito glassmorphism (fundo semi-transparente com blur), e botões com gradiente. Não vou explicar linha por linha porque CSS é mais sobre experimentação - o importante é entender que ele estiliza as classes que usamos no HTML (.container, .card, .nav, .btn, etc.).
 
 <details markdown="1">
 <summary><strong>style.css - Estilos do projeto</strong></summary>
@@ -968,6 +997,10 @@ tr:hover {
 
 ### Páginas do sistema
 
+Agora vamos ver as páginas em si. Cada uma começa incluindo o `auth.php`, que já inicia a sessão e carrega as dependências. Perceba o padrão: primeiro vem a lógica PHP (processar formulário, buscar dados), depois o HTML. Isso é importante porque headers HTTP (como redirects) precisam ser enviados antes de qualquer output HTML.
+
+**index.php** é a página inicial. Ela verifica se o usuário está logado e mostra conteúdo diferente pra cada caso. Usa as funções `estaLogado()` e `usuarioAtual()` que definimos no auth.php.
+
 <details markdown="1">
 <summary><strong>index.php - Página inicial</strong></summary>
 
@@ -1021,6 +1054,8 @@ tr:hover {
 
 </details>
 
+**login.php** processa o formulário de login. Primeiro verifica se já está logado (redireciona pra home). Quando recebe POST, valida o token CSRF, busca o usuário pelo email, e usa `password_verify()` pra comparar a senha digitada com o hash no banco. Se bater, regenera o ID da sessão (segurança contra session fixation) e guarda os dados do usuário na sessão.
+
 <details markdown="1">
 <summary><strong>login.php - Página de login</strong></summary>
 
@@ -1028,6 +1063,7 @@ tr:hover {
 <?php
 require_once 'includes/auth.php';
 
+// Se já tá logado, manda pra home
 if (estaLogado()) {
     redirecionar('index.php');
 }
@@ -1035,17 +1071,22 @@ if (estaLogado()) {
 $erro = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $email = sanitizar($_POST['email']);
-    $senha = $_POST['senha'];
+    validarCsrf();  // Verifica token CSRF antes de processar
     
+    $email = sanitizar($_POST['email']);
+    $senha = $_POST['senha'];  // Não sanitiza senha - pode ter caracteres especiais
+    
+    // Busca usuário pelo email usando prepared statement
     $stmt = $pdo->prepare("SELECT id, nome, email, senha FROM usuarios WHERE email = ?");
     $stmt->execute([$email]);
     $usuario = $stmt->fetch();
     
+    // Verifica se encontrou E se a senha bate com o hash
     if ($usuario && password_verify($senha, $usuario['senha'])) {
         // Regenera ID da sessão pra prevenir session fixation
         session_regenerate_id(true);
         
+        // Guarda dados na sessão
         $_SESSION['usuario_id'] = $usuario['id'];
         $_SESSION['usuario_nome'] = $usuario['nome'];
         $_SESSION['usuario_email'] = $usuario['email'];
@@ -1053,6 +1094,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         mensagemSessao('sucesso', 'Login realizado com sucesso!');
         redirecionar('index.php');
     } else {
+        // Mensagem genérica - não diz se foi email ou senha errada (segurança)
         $erro = 'Email ou senha incorretos';
     }
 }
@@ -1077,6 +1119,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <?php endif; ?>
             
             <form method="POST">
+                <?php echo csrfToken(); ?>  <!-- Token CSRF oculto -->
+                
                 <div class="form-group">
                     <label>Email</label>
                     <input type="email" name="email" required>
@@ -1101,6 +1145,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 </details>
 
+**cadastro.php** cria novos usuários. Valida todos os campos (tamanho do nome, formato do email, tamanho da senha, confirmação), verifica se o email já existe no banco, e só então cria o usuário com a senha hasheada. Nunca armazene senhas em texto puro!
+
 <details markdown="1">
 <summary><strong>cadastro.php - Página de registro</strong></summary>
 
@@ -1115,11 +1161,14 @@ if (estaLogado()) {
 $erro = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    validarCsrf();  // Sempre validar CSRF antes de processar
+    
     $nome = sanitizar($_POST['nome']);
     $email = sanitizar($_POST['email']);
-    $senha = $_POST['senha'];
+    $senha = $_POST['senha'];  // Não sanitizar senha
     $confirma = $_POST['confirma'];
     
+    // Validações em cascata
     if (strlen($nome) < 3) {
         $erro = 'Nome deve ter pelo menos 3 caracteres';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -1129,12 +1178,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif ($senha !== $confirma) {
         $erro = 'As senhas não conferem';
     } else {
+        // Verifica se email já existe
         $stmt = $pdo->prepare("SELECT id FROM usuarios WHERE email = ?");
         $stmt->execute([$email]);
         
         if ($stmt->fetch()) {
             $erro = 'Este email já está cadastrado';
         } else {
+            // Cria hash da senha - NUNCA armazene em texto puro!
             $hash = password_hash($senha, PASSWORD_DEFAULT);
             $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)");
             $stmt->execute([$nome, $email, $hash]);
@@ -1163,6 +1214,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <?php endif; ?>
             
             <form method="POST">
+                <?php echo csrfToken(); ?>
+                
                 <div class="form-group">
                     <label>Nome</label>
                     <input type="text" name="nome" required>
@@ -1197,6 +1250,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 </details>
 
+**logout.php** encerra a sessão de forma segura. Não basta só chamar `session_destroy()` - também limpa o array `$_SESSION` e invalida o cookie no navegador. Assim mesmo que alguém tenha o ID de sessão antigo, não vai funcionar.
+
 <details markdown="1">
 <summary><strong>logout.php - Encerrar sessão</strong></summary>
 
@@ -1226,21 +1281,26 @@ exit;
 
 </details>
 
+**contato.php** é o formulário de contato - só acessível pra usuários logados. O `exigirLogin()` no início redireciona pra login se não estiver autenticado. Valida o assunto contra uma lista pré-definida (não confia no que vem do select), e limita o tamanho da mensagem.
+
 <details markdown="1">
 <summary><strong>contato.php - Formulário de contato</strong></summary>
 
 ```php
 <?php
 require_once 'includes/auth.php';
-exigirLogin();
+exigirLogin();  // Bloqueia acesso se não estiver logado
 
 $erro = '';
 $assuntos = ['Dúvida', 'Sugestão', 'Reclamação', 'Parceria', 'Outro'];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    validarCsrf();
+    
     $assunto = sanitizar($_POST['assunto']);
     $mensagem = sanitizar($_POST['mensagem']);
     
+    // Valida contra lista pré-definida - não confia no que veio do <select>
     if (!in_array($assunto, $assuntos)) {
         $erro = 'Selecione um assunto válido';
     } elseif (strlen($mensagem) < 10) {
@@ -1248,6 +1308,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (strlen($mensagem) > 2000) {
         $erro = 'Mensagem muito longa (máximo 2000 caracteres)';
     } else {
+        // Insere a mensagem associada ao usuário logado
         $stmt = $pdo->prepare("INSERT INTO mensagens (usuario_id, assunto, mensagem) VALUES (?, ?, ?)");
         $stmt->execute([usuarioAtual()['id'], $assunto, $mensagem]);
         
@@ -1283,6 +1344,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <?php endif; ?>
             
             <form method="POST">
+                <?php echo csrfToken(); ?>
+                
                 <div class="form-group">
                     <label>Assunto</label>
                     <select name="assunto" required>
@@ -1308,6 +1371,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 </details>
 
+**mensagens.php** lista as mensagens do usuário logado. A query usa `WHERE usuario_id = ?` pra só trazer mensagens dele (não de outros usuários), ordenadas da mais recente pra mais antiga. O `htmlspecialchars()` ao exibir garante que mesmo se alguém tivesse conseguido salvar HTML malicioso, não seria executado.
+
 <details markdown="1">
 <summary><strong>mensagens.php - Lista de mensagens</strong></summary>
 
@@ -1316,6 +1381,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 require_once 'includes/auth.php';
 exigirLogin();
 
+// Busca só as mensagens do usuário logado, mais recentes primeiro
 $stmt = $pdo->prepare("SELECT * FROM mensagens WHERE usuario_id = ? ORDER BY criado_em DESC");
 $stmt->execute([usuarioAtual()['id']]);
 $mensagens = $stmt->fetchAll();
@@ -1377,6 +1443,8 @@ $mensagens = $stmt->fetchAll();
 ```
 
 </details>
+
+**.htaccess** configura o Apache pra melhorar a segurança. Desabilita listagem de diretórios (senão qualquer um poderia ver todos os arquivos), adiciona headers de segurança, bloqueia acesso a arquivos sensíveis (.sql, .env, etc), e impede acesso direto à pasta includes. Esse arquivo é processado pelo Apache, não pelo PHP.
 
 <details markdown="1">
 <summary><strong>.htaccess - Configurações do Apache</strong></summary>
@@ -1506,7 +1574,11 @@ CSRF é quando um atacante engana um usuário logado a fazer uma ação sem quer
 
 Seu navegador ainda tem a sessão do banco ativa, então a requisição é feita com suas credenciais. O banco não sabe que não foi você que fez.
 
-**Nosso projeto ainda não tem proteção CSRF!** Aqui tá um ponto pra melhorar. A proteção é usar tokens CSRF:
+**No nosso projeto implementamos proteção CSRF** usando tokens. No `funcoes.php` temos as funções `csrfToken()` que gera um input hidden com um token único, e `validarCsrf()` que verifica se o token enviado bate com o da sessão. Todos os formulários (login, cadastro, contato) incluem o token e validam antes de processar.
+
+O funcionamento é simples: quando a sessão começa, geramos um token aleatório de 32 bytes. Cada formulário inclui esse token num campo hidden. Quando o formulário é enviado, verificamos se o token veio e se bate com o da sessão. Como o atacante não tem acesso ao token (ele é único por sessão), não consegue forjar requisições válidas.
+
+**CUIDADO!** Se você não aplicou proteção CSRF na sua aplicação, abaixo vai um resumo de como botar para usar tokens CSRF:
 
 <details markdown="1">
 <summary><strong>Como implementar proteção CSRF (código opcional)</strong></summary>
@@ -1647,9 +1719,9 @@ O Content-Security-Policy (CSP) é especialmente poderoso contra XSS - você def
 
 ### Checklist de Segurança
 
-Resumindo, aqui tá o que nosso projeto já faz e o que pode melhorar:
+Resumindo, aqui tá o que nosso projeto implementa:
 
-**Já implementado:**
+**Implementado no projeto:**
 - Prepared statements contra SQL Injection
 - `htmlspecialchars()` contra XSS
 - `password_hash()` pra senhas
@@ -1659,12 +1731,12 @@ Resumindo, aqui tá o que nosso projeto já faz e o que pode melhorar:
 - `session_regenerate_id()` após login
 - Configurações de cookie seguro (httponly, strict mode)
 - Logout seguro (limpa sessão e cookie)
+- Tokens CSRF em todos os formulários
 
-**Pra implementar futuramente:**
-- Tokens CSRF nos formulários
+**Pra implementar em produção:**
 - Rate limiting (limitar tentativas de login)
 - Logs de atividades suspeitas
-- HTTPS em produção (obrigatório!)
+- HTTPS (obrigatório!)
 - Content-Security-Policy mais restritivo
 
 Segurança é um processo contínuo. Novas vulnerabilidades são descobertas o tempo todo. Mantenha PHP e dependências atualizados, acompanhe as boas práticas, e sempre parta do princípio que todo input do usuário é potencialmente malicioso.
