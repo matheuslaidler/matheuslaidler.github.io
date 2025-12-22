@@ -19,7 +19,7 @@ title: Acervo de TI # the main title
 tagline: Compartilhamento de estudos em tecnologia # it will display as the sub-title
 
 description: >- # used by seo meta and the atom feed
-  Projeto de Divulgação Científica da Computação.
+  Projeto de Divulgação Científica da Computação. Compartilhamento de estudos em tecnologia e segurança da informação.
 
 # Fill in the protocol & hostname for your site.
 # e.g. 'https://username.github.io', note that it does not end with a '/'.
@@ -35,12 +35,12 @@ social:
   # Change to your full name.
   # It will be displayed as the default author of the posts and the copyright owner in the Footer
   name: Matheus Laidler
-  email: matheuslaidler@protonmail.com # change to your email address
+  email: laidler@wearehackerone.com # change to your email address
   links:
     # The first element serves as the copyright owner's link
     - https://youtube.com/@matheuslaidler
-    # - https://twitter.com/matheuslaidler # change to your twitter homepage
-    # - https://github.com/matheuslaidler # change to your github homepage
+    # - https://twitter.com/matheuslaidler
+    - https://github.com/matheuslaidler
     # Uncomment below to add more social links
     # - https://www.facebook.com/matheus.laidler
     # - https://www.linkedin.com/in/laidlervidal
@@ -79,7 +79,7 @@ pageviews:
 #     light  - Use the light color scheme
 #     dark   - Use the dark color scheme
 #
-theme_mode: # [light | dark] - deixar vazio para poder ter a opção dos dois - está bugado e não clicável por algum motivo. I'll fix later
+theme_mode: # [light | dark] - deixar vazio para poder ter a opção dos dois
 
 # The CDN endpoint for images.
 # Notice that once it is assigned, the CDN url
