@@ -1,6 +1,6 @@
 ---
-title: Code Review de Segurança com exemplos reais
-description: 'Guia prático de análise de código inseguro em PHP, Python, C/C++ e PL/SQL'
+title: Secure Code Review com exercícios reais e práticos
+description: 'Revisão Segura de Código em PHP, Python, C/C++ e PL/SQL'
 author: matheus
 tags: ["code review", "security", "vulnerabilities", "SAST", "secure coding", "python", "php", "red team", "bug bounty"]
 categories: ["SecLab", "Way of Security", "Hacking"]
@@ -9,15 +9,15 @@ comments: true
 
 ---
 
-## Prevenção sendo a arte de encontrar potencial perigo no código
+## A prevenção sendo a arte de encontrar pelo em ovo (potencial perigo no código)
 
-Se você trabalha ou quer trabalhar com segurança da informação, uma hora ou outra vai precisar olhar código e identificar problemas. Pode ser num pentest, numa auditoria, num bug bounty ou até desenvolvendo sua própria aplicação. A questão é: você sabe reconhecer código vulnerável quando vê um?
+Se você trabalha ou quer trabalhar com segurança da informação, uma hora ou outra vai precisar olhar código e identificar problemas. Pode ser num pentest, numa auditoria, num bug bounty ou até desenvolvendo sua própria aplicação. Se você é DEV pode precisar adquirir conhecimento de segurança para te aprimorar ainda mais seu leque e evitar desenvolver algo falho. No final das contas, a questão é: você sabe reconhecer código vulnerável quando vê um?
 
-Esse documento nasceu de uma série de exercícios de code review que eu resolvi durante meus estudos. A ideia aqui não é só dar as respostas, mas explicar o raciocínio por trás de cada vulnerabilidade - porque entender o "porquê" é muito mais útil do que decorar padrões.
+Esse documento nasceu de uma série de exercícios de code review que eu resolvi durante meus estudos. A ideia aqui não é só dar as respostas, mas explicar o raciocínio por trás de cada vulnerabilidade - já que entender o "porquê" é muito mais útil do que decorar padrões que uma IA pode cuspir pra você a qualquer momento.
 
-Lembro das aulas de segurança da informação na UFRJ com o professor Claudio Miceli (professor muito bom, diga-se de passagem), ele chegou a passar diversos trechos de códigos em sala para tentarmos na hora falar que vulnerabilidade potencialmente teríamos ali nos exemplos... e quase nunca os alunos acertavam de cara. Eu mesmo nunca tinha feito isso e tive dificuldades (até que ainda tenho). Aquele dia tive um alerta de precisar melhorar meu faro, meu repertório, minha lógica em si a ponto de identificar métodos de burlar mais rapidamente, mesmo que apenas lendo um trecho de código.
+Lembro das aulas de segurança da informação na UFRJ - com o professor Claudio Miceli, que é um baita professor diga-se de passagem -, ele chegou a passar diversos trechos de códigos em sala para tentarmos na hora identificar que vulnerabilidade potencialmente teríamos nos exemplos demonstrados em sala... e quase nunca os alunos acertavam de cara. Eu mesmo nunca tinha feito isso e tive dificuldades (na verdade até hoje ainda tenho, e muito). Aquele dia tive um alerta de precisar melhorar meu faro, meu repertório, minha lógica em si a ponto de identificar métodos de burlar mais rapidamente, mesmo que apenas lendo um trecho de código.
 
-**Uma observação importante:** as análises que apresento aqui foram feitas de forma individual, como exercício de estudo. Não tenho gabarito oficial desses exercícios - as respostas são minha interpretação baseada no que estudei. Não sou especialista em code review de segurança e ainda estou me aprimorando nessa área. Pode haver imprecisões ou interpretações incompletas em alguns casos - se você identificar algo errado ou quiser complementar alguma análise, fico feliz em aprender junto. O objetivo aqui é compartilhar o processo de raciocínio, não entregar verdades absolutas. Podemos discutir sobre isso no chat (entrando via GitHub) que disponibilizo sempre ao final de cada postagem.
+**Uma observação importante:** as análises que apresento aqui foram feitas de forma individual, como exercício de estudo. Não tenho gabarito oficial desses exercícios - as respostas são minha interpretação baseada no que estudei. Não sou especialista em "Revisão Segura de Código" e ainda estou me aprimorando. Podendo, assim, haver imprecisões ou interpretações incompletas em alguns casos - se você identificar algo errado ou quiser complementar alguma análise, fico feliz em aprender junto. O objetivo aqui é compartilhar o processo de raciocínio, não entregar verdades absolutas. Podemos discutir sobre isso no chat (entrando via GitHub) que disponibilizo sempre ao final de cada postagem. As minhas respostas parecem estar corretas, de forma geral, então acho que é um bom material de estudo.
 
 **Dica:** antes de ler minha análise de cada caso, tente identificar a vulnerabilidade por conta própria. Coloquei as opções de resposta logo após cada código pra você testar seu conhecimento.
 
