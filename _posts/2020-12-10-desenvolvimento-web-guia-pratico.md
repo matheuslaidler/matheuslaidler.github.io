@@ -472,7 +472,6 @@ session_destroy();  // Destrói a sessão
 ```
 
 Um detalhe importante: o `session_start()` tem que vir antes de qualquer output (HTML, echo, espaço em branco antes do `<?php`). Se você ver um erro "headers already sent", provavelmente é isso.
-```
 
 ### Sistema de login básico
 
@@ -673,7 +672,7 @@ A tabela `mensagens` tem uma foreign key pra `usuarios` - cada mensagem pertence
 
 ### Estrutura de arquivos
 
-```
+```plaintext
 sistema_contatos/
 ├── index.php
 ├── login.php
@@ -690,7 +689,12 @@ sistema_contatos/
 └── .htaccess
 ```
 
-### conexao.php
+### Arquivos do includes/
+
+Esses são os arquivos base que serão usados por todas as páginas.
+
+<details markdown="1">
+<summary><strong>conexao.php - Conexão com o banco</strong></summary>
 
 ```php
 <?php
@@ -715,7 +719,10 @@ try {
 ?>
 ```
 
-### funcoes.php
+</details>
+
+<details markdown="1">
+<summary><strong>funcoes.php - Funções auxiliares</strong></summary>
 
 ```php
 <?php
@@ -743,7 +750,10 @@ function exibirMensagem() {
 ?>
 ```
 
-### auth.php
+</details>
+
+<details markdown="1">
+<summary><strong>auth.php - Autenticação e sessão</strong></summary>
 
 ```php
 <?php
@@ -777,7 +787,12 @@ function usuarioAtual() {
 ?>
 ```
 
-### style.css
+</details>
+
+### Estilos CSS
+
+<details markdown="1">
+<summary><strong>style.css - Estilos do projeto</strong></summary>
 
 ```css
 * {
@@ -949,7 +964,12 @@ tr:hover {
 }
 ```
 
-### index.php
+</details>
+
+### Páginas do sistema
+
+<details markdown="1">
+<summary><strong>index.php - Página inicial</strong></summary>
 
 ```php
 <?php require_once 'includes/auth.php'; ?>
@@ -999,7 +1019,10 @@ tr:hover {
 </html>
 ```
 
-### login.php
+</details>
+
+<details markdown="1">
+<summary><strong>login.php - Página de login</strong></summary>
 
 ```php
 <?php
@@ -1076,7 +1099,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </html>
 ```
 
-### cadastro.php
+</details>
+
+<details markdown="1">
+<summary><strong>cadastro.php - Página de registro</strong></summary>
 
 ```php
 <?php
@@ -1169,7 +1195,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </html>
 ```
 
-### logout.php
+</details>
+
+<details markdown="1">
+<summary><strong>logout.php - Encerrar sessão</strong></summary>
 
 ```php
 <?php
@@ -1195,7 +1224,10 @@ exit;
 ?>
 ```
 
-### contato.php
+</details>
+
+<details markdown="1">
+<summary><strong>contato.php - Formulário de contato</strong></summary>
 
 ```php
 <?php
@@ -1274,7 +1306,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </html>
 ```
 
-### mensagens.php
+</details>
+
+<details markdown="1">
+<summary><strong>mensagens.php - Lista de mensagens</strong></summary>
 
 ```php
 <?php
@@ -1341,7 +1376,10 @@ $mensagens = $stmt->fetchAll();
 </html>
 ```
 
-### .htaccess
+</details>
+
+<details markdown="1">
+<summary><strong>.htaccess - Configurações do Apache</strong></summary>
 
 ```apache
 # Desabilita listagem de diretórios
@@ -1369,6 +1407,8 @@ RewriteEngine On
     RewriteRule ^includes/ - [F,L]
 </IfModule>
 ```
+
+</details>
 
 ---
 
@@ -1468,6 +1508,9 @@ Seu navegador ainda tem a sessão do banco ativa, então a requisição é feita
 
 **Nosso projeto ainda não tem proteção CSRF!** Aqui tá um ponto pra melhorar. A proteção é usar tokens CSRF:
 
+<details markdown="1">
+<summary><strong>Como implementar proteção CSRF (código opcional)</strong></summary>
+
 ```php
 // No início da sessão, gera um token
 if (empty($_SESSION['csrf_token'])) {
@@ -1498,6 +1541,8 @@ E nos formulários:
 
 Cada formulário tem um token único que o atacante não consegue adivinhar. Se o token não bater, a requisição é rejeitada.
 
+</details>
+
 ### Remote Code Execution (RCE)
 
 RCE é o pesadelo de qualquer desenvolvedor - quando um atacante consegue executar código arbitrário no seu servidor. Geralmente acontece via:
@@ -1509,6 +1554,9 @@ RCE é o pesadelo de qualquer desenvolvedor - quando um atacante consegue execut
 **Desserialização insegura**: `unserialize()` com dados não confiáveis.
 
 Nosso projeto não tem upload de arquivos nem usa essas funções perigosas, então tá relativamente seguro nesse aspecto. Mas se você for adicionar upload depois:
+
+<details markdown="1">
+<summary><strong>Como implementar upload seguro (código opcional)</strong></summary>
 
 ```php
 // Validação básica de upload
@@ -1534,6 +1582,8 @@ $novoNome = bin2hex(random_bytes(16)) . '.' . $extensao;
 // Move pra pasta fora do webroot ou com .htaccess bloqueando PHP
 move_uploaded_file($_FILES['arquivo']['tmp_name'], 'uploads/' . $novoNome);
 ```
+
+</details>
 
 ### Session Hijacking
 
