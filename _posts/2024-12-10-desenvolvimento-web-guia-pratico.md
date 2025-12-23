@@ -1,5 +1,5 @@
 ---
-title: Desenvolvimento Web na Prática
+title: Desenvolvimento Web na Prática com PHP
 description: 'Guia do zero ao deploy com HTML, CSS, JavaScript, PHP, MySQL e segurança básica'
 author: matheus
 tags: ["web development", "html", "css", "javascript", "php", "mysql", "backend", "frontend", "programação", "xampp", "RCE", "sql injection", "XSS", "session hijacking", "CSRF"]
@@ -1567,6 +1567,75 @@ RewriteEngine On
 
 ---
 
+## Complemento com JavaScript para validação extra (primeira camada) no Sistema de Contatos
+
+Agora sim, vamos colocar JavaScript pra funcionar no projeto prático. Até aqui, ele só apareceu nos exemplos, mas não foi usado no sistema real. Então, bora adicionar uma funcionalidade útil: validação de formulário no front-end.
+
+Se a validação já acontece no PHP, por que fazer no JavaScript também, tendo em vista que por segurança nenhuma validação deveria ocorrer por parte do cliente? Então, não é bem assim, nenhuma validação deveria ser APENAS por parte do usuário, mas validações desse nível geralmente é feito com objetivo de ajudar o próprio usuário: com JS, você avisa instantaneamente se ele esqueceu de preencher algum campo ou digitou um email errado sem precisar esperar o servidor responder por isso, o que pode otimizar as coisas. Isso deixa o sistema mais amigável e evita frustração ( pode deixar ainda mais amigável ao personalizar o modal / janela de confirmação do javascript embelezando pelo front-end ).
+
+Enfim, vamos utilizar o formulário mesmo como exemplo. Crie um arquivo chamado `js/validacao.js` dentro da pasta do projeto. No arquivo `contato.php`, logo antes do `</body>`, coloque:
+
+```html
+<script src="js/validacao.js"></script>
+```
+
+Crie a pasta `/js/` e o arquivo `validacao.js` na raiz do projeto.
+
+Agora, vamos escrever nosso script, vou explicar resumidamente linha a linha:
+
+Para fazer o JS esperar a página carregar antes de rodar qualquer coisa, para que assim, ele só consiga mexer no formulário quando tudo já está pronto: `document.addEventListener('DOMContentLoaded', function() {...})`.
+
+Para pegar o primeiro formulário da página vamos usar: `const form = document.querySelector('form');`. Se tivesse mais de um, você poderia usar um seletor mais específico.
+
+Para fazer o JS reagir quando o usuário tenta enviar o formulário: `form.addEventListener('submit', function(e) {...})`.
+
+O conteúdo do `validacao.js` vai acabar por ficar assim:
+
+```javascript
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const nome = form.nome.value.trim();
+        const email = form.email.value.trim();
+        const mensagem = form.mensagem.value.trim();
+        let erro = '';
+        // Validação dos campos
+        if (nome.length < 3) {
+            erro = 'Nome deve ter pelo menos 3 caracteres.';
+        } else if (!email.match(/^[^@\s]+@[^@\s]+\.[^@\s]+$/)) {
+            erro = 'Email inválido.';
+        } else if (mensagem.length < 5) {
+            erro = 'Mensagem muito curta.';
+        }
+        if (erro) {
+            alert(erro);
+            e.preventDefault();
+        }
+    });
+});
+```
+
+Agora, vamos dar uma leve explicada em cada parte desse código pra quem nunca viu JavaScript ou ainda está entendendo:
+
+Quando a gente faz `form.nome.value`, `form.email.value` e `form.mensagem.value`, estamos pegando os valores dos campos do formulário HTML. Esses nomes ("nome", "email", "mensagem") vêm direto do atributo `name` de cada `<input>` ou `<textarea>` no HTML. Ou seja, se no HTML está `<input name="nome">`, no JS você acessa com `form.nome.value`.
+
+O `.trim()` serve pra tirar espaços em branco do começo e do fim do texto, porque às vezes a pessoa digita só um espaço ou dá um enter sem querer.
+
+Depois, a gente faz a validação usando condicionais (`if`, `else if`). O JS vai checando cada condição, uma por uma:
+- Primeiro, vê se o nome tem pelo menos 3 letras. Se não tiver, já dá erro.
+- Se o nome passou, ele testa o email usando uma expressão regular (aquele monte de símbolo estranho). Isso serve pra ver se o email tem um formato válido, tipo "fulano@dominio.com".
+- Se o email também passou, ele checa se a mensagem tem pelo menos 5 caracteres.
+
+Se algum desses testes falhar, a variável `erro` recebe a mensagem correspondente. No final, se `erro` não estiver vazia, o JS mostra um alerta com o motivo e impede o envio do formulário (`e.preventDefault()`).
+
+Esse tipo de validação é só uma camada extra pra ajudar o usuário a não errar coisas bobas. Mas lembra: a validação séria, que protege o sistema, continua sendo feita no PHP do lado do servidor. Ou seja, se o usuário tentar 'bypassar'  a proteção apagando a validacao.js do client-side, a verificação vai continuar ocorrendo.
+
+> Esse tipo de validação no front-end é só pra ajudar o usuário, mas nunca substitui a validação do PHP no back-end. O usuário pode desativar JS ou mexer no código, então a segurança de verdade é sempre no servidor.
+
+Com isso, você tem um exemplo prático de como integrar JavaScript ao seu sistema de contatos, entendendo cada linha do código. Dá pra ir muito além, mas esse é o básico pra começar a brincar e aprender. Se foi possível entender como colocar javascript no seu projeto, entender a estruturar uma condicional com janela de avisos... já está bom para uma primeira vista. Agora é se aventurar e se aprofundar ainda mais.
+
+---
+
 ## Testando o projeto
 
 1. Instala o XAMPP e inicia o Apache e MySQL
@@ -1578,6 +1647,14 @@ RewriteEngine On
 7. Cria uma conta, faz login, e envia mensagens!
 
 O legal desse projeto é que ele usa tudo que a gente viu: HTML pra estrutura, CSS pra estilo, PHP pra lógica, MySQL pra persistência, sessões pra autenticação, validação e sanitização pra segurança. É um sistema completo, por mais simples que pareça.
+
+---
+
+## Sobre o projeto que criamos, problemas e esclarecendo o funcionamento
+
+A ideia era apenas introduzir PHP, comunicações entre client-side e server-side, banco de dados, front-end e coisas comuns para o desenvolvimento web. Agora, o projeto em si - que era feito para ser de comunicação ou de salvar lembretes em mural -, acabou não tendo interações entre usuários e se tivesse teríamos o problema de um usuário conseguir escrever visualmente uma mensagem no nome de outra pessoa, seja ela um membro existente ou não, mesmo ficando marcado no banco de quem é a mensagem original. Atualmente, cada usuário visualiza apenas as suas próprias mensagens, então ele colocar nome de outra pessoa não foi um problema, só quis mostrar para vocês como funciona formulário e requisições.
+
+Mais problemas podem acabar tendo acontecido sem eu ter me ligado. Então qualquer coisa para revisão, por favor, deixem nos comentários no final da publicação, vai me ajudar muito (basta logar com sua conta do github).
 
 ---
 

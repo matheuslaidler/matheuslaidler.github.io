@@ -3,7 +3,7 @@ title: 'Deep Web Desiludida: Significado e o que é delírio'
 description: 'Entendendo realmente conceitos como Deep Web, Dark Web, redes descentralizadas e porque "camadas" é papo furado'
 author: matheus
 tags: ["deep web", "dark web", "tor", "redes", "privacidade", "anonimato", "segurança", "desmistificando"]
-categories: ["Road2Tech", "Redes", "DeepWeb", "Onion"]
+categories: ["Road2Tech", "Redes de Computadores", "DeepWeb", "Onion"]
 pin: false
 comments: true
 ---
