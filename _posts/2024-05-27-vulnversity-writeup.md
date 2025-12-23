@@ -574,6 +574,6 @@ Bons estudos e happy hacking!
 <div class="thm-card">
   <iframe
     src="https://tryhackme.com/api/v2/badges/public-profile?userPublicId=2385463"
-    style="border:none; width:450px; height:120px"
+    style="border:none; width:330px; height:88px"
   ></iframe>
 </div>
