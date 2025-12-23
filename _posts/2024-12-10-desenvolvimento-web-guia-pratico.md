@@ -1133,6 +1133,9 @@ Agora vamos ver as páginas em si. Cada uma começa incluindo o `auth.php`, que 
 ```
 
 </details>
+
+<img width="65%" alt="index" src="https://github.com/user-attachments/assets/f646cf16-ef25-417c-a7bf-44217cd56769" />
+
 <br>
 
 **login.php** processa o formulário de login. Primeiro verifica se já está logado (redireciona pra home). Quando recebe POST, valida o token CSRF, busca o usuário pelo email, e usa `password_verify()` pra comparar a senha digitada com o hash no banco. Se bater, regenera o ID da sessão (segurança contra session fixation) e guarda os dados do usuário na sessão.
@@ -1225,6 +1228,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ```
 
 </details>
+
+<img width="55%" alt="login" src="https://github.com/user-attachments/assets/e6f8fa54-392e-4ea4-97d9-8f51c1acd565" />
+
 <br>
 
 **cadastro.php** cria novos usuários. Valida todos os campos (tamanho do nome, formato do email, tamanho da senha, confirmação), verifica se o email já existe no banco, e só então cria o usuário com a senha hasheada. Nunca armazene senhas em texto puro!
@@ -1331,6 +1337,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ```
 
 </details>
+
+<img width="50%" alt="Register" src="https://github.com/user-attachments/assets/6e7d2d9f-a1fd-4ff6-9dcb-96ae0c5b5a87" />
+
 <br>
 
 **logout.php** encerra a sessão de forma segura. Não basta só chamar `session_destroy()` - também limpa o array `$_SESSION` e invalida o cookie no navegador. Assim mesmo que alguém tenha o ID de sessão antigo, não vai funcionar.
@@ -1454,6 +1463,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ```
 
 </details>
+
+<img width="50%" alt="contact" src="https://github.com/user-attachments/assets/06d02876-dc7f-4202-a3b7-783541c25391" />
+
 <br>
 
 **mensagens.php** lista as mensagens do usuário logado. A query usa `WHERE usuario_id = ?` pra só trazer mensagens dele (não de outros usuários), ordenadas da mais recente pra mais antiga. O `htmlspecialchars()` ao exibir garante que mesmo se alguém tivesse conseguido salvar HTML malicioso, não seria executado.
@@ -1528,6 +1540,8 @@ $mensagens = $stmt->fetchAll();
 ```
 
 </details>
+<img width="50%" alt="msg" src="https://github.com/user-attachments/assets/7bb2888c-31af-4e07-af5c-25aa9d044bae" />
+
 <br>
 
 **.htaccess** configura o Apache pra melhorar a segurança. Desabilita listagem de diretórios (senão qualquer um poderia ver todos os arquivos), adiciona headers de segurança, bloqueia acesso a arquivos sensíveis (.sql, .env, etc), e impede acesso direto à pasta includes. Esse arquivo é processado pelo Apache, não pelo PHP.
@@ -1913,7 +1927,7 @@ A dica é não ficar só na teoria. Pega esse projeto, roda, modifica, quebra, c
 
 ## Projeto completo
 
-Você pode baixar ou ver o código-fonte completo deste sistema no repositório:
+Você pode baixar ou ver o código-fonte completo deste sistema no repositório do github abaixo
 
 [Repositorio do nosso projeto: sistema_contatos](https://github.com/matheuslaidler/sistema_contatos)
 
