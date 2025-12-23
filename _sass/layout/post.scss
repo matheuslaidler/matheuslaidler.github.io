@@ -370,15 +370,20 @@ header {
 }
 // tryhackme card post test
 .thm-card {
-  background: transparent !important;
-  padding: 0 !important;
+  background: none !important;
+  border-radius: 14px;
+  padding: 6px;
+  width: fit-content;
   margin: 0 auto;
-  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
 }
 
 .thm-card iframe {
   border: none;
-  background: transparent;
+  background: transparent !important;
   width: 450px;
   height: 120px;
+  padding: 0 !important;
+  margin: 0 auto;
+  text-align: center;
 }
