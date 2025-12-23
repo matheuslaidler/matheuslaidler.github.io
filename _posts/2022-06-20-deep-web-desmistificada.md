@@ -1,9 +1,9 @@
 ---
-title: Deep Web desmistificada - O que realmente é e o que é delírio
-description: 'Entendendo de verdade o que é Deep Web, Dark Web, redes descentralizadas e por que "camadas" é papo furado'
+title: 'Deep Web Desiludida: Significado e o que é delírio'
+description: 'Entendendo realmente conceitos como Deep Web, Dark Web, redes descentralizadas e porque "camadas" é papo furado'
 author: matheus
 tags: ["deep web", "dark web", "tor", "redes", "privacidade", "anonimato", "segurança", "desmistificando"]
-categories: ["Road2Tech", "Redes"]
+categories: ["Road2Tech", "Redes", "DeepWeb", "Onion"]
 pin: false
 comments: true
 ---

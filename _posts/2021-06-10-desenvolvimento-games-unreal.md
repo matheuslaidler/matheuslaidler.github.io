@@ -3,7 +3,7 @@ title: Criando seu próprio game do zero
 description: 'Guia prático sobre desenvolvimento de jogos, engines, Blueprints e por onde começar'
 author: matheus
 tags: ["game development", "unreal engine", "blueprints", "unity", "blender", "C++", "programação", "indie dev"]
-categories: ["Road2Tech", "Game Development"]
+categories: ["Road2Tech", "Game Development", "Programação"]
 pin: false
 comments: true
 ---

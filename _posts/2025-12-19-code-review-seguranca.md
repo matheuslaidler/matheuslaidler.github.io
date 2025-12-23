@@ -3,7 +3,7 @@ title: Secure Code Review com exercícios reais e práticos
 description: 'Revisão Segura de Código em PHP, Python, C/C++ e PL/SQL'
 author: matheus
 tags: ["code review", "security", "vulnerabilities", "SAST", "secure coding", "python", "php", "red team", "bug bounty"]
-categories: ["SecLab", "Way of Security", "Hacking"]
+categories: ["SecLab", "WayOfSec", "Hacking"]
 pin: false
 comments: true
 

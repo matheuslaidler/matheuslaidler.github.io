@@ -3,7 +3,7 @@ title: Vulnversity - Desafio Hacker [TryHackMe]
 description: 'Resolvendo máquina da TryHackMe através de enumeração com Nmap, fuzzing de diretórios, bypass de upload e privilege escalation via SUID'
 author: matheus
 tags: ["tryhackme", "WriteUps", "nmap", "gobuster", "reverse shell", "SUID", "privilege escalation"]
-categories: ["SecLab", "Hacking"]
+categories: ["SecLab", "WayOfSec", "Hacking", "Write Ups"]
 pin: false
 comments: true
 last_modified_at: 2025-12-19

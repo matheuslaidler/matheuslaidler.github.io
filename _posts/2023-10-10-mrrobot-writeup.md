@@ -3,7 +3,7 @@ title: Mr. Robot - Desafio Hacker [TryHackMe]
 description: 'Resolvendo máquina nível médio do TryHackMe inspirada na série Mr. Robot - WordPress exploitation, hash cracking e privilege escalation via SUID'
 author: matheus
 tags: ["tryhackme", "WriteUps", "WordPress", "privilege escalation", "SUID", "reverse shell"]
-categories: ["SecLab", "Hacking"]
+categories: ["SecLab", "WayOfSec", "Hacking", "Write Ups"]
 pin: false
 comments: true
 

@@ -3,7 +3,7 @@ title: XSS e HTML Injection - Tipos e Exploração
 description: 'Entendendo Cross-Site Scripting: Reflected, Stored e DOM-based XSS com exemplos práticos'
 author: matheus
 tags: ["XSS", "web security", "javascript", "vulnerability", "pentesting", "Stored XSS", "Reflected XSS", "DOM-based XSS", "HTML Injection"]
-categories: ["SecLab", "Hacking", "Way of Security"]
+categories: ["SecLab", "WayOfSec", "Hacking", "Write Ups"]
 pin: false
 comments: true
 

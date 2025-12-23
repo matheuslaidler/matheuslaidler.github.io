@@ -1,9 +1,9 @@
 ---
 title: Desenvolvimento Web na Prática
-description: 'Guia Do zero ao deploy com HTML, CSS, JavaScript, PHP, MySQL, autenticação e segurança básica'
+description: 'Guia do zero ao deploy com HTML, CSS, JavaScript, PHP, MySQL e segurança básica'
 author: matheus
 tags: ["web development", "html", "css", "javascript", "php", "mysql", "backend", "frontend", "programação", "xampp", "RCE", "sql injection", "XSS", "session hijacking", "CSRF"]
-categories: ["Road2Tech"]
+categories: ["Road2Tech", "Development", "Programação", "WayOfSec"]
 pin: false
 comments: true
 ---
@@ -114,31 +114,34 @@ Não vou me aprofundar muito em CSS aqui porque daria um guia só sobre isso. A 
 
 JavaScript é a linguagem de programação do front-end. Diferente do HTML e CSS, JavaScript TEM lógica - variáveis, condicionais, loops, funções, objetos. Com JavaScript você pode validar formulários, reagir a cliques, fazer animações, carregar conteúdo sem recarregar a página, manipular o DOM...
 
+
 ```javascript
 // Variáveis
-let nome = "Matheus";
-const PI = 3.14;  // constante, não muda
+let nome = "Matheus"; // let cria uma variável que pode mudar depois
+const PI = 3.14;       // const cria uma constante, não pode mudar
 
 // Condicionais
 if (idade >= 18) {
-    console.log("Maior de idade");
+    console.log("Maior de idade"); // Se idade for 18 ou mais, mostra isso
 } else {
-    console.log("Menor de idade");
+    console.log("Menor de idade"); // Se não, mostra isso
 }
 
 // Loops
 for (let i = 0; i < 5; i++) {
-    console.log(i);
+    console.log(i); // Repete 5 vezes, de 0 a 4
 }
 
 // Funções
 function somar(a, b) {
-    return a + b;
+    return a + b; // Recebe dois valores e retorna a soma
 }
 
 // Arrow functions (forma moderna)
-const multiplicar = (a, b) => a * b;
+const multiplicar = (a, b) => a * b; // Outra forma de criar função
 ```
+
+Repare que em JavaScript, variáveis podem ser criadas com `let` (pode mudar depois) ou `const` (não pode mudar). Condicionais usam `if` e `else` para decidir o que fazer dependendo do valor de uma variável. Loops como o `for` servem para repetir um bloco de código várias vezes. Funções são blocos de código que você pode reaproveitar, e podem ser escritas de formas diferentes (tradicional ou arrow function).
 
 O DOM (Document Object Model) é a representação da página que o JavaScript consegue manipular. Você pode selecionar elementos, mudar conteúdo, adicionar ou remover classes, criar elementos novos, reagir a eventos...
 
@@ -202,48 +205,53 @@ Código PHP fica entre `<?php` e `?>`. Pode ser misturado com HTML no mesmo arqu
 </html>
 ```
 
-Variáveis em PHP sempre começam com `$`. Não precisa declarar tipo - PHP é fracamente tipado. Strings podem usar aspas duplas (interpola variáveis) ou simples (literal).
+
+Variáveis em PHP sempre começam com `$`. Não precisa declarar tipo - PHP é flexível nesse ponto. Strings podem usar aspas duplas (interpola variáveis) ou simples (literal).
 
 ```php
 <?php
 // Tipos de dados
-$texto = "uma string";
-$numero = 42;
-$decimal = 3.14;
-$booleano = true;
-$lista = ["um", "dois", "três"];
-$associativo = ["nome" => "João", "idade" => 30];
+$texto = "uma string"; // texto
+$numero = 42;          // número inteiro
+$decimal = 3.14;       // número decimal
+$booleano = true;      // booleano (verdadeiro ou falso)
+$lista = ["um", "dois", "três"]; // array comum (lista)
+$associativo = ["nome" => "João", "idade" => 30]; // array associativo (chave => valor)
 
 // Condicionais
 if ($idade >= 18) {
-    echo "Maior de idade";
+    echo "Maior de idade"; // Se idade for 18 ou mais
 } elseif ($idade >= 16) {
-    echo "Pode votar";
+    echo "Pode votar";     // Se idade for 16 ou 17
 } else {
-    echo "Menor de idade";
+    echo "Menor de idade"; // Se for menor que 16
 }
 
 // Loops
 for ($i = 0; $i < 5; $i++) {
-    echo $i;
+    echo $i; // Repete 5 vezes, de 0 a 4
 }
 
+// Percorrendo uma lista comum
 foreach ($lista as $item) {
-    echo $item;
+    echo $item; // Mostra cada item da lista
 }
 
+// Percorrendo um array associativo
 foreach ($associativo as $chave => $valor) {
-    echo "$chave: $valor";
+    echo "$chave: $valor"; // Mostra a chave e o valor
 }
 
 // Funções
 function saudacao($nome) {
-    return "Olá, $nome!";
+    return "Olá, $nome!"; // Recebe um nome e retorna uma saudação
 }
 
-echo saudacao("Matheus");
+echo saudacao("Matheus"); // Chama a função e mostra o resultado
 ?>
 ```
+
+No PHP, arrays associativos são como "dicionários": você acessa valores por uma chave, não só por número. O `foreach` é muito usado para percorrer listas e arrays associativos, mostrando cada item ou cada par chave/valor. Funções permitem reaproveitar código e deixar o programa mais organizado.
 
 ### Processando formulários
 

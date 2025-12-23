@@ -3,7 +3,7 @@ title: CyberHeroes - Desafio hacker [TryHackMe]
 description: 'Resolvendo Máquina do TryHackMe em português'
 author: matheus
 tags: ["tryhackme", "WriteUps"]
-categories: ["SecLab", "Hacking"]
+categories: ["SecLab", "WayOfSec", "Hacking", "Write Ups"]
 pin: false
 comments: true
 ---

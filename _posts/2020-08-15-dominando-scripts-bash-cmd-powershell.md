@@ -3,7 +3,7 @@ title: Dominando Scripts com Bash, CMD e PowerShell do zero
 description: 'Guia de automação com Shell Script, Batch e PowerShell para quem quer entender sistemas de verdade'
 author: matheus
 tags: ["shell script", "bash", "powershell", "cmd", "batch", "automação", "linux", "windows", "scripting", "hacking"]
-categories: ["Road2Tech"]
+categories: ["Road2Tech", "Sistema Operacional", "Programação"]
 pin: false
 comments: true
 ---

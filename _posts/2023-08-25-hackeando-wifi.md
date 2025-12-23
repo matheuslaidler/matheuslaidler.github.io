@@ -2,8 +2,8 @@
 title: Invadindo rede wifi na prática
 description: Mostrando como hackeei a rede wifi de uma vizinha da minha mãe
 author: matheus
-tags: ["Wifi Hacking", "Shell Script", "Brute Force"]
-categories: ["SecLab", "Hacking"]
+tags: ["Wifi Hacking", "Shell Script", "Brute Force", "video"]
+categories: ["SecLab", "WayOfSec", "Hacking"]
 pin: false
 comments: true
 ---

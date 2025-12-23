@@ -3,7 +3,7 @@ title: Wargames e CTFs - Resolvendo desafios do ThisIsLegal
 description: 'Introdução prática a CTFs e wargames com writeups completos dos desafios do ThisIsLegal'
 author: matheus
 tags: ["ctf", "wargames", "hacking", "writeup", "thisislegal", "segurança", "web security", "challenges"]
-categories: ["WayOfSec"]
+categories: ["SecLab", "WayOfSec", "Hacking", "Write Ups"]
 pin: false
 comments: true
 ---

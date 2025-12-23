@@ -2,7 +2,7 @@
 title: Comunicação de dados e Protocolos de Rede
 description: 'Resumão geral da matéria com resolução de exercício'
 author: matheus
-tags: ["Redes", "WiFi"]
+tags: ["Redes", "WiFi", "Protocolos", "TCP", "UDP"]
 categories: ["Road2Tech", "Redes de Computadores"]
 pin: false
 comments: true

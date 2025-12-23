@@ -3,7 +3,7 @@ title: "Vibe Coding: Analisando riscos na prática"
 description: "Análise completa de vulnerabilidades em projetos gerados por IA e plataformas no-code/low-code - um estudo de caso real"
 date: 2025-12-17 20:00:00 -0300
 last_modified_at: 2025-12-18 12:00:00 -0300
-categories: [wayofsec,appsec]
+categories: [WayOfSec,AppSec,Hacking,Development,Programação,SecLab]
 tags: [segurança, vulnerabilidades, vibecode, nocode, lowcode, lovable, ia, supply-chain, dependabot, cve, owasp, xss]
 pin: false
 math: false
