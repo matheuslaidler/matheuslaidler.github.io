@@ -187,7 +187,7 @@ Se você só tem PHP instalado sem XAMPP, pode usar o servidor embutido. Abre o 
 
 Código PHP fica entre `<?php` e `?>`. Pode ser misturado com HTML no mesmo arquivo:
 
-```php
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -205,8 +205,74 @@ Código PHP fica entre `<?php` e `?>`. Pode ser misturado com HTML no mesmo arqu
 </html>
 ```
 
+Se você nunca programou, vale entender alguns fundamentos básicos do PHP antes de ver exemplos maiores. PHP é uma linguagem bem acessível, mas tem suas particularidades:
 
-Variáveis em PHP sempre começam com `$`. Não precisa declarar tipo - PHP é flexível nesse ponto. Strings podem usar aspas duplas (interpola variáveis) ou simples (literal).
+**Variáveis:**
+Em PHP, variáveis servem para guardar valores (números, textos, listas, etc.) e sempre começam com o símbolo `$`. Você não precisa dizer o tipo, PHP é flexível nesse ponto basta atribuir um valor. Já as strings (texto) podem usar aspas duplas (interpola variáveis) ou simples (literal). Segue exemplos de declaração de variáveis:
+
+```php
+$nome = "João"; // string
+$idade = 25;     // número
+$ativo = true;   // booleano (verdadeiro/falso)
+```
+
+**Operadores:**
+Você pode fazer contas e comparações usando operadores:
+
+```php
+$soma = 2 + 3;      // 5
+$diferenca = 10 - 4; // 6
+$produto = 2 * 5;    // 10
+$divisao = 10 / 2;   // 5
+$resto = 7 % 2;      // 1
+$igual = ($a == $b); // compara se $a é igual a $b
+```
+
+**Condicionais:**
+Para tomar decisões, usamos o `if`:
+
+```php
+if ($idade >= 18) {
+    echo "Maior de idade";
+} else {
+    echo "Menor de idade";
+}
+```
+
+**Loops:**
+Para repetir algo várias vezes, usamos `for` ou `while`:
+
+```php
+for ($i = 0; $i < 5; $i++) {
+    echo $i; // Mostra 0,1,2,3,4
+}
+```
+
+**Arrays:**
+Arrays são listas de valores. Você pode acessar cada item pelo índice (posição) ou por uma chave (array associativo):
+
+```php
+$frutas = ["maçã", "banana", "laranja"];
+echo $frutas[0]; // "maçã"
+
+$pessoa = ["nome" => "João", "idade" => 30];
+echo $pessoa["nome"]; // "João"
+```
+
+> Perceba que o índice '0' que é relacionado ao primeiro elemento da array e não o '1'. Iniciantes podem sofrer com isso.
+
+**Funções:**
+Funções são blocos de código que você pode reaproveitar e ainda melhorar a organização do código como um todo:
+
+```php
+function saudacao($nome) {
+    return "Olá, $nome!";
+}
+echo saudacao("Maria"); // "Olá, Maria!"
+```
+Esses são os blocos básicos que você vai ver em praticamente todo código PHP.
+
+Agora, veja abaixo estes exemplos na prática e mais completos:
 
 ```php
 <?php
@@ -251,15 +317,17 @@ echo saudacao("Matheus"); // Chama a função e mostra o resultado
 ?>
 ```
 
-No PHP, arrays associativos são como "dicionários": você acessa valores por uma chave, não só por número. O `foreach` é muito usado para percorrer listas e arrays associativos, mostrando cada item ou cada par chave/valor. Funções permitem reaproveitar código e deixar o programa mais organizado.
+No PHP, arrays associativos são como "dicionários": você acessa valores por uma chave, não só por número. O `foreach` é muito usado para percorrer listas e arrays associativos, mostrando cada item ou cada par chave/valor.
 
 ### Processando formulários
 
-Uma das coisas mais comuns em PHP é processar formulários. Quando um formulário HTML é enviado, os dados chegam no PHP via GET ou POST.
+Uma das coisas mais comuns em PHP é processar formulários. Quando um formulário HTML é enviado, os dados chegam no PHP via GET ou POST (métodos HTTP de comunicação).
 
-GET manda os dados na URL: `pagina.php?nome=joao&email=joao@email.com`. É visível, tem limite de tamanho, fica no histórico. Usa pra buscas, filtros, coisas que podem ser compartilhadas via link.
+> Entender o básico de redes é importante, ao menos como a comunicação funciona de forma geral
 
-POST manda os dados no corpo da requisição, não aparece na URL. Usa pra formulários de cadastro, login, qualquer coisa com dados sensíveis.
+Usaremos método `GET` quando vamos mandar os dados na URL: `pagina.php?nome=joao&email=joao@email.com`. É visível, tem limite de tamanho, fica no histórico. Usa pra buscas, filtros, coisas que podem ser compartilhadas via link.
+
+Usaremos método `POST` quando vamos mandar os dados no corpo da requisição, não aparece na URL. Usa pra formulários de cadastro, login, qualquer coisa com dados mais sensíveis.
 
 ```html
 <!-- formulario.html -->
@@ -283,11 +351,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 ```
 
-`$_POST` e `$_GET` são arrays superglobais que contêm os dados enviados. `$_SERVER` tem informações sobre a requisição.
+`$_POST` e `$_GET` são arrays **superglobais** que contêm os dados enviados. `$_SERVER` tem informações sobre a requisição.
 
 ### Validação e segurança
 
-Regra número um do back-end: nunca confie em dados vindos do usuário. Sempre valide e sanitize.
+Regra número um do back-end: nunca confie em dados vindos do usuário. Sempre valide e sanitize. Nunca faça verificações ou validações pelo front-end (client-side).
 
 Sanitizar é limpar os dados - remover caracteres perigosos, tags HTML, espaços extras. Validar é verificar se os dados estão no formato correto.
 
@@ -372,7 +440,7 @@ INSERT INTO usuarios (nome, email, senha) VALUES ('João', 'joao@email.com', 'ha
 SELECT * FROM usuarios;                          -- todos os campos, todos os registros
 SELECT nome, email FROM usuarios;                -- só nome e email
 SELECT * FROM usuarios WHERE id = 1;             -- registro específico
-SELECT * FROM usuarios WHERE email LIKE '%@gmail%';  -- busca parcial
+SELECT * FROM usuarios WHERE email LIKE '%@gmail%';  -- busca parcial por gmails
 
 -- Atualizar dados
 UPDATE usuarios SET nome = 'João Silva' WHERE id = 1;
@@ -381,11 +449,11 @@ UPDATE usuarios SET nome = 'João Silva' WHERE id = 1;
 DELETE FROM usuarios WHERE id = 1;
 ```
 
-Você pode executar esses comandos direto no phpMyAdmin na aba SQL. Mas no dia a dia você vai executar pelo PHP.
+Você pode executar esses comandos direto no phpMyAdmin na aba SQL. Para funcionalidade do seu sistema, você vai executar através do PHP.
 
 ### PHP + MySQL
 
-Pra conectar PHP com MySQL, a forma moderna é usar PDO (PHP Data Objects). É mais seguro e funciona com vários bancos diferentes.
+Pra conectar PHP com MySQL vamos usar PDO (PHP Data Objects). É mais seguro e funciona com vários bancos diferentes.
 
 ```php
 <?php
@@ -730,6 +798,7 @@ try {
 ```
 
 </details>
+<br>
 
 **funcoes.php** centraliza funções utilitárias usadas em várias páginas. A função `sanitizar()` limpa inputs contra XSS. A `redirecionar()` faz redirect de forma segura (com `exit` pra garantir que o código para). As funções de mensagem permitem passar feedback entre páginas via sessão. E as funções de CSRF geram e validam tokens pra proteger formulários.
 
@@ -781,6 +850,7 @@ function validarCsrf() {
 ```
 
 </details>
+<br>
 
 **auth.php** é incluído no topo de todas as páginas. Ele configura a sessão de forma segura, inicia ela, carrega as dependências e define funções de autenticação. O `cookie_httponly` impede JavaScript de acessar o cookie de sessão (proteção contra roubo via XSS). O `use_strict_mode` rejeita IDs de sessão inventados pelo cliente.
 
@@ -823,6 +893,7 @@ function usuarioAtual() {
 ```
 
 </details>
+<br>
 
 ### Estilos CSS
 
@@ -1002,6 +1073,7 @@ tr:hover {
 ```
 
 </details>
+<br>
 
 ### Páginas do sistema
 
@@ -1061,6 +1133,7 @@ Agora vamos ver as páginas em si. Cada uma começa incluindo o `auth.php`, que 
 ```
 
 </details>
+<br>
 
 **login.php** processa o formulário de login. Primeiro verifica se já está logado (redireciona pra home). Quando recebe POST, valida o token CSRF, busca o usuário pelo email, e usa `password_verify()` pra comparar a senha digitada com o hash no banco. Se bater, regenera o ID da sessão (segurança contra session fixation) e guarda os dados do usuário na sessão.
 
@@ -1152,6 +1225,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ```
 
 </details>
+<br>
 
 **cadastro.php** cria novos usuários. Valida todos os campos (tamanho do nome, formato do email, tamanho da senha, confirmação), verifica se o email já existe no banco, e só então cria o usuário com a senha hasheada. Nunca armazene senhas em texto puro!
 
@@ -1257,6 +1331,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ```
 
 </details>
+<br>
 
 **logout.php** encerra a sessão de forma segura. Não basta só chamar `session_destroy()` - também limpa o array `$_SESSION` e invalida o cookie no navegador. Assim mesmo que alguém tenha o ID de sessão antigo, não vai funcionar.
 
@@ -1288,6 +1363,7 @@ exit;
 ```
 
 </details>
+<br>
 
 **contato.php** é o formulário de contato - só acessível pra usuários logados. O `exigirLogin()` no início redireciona pra login se não estiver autenticado. Valida o assunto contra uma lista pré-definida (não confia no que vem do select), e limita o tamanho da mensagem.
 
@@ -1378,6 +1454,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ```
 
 </details>
+<br>
 
 **mensagens.php** lista as mensagens do usuário logado. A query usa `WHERE usuario_id = ?` pra só trazer mensagens dele (não de outros usuários), ordenadas da mais recente pra mais antiga. O `htmlspecialchars()` ao exibir garante que mesmo se alguém tivesse conseguido salvar HTML malicioso, não seria executado.
 
@@ -1451,6 +1528,7 @@ $mensagens = $stmt->fetchAll();
 ```
 
 </details>
+<br>
 
 **.htaccess** configura o Apache pra melhorar a segurança. Desabilita listagem de diretórios (senão qualquer um poderia ver todos os arquivos), adiciona headers de segurança, bloqueia acesso a arquivos sensíveis (.sql, .env, etc), e impede acesso direto à pasta includes. Esse arquivo é processado pelo Apache, não pelo PHP.
 
@@ -1485,6 +1563,7 @@ RewriteEngine On
 ```
 
 </details>
+<br>
 
 ---
 
@@ -1725,29 +1804,13 @@ Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"  # Fo
 
 O Content-Security-Policy (CSP) é especialmente poderoso contra XSS - você define de onde scripts podem ser carregados, bloqueando scripts inline maliciosos.
 
-### Checklist de Segurança
+### Nossa segurança até o momento
 
 Resumindo, aqui tá o que nosso projeto implementa:
 
-**Implementado no projeto:**
-- Prepared statements contra SQL Injection
-- `htmlspecialchars()` contra XSS
-- `password_hash()` pra senhas
-- Validação de inputs
-- Headers de segurança básicos
-- Proteção da pasta includes via .htaccess
-- `session_regenerate_id()` após login
-- Configurações de cookie seguro (httponly, strict mode)
-- Logout seguro (limpa sessão e cookie)
-- Tokens CSRF em todos os formulários
+No projeto, já coloquei em prática várias proteções importantes: uso de prepared statements pra evitar SQL Injection, `htmlspecialchars()` pra barrar XSS, senhas sempre protegidas com `password_hash()`, validação de todos os inputs, headers de segurança básicos, proteção da pasta includes via `.htaccess`, regeneração do ID de sessão depois do login, configuração de cookies seguros (httponly e strict mode), logout que realmente limpa tudo e tokens CSRF em todos os formulários. Para produção, ainda recomendo **implementar** algumas coisas a mais, como limitar tentativas de login (**rate limiting**), registrar atividades suspeitas em **logs**, obrigar o uso de HTTPS e caprichar ainda mais na **Content-Security-Policy**. 
 
-**Pra implementar em produção:**
-- Rate limiting (limitar tentativas de login)
-- Logs de atividades suspeitas
-- HTTPS (obrigatório!)
-- Content-Security-Policy mais restritivo
-
-Segurança é um processo contínuo. Novas vulnerabilidades são descobertas o tempo todo. Mantenha PHP e dependências atualizados, acompanhe as boas práticas, e sempre parta do princípio que todo input do usuário é potencialmente malicioso.
+**Segurança** nunca é um ponto final, **é um processo contínuo**: sempre pode (e deve) ser melhorada. Novas vulnerabilidades são descobertas o tempo todo. Mantenha PHP e dependências atualizados, acompanhe as boas práticas, e sempre parta do princípio que todo input do usuário é potencialmente malicioso.
 
 ---
 
@@ -1768,3 +1831,14 @@ Desenvolvimento web é um campo gigante e esse guia mal arranhou a superfície. 
 O projeto que a gente fez é simples mas funcional. Você pode evoluir ele de várias formas: adicionar painel admin pra ver todas as mensagens, implementar "esqueci minha senha" com envio de email, upload de arquivos, paginação, AJAX pra experiência mais fluida...
 
 A dica é não ficar só na teoria. Pega esse projeto, roda, modifica, quebra, conserta. Adiciona features. Cada problema que você resolve te ensina algo novo. E quando travar, pesquisa - a comunidade de desenvolvimento é enorme e provavelmente alguém já passou pelo mesmo problema.
+
+---
+
+## Projeto completo
+
+Você pode baixar ou ver o código-fonte completo deste sistema no repositório:
+
+[Repositorio do nosso projeto: sistema_contatos](https://github.com/matheuslaidler/sistema_contatos)
+
+---
+*Editado para adicionar o link do repositório (23/12/2025)*

@@ -14,70 +14,45 @@ Se você já se perguntou como investigadores conseguem recuperar arquivos delet
 
 ## O que é e pra que serve
 
-A computação forense é basicamente a ciência de investigar dados digitais. O objetivo é encontrar evidências ou informações relevantes pra casos judiciais, criminais ou até administrativos. Envolve desde copiar dados de um HD de forma que nada seja alterado, até recuperar aquele arquivo que alguém "deletou pra sempre" (spoiler: deletar não é tão permanente quanto parece).
 
-Vou passar pelos principais tópicos e etapas dessa área, explicando cada um de forma que faça sentido mesmo pra quem nunca mexeu com isso.
+A computação forense é, no fim das contas, a arte de investigar dados digitais. O objetivo é encontrar evidências ou informações relevantes pra casos judiciais, criminais ou até administrativos. Isso vai desde copiar dados de um HD sem mexer em nada, até recuperar aquele arquivo que alguém jurou que tinha "deletado pra sempre" (spoiler: deletar não é tão permanente quanto parece, e é aí que a mágica acontece).
+
+Ao longo do texto, vou te mostrar os principais tópicos e etapas dessa área, sempre explicando de um jeito que faça sentido mesmo pra quem nunca mexeu com isso. Se você já tem alguma experiência, aproveite pra revisar conceitos e, quem sabe, pegar algum detalhe novo.
+
 
 ## Aquisição de imagem
 
-A primeira etapa da computação forense é a aquisição de imagem, que consiste em copiar os dados de um dispositivo de armazenamento, como um HD ou um SSD, para outro meio, como um pendrive ou um CD. Essa cópia deve ser feita de forma fiel e íntegra, preservando todas as características e propriedades dos dados originais. Para isso, são usadas ferramentas específicas que garantem a autenticidade e a integridade da imagem, como o uso de hashing de arquivos.
+A primeira etapa da computação forense é chamada de aquisição de imagem. Basicamente, é o momento de copiar os dados de um dispositivo de armazenamento, como um HD ou SSD, para outro meio, tipo um pendrive ou um CD. Mas não é só dar um Ctrl+C e Ctrl+V: essa cópia precisa ser fiel, íntegra, sem alterar nada do original. Pra garantir isso, usamos ferramentas específicas que preservam todas as características dos dados, e ainda aplicamos técnicas como o hashing de arquivos pra garantir que nada foi modificado no processo.
+
 
 ## Hashing de arquivos
 
-O hashing de arquivos é uma técnica que permite gerar um código único para cada arquivo, chamado de hash ou resumo criptográfico. Esse código é uma sequência de caracteres que representa o conteúdo do arquivo e que muda completamente se qualquer alteração for feita no arquivo. 
+Hashing de arquivos é uma técnica que gera um código único pra cada arquivo, chamado de hash ou resumo criptográfico. Esse código é uma sequência de caracteres que representa o conteúdo do arquivo, e muda completamente se qualquer coisa for alterada. É como se fosse a impressão digital do arquivo.
 
-Por exemplo, se um arquivo tem o hash 1234567890abcdef, e uma letra for mudada no arquivo, o hash será outro, como 0987654321fedcba. Assim, o hashing permite verificar se um arquivo foi modificado ou não, comparando os hashes antes e depois da cópia. 
+Por exemplo, se um arquivo tem o hash 1234567890abcdef e você muda uma letra, o hash vira outro completamente diferente, tipo 0987654321fedcba. Por isso, o hashing é usado pra garantir que um arquivo não foi modificado: basta comparar os hashes antes e depois da cópia.
 
-### Principais algoritmos de hash:
 
-**MD5 (Message Digest 5)**:
-- Produz hash de 128 bits (32 caracteres hexadecimais)
-- Rápido mas considerado criptograficamente quebrado
-- Vulnerável a ataques de colisão
-- Ainda usado para verificação de integridade simples
+### Principais algoritmos de hash
 
-**SHA-1 (Secure Hash Algorithm 1)**:
-- Produz hash de 160 bits (40 caracteres hexadecimais)
-- Mais seguro que MD5, mas também comprometido
-- Sendo gradualmente substituído
+Existem vários algoritmos de hash, cada um com suas características. O MD5, por exemplo, gera um hash de 128 bits (32 caracteres hexadecimais) e é bem rápido, mas já foi quebrado criptograficamente, então não serve pra segurança séria, só pra conferir integridade simples. O SHA-1 é um pouco mais seguro, gera 160 bits (40 caracteres), mas também já foi comprometido e está sendo deixado de lado. O SHA-256, que faz parte da família SHA-2: gera 256 bits (64 caracteres), é mais seguro que os anteriores e muito usado em blockchain, criptomoedas e investigações forenses. O SHA-3 (Keccak) é a geração mais nova, ainda mais resistente a ataques, com variações de 224, 256, 384 e 512 bits, e deve ser o futuro da criptografia hash.
 
-**SHA-256 (parte da família SHA-2)**:
-- Produz hash de 256 bits (64 caracteres hexadecimais)
-- Atualmente considerado seguro
-- Amplamente usado em blockchain e criptomoedas
-- Recomendado para investigações forenses atuais
-
-**SHA-3 (Keccak)**:
-- Última geração, mais resistente a ataques
-- Variações de 224, 256, 384 e 512 bits
-- Futuro da criptografia hash
-
-Nesse sentido, o `hashing` também pode ser usado para identificar arquivos duplicados ou maliciosos.
-
-**Cadeia de Custódia (Chain of Custody)**: É fundamental manter um registro detalhado de todos os hashes gerados e quando foram criados, garantindo que as evidências não foram adulteradas durante a investigação. 
+Além de garantir integridade, o hashing também serve pra identificar arquivos duplicados ou maliciosos. E tem um detalhe importante: a chamada cadeia de custódia (Chain of Custody). É fundamental manter um registro detalhado de todos os hashes gerados e quando foram criados, pra garantir que as evidências não foram adulteradas durante a investigação.
 
 >Outra ocasião que utiliza-se de hashing é em armazenamento de senhas em banco de dados. 
 >Não seria prudente armazenas dados sensíveis de forma aberta e sem proteção.
 >Para criar exemplos práticos de hash, você pode ir até a minha ferramenta `Cryptool` e gerar a hash de qualquer coisa que escrever, podendo escolher entre os tipos MD5, SHA-1, SHA-256 e SHA3-256.
 
+
 ## Análise de arquivos
 
-A análise de arquivos é a etapa em que os dados copiados são examinados para encontrar informações relevantes para a investigação. Essa análise pode ser feita de forma manual ou automatizada, usando ferramentas que permitem visualizar, filtrar, classificar e extrair dados dos arquivos. A análise pode envolver diferentes aspectos dos arquivos, como:
+Depois de copiar os dados, vem a etapa de análise de arquivos. Aqui, o objetivo é examinar tudo que foi copiado pra encontrar informações relevantes pra investigação. Dá pra fazer isso manualmente, olhando arquivo por arquivo, ou usando ferramentas que ajudam a visualizar, filtrar, classificar e extrair dados. Nessa análise, você pode olhar pro tipo do arquivo (documento, imagem, vídeo, áudio...), pro formato (PDF, JPG, MP4, MP3...), pro conteúdo (texto, imagem, som...) e pros metadados (informações extras como autor, data de criação, localização geográfica e por aí vai).
 
-- O tipo do arquivo: se é um documento, uma imagem, um vídeo, um áudio, etc.
-- O formato do arquivo: se é um PDF, um JPG, um MP4, um MP3, etc.
-- O conteúdo do arquivo: o texto, a imagem, o som, etc.
-- Os metadados do arquivo: as informações adicionais sobre o arquivo, como o autor, a data de criação, a localização geográfica, etc.
 
 ## Recuperação de arquivos
 
-A recuperação de arquivos é a etapa em que se tenta recuperar dados que foram apagados ou corrompidos nos dispositivos de armazenamento. 
+A recuperação de arquivos é aquela etapa em que tentamos trazer de volta dados que foram apagados ou corrompidos nos dispositivos de armazenamento. Muita gente acha que, ao deletar um arquivo, ele some pra sempre, mas na verdade o sistema só marca aquele espaço como livre pra ser sobrescrito. Enquanto isso não acontece, dá pra recuperar o arquivo usando ferramentas que conseguem ler esses dados "escondidos". Claro, a recuperação depende do tipo de dispositivo e do sistema operacional, então é sempre bom entender como cada tecnologia funciona pra escolher a melhor abordagem.
 
-Essa recuperação é possível porque quando um arquivo é apagado ou corrompido, **ele não é realmente eliminado do disco**, mas apenas marcado como espaço livre para ser sobrescrito por novos dados. Enquanto isso não acontece, o arquivo ainda pode ser recuperado usando ferramentas que conseguem ler os dados marcados como livres. 
-
-A recuperação depende do tipo de dispositivo de armazenamento e do sistema operacional usado.
-
-Para entender melhor vamos dar um breve resumo sobre os discos rígidos de armazenamento.
+Pra facilitar, vou dar um breve resumo sobre os discos rígidos de armazenamento, porque isso faz toda diferença na hora de recuperar arquivos.
 
 ### Ferramentas de recuperação
 
@@ -103,8 +78,7 @@ Algumas das ferramentas mais conhecidas e utilizadas na computação forense par
 
  - **SIFT**: É um programa que oferece uma grande variedade de ferramentas, incluindo _log2timeline_ para gerar uma linha do tempo a partir de logs do sistema, _Scalpel_ para a criação de arquivos de dados, _Rifiuti_ para examinar a lixeira e muito mais.
 
- >**Atenção**: Tentativas excessivas de recuperação e/ou uso incorreto de ferramentas para recuperação de dados dos discos rígidos, sistemas RAID, pendrives e várias outras mídias de armazenamento de dados, podem agravar o problema nas mídias físicas. 
- >Portanto, o **conhecimento de cada ferramenta** para um determinado trabalho e cenário **é crucial para evitar danos adicionais aos dispositivos de armazenamento durante a recuperação de dados**.
+ >**Atenção**: Tentativas excessivas de recuperação e/ou uso incorreto de ferramentas para recuperação de dados dos discos rígidos, sistemas RAID, pendrives e várias outras mídias de armazenamento de dados, podem agravar o problema nas mídias físicas. Portanto, o **conhecimento de cada ferramenta** para um determinado trabalho e cenário **é crucial para evitar danos adicionais aos dispositivos de armazenamento durante a recuperação de dados**.
 
 ## Live Forensics vs Dead Forensics
 
@@ -279,9 +253,10 @@ A funcionalidade da escrita e leitura de dados desses dois tipos de armazenament
 
 Os dois dispositivos têm vantagens e desvantagens em relação à **recuperação de dados**.
 
-- Um HD geralmente tem mais capacidade de armazenamento e é mais barato que um SSD. No entanto, ele é **mais lento e mais suscetível a danos físicos**. 
+Um HD geralmente tem mais capacidade de armazenamento e é mais barato que um SSD. No entanto, ele é **mais lento e mais suscetível a danos físicos**. 
   Além disso, ele usa uma técnica chamada `fragmentação` para otimizar o espaço no disco. A fragmentação consiste em dividir os arquivos em pedaços menores e distribuí-los pelo disco, podendo apenas **dificultar** a recuperação dos arquivos apagados ou corrompidos.
-- Um SSD geralmente tem menos capacidade de armazenamento e é mais caro que um HD. No entanto, ele é **mais rápido e mais resistente a danos físicos**. 
+
+Um SSD geralmente tem menos capacidade de armazenamento e é mais caro que um HD. No entanto, ele é **mais rápido e mais resistente a danos físicos**. 
   Além disso, ele usa uma técnica chamada `trim` para otimizar o desempenho do dispositivo, que consiste em **apagar** os dados marcados como livres de forma definitiva e **isso pode impedir a recuperação dos arquivos apagados ou corrompidos**.
 
 Então, resumidamente, a principal diferença entre o HD e o SSD é que o primeiro tem partes móveis e mecânicas, enquanto o segundo é todo formado por circuitos integrados. Por isso o SSD acaba sendo mais rápido, silencioso e resistente do que o HD, e também geralmente mais caro (atualmente deu uma boa melhorada).
@@ -292,9 +267,9 @@ A recomendação é uso de SSD sempre que possível.
 
 Windows e Linux são dois sistemas operacionais que podem ser usados nos dispositivos de armazenamento, os quais também têm vantagens e desvantagens em relação à recuperação de dados.
 
-- O **Windows** é o sistema operacional mais popular e mais fácil de usar. No entanto, ele usa um sistema de arquivos chamado `NTFS`, que é mais complexo e menos flexível que outros sistemas. 
+O **Windows** é o sistema operacional mais popular e mais fácil de usar. No entanto, ele usa um sistema de arquivos chamado `NTFS`, que é mais complexo e menos flexível que outros sistemas. 
   O NTFS usa uma estrutura chamada `MFT` (master file table), que armazena as informações sobre os arquivos, como o nome, o tamanho, a localização, etc. Se a MFT for danificada, a recuperação dos arquivos pode ser impossível.
-- O **Linux** é um kernel de uma *distribuição*, que este sim é um sistema operacional - geralmente gratuito - e bem usado por profissionais e especialistas. No entanto, como estamos falando sobre diversos tipos de sistemas operacionais que operam com o linux, acaba que vários sistemas de arquivos podem ser utilizados, como o `EXT4`, o `XFS`, o `BTRFS` e etc. 
+O **Linux** é um kernel de uma *distribuição*, que este sim é um sistema operacional - geralmente gratuito - e bem usado por profissionais e especialistas. No entanto, como estamos falando sobre diversos tipos de sistemas operacionais que operam com o linux, acaba que vários sistemas de arquivos podem ser utilizados, como o `EXT4`, o `XFS`, o `BTRFS` e etc. 
   Em geral, esses sistemas são mais simples e mais flexíveis que o NTFS, já que utilizam uma estrutura chamada `inode`, que armazena as informações sobre os arquivos, como o tipo, o dono, as permissões, etc. Se o inode for danificado, a recuperação dos arquivos pode ser possível usando ferramentas que conseguem reconstruir a estrutura.
 
 >Ambos os sistemas possuem ferramentas e opções de criptografia geral do disco, precisando de uma senha para poder bootar e utilizar o disco, ainda podendo precisar da senha de usuário para entrar no sistema - caso assim esteja configurado.
@@ -349,10 +324,10 @@ Já a `Análise de Esteganografia` é uma técnica de computação forense que v
 
 ### Métodos de esteganografia
   
- - Um dos métodos mais comuns de esteganografia é a **inserção de bits de informação em uma imagem**, alterando levemente sua cor ou brilho. 
+ Um dos métodos mais comuns de esteganografia é a **inserção de bits de informação em uma imagem**, alterando levemente sua cor ou brilho. 
    Essa alteração é imperceptível ao olho humano, mas pode ser detectada por um programa de computador que analisa o espectograma da imagem, ou seja, a representação gráfica das frequências e intensidades dos pixels. Um exemplo de ferramenta que faz essa análise é o Stegsolve, que permite visualizar diferentes camadas da imagem e identificar possíveis padrões ou mensagens ocultas.
 
- - Outro método é usar um editor hexadecimal para modificar diretamente os dados binários de uma imagem, inserindo um texto codificado em uma área específica do arquivo. 
+ Outro método é usar um editor hexadecimal para modificar diretamente os dados binários de uma imagem, inserindo um texto codificado em uma área específica do arquivo. 
    Um editor hexadecimal é um programa que permite visualizar e editar os dados em formato hexadecimal, que é uma forma de representar números binários usando 16 símbolos (0 a 9 e A a F). 
    _(Um exemplo de editor hexadecimal é o HxD, que permite abrir qualquer tipo de arquivo e alterar seus bytes livremente)_
 
@@ -361,13 +336,15 @@ Existem também programas específicos para esconder informações em arquivos, 
  - Já o `OpenPuff` é um software que usa técnicas avançadas de criptografia e compressão para ocultar vários tipos de arquivos em imagens, áudios ou vídeos. Ele também permite escolher um nível de segurança e uma senha para proteger os dados. 
 
 Uma outra forma de esconder *informações* em *imagens* é usar QR Code.
- - **Códigos QR** (Quick Response) são códigos de barras bidimensionais que podem armazenar dados alfanuméricos. Este pode ser gerado por um site ou aplicativo, como o QR Code Generator, e inserido em uma imagem usando um editor gráfico, como o Photoshop. Para ler o código, basta usar um leitor específico, como o QR Code Reader, que pode ser instalado em um smartphone ou tablet.
+
+**Códigos QR** (Quick Response) são códigos de barras bidimensionais que podem armazenar dados alfanuméricos. Este pode ser gerado por um site ou aplicativo, como o QR Code Generator, e inserido em uma imagem usando um editor gráfico, como o Photoshop. Para ler o código, basta usar um leitor específico, como o QR Code Reader, que pode ser instalado em um smartphone ou tablet.
 
 Um método mais *sofisticado* de esteganografia é **usar textos em spam** para ocultar mensagens. 
- - Esse método **SpamText** consiste em gerar textos aleatórios ou sem sentido, usando palavras-chave relacionadas a um assunto específico, como medicamentos, viagens ou negócios. Esses textos são enviados por e-mail ou publicados em sites ou redes sociais, com o objetivo de despistar os filtros anti-spam e atrair a atenção dos destinatários. No entanto, esses textos podem conter informações codificadas, que podem ser decifradas por quem conhece o algoritmo usado para gerá-los. Um exemplo de ferramenta que faz isso é o Spam Mimic, que permite escrever e decodificar mensagens usando vários tipos de spam.
+ Esse método **SpamText** consiste em gerar textos aleatórios ou sem sentido, usando palavras-chave relacionadas a um assunto específico, como medicamentos, viagens ou negócios. Esses textos são enviados por e-mail ou publicados em sites ou redes sociais, com o objetivo de despistar os filtros anti-spam e atrair a atenção dos destinatários. No entanto, esses textos podem conter informações codificadas, que podem ser decifradas por quem conhece o algoritmo usado para gerá-los. Um exemplo de ferramenta que faz isso é o Spam Mimic, que permite escrever e decodificar mensagens usando vários tipos de spam.
 
-Além disso tudo, existe uma forma muito simples de esteganografia que qualquer usuário normal de windows pode fazer para esconder arquivos em imagens. 
- - Esse método consistem em usar o **WinRAR**. Como já devem conhecer, é um programa que permite compactar e descompactar arquivos em vários formatos, como ZIP ou RAR. Para esconder um arquivo em uma imagem, basta selecionar os dois arquivos no Windows Explorer, clicar com o botão direito do mouse e escolher a opção "Adicionar ao arquivo...". Na janela que se abre, escolher o formato RAR e marcar a opção "Criar arquivo SFX". Isso vai gerar um arquivo executável com a extensão .exe e o ícone da imagem original. Para extrair o arquivo oculto, basta executar o arquivo .exe e escolher a pasta de destino.
+Além disso tudo, existe uma forma muito simples de esteganografia que qualquer usuário normal de windows pode fazer para esconder arquivos em imagens. Esse método consistem em usar o **WinRAR**. 
+
+Como já devem conhecer, WinRar é um ferramenta que permite compactar e descompactar arquivos em vários formatos, como ZIP ou próprio RAR. Para esconder um arquivo em uma imagem, basta selecionar os dois arquivos no Windows Explorer, clicar com o botão direito do mouse e escolher a opção "Adicionar ao arquivo...". Na janela que se abre, escolher o formato RAR e marcar a opção "Criar arquivo SFX". Isso vai gerar um arquivo executável com a extensão .exe e o ícone da imagem original. Para extrair o arquivo oculto, basta executar o arquivo .exe e escolher a pasta de destino.
 
 Como se pode ver, existem vários métodos e ferramentas para realizar a análise de esteganografia, uma técnica essencial para a computação forense. Essa análise pode revelar informações valiosas para a investigação e solução de crimes cibernéticos, bem como para a proteção da segurança e da privacidade dos usuários. 
 Por isso, é importante estar atento aos sinais de que uma imagem pode conter algo mais do que aparenta, e usar os recursos adequados para desvendar os mistérios da esteganografia.
@@ -403,7 +380,7 @@ Alguns links interessantes para ter de referências sobre as ferramentas.
  - [Principais ferramentas de recuperação - Academia Forense Digital](https://academiadeforensedigital.com.br/recuperacao-de-dados-conheca-as-principais-ferramentas/)
  - [KALI LINUX - FERRAMENTAS FORENSES](https://acervolima.com/kali-linux-ferramentas-forenses/)
  - [Kali Linux Ferramentas Forense - Tutorial](https://isolution.pro/pt/t/kali-linux/kali-linux-forensics-tools/kali-linux-ferramentas-forenses)
- - [LMelhores ferramentas do Kali Linux](https://tecnologia.blackpilado.com.br/2024/01/lista-das-melhores-ferramentas-do-kali.html)
+ - [Melhores ferramentas do Kali Linux](https://tecnologia.blackpilado.com.br/2024/01/lista-das-melhores-ferramentas-do-kali.html)
  - [21 Ferramentas de penetração importantes do Kali](https://pt.moyens.net/linux/21-ferramentas-de-penetracao-importantes-no-kali-linux/)
 
 #### Recomendação de conteúdo
@@ -411,9 +388,12 @@ Alguns links interessantes para ter de referências sobre as ferramentas.
 Para começar a estudar forense, você pode estudar através de diversos conteúdos gratuitos e pagos pela internet, ou até matérias específicas e/ou cursos de extensõies de uma faculdade. 
 Nunca pare de estudar, sempre busque por mais conhecimento. Talvez você queira até estudar para concurso e trabalhar para a polícia federal como investigador forense digital, isso demandaria bastante estudo não apenas dos conteúdos derivados deste post, mas dos conteúdos do concurso. Um futuro difícil e promissor que pode ser traçado por você, mas calma... um passo de cada vez, sem pular etapas. 
 
-Eu tenho três recomendações de conteúdos para quem não sabe nada e quer começar: 
- - Primeiro: O livro "Desvendando a Computação Forense" da Novatec é um bom livro até para quem não sabe nada de computação, pois ele passa pelo básico de computação e explica muito bem sobre forense digital, tendo sido escrito por profissionais da área. Boa porta de entrada.
- - Segundo: Vídeos do youtube. Existe diversos vídeos super bons em conteúdo e gratuitos, também sendo ótimo como porta de entrada. Um canal que eu recomendo é o "Fábrica de Noobs", ele possui diversos vídeos sobre o básico de forense geral, esteganografia e criptografia (com pdf).
- - Terceiro: Aulas disponibilizadas ao público. Esta é basicamente parte da segunda dica. Diversos professores universitários decidem postar suas aulas gratuitas em canais do youtube, desde gringos a brasileiros. Quando eu estudava na UFRJ e fiz a matéria de segurança, meu professor gravava a aula e postava em seu canal do youtube (infelizmente so gravava pela tela do pc, então não tinha ele apontando no quadro sobre o que fala e o audio nunca ficava distante, mas já era algo). Dessa forma quem precisava faltar tinha o conteúdo, além de poder ficar para qualquer entusiasta. Nesta matéria havia a parte de forense e talvez ainda seja possível achar no youtube, seu nome é Claudio Miceli e qualquer conteúdo dele será super recomendado por mim. 
+Eu tenho algumas recomendações de conteúdos para quem não sabe nada e quer começar: 
+
+ O livro "Desvendando a Computação Forense" da Novatec é um bom livro até para quem não sabe nada de computação, pois ele passa pelo básico de computação e explica muito bem sobre forense digital, tendo sido escrito por profissionais da área. Boa porta de entrada.
+ 
+ Vídeos do youtube... sim... existe diversos vídeos super bons em conteúdo e gratuitos, também sendo ótimo como porta de entrada. 
+ 
+ Um exemplo são aulas disponibilizadas ao público. Diversos professores universitários decidem postar suas aulas gratuitas em canais do youtube, desde gringos a brasileiros, ou até em alguma outra plataforma. Quando eu estudava na UFRJ e fiz a matéria de segurança, meu professor gravava a aula e postava em seu canal do youtube (infelizmente so gravava pela tela do pc, então não tinha ele apontando no quadro sobre o que fala e o audio sempre ficava distante, mas já era algo). Dessa forma quem precisava faltar tinha o conteúdo, além de poder ficar para qualquer entusiasta. Na gringa tem MUITOS professores feras de universidades renomadas que publicam de graça suas aulas no youtube.
 
  Espero que tenham gostado desta publicação. Não sou focado na área de forense e ainda tenho muito que aprender, basicamente tentei escrever o pouco que sei de forma introdutória. Se tiver uma forma melhor de introdução ou até se eu tiver esquecido algo, favor me deixe sabendo. Tente comentar, mandar e-mail ou direct, tanto faz. Abração!
