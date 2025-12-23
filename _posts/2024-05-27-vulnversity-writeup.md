@@ -571,4 +571,9 @@ E é isso! Uma máquina simples mas que ensina fundamentos muito importantes. Se
 
 Bons estudos e happy hacking!
 
-<iframe src="https://tryhackme.com/api/v2/badges/public-profile?userPublicId=2385463" style='border:none;'></iframe>
+<div style="background:transparent !important; text-align:center">
+  <iframe
+    src="https://tryhackme.com/api/v2/badges/public-profile?userPublicId=2385463"
+    style="border:none; width:450px; height:120px"
+  ></iframe>
+</div>
