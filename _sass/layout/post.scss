@@ -368,3 +368,17 @@ header {
     margin-right: -0.5rem;
   }
 }
+// tryhackme card post test
+.thm-card {
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.thm-card iframe {
+  border: none;
+  background: transparent;
+  width: 450px;
+  height: 120px;
+}
