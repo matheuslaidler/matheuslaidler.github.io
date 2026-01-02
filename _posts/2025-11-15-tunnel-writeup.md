@@ -687,9 +687,8 @@ A shell reversa inicial é bem limitada - não conseguimos usar setas, tab para 
 ```bash
 cd /root
 ls -la  
-which script  # ✅ Disponível
-#which python 
-#podemos usar o comando whereis tbm.
+which script  # Disponível
+#whereis python 
 ```
 
 **Entendendo o processo de upgrade:**
@@ -1318,5 +1317,6 @@ Mas como todas estavam presentes, criaram um caminho direto para comprometimento
 #### Áudio Visual: Resolução gravada em vídeo
 
 <iframe width="80%" src="https://www.youtube.com/embed/Ew0WCkQvJl4?si=5pymaXYW5QR_xNGo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 
  - Problema com o vídeo? então clique [aqui](https://youtu.be/Ew0WCkQvJl4) para ver diretamente do youtube.
