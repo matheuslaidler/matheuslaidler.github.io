@@ -1169,7 +1169,7 @@ ls -la /opt/lion/lion.backup.sh
 
 Saída: `-rwxrwxrwx 1 root root ... lion.backup.sh`
 
-**Como vimos anteriormente ao analisando as permissões:**
+**Como vimos anteriormente ao analisar as permissões:**
 
 - `rwx` (posições 2-4): dono (root) pode ler, escrever, executar
 - `rwx` (posições 5-7): grupo pode ler, escrever, executar
