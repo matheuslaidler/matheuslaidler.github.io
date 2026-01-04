@@ -1042,11 +1042,11 @@ Os comandos que encontram a vulnerabilidade diretamente é:
 find / -perm -4000 -type f 2>/dev/null
 #/usr/bin/crontab avistado
 #buscar config
-find / -type d -iname "contrab" 2>/dev/null
-#ou já sabendo da localização padrão de contrab em /etc/
+find / -iname "crontab" 2>/dev/null
+#/etc/crontab
 cat /etc/crontab
 #podendo tbm achar o script de backup com
-find / -type f -iname "*backup*.sh" 2>/dev/null
+#find / -type f -iname "*backup*.sh" 2>/dev/null
 ```
 
 Ele retorna: `/opt/lion/lion.backup.sh` - um script de backup que será nossa porta de entrada.
@@ -1073,6 +1073,10 @@ bash-4.2$ find / -perm -4000 -type f 2>/dev/null
 /usr/libexec/dbus-daemon-launch-helper
 /usr/libexec/pt_chown
 
+bash-4.2$ find / -iname "crontab" 2>/dev/null
+/etc/crontab
+/usr/bin/crontab
+
 bash-4.2$ cat /etc/crontab
 SHELL=/bin/bash
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
@@ -1093,11 +1097,13 @@ MAILTO=root
 
 bash-4.2$ find / -type f -iname "*backup*.sh" 2>/dev/null
 /opt/lion/lion.backup.sh
+
 bash-4.2$ ls -la /opt/lion/lion.backup.sh
+
 -rwxrwxrwx 1 root root ... lion.backup.sh
 ```
 
-> * * * * * root /opt/lion/lion.backup.sh | Cron com permissão 777
+ >/opt/lion/lion.backup.sh é um cron com permissão 777
 
 Teremos nosso nossa nova shell reversa pelo script executar sempre como root, enquanto pode ser editado por um usuário comum:
 
@@ -1108,6 +1114,8 @@ Teremos nosso nossa nova shell reversa pelo script executar sempre como root, en
 - `rwx` (posições 8-10): **OUTROS** podem ler, escrever, executar!
 
 ### Fase 9: Usando linPEAS para Confirmar (Automatizado)
+
+>A fase 8 e 9 podem ser escolhidas a serem feitas isoladamente,isto é, se você fez a fase 8, pode apenas passar para a fase 10. Para outras máquinas, você pode preferir fazer apenas a fase 9, e por aí vai.
 
 Se preferir automatizar (ou confirmar suas descobertas manuais), o **linPEAS** (Linux Privilege Escalation Awesome Script) é uma ferramenta que verifica centenas de possíveis falhas de configuração.
 
@@ -1171,13 +1179,9 @@ ls -la /opt/lion/lion.backup.sh
 
 Saída: `-rwxrwxrwx 1 root root ... lion.backup.sh`
 
-**Como vimos anteriormente ao analisar as permissões:**
+Vemos que o **Dono é o root e pode fazer tudo, o grupo pode fazer tudo, mas até os outros também podem fazer tudo**.
 
-- `rwx` (posições 2-4): dono (root) pode ler, escrever, executar
-- `rwx` (posições 5-7): grupo pode ler, escrever, executar
-- `rwx` (posições 8-10): **OUTROS** podem ler, escrever, executar!
-
-Isso é uma falha de configuração grave. O administrador criou um script de backup que roda automaticamente como root (via cron), mas deu permissão 777 - qualquer usuário pode modificar!
+Isso é uma falha de configuração grave. O administrador criou um script de backup que roda automaticamente como root (via cron), mas deu permissão 777 - qualquer usuário pode modificar e injetar payload malicioso!
 
 ### Fase 10: O Xeque-Mate (Obtendo Root)
 
