@@ -1097,7 +1097,7 @@ bash-4.2$ ls -la /opt/lion/lion.backup.sh
 
 > * * * * * root /opt/lion/lion.backup.sh | Cron com permissão 777
 
-Teremos nossa execução por executar sempre como root e pode ser editado por usuário comum:
+Teremos nosso nossa nova shell reversa pelo script executar sempre como root, enquanto pode ser editado por um usuário comum:
 
 **Analisando as permissões:**
 - Primeiro caractere: `-` = arquivo regular
