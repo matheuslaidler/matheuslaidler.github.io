@@ -934,12 +934,7 @@ Antes de usar ferramentas automatizadas, é fundamental saber procurar vulnerabi
 
 #### Checklist Escalação Manual:
 
-1. **Verificar sudo mal configurado**
-
-Não será utilizado neste caso, visto que entramos como usuário apache, mas não apenas não sabemos a senha dele, como nem sabemos se faz parte de sudoers. 
-De qualquer forma, o comando `sudo -l` lista quais comandos o usuário atual pode executar como root (ou outro usuário). Se aparecer algo como `(ALL) NOPASSWD: /usr/bin/vim`, significa que você pode rodar vim como root sem senha - e do vim você consegue spawnar um shell root com `:!bash`. Isso é algo que pode ser útil em outras ocasiões, mas não para essa máquina.
-
-2. **Procurar binários SUID (Set User ID)**
+1. **Procurar binários SUID (Set User ID)**
 
 Geralmente é uma boa opção, este comando será bem utilizado em outras máquinas também.
 
@@ -960,6 +955,17 @@ O redirecionamento com `2>/dev/null` é basicamente para **não printar os erros
 Aqui já temos um resultado lindo e podemos progredir.
 
 #### Continuando checklist para fins de curiosidade e aprendizado
+
+```bash
+# 2. Verificar sudo mal configurado
+sudo -l
+```
+
+Não será utilizado neste caso, visto que entramos como usuário apache, mas não apenas não sabemos a senha dele, como nem sabemos se faz parte de sudoers. 
+
+De qualquer forma, o comando lista quais comandos o usuário atual pode executar como root (ou outro usuário). 
+
+Se aparecer algo como `(ALL) NOPASSWD: /usr/bin/vim`, significa que você pode rodar vim como root sem senha - e do vim você consegue spawnar um shell root com `:!bash`. Isso é algo que pode ser útil em outras ocasiões, mas não para essa máquina.
 
 ```bash
 # 3. Procurar binários SGID (Set Group ID)
