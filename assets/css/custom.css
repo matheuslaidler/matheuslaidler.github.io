@@ -69,7 +69,7 @@ html[data-mode='light'] body {
 
 /* ===== SIDEBAR - BACKGROUND COM GRADIENTE (SEMPRE ESCURO) ===== */
 
-#sidebar {
+html[data-mode='dark'] #sidebar {
   background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
   border-right: 2px solid rgba(115, 255, 232, 0.3);
 }
@@ -803,5 +803,97 @@ html.reading-mode #main-wrapper #tail-wrapper {
   flex: 0 0 100%;
   width: 100%;
   max-width: 100%;
+}
+
+/* ===================================================================== */
+/* AJUSTES PÓS-FEEDBACK — matheus laidler                                */
+/* ===================================================================== */
+
+/* --- Offset de âncora: ao clicar num título (TOC/anchor), ele para     */
+/*     ABAIXO do menu superior (8vh) + topbar (3rem), e não escondido.   */
+html {
+  scroll-padding-top: calc(8vh + 3.5rem);
+}
+
+/* --- Menu superior: botão ativo/hover preenche até a borda inferior --- */
+/*     (remove o "gap" entre o botão e a linha ciano).                    */
+#cssmenu > ul > li > a {
+  height: 8vh;
+  display: inline-flex;
+  align-items: center;
+  line-height: normal;
+  box-sizing: border-box;
+}
+
+/* --- Botão de tema (mode-toggle): mesma borda circular dos demais --- */
+/*     ícones. O Chirpy zera a borda com especificidade de ID; aqui      */
+/*     reempatamos com #sidebar para sobrescrever.                        */
+#sidebar .sidebar-bottom .mode-toggle {
+  border: 1px solid rgba(115, 255, 232, 0.3);
+}
+
+/* ===== SIDEBAR EM LIGHT MODE (antes ficava sempre escura) ===== */
+html[data-mode='light'] #sidebar {
+  background: linear-gradient(135deg, #ffffff 0%, #eef3f7 100%);
+  border-right: 2px solid rgba(0, 157, 178, 0.25);
+}
+
+html[data-mode='light'] .site-title a {
+  background: linear-gradient(135deg, #009db2, #00b894);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+html[data-mode='light'] .site-subtitle {
+  color: #5a6b72;
+}
+
+html[data-mode='light'] .site-subtitle::before {
+  color: rgba(0, 157, 178, 0.6);
+}
+
+html[data-mode='light'] #sidebar .nav-link {
+  color: rgba(40, 50, 60, 0.85);
+}
+
+html[data-mode='light'] #sidebar .nav-link:hover {
+  color: #009db2;
+  background: rgba(0, 157, 178, 0.08);
+  box-shadow: 0 0 12px rgba(0, 157, 178, 0.15),
+              inset 0 0 12px rgba(0, 157, 178, 0.04);
+}
+
+html[data-mode='light'] #sidebar .nav-link:hover i {
+  color: #00b894;
+  text-shadow: none;
+}
+
+html[data-mode='light'] #sidebar .nav-item.active .nav-link {
+  color: #009db2;
+  background: linear-gradient(135deg, rgba(0, 157, 178, 0.12), rgba(0, 184, 148, 0.08));
+  box-shadow: 0 0 14px rgba(0, 157, 178, 0.18),
+              inset 0 0 8px rgba(0, 157, 178, 0.05);
+  border-left: 3px solid #009db2;
+}
+
+html[data-mode='light'] #sidebar .nav-item.active .nav-link i {
+  color: #00b894;
+}
+
+html[data-mode='light'] #sidebar .sidebar-bottom .mode-toggle,
+html[data-mode='light'] .sidebar-bottom a,
+html[data-mode='light'] .sidebar-bottom button {
+  border-color: rgba(0, 157, 178, 0.35);
+  color: rgba(0, 157, 178, 0.85);
+  background: linear-gradient(135deg, rgba(0, 157, 178, 0.08), rgba(0, 184, 148, 0.05));
+}
+
+html[data-mode='light'] .sidebar-bottom .mode-toggle:hover,
+html[data-mode='light'] .sidebar-bottom a:hover,
+html[data-mode='light'] .sidebar-bottom button:hover {
+  color: #009db2;
+  border-color: #009db2;
+  box-shadow: 0 0 16px rgba(0, 157, 178, 0.3);
 }
 

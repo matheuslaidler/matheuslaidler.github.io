@@ -2,7 +2,7 @@
 title: Desenvolvimento Web na Prática com PHP
 description: 'Guia do zero ao deploy com HTML, CSS, JavaScript, PHP, MySQL e segurança básica'
 author: matheus
-tags: ["web development", "html", "css", "javascript", "php", "mysql", "backend", "frontend", "programação", "xampp", "RCE", "sql injection", "XSS", "session hijacking", "CSRF"]
+tags: ["web development", "html", "css", "javascript", "php", "mysql", "backend", "frontend", "Programação", "xampp", "RCE", "SQL Injection", "XSS", "session hijacking", "CSRF"]
 categories: ["Road2Tech", "Development", "Programação", "WayOfSec"]
 pin: false
 comments: true

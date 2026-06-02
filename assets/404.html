@@ -1,6 +1,6 @@
 ---
 layout: page
-title: "404: Page not found"
+title: "404: Página não encontrada"
 permalink: /404.html
 
 redirect_from:
@@ -11,4 +11,41 @@ redirect_from:
 
 {% include lang.html %}
 
-<p class="lead">{{ site.data.locales[lang].not_found.statment }}</p>
+<style>
+  .error-content {
+    text-align: center;
+    padding: 1rem 0 2rem;
+  }
+  .error-content .error-code {
+    font-size: clamp(4rem, 18vw, 9rem);
+    font-weight: 800;
+    line-height: 1;
+    background: linear-gradient(135deg, #73ffe8, #00ff88);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .error-content .error-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+</style>
+
+<div class="error-content">
+  <p class="error-code">404</p>
+
+  <p class="lead">{{ site.data.locales[lang].not_found.statment }}</p>
+  <p>A página que você procura não existe, foi movida ou o link está quebrado.</p>
+
+  <div class="error-actions">
+    <a class="btn btn-outline-primary" href="{{ '/' | relative_url }}">
+      <i class="fas fa-home fa-fw"></i> Voltar ao início
+    </a>
+    <a class="btn btn-outline-primary" href="{{ '/archives/' | relative_url }}">
+      <i class="fas fa-archive fa-fw"></i> Ver todos os posts
+    </a>
+  </div>
+</div>

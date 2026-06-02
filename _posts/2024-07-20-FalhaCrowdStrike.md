@@ -2,7 +2,7 @@
 title: O update que fez a CrowdStrike parar o mundo
 description: 'Entenda e reflita sobre o incidente da empresa, ao atualizar o Falcon, que respingou no mundo todo'
 author: matheus
-tags: ["CrowdStrike", "Microsoft", "Falcon","Programação"]
+tags: ["CrowdStrike", "Microsoft", "Falcon", "Programação"]
 categories: ["WayOfSec", "Sistema Operacional"]
 pin: false
 comments: true

@@ -5,7 +5,7 @@ date: 2025-12-17 20:00:00 -0300
 last_modified_at: 2025-12-18 12:00:00 -0300
 author: matheus
 categories: ["WayOfSec", "AppSec", "Hacking", "Development", "Programação", "SecLab"]
-tags: ["segurança", "vulnerabilidades", "vibecode", "nocode", "lowcode", "lovable", "ia", "supply-chain", "dependabot", "cve", "owasp", "xss"]
+tags: ["segurança", "vulnerabilidades", "vibecode", "nocode", "lowcode", "lovable", "ia", "supply-chain", "dependabot", "cve", "owasp", "XSS"]
 pin: false
 comments: true
 math: false

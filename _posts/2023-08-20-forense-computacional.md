@@ -2,8 +2,8 @@
 title: Desvendando a Forense Digital
 description: Conhecendo a computação forense
 author: matheus
-tags: ["Forense digital", "Análise Forense", "Recovery","Esteganografia", "Criptografia", "Ferramentas Forense"]
-categories: ["Forensic Trail", "Computação Forense"]
+tags: ["Forense digital", "Análise Forense", "Recovery", "Esteganografia", "Criptografia", "Ferramentas Forense"]
+categories: ["Computação Forense"]
 pin: false
 comments: true
 ---

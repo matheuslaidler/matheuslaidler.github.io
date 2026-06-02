@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Acervo de TI">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f1419"/>
+      <stop offset="100%" stop-color="#1a1f2e"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#73ffe8"/>
+      <stop offset="100%" stop-color="#00ff88"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- moldura sutil -->
+  <rect x="24" y="24" width="1152" height="582" rx="18" fill="none" stroke="#73ffe8" stroke-opacity="0.18" stroke-width="2"/>
+
+  <!-- prompt / brand -->
+  <text x="600" y="250" text-anchor="middle"
+        font-family="'Courier New', monospace" font-size="40" fill="#73ffe8" fill-opacity="0.85">&gt;_ ./matheuslaidler</text>
+
+  <!-- título -->
+  <text x="600" y="360" text-anchor="middle"
+        font-family="'Lato', 'Segoe UI', sans-serif" font-size="104" font-weight="800" fill="url(#accent)">Acervo de TI</text>
+
+  <!-- tagline -->
+  <text x="600" y="430" text-anchor="middle"
+        font-family="'Source Sans Pro', 'Segoe UI', sans-serif" font-size="36" fill="#73ffe8" fill-opacity="0.7">// estudos em tecnologia &amp; seguran&#231;a da informa&#231;&#227;o</text>
+
+  <!-- barra de acento inferior -->
+  <rect x="0" y="618" width="1200" height="12" fill="url(#accent)"/>
+</svg>
