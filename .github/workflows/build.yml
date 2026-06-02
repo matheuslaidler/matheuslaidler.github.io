@@ -20,7 +20,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.1.4'
+          ruby-version: '3.3'  # Ruby 3.1 quebra o sass-embedded (NameError: JSON::Fragment)
           bundler-cache: true  # Automaticamente roda bundle install e faz cache
 
       # Build do site Jekyll
