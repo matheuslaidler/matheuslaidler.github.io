@@ -1933,3 +1933,10 @@ Você pode baixar ou ver o código-fonte completo deste sistema no repositório 
 
 ---
 *Editado para adicionar o link do repositório (23/12/2025)*
+
+
+## Leia também
+
+- [SQL Injection da teoria à prática](/posts/sql-injection-definitivo/)
+- [XSS e HTML Injection — Tipos e Exploração](/posts/xss-guia-completo/)
+- [Secure Code Review com exercícios práticos](/posts/code-review-seguranca/)

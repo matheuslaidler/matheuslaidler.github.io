@@ -232,14 +232,15 @@
   #cssmenu ul.open {
 	display: block;
 	position: absolute;
-	top: 7.5725vh;
+	top: 8vh;
 	right: 0;
 	left: 0;
 	background-color: #141414cb;
 	border-top: 3.5px solid #73ffe8;
 	padding: 0.2vh;
 	padding-top: 0;
-	min-height: 135vh;
+	max-height: calc(100vh - 8vh);
+	overflow-y: auto;
 	z-index: 9999;
   }
 

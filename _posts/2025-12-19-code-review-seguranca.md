@@ -644,3 +644,10 @@ Mesmo quando você não acha nada explorável de cara, o tempo investido lendo c
 Então se você tá começando em bug bounty e quer se destacar da massa que só aperta botão, investe tempo em aprender a ler código. Não precisa ser expert em todas as linguagens - começa pelo básico de JavaScript (porque tá em todo lugar), PHP (ainda roda metade da web), e vai expandindo conforme a necessidade. O retorno vem.
 
 > Lembre-se: a segurança acaba sempre sendo em camadas. Podemos dizer quer a "melhor vulnerabilidade" é a identificada e barrada antes pela revisão, isto é, que nunca chega em produção. A "segunda melhor" é a que passou, mas foi identificada antes que pudesse ter sido explorada. A "terceira melhor" é a que acabou sendo explorada, mas também acabou sendo barrada por outra proteção - o que notificou o sistema sobre o ocorrido e com isso a falha é identificada antes de qualquer prejuízo real. Quando não temos camadas de proteção suficiente, a chance de uma exploração ocorrer silenciosamente é muito alta e isso é ruim. Code review faz parte de uma das camadas, temos diversas outras importantes e eu espero poder trazer ainda mais conhecimento a respeito.
+
+
+## Leia também
+
+- [SQL Injection da teoria à prática](/posts/sql-injection-definitivo/)
+- [XSS e HTML Injection — Tipos e Exploração](/posts/xss-guia-completo/)
+- [Desenvolvimento Web na Prática com PHP](/posts/desenvolvimento-web-guia-pratico/)

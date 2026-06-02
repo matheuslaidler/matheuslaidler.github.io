@@ -1,4 +1,4 @@
-﻿---
+---
 title: Tunnel - Desafio Hacker [HackingClub]
 description: 'Resolvendo máquina nível médio da Hacking Club sobre h2c request smuggling, RCE e Docker escape'
 author: matheus
@@ -7,6 +7,9 @@ categories: ["SecLab", "WayOfSec", "Hacking", "Write Ups"]
 pin: false
 comments: true
 
+image:
+  path: https://github.com/user-attachments/assets/47dffbac-2eea-4c65-b6b7-f51d8582842b
+  alt: "Tunnel (Hacking Club) — h2c request smuggling, RCE e Docker escape"
 ---
 
 # Writeup: Tunnel (HackingClub Machine)

@@ -605,6 +605,7 @@ public ResponseEntity<?> receberDados(@RequestBody String input) {
 ```
 
 **React (frontend adicional):**
+{% raw %}
 ```jsx
 import DOMPurify from 'dompurify';
 
@@ -636,6 +637,7 @@ function useSanitizedInput(input) {
     return sanitized;
 }
 ```
+{% endraw %}
 
 ### Configurações no servidor (.htaccess)
 
@@ -1014,3 +1016,10 @@ Lembre-se: XSS é sobre fazer o navegador da vítima executar código que você 
 **Mas com grandes poderes vem grandes responsabilidades.** Use esse conhecimento pra proteger seus próprios projetos, fazer pentests autorizados, educar outros desenvolvedores e reportar vulnerabilidades de forma responsável. Nunca pra atacar sites sem permissão - além de crime, é desnecessário quando tem tanto lab legal pra praticar.
 
 Agora é só partir para a prática!
+
+
+## Leia também
+
+- [SQL Injection da teoria à prática](/posts/sql-injection-definitivo/)
+- [Desenvolvimento Web na Prática com PHP](/posts/desenvolvimento-web-guia-pratico/)
+- [Secure Code Review com exercícios práticos](/posts/code-review-seguranca/)

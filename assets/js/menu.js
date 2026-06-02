@@ -56,3 +56,33 @@ document.addEventListener('DOMContentLoaded', function() { //DOMContentLoaded ad
 //Quando o JavaScript é colocado no HTML, ele é executado após o carregamento do DOM, então não era necessário. 
 //No entanto, quando está em um arquivo .js externo, ele pode ser executado antes que o DOM esteja totalmente carregado, resultando no erro `Uncaught TypeError: Cannot read properties of null (reading 'addEventListener')`.
 //A solução é envolver seu código em um ouvinte de evento DOMContentLoaded para garantir que o DOM esteja totalmente carregado antes de seu código ser executado.
+
+
+// ===== MODO LEITURA / TELA CHEIA (desktop) =====
+// Esconde sidebar + painel direito para focar no texto, mantendo o menu superior.
+// O estado é persistido em localStorage e restaurado antes do paint (script inline no <head>).
+document.addEventListener('DOMContentLoaded', function () {
+  const readingBtn = document.getElementById('reading-mode-trigger');
+  if (!readingBtn) return;
+
+  const icon = readingBtn.querySelector('i');
+
+  function syncReadingButton() {
+    const on = document.documentElement.classList.contains('reading-mode');
+    readingBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    if (icon) {
+      icon.classList.toggle('fa-compress', on);
+      icon.classList.toggle('fa-expand', !on);
+    }
+  }
+
+  syncReadingButton();
+
+  readingBtn.addEventListener('click', function () {
+    const on = document.documentElement.classList.toggle('reading-mode');
+    try {
+      localStorage.setItem('reading-mode', on ? 'true' : 'false');
+    } catch (e) {}
+    syncReadingButton();
+  });
+});

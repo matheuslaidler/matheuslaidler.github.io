@@ -9,6 +9,9 @@ categories: ["SecLab", "WayOfSec", "Hacking", "Write Ups"]
 pin: false
 comments: true
 math: true
+image:
+  path: https://github.com/user-attachments/assets/3f7278d7-4aa5-4e30-89a3-1df50cb958e8
+  alt: "SQL Injection — exploração prática na máquina Lion do Hacking Club"
 ---
 
 # A "velha guarda" que ainda tem força para afetar "vibe sistemas" 
@@ -1537,3 +1540,10 @@ Enquanto houver desenvolvedores que ignoram a base, sempre haverá uma shell esp
 ---
 
 >Algum erro ou problema na postagem? Deixe um comentário abaixo através da sua conta do github. Elogios e reações também serão bem vindas, hehe. Abração!!
+
+
+## Leia também
+
+- [Desenvolvimento Web na Prática com PHP](/posts/desenvolvimento-web-guia-pratico/)
+- [XSS e HTML Injection — Tipos e Exploração](/posts/xss-guia-completo/)
+- [Secure Code Review com exercícios práticos](/posts/code-review-seguranca/)

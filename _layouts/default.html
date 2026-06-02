@@ -19,6 +19,7 @@ layout: compress
 
   {% include head.html %}
 
+  <body>
 <!-- menu desktop/mobile -  creditos> matheuslaidler.github.io -->
 <nav id="cssmenu">
   <table width="auto" border="0" align="left"> 
@@ -30,7 +31,7 @@ layout: compress
       </td> 
       </tbody>
     </table> 
-  <div class="menu-icon">
+  <div class="menu-icon" role="button" tabindex="0" aria-label="Abrir menu de seções do site" aria-expanded="false">
     <span class="bar"></span>
     <span class="bar"></span>
     <span class="bar"></span>
@@ -93,7 +94,6 @@ layout: compress
   </nav>
 <!-- fim do menu de matheus laidler -->
 
-  <body>
     {% include sidebar.html lang=lang %}
 
     <div id="main-wrapper" class="d-flex justify-content-center">

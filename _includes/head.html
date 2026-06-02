@@ -3,6 +3,17 @@
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f7f7">
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1b1b1e">
 
+  <!-- Restaura o "Modo leitura" antes do paint (evita flash da sidebar) -->
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem('reading-mode') === 'true') {
+          document.documentElement.classList.add('reading-mode');
+        }
+      } catch (e) {}
+    })();
+  </script>
+
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6850970123968671"
        crossorigin="anonymous"></script>

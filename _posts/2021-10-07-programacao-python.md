@@ -1,6 +1,7 @@
 ---
 title: "Guia Definitivo de Programação Python"
 description: "Jornada completa pela programação Python baseada na experiência pessoal que tive na UFRJ em 2021"
+author: matheus
 date: 2021-10-07 12:00:00 -0300
 last_modified_at: 2025-12-17 20:00:00 -0300
 categories: ["Road2Tech", "Development", "Programação"]

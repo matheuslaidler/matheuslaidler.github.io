@@ -3,11 +3,16 @@ title: "Vibe Coding: Analisando riscos na prática"
 description: "Análise completa de vulnerabilidades em projetos gerados por IA e plataformas no-code/low-code - um estudo de caso real"
 date: 2025-12-17 20:00:00 -0300
 last_modified_at: 2025-12-18 12:00:00 -0300
-categories: [WayOfSec,AppSec,Hacking,Development,Programação,SecLab]
-tags: [segurança, vulnerabilidades, vibecode, nocode, lowcode, lovable, ia, supply-chain, dependabot, cve, owasp, xss]
+author: matheus
+categories: ["WayOfSec", "AppSec", "Hacking", "Development", "Programação", "SecLab"]
+tags: ["segurança", "vulnerabilidades", "vibecode", "nocode", "lowcode", "lovable", "ia", "supply-chain", "dependabot", "cve", "owasp", "xss"]
 pin: false
+comments: true
 math: false
 mermaid: true
+image:
+  path: https://github.com/user-attachments/assets/3392e1ea-3634-4590-83a9-57b6794d150d
+  alt: "Vibe Coding — análise de riscos de segurança em projetos gerados por IA"
 ---
 
 # A festa dos sonhos que pode virar pesadelo
