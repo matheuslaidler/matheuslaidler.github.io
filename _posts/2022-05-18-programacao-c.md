@@ -4,13 +4,13 @@ description: "Jornada completa pela programação C baseada na experiência pess
 author: matheus
 date: 2022-05-18 12:00:00 -0300
 last_modified_at: 2025-11-18 20:00:40 -0300
-categories: ["Road2Tech", "Development", "Programação"]
-tags: ["C++", "programming", "programacao", "guia", "complete-guide", "gcc", "unix", "linux", "matematica", "decimal"]
+categories: ["Programação", "C/C++"]
+tags: ["C/C++", "GCC", "ponteiros", "system calls", "Make", "Linux", "guia"]
 pin: false
 math: true
 ---
 
-# Desbravando C: Programação de Forma Didática
+## Desbravando C: Programação de Forma Didática
 
 > Documentação completa e definitiva baseada na experiência prática de laboratório e redação na UFRJ. Do ambiente de desenvolvimento até conceitos avançados, preservando o estilo didático e explicações claras que fizeram desta jornada uma experiência única de aprendizado.
 
@@ -310,7 +310,7 @@ Se aparecer "Ambiente configurado com sucesso!", você está pronto para começa
 
 #### Estrutura de Projeto Recomendada
 
-```
+```text
 projeto/
 ├── src/           # Código fonte (.c)
 ├── include/       # Headers (.h)
@@ -453,8 +453,6 @@ Em outras palavras, o programa pega o valor dos caracteres e os compara. É como
 
 A cada espaço, quebra de linha ou tab, incrementa o 'white space'. Para cada caractere que não é número nem espaço, incrementa 'other'. Para cada dígito, incrementa a posição correspondente no array.
 
-**Observação importante:** Para pegar o número total de caracteres usados, podemos somar o 'other' com os números encontrados. Isso sem contar espaços e quebras de linha.
-
 **Exibição dos resultados:**
 
 ```c
@@ -549,17 +547,17 @@ Um chefe pede para você ajudar o time de suporte verificando relatórios que se
 
 #### Conceitos Fundamentais sobre Strings
 
-É importante considerarmos uma 'string de palavras' como uma lista de caracteres, ou seja, banana seria um array com cada elemento sendo cada letra dessa palavra. Portanto, uma linha inteira seria uma lista de todas as caracteres presentes, como letras e espaços, por exemplo.
+É importante considerarmos uma 'string de palavras' como uma lista de caracteres, ou seja, banana seria um array com cada elemento sendo cada letra dessa palavra. Portanto, uma linha inteira seria uma lista de todos os caracteres presentes, como letras e espaços, por exemplo.
 
 Cada letra, espaço e caractere escape serão contados como um caractere. Caracteres escape seriam os tipos de caracteres que são interpretados de outra forma, como o '\n', que ao invés de printar a escrita direto, será feito a função de pular uma linha.
 
 **Importante:** Para usuários de Windows, uma quebra de linha pode contar como dois. Isso porque o padrão desse sistema é ser \r\n ao invés de ser apenas \n. Dá para verificar o tipo com programas de edição de texto como NotePad++, podemos ver se está como Unix(LF) ou Windows(CR LF).
 
-Podemos até adicionar uma condicional no programa para sempre que achar um \r antes de um \n descartar ele da contagem ou simplesmente colocá-lo no loop for como uma das formas de parar o loop, dessa forma ele já não será contado de qualquer maneira. O problema é que nunca daria para verificar se o \n existe pois antes de chegar nele o loop já pararia. Não me parece necessário perder muito tempo nisso. Por exemplo: se a lista[i] = \n, podemos ver se lista[i-1] é \r, se for, não contar essa caractere.
+Podemos até adicionar uma condicional no programa para sempre que achar um \r antes de um \n descartar ele da contagem ou simplesmente colocá-lo no loop for como uma das formas de parar o loop, dessa forma ele já não será contado de qualquer maneira. O problema é que nunca daria para verificar se o \n existe pois antes de chegar nele o loop já pararia. Não me parece necessário perder muito tempo nisso. Por exemplo: se a lista[i] = \n, podemos ver se lista[i-1] é \r, se for, não contar esse caractere.
 
 **Representação na memória:**
 
-```
+```text
 lista = ['b','a','n','a','n','a','\n','\0']
 
          B A N A N A \n \0    ->      08 bytes
@@ -679,7 +677,7 @@ Como uma calculadora completa é complexa para iniciantes, o professor recomenda
 
 #### Entendendo a Notação Polonesa
 
-Enquanto usamos expressões como "2 + 2" (notação infixa), a "notação polonesa" escreveria "+ 4 4" - operador antes dos argumentos. A notação reversa escreve "4 4 +" - argumentos antes do operador. Esta notação foi inventada pelo matemático Jan Lukasiewicz.
+Enquanto usamos expressões como "2 + 2" (notação infixa), a "notação polonesa" escreveria "+ 2 2" - operador antes dos argumentos. A notação reversa escreve "2 2 +" - argumentos antes do operador. Esta notação foi inventada pelo matemático Jan Lukasiewicz.
 
 Nosso programa usa notação polonesa inversa e é básico: não considera números flutuantes. Uma divisão resultando '1,3' será exibida como '1'.
 
@@ -938,7 +936,7 @@ O operador '&' mostra o endereço em memória onde uma variável está localizad
 
 #### Endereços IP e Network Byte Order
 
-IP significa "Internet Protocol". É o nome do protocolo de roteamento de redes como a Internet. Numa rede-IP, a cada computador um número de 32 bits é associado. Por exemplo, um computador na Internet poderia ter sido associado ao número 1 ou 2 ou 16909060. Qualquer número entre 0 e 2^32 - 1 bits serve.
+IP significa "Internet Protocol". É o nome do protocolo de roteamento de redes como a Internet. Numa rede-IP, a cada computador um número de 32 bits é associado. Por exemplo, um computador na Internet poderia ter sido associado ao número 1 ou 2 ou 16909060. Qualquer número entre 0 e 2^32 - 1 serve.
 
 Suponha que um certo computador na Internet tenha sido associado ao número 16909060. O que se diz então é que esse computador tem endereço-IP 1.2.3.4.
 
@@ -1040,8 +1038,6 @@ O programa utiliza uma função interessante para este fim: `uint64_t array_to_u
 
 Essa função trabalha percorrendo cada caractere da string, convertendo de caractere para dígito (`s[pos] - '0'`), verificando se é válido (< 10), e construindo o número final multiplicando por 10 e somando o novo dígito.
 
-Para facilitar iniciantes: se você der `make` no terminal e obtiver erro, copie o comando gcc do erro e adicione o `-lm`. A compilação será concluída.
-
 #### Biblioteca Matemática e Compilação
 
 Para usar funções como pow() para potenciação, precisamos compilar com a flag '-lm':
@@ -1137,7 +1133,7 @@ Rational mul(Rational r1, Rational r2) {
 Para somar frações com denominadores diferentes, usamos duas técnicas:
 
 **Método do "cruzamento":**
-```
+```text
 1/4 + 1/10 = (1×10 + 1×4)/(4×10) = 14/40 = 7/20
 ```
 
@@ -1176,7 +1172,7 @@ Quando chegamos ao último símbolo de uma base, incrementamos o dígito da esqu
 A conversão usa divisões consecutivas pela base desejada até não ser mais divisível. Pegamos o resultado da última divisão junto com os restos (do último ao primeiro).
 
 **Exemplo: 34 para binário:**
-```
+```text
 34/2 = 17 (resto 0)
 17/2 = 8  (resto 1)
 8/2  = 4  (resto 0)
@@ -1191,7 +1187,7 @@ Resultado: 1 + restos invertidos = 100010
 Para converter qualquer base para decimal, multiplicamos cada dígito pela base elevada à sua posição (começando de 0 pela direita):
 
 **Exemplo: 3000321 (base 4) para decimal:**
-```
+```text
 3×(4⁶) + 0×(4⁵) + 0×(4⁴) + 0×(4³) + 3×(4²) + 2×(4¹) + 1×(4⁰)
 = 3×4096 + 0 + 0 + 0 + 3×16 + 2×4 + 1×1
 = 12288 + 0 + 0 + 0 + 48 + 8 + 1 = 12345
@@ -1325,7 +1321,7 @@ O programa funciona assim:
 5. Exibe resultado formatado
 
 **Exemplo de saída:**
-```
+```text
 Dia 1 de janeiro de 1970       --> The UNIX Epoch.
 Dia 25 de dezembro de 2021     --> Natal
 ```
@@ -1557,7 +1553,7 @@ Para completar o domínio da linguagem C, precisamos entender os operadores bit 
 #### Tabelas de Verdade
 
 **AND (&):**
-```
+```text
 0 & 0 = 0
 0 & 1 = 0  
 1 & 0 = 0
@@ -1565,7 +1561,7 @@ Para completar o domínio da linguagem C, precisamos entender os operadores bit 
 ```
 
 **OR (|):**
-```
+```text
 0 | 0 = 0
 0 | 1 = 1
 1 | 0 = 1  
@@ -1573,7 +1569,7 @@ Para completar o domínio da linguagem C, precisamos entender os operadores bit 
 ```
 
 **XOR (^):**
-```
+```text
 0 ^ 0 = 0
 0 ^ 1 = 1
 1 ^ 0 = 1
@@ -1584,7 +1580,7 @@ Para completar o domínio da linguagem C, precisamos entender os operadores bit 
 
 Usando 5 (101₂) e 3 (011₂):
 
-```
+```text
 AND:  101 & 011 = 001 = 1
 OR:   101 | 011 = 111 = 7  
 XOR:  101 ^ 011 = 110 = 6

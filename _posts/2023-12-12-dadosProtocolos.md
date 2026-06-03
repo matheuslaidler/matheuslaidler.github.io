@@ -2,13 +2,13 @@
 title: Comunicação de dados e Protocolos de Rede
 description: 'Resumão geral da matéria com resolução de exercício'
 author: matheus
-tags: ["Redes", "WiFi", "Protocolos", "TCP", "UDP"]
-categories: ["Road2Tech", "Redes de Computadores"]
+tags: ["Redes", "protocolos", "TCP", "UDP", "DNS", "HTTP", "TCP/IP"]
+categories: ["Redes e Sistemas", "Redes"]
 pin: false
 comments: true
 ---
 
-# Comunicação de dados e Protocolos
+## Comunicação de dados e Protocolos
 
 Esse resumão foi feito com base em questões de prova da faculdade, então além de servir como material de estudo, tem as respostas das questões no final. Achei interessante compartilhar porque acaba cobrindo bastante coisa sobre protocolos de rede de forma prática.
 
@@ -146,9 +146,10 @@ No cenário em que um usuário leva seu notebook à faculdade para conectar-se �
 2. **ARP (Protocolo de Resolução de Endereços) - Parte do Protocolo Wi-Fi:**
    - Mapeia endereços IP para endereços MAC na camada de enlace.
    - Camada TCP/IP: Enlace
+   - _Nota: o ARP fica numa posição "entre" o Enlace e a Rede, pois mapeia endereços IP (camada de Rede) para endereços MAC (camada de Enlace). É comum classificá-lo no Enlace por operar dentro do segmento local, mas vale lembrar dessa ponte entre as duas camadas._
 3. **DHCP (Protocolo de Configuração Dinâmica de Host):**
    - Fornece ao notebook um endereço IP válido dentro da rede sem fio.
-   - Camada TCP/IP: Rede
+   - Camada TCP/IP: Aplicação (o DHCP roda sobre UDP, nas portas 67/68).
    - Dispositivo: Servidor DHCP da faculdade.
 4. **DNS (Protocolo de Resolução de Endereços):**
    - Converte o URL da página em um endereço IP.
@@ -209,13 +210,13 @@ No cenário proposto, os cinco possíveis protocolos de redes que podem ser acio
 
 **Camada TCP/IP>** Camada de Enlace; . Dispositivo envolvido> Notebook e ponto de acesso Wi-Fi via roteador;
 
-**ARP>** Protocolo ARP é mencionado aqui como parte do protocolo de acesso à rede sem fio, por ser responsável por mapear endereços IP para endereços MAC na camada de enlace, permitindo que os dispositivos se comuniquem dentro da rede LAN. Portanto, achei apropriado incluir o ARP nesse contexto já que estamos tratando de um acesso a uma local inicialmente.
+**ARP>** Protocolo ARP é mencionado aqui como parte do protocolo de acesso à rede sem fio, por ser responsável por mapear endereços IP para endereços MAC na camada de enlace, permitindo que os dispositivos se comuniquem dentro da rede LAN. Portanto, achei apropriado incluir o ARP nesse contexto já que estamos tratando de um acesso a uma local inicialmente. _Vale a ressalva de que o ARP fica numa posição "entre" o Enlace e a Rede: ele opera no segmento local (Enlace), mas justamente faz a ponte ao traduzir o endereço IP (Rede) para o endereço MAC (Enlace)._
 
 - **DHCP | Protocolo de Configuração Dinâmica de Host**
 
 **Função>** Fornece ao notebook um endereço IP válido dentro da rede sem fio da faculdade, junto com outras configurações de rede necessárias;
 
-**Camada TCP/IP>** Camada de Rede;
+**Camada TCP/IP>** Camada de Aplicação (o DHCP roda sobre UDP, nas portas 67/68);
 
 **Dispositivo envolvido>** Servidor DHCP da faculdade.
 

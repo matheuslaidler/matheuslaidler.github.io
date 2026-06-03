@@ -2,8 +2,8 @@
 title: Dominando Scripts com Bash, CMD e PowerShell do zero
 description: 'Guia de automação com Shell Script, Batch e PowerShell para quem quer entender sistemas de verdade'
 author: matheus
-tags: ["Shell Script", "bash", "powershell", "cmd", "batch", "automação", "linux", "windows", "scripting", "Hacking"]
-categories: ["Road2Tech", "Sistema Operacional", "Programação"]
+tags: ["Bash", "PowerShell", "CMD", "Batch", "scripting", "automação", "Linux", "Windows"]
+categories: ["Programação", "Shell Script"]
 pin: false
 comments: true
 ---
@@ -14,7 +14,7 @@ Se você quer trabalhar com tecnologia - seja como desenvolvedor, sysadmin, ou e
 
 Pensa comigo: você vai fazer a mesma tarefa manualmente 50 vezes, ou vai escrever um script uma vez e deixar o computador fazer pra você? A resposta é óbvia, mas a quantidade de gente que não sabe automatizar tarefas básicas é assustadora.
 
-E na área de segurança então... cara, é impossível trabalhar sem isso. Red team precisa de scripts pra automatizar reconhecimento, exploração, pós-exploração. Blue team precisa de scripts pra monitoramento, análise de logs, resposta a incidentes. Pentesters precisam de scripts pra praticamente tudo. Até CTFs ficam muito mais fáceis quando você sabe scriptiar.
+E na área de segurança então... cara, é impossível trabalhar sem isso. Red team precisa de scripts pra automatizar reconhecimento, exploração, pós-exploração. Blue team precisa de scripts pra monitoramento, análise de logs, resposta a incidentes. Pentesters precisam de scripts pra praticamente tudo. Até CTFs ficam muito mais fáceis quando você sabe scriptar.
 
 Esse documento é pra te ensinar o básico do básico de três tipos de script: **Shell Script (Bash)** pra Linux, **Batch (.bat)** e **PowerShell** pra Windows. Não vou fingir que vai te transformar em expert - isso leva tempo e prática. Mas vai te dar a base pra você começar a automatizar coisas e parar de fazer trabalho repetitivo manualmente.
 
@@ -138,7 +138,7 @@ echo "Quantidade de argumentos: $#"
 
 Se você rodar `./script.sh banana maçã`, vai imprimir:
 
-```
+```text
 Primeiro argumento: banana
 Segundo argumento: maçã
 Todos os argumentos: banana maçã
@@ -754,6 +754,8 @@ Write-Host "`nTotal: $($resultados.Count) hosts encontrados"
 ```
 
 Esse script usa jobs paralelos pra escanear mais rápido. PowerShell é poderoso assim.
+
+> **Nota de compatibilidade:** o parâmetro `-TimeoutSeconds` do `Test-Connection` só existe no PowerShell 7+. No Windows PowerShell 5.1 (o que vem por padrão no Windows) ele não existe - use apenas `-Count 1 -Quiet` (ex.: `Test-Connection -ComputerName $ip -Count 1 -Quiet`).
 
 ## Comparativo rápido
 

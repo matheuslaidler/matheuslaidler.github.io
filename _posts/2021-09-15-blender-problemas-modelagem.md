@@ -2,8 +2,8 @@
 title: Problemas comuns no Blender que acabam com a cabeça de iniciantes
 description: 'Guia prático para resolver bugs de render, faces invertidas e texturas zoadas ao juntar malhas'
 author: matheus
-tags: ["blender", "modelagem 3D", "Game Development", "UV map", "tutorial"]
-categories: ["Road2Tech", "Game Development", "Modelagem"]
+tags: ["Blender", "modelagem 3D", "UV map", "normais", "game dev", "tutorial"]
+categories: ["Programação", "Game Dev"]
 pin: false
 comments: true
 ---

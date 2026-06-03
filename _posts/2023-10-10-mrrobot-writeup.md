@@ -2,14 +2,14 @@
 title: Mr. Robot - Desafio Hacker [TryHackMe]
 description: 'Resolvendo máquina nível médio do TryHackMe inspirada na série Mr. Robot - WordPress exploitation, hash cracking e privilege escalation via SUID'
 author: matheus
-tags: ["tryhackme", "WriteUps", "WordPress", "Privilege Escalation", "SUID", "reverse shell"]
-categories: ["SecLab", "WayOfSec", "Hacking", "Write Ups"]
+tags: ["TryHackMe", "WriteUps", "WordPress", "privilege escalation", "SUID", "reverse shell", "Nmap", "Hydra"]
+categories: ["Segurança", "CTF e Writeups"]
 pin: false
 comments: true
 
 ---
 
-# Writeup: Mr. Robot (TryHackMe)
+## Writeup: Mr. Robot (TryHackMe)
 
 ### WordPress Exploitation, Brute Force, Reverse Shell e Privilege Escalation via SUID
 
@@ -65,7 +65,7 @@ dirb http://10.10.70.104
 
 ```text
 /wp-includes    → Diretório do WordPress
-/wp-login       → Página de login do WordPress
+/wp-login.php   → Página de login do WordPress
 /wp-admin       → Painel administrativo
 /robots.txt     → Arquivo de configuração para crawlers
 ```
@@ -458,6 +458,18 @@ Para filtrar apenas binários:
 find / -perm +6000 2>/dev/null | grep '/bin/'
 ```
 
+> **Nota (sintaxe atual):** A forma `+6000` é **deprecada** no `find` moderno (GNU findutils) e hoje retorna erro do tipo `find: Mode '+6000' is not valid`. A sintaxe atual usa a barra `/` para "qualquer um destes bits":
+>
+> ```bash
+> # SUID + SGID (equivalente ao +6000 da época)
+> find / -perm /6000 2>/dev/null | grep '/bin/'
+>
+> # Apenas SUID (bit 4000)
+> find / -perm -4000 2>/dev/null | grep '/bin/'
+> ```
+>
+> O `-perm -4000` (com hífen) já era válido na época e continua sendo a forma mais usada para caçar binários SUID.
+
 ### 8.3 Binário vulnerável encontrado: nmap
 
 Entre os resultados, encontramos:
@@ -591,6 +603,6 @@ cat key-3-of-3.txt
 
 ---
 
-**Nota:** Esta é uma máquina excelente para iniciar com praticas de enumeração web, exploração de CMS e técnicas básicas de privilege escalation (escalação de privilégios). Para finalizar, deixaremos claro que a série 'Mr. Robot' é realmente altamente recomendada para quem gosta de hacking! :D
+**Nota:** Esta é uma máquina excelente para iniciar com práticas de enumeração web, exploração de CMS e técnicas básicas de privilege escalation (escalação de privilégios). Para finalizar, deixaremos claro que a série 'Mr. Robot' é realmente altamente recomendada para quem gosta de hacking! :D
 
 ---

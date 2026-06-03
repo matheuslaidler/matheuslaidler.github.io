@@ -3,11 +3,12 @@
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f7f7">
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1b1b1e">
 
-  <!-- Restaura o "Modo leitura" antes do paint (evita flash da sidebar) -->
+  <!-- Modo leitura é PADRÃO ao entrar; só fica off se o usuário desativou. -->
+  <!-- Restaura antes do paint (evita flash da sidebar). -->
   <script>
     (function () {
       try {
-        if (localStorage.getItem('reading-mode') === 'true') {
+        if (localStorage.getItem('reading-mode') !== 'false') {
           document.documentElement.classList.add('reading-mode');
         }
       } catch (e) {}

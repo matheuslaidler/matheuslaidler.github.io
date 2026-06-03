@@ -2,8 +2,8 @@
 title: Secure Code Review com exercícios reais e práticos
 description: 'Revisão Segura de Código em PHP, Python, C/C++ e PL/SQL'
 author: matheus
-tags: ["code review", "security", "vulnerabilities", "SAST", "secure coding", "python", "php", "red team", "bug bounty"]
-categories: ["SecLab", "WayOfSec", "Hacking"]
+tags: ["code review", "secure coding", "SAST", "DAST", "AppSec", "bug bounty", "CWE", "PHP", "Python"]
+categories: ["Segurança", "AppSec"]
 pin: false
 comments: true
 
@@ -11,13 +11,13 @@ comments: true
 
 ## A prevenção sendo a arte de encontrar pelo em ovo (potencial perigo no código)
 
-Se você trabalha ou quer trabalhar com segurança da informação, uma hora ou outra vai precisar olhar código e identificar problemas. Pode ser num pentest, numa auditoria, num bug bounty ou até desenvolvendo sua própria aplicação. Se você é DEV pode precisar adquirir conhecimento de segurança para te aprimorar ainda mais seu leque e evitar desenvolver algo falho. No final das contas, a questão é: você sabe reconhecer código vulnerável quando vê um?
+Se você trabalha ou quer trabalhar com segurança da informação, uma hora ou outra vai precisar olhar código e identificar problemas. Pode ser num pentest, numa auditoria, num bug bounty ou até desenvolvendo sua própria aplicação. Se você é DEV pode precisar adquirir conhecimento de segurança para aprimorar ainda mais seu leque e evitar desenvolver algo falho. No final das contas, a questão é: você sabe reconhecer código vulnerável quando vê um?
 
 Esse documento nasceu de uma série de exercícios de code review que eu resolvi durante meus estudos. A ideia aqui não é só dar as respostas, mas explicar o raciocínio por trás de cada vulnerabilidade - já que entender o "porquê" é muito mais útil do que decorar padrões que uma IA pode cuspir pra você a qualquer momento.
 
 Lembro das aulas de segurança da informação na UFRJ - com o professor Claudio Miceli, que é um baita professor diga-se de passagem -, ele chegou a passar diversos trechos de códigos em sala para tentarmos na hora identificar que vulnerabilidade potencialmente teríamos nos exemplos demonstrados em sala... e quase nunca os alunos acertavam de cara. Eu mesmo nunca tinha feito isso e tive dificuldades (na verdade até hoje ainda tenho, e muito). Aquele dia tive um alerta de precisar melhorar meu faro, meu repertório, minha lógica em si a ponto de identificar métodos de burlar mais rapidamente, mesmo que apenas lendo um trecho de código.
 
-**Uma observação importante:** as análises que apresento aqui foram feitas de forma individual, como exercício de estudo. Não tenho gabarito oficial desses exercícios - as respostas são minha interpretação baseada no que estudei. Não sou especialista em "Revisão Segura de Código" e ainda estou me aprimorando. Podendo, assim, haver imprecisões ou interpretações incompletas em alguns casos - se você identificar algo errado ou quiser complementar alguma análise, fico feliz em aprender junto. O objetivo aqui é compartilhar o processo de raciocínio, não entregar verdades absolutas. Podemos discutir sobre isso no chat (entrando via GitHub) que disponibilizo sempre ao final de cada postagem. As minhas respostas parecem estar corretas, de forma geral, então acho que é um bom material de estudo.
+**Uma observação importante:** as análises que apresento aqui foram feitas de forma individual, como exercício de estudo. Não tenho gabarito oficial desses exercícios - as respostas são minha interpretação baseada no que estudei. Não sou especialista em "Revisão Segura de Código" e ainda estou me aprimorando. Pode, assim, haver imprecisões ou interpretações incompletas em alguns casos - se você identificar algo errado ou quiser complementar alguma análise, fico feliz em aprender junto. O objetivo aqui é compartilhar o processo de raciocínio, não entregar verdades absolutas. Podemos discutir sobre isso no chat (entrando via GitHub) que disponibilizo sempre ao final de cada postagem. As minhas respostas parecem estar corretas, de forma geral, então acho que é um bom material de estudo.
 
 **Dica:** antes de ler minha análise de cada caso, tente identificar a vulnerabilidade por conta própria. Coloquei as opções de resposta logo após cada código pra você testar seu conhecimento.
 
@@ -97,7 +97,6 @@ A correção ideal seria usar uma whitelist de páginas/caminhos permitidos. Se 
 ```php
 <?php
 $dn = $_GET['host'];
-$filter = "(|(sn=$person*)(givenname=$person*))";
 $justthese = array("ou", "sn", "givenname", "mail");
 $sr = ldap_search($ds, $dn, $dn, $justthese);
 $info = ldap_get_entries($ds, $sr);
@@ -437,7 +436,7 @@ d) Nenhuma das anteriores
 <details markdown="1">
 <summary><b>Ver minha análise</b></summary>
 
-Esse código tem dois problemas sérios. O primeiro e mais crítico é **Command Injection** (CWE-78). O `zipCode` e `address` vão direto pra um `os.system()`. Se eu passar `zip="; rm -rf / #`, o servidor vai executar `zipvalidator ""; rm -rf / #" ""`. Basicamente execução remota de código (RCE).
+Esse código tem dois problemas sérios. O primeiro e mais crítico é **Command Injection** (CWE-78). O `zipCode` e `address` vão direto pra um `os.system()`. Como o valor é concatenado entre aspas duplas - `'zipvalidator "' + zipCode + '" "' + address + '"'` -, basta o atacante fechar a primeira aspa que ele mesmo abriu e emendar comandos. Passando `zip=";id;#`, a string montada vira `zipvalidator "";id;#" "..."`: o `zipvalidator ""` roda com argumento vazio, o `;` separa e dispara o `id`, e o `#` comenta o resto da linha (as aspas e o `address` que sobraram). Basicamente execução remota de código (RCE).
 
 **Explorando Command Injection:**
 
@@ -589,7 +588,7 @@ Quando a gente fala de **vulnerabilidade**, é o conceito geral mesmo - uma fraq
 
 Agora, **CWE (Common Weakness Enumeration)** é uma forma de classificar *tipos* de vulnerabilidades. Pensa como uma taxonomia, tipo quando biólogo classifica espécies. CWE-79 não é uma vulnerabilidade específica que aconteceu em algum lugar - é a *categoria* XSS como um todo. Serve pra gente padronizar a comunicação, sabe? Quando eu falo "achei um CWE-22" você já sabe que é Path Traversal sem eu precisar explicar.
 
-Já o **CVE (Common Vulnerabilities and Exposures)** é diferente - é um identificador único pra uma vulnerabilidade *específica* em um software *específico*. CVE-2021-44228, por exemplo, é o famoso Log4Shell, aquela vulnerabilidade no Log4j que derrubou a internet em dezembro de 2021 (se você trabalhava com TI naquela época, provavelmente lembra do caos). Cada CVE geralmente tem um CWE associado - o Log4Shell, por exemplo, é classificado como CWE-502 (deserialization insegura).
+Já o **CVE (Common Vulnerabilities and Exposures)** é diferente - é um identificador único pra uma vulnerabilidade *específica* em um software *específico*. CVE-2021-44228, por exemplo, é o famoso Log4Shell, aquela vulnerabilidade no Log4j que derrubou a internet em dezembro de 2021 (se você trabalhava com TI naquela época, provavelmente lembra do caos). Cada CVE geralmente tem um CWE associado - o Log4Shell, por exemplo, é classificado primariamente como CWE-917 (Expression Language Injection), via injeção de JNDI/lookups, e não como uma falha de desserialização insegura.
 
 E o **exploit**? É o código ou técnica que *explora* a vulnerabilidade na prática. A vulnerabilidade é o buraco na parede, o exploit é a ferramenta que você usa pra passar por esse buraco. Nem toda vulnerabilidade tem exploit público disponível - algumas são muito teóricas ou difíceis de explorar na vida real.
 
@@ -635,7 +634,7 @@ Code review de segurança é uma skill que melhora com prática. Quanto mais có
 
 Uma coisa que aprendi: todo desenvolvedor escreve código vulnerável às vezes. O importante é ter processos pra pegar isso antes de ir pra produção. Code review, análise estática automatizada no CI/CD, e uma cultura onde segurança é responsabilidade de todo mundo, não só do "time de segurança".
 
-E olha, code review não serve só pra quem trabalha interno numa empresa. Se você faz bug bounty (pesquisada por falhas de segurança em empresas através de programas de recompensas), saber ler código é um diferencial absurdo - e isso foi falado até pelo Coradi/crd0x49 (top 1 na BugHunt com +19315 pontos) em chamada no discord com a galera tentando aprender sua metodologia. A maioria dos hunters fica só rodando nuclei, ffuf, e esperando que alguma ferramenta cuspa uma vulnerabilidade pronta. E tudo bem, ferramentas ajudam muito - mas quando todo mundo usa as mesmas ferramentas, todo mundo acha as mesmas coisas. O que sobra são as vulnerabilidades que exigem entendimento mais profundo da aplicação.
+E olha, code review não serve só pra quem trabalha interno numa empresa. Se você faz bug bounty (pesquisa por falhas de segurança em empresas através de programas de recompensas), saber ler código é um diferencial absurdo - e isso foi falado até pelo Coradi/crd0x49 (top 1 na BugHunt com +19315 pontos) em chamada no discord com a galera tentando aprender sua metodologia. A maioria dos hunters fica só rodando nuclei, ffuf, e esperando que alguma ferramenta cuspa uma vulnerabilidade pronta. E tudo bem, ferramentas ajudam muito - mas quando todo mundo usa as mesmas ferramentas, todo mundo acha as mesmas coisas. O que sobra são as vulnerabilidades que exigem entendimento mais profundo da aplicação.
 
 Já parou pra analisar os JavaScripts de uma aplicação? Muita gente ignora, mas ali tem um mapa do tesouro escondido. Endpoints internos, lógica de autenticação, parâmetros que não aparecem na interface, funções administrativas "escondidas". Às vezes um JS de uma funcionalidade esquecida - tipo aquele recurso beta que a empresa lançou há 3 anos e ninguém mais usa - ainda tá lá, exposto, chamando APIs que ninguém mais monitora. Imagina achar isso num programa do Mercado Livre ou de qualquer big tech? É o tipo de coisa que ferramenta automatizada não pega porque ela não *entende* o que tá olhando.
 
@@ -643,7 +642,7 @@ Mesmo quando você não acha nada explorável de cara, o tempo investido lendo c
 
 Então se você tá começando em bug bounty e quer se destacar da massa que só aperta botão, investe tempo em aprender a ler código. Não precisa ser expert em todas as linguagens - começa pelo básico de JavaScript (porque tá em todo lugar), PHP (ainda roda metade da web), e vai expandindo conforme a necessidade. O retorno vem.
 
-> Lembre-se: a segurança acaba sempre sendo em camadas. Podemos dizer quer a "melhor vulnerabilidade" é a identificada e barrada antes pela revisão, isto é, que nunca chega em produção. A "segunda melhor" é a que passou, mas foi identificada antes que pudesse ter sido explorada. A "terceira melhor" é a que acabou sendo explorada, mas também acabou sendo barrada por outra proteção - o que notificou o sistema sobre o ocorrido e com isso a falha é identificada antes de qualquer prejuízo real. Quando não temos camadas de proteção suficiente, a chance de uma exploração ocorrer silenciosamente é muito alta e isso é ruim. Code review faz parte de uma das camadas, temos diversas outras importantes e eu espero poder trazer ainda mais conhecimento a respeito.
+> Lembre-se: a segurança acaba sempre sendo em camadas. Podemos dizer que a "melhor vulnerabilidade" é a identificada e barrada antes pela revisão, isto é, que nunca chega em produção. A "segunda melhor" é a que passou, mas foi identificada antes que pudesse ter sido explorada. A "terceira melhor" é a que acabou sendo explorada, mas também acabou sendo barrada por outra proteção - o que notificou o sistema sobre o ocorrido e com isso a falha é identificada antes de qualquer prejuízo real. Quando não temos camadas de proteção suficiente, a chance de uma exploração ocorrer silenciosamente é muito alta e isso é ruim. Code review faz parte de uma das camadas, temos diversas outras importantes e eu espero poder trazer ainda mais conhecimento a respeito.
 
 
 ## Leia também

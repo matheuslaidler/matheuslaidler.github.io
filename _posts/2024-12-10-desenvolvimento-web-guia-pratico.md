@@ -2,8 +2,8 @@
 title: Desenvolvimento Web na Prática com PHP
 description: 'Guia do zero ao deploy com HTML, CSS, JavaScript, PHP, MySQL e segurança básica'
 author: matheus
-tags: ["web development", "html", "css", "javascript", "php", "mysql", "backend", "frontend", "Programação", "xampp", "RCE", "SQL Injection", "XSS", "session hijacking", "CSRF"]
-categories: ["Road2Tech", "Development", "Programação", "WayOfSec"]
+tags: ["PHP", "MySQL", "JavaScript", "desenvolvimento web", "web security", "SQL Injection", "XSS", "CSRF"]
+categories: ["Programação", "Desenvolvimento Web"]
 pin: false
 comments: true
 ---
@@ -394,6 +394,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ```
 
 `htmlspecialchars()` converte caracteres especiais em entidades HTML - isso previne XSS (Cross-Site Scripting), onde alguém tenta injetar JavaScript malicioso. `filter_var()` com FILTER_VALIDATE_EMAIL verifica se é um email válido. `trim()` remove espaços do início e fim.
+
+> **Nota:** aqui estou aplicando o `htmlspecialchars()` já na **entrada** dos dados, o que mantém o exemplo simples. Na prática, porém, o ideal é escapar a **saída** (no momento de exibir o dado no HTML), não a entrada. Sanitizar na entrada pode corromper dados legítimos no banco - por exemplo, um nome como `Sá & Filhos` viraria `S&aacute; &amp; Filhos` armazenado. Guarde o dado original e aplique `htmlspecialchars()` apenas quando for imprimir na página.
 
 ---
 
@@ -1579,6 +1581,8 @@ RewriteEngine On
 </details>
 <br>
 
+> **Nota sobre o `X-XSS-Protection`:** esse header está **deprecado** e os navegadores atuais já o ignoram. Hoje a proteção contra XSS no nível de header vem do **Content-Security-Policy (CSP)** - falo mais sobre isso na seção de Headers de Segurança. Deixei ele aqui só por fidelidade ao projeto original.
+
 ---
 
 ## Complemento com JavaScript para validação extra (primeira camada) no Sistema de Contatos
@@ -1885,6 +1889,8 @@ Header set X-Frame-Options "SAMEORIGIN"          # Previne clickjacking
 Header set X-XSS-Protection "1; mode=block"      # Ativa filtro XSS do navegador
 Header set Referrer-Policy "strict-origin-when-cross-origin"
 ```
+
+> **Nota:** o header `X-XSS-Protection` está hoje **deprecado**. Os navegadores modernos (Chrome, Edge, Firefox) já removeram o "filtro XSS" embutido que ele ativava - inclusive porque ele próprio podia introduzir problemas. A proteção real contra XSS no nível de header vem hoje do **Content-Security-Policy (CSP)**. Mantenho o `X-XSS-Protection` aqui por ser o que estava no projeto original, mas para uma aplicação nova foque no CSP em vez dele.
 
 Pra produção, considere adicionar também:
 

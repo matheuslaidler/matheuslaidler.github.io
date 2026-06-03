@@ -2,8 +2,8 @@
 title: Criando seu próprio game do zero
 description: 'Guia prático sobre desenvolvimento de jogos, engines, Blueprints e por onde começar'
 author: matheus
-tags: ["Game Development", "unreal engine", "blueprints", "unity", "blender", "C++", "Programação", "indie dev"]
-categories: ["Road2Tech", "Game Development", "Programação"]
+tags: ["Unreal Engine", "Unity", "Blender", "Blueprints", "C++", "game dev", "indie dev"]
+categories: ["Programação", "Game Dev"]
 pin: false
 comments: true
 ---
@@ -157,7 +157,7 @@ Mas depois que passa essa fase inicial, a coisa flui. A comunidade é incrível,
 
 Minha sugestão: não tenta aprender tudo de uma vez. Começa com modelagem básica - um objeto simples, uma arma, um item. Depois parte pra coisas mais complexas. Animação e rigging podem ficar pra depois.
 
-E uma dica importante: quando for exportar pro Unreal/Unity, presta atenção nas normais e nos UV maps. Esses dois são responsáveis pela maior parte dos bugs de "meu modelo tá estranho na engine" (experiência próprioa), mas isso é assunto pra outro post.
+E uma dica importante: quando for exportar pro Unreal/Unity, presta atenção nas normais e nos UV maps. Esses dois são responsáveis pela maior parte dos bugs de "meu modelo tá estranho na engine" (experiência própria), mas isso é assunto pra outro post.
 
 ## Por Onde Começar: Um Roadmap Prático
 
@@ -200,7 +200,7 @@ Pode até começar fazendo jogo single player mesmo, mas pode ser legal você ir
 - **Documentação oficial** - Tanto Unreal quanto Unity têm docs excelentes
 - **YouTube** - Canais como Unreal Engine (oficial) e de outros criadores são ótimos
 - **Comunidades** - Reddit (r/unrealengine, r/gamedev), Discord servers, fóruns oficiais
-- **Cursos** - Udemy, e youtube mesmo já tem muita coisa boa (em cursor sempre espere promoção, nunca paga preço cheio)
+- **Cursos** - Udemy, e youtube mesmo já tem muita coisa boa (em cursos sempre espere promoção, nunca paga preço cheio)
 
 ### Não subestime a comunidade
 

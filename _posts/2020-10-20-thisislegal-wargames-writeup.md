@@ -2,8 +2,8 @@
 title: Wargames e CTFs - Resolvendo desafios do ThisIsLegal
 description: 'Introdução prática a CTFs e wargames com writeups completos dos desafios do ThisIsLegal'
 author: matheus
-tags: ["ctf", "wargames", "Hacking", "writeup", "thisislegal", "segurança", "web security", "challenges"]
-categories: ["SecLab", "WayOfSec", "Hacking", "Write Ups"]
+tags: ["CTF", "wargames", "ThisIsLegal", "WriteUps", "web security", "LFI", "SQL Injection"]
+categories: ["Segurança", "CTF e Writeups"]
 pin: false
 comments: true
 ---
@@ -76,11 +76,13 @@ Percebe o parâmetro `file=home` na URL? Isso tá dizendo pro PHP qual arquivo c
 
 Troca o `home` pela URL completa do arquivo que você quer acessar:
 
-```
+```text
 https://thisislegal.com/challenge3/index.php?file=https://thisislegal.com/challenge3/c_99.txt
 ```
 
-Isso é uma vulnerabilidade chamada LFI (Local File Inclusion) ou nesse caso RFI (Remote File Inclusion). Quando uma aplicação inclui arquivos baseado em input do usuário sem validar direito, você pode fazer ela carregar arquivos que não deveria.
+Esse tipo de falha (incluir arquivos baseado em input do usuário sem validar direito) tem duas variantes: **LFI** (Local File Inclusion), quando você carrega um arquivo que já está no próprio servidor, e **RFI** (Remote File Inclusion), quando você faz a aplicação carregar um arquivo de uma URL remota.
+
+> **Nota:** O desafio tem o nome "LFI", mas repare que o payload acima passa uma **URL completa** (`https://thisislegal.com/...`) no parâmetro `file`. Carregar um arquivo a partir de uma URL externa é, tecnicamente, **RFI (Remote File Inclusion)**, não LFI. O conceito de base é o mesmo (inclusão de arquivo sem validação), mas esse caso específico é RFI. LFI puro seria, por exemplo, carregar `../../../../etc/passwd` — um arquivo local do servidor.
 
 ### Challenge 4 - Cookie Manipulation
 
@@ -134,7 +136,7 @@ A senha é `crackedapp175`.
 
 Agora entramos em criptografia. Você recebe um texto cifrado:
 
-```
+```text
 zjii hfxj tfs mwkj qlwqejh nv vmj ywddzflh nd xfzvmjijwhjl :)
 ```
 
@@ -144,7 +146,7 @@ Você pode fazer análise de frequência (contar quais letras aparecem mais e co
 
 Usando ferramentas como dcode.fr ou cryptii.com, testando diferentes tipos de cifra de substituição, você chega em:
 
-```
+```text
 WELL DONE YOU HAVE CRACKED IT THE PASSWORD IS NOWTHELEADER :)
 ```
 
@@ -236,7 +238,7 @@ Então tem um arquivo `login.pwd` em algum lugar. Olhando a página de produtos,
 
 Testando `i.php?img=adm/login.pwd` dá erro. Mas adicionando um null byte (`%00`) no final, você consegue bypassar a verificação de extensão:
 
-```
+```text
 i.php?img=adm/login.pwd%00
 ```
 

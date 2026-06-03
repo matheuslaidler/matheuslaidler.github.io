@@ -2,18 +2,18 @@
 title: Git Exposed - Fundamentos e Exploração
 description: 'Explorando vulnerabilidade Git Exposed, desde conceitos fundamentais até práticos via hacking club'
 author: matheus
-tags: ["HackingClub", "WriteUps", "git", "information disclosure", "source code analysis", "video"]
-categories: ["SecLab", "WayOfSec", "Hacking", "Write Ups"]
+tags: ["HackingClub", "WriteUps", "git", "information disclosure", "git-dumper", "forensics", "video"]
+categories: ["Segurança", "CTF e Writeups"]
 pin: false
 comments: true
 
 ---
 
-# Git Exposed (HackingClub Machine)
+## Git Exposed (HackingClub Machine)
 
 ### Fundamentos do Git, Versionamento e Exploração de Repositórios Expostos
 
-Essa máquina do Hacking Club foi  bem rápida de resolver, mas achei que valia a pena usar ela como desculpa pra explicar direito como funciona o Git e principalmente essa vulnerabilidade de Git Exposed que é super comum por aí. Vou focar bastante nas explicações porque mesmo sendo "simples", tem muita coisa interessante acontecendo nos bastidores.
+Essa máquina do Hacking Club foi bem rápida de resolver, mas achei que valia a pena usar ela como desculpa pra explicar direito como funciona o Git e principalmente essa vulnerabilidade de Git Exposed que é super comum por aí. Vou focar bastante nas explicações porque mesmo sendo "simples", tem muita coisa interessante acontecendo nos bastidores.
 
 ## 1. Fundamentos do Git e Versionamento
 
@@ -202,7 +202,7 @@ curl -I http://10.10.0.14/.git/
 HTTP/1.1 403 Forbidden
 ```
 
-**Coisa interessante:** Mesmo que `.git/` dê 403, às vezes os arquivos dentro dele estão liberados, nesse caso seria quase como se  trancassem as portas enquanto deixavam as janelas abertas.
+**Coisa interessante:** Mesmo que `.git/` dê 403, às vezes os arquivos dentro dele estão liberados, nesse caso seria quase como se trancassem as portas enquanto deixavam as janelas abertas.
 
 ### 4.2 Entendendo o comportamento da aplicação
 
@@ -217,7 +217,7 @@ curl "http://10.10.0.14/?token="
 # Resultado: "Token Errado :p"
 ```
 
-**Hipótese:** A aplicação é um simples script PHP que compara o token fornecido com um valor específico. Se for diferente, mostra erro. A flag provavelmente era o token correto que foi removido do código, já sabemos que a mensagem de sucesso atualmente não será a flag mais.
+**Hipótese:** A aplicação é um simples script PHP que compara o token fornecido com um valor específico. Se for diferente, mostra erro. A flag provavelmente era o token correto que foi removido do código, já sabemos que a mensagem de sucesso atualmente não será mais a flag.
 
 ### 4.3 Ferramentas para dump de repositórios Git
 
@@ -297,14 +297,18 @@ drwxr-xr-x .git/
 cat index.php
 ```
 
+<!-- fechamento reconstruído -->
+
 ```php
 <?php
 if(isset($_GET['token']) and !empty($_GET['token'])){
-if($_GET['token'] == "Sup3rAdminT0k3n") {
-    echo "Get the flag: [REDACTED]";
-}else{
-    echo "Token errado :p";
+    if($_GET['token'] == "Sup3rAdminT0k3n") {
+        echo "Get the flag: [REDACTED]";
+    }else{
+        echo "Token errado :p";
+    } # fechamento reconstruído - confira com o código real
 }
+?>
 ```
 
 **Exato, como eu imaginava:**
@@ -492,6 +496,8 @@ curl "http://10.10.0.14/?token=Sup3rAdminT0k3n"
 curl "http://10.10.0.14/?token=Sup3rAdminT0k3n"
 # Resultado: "Get the flag: CS{G1t_3Xp0s3d_4tt4ck}" 
 ```
+
+> Atenção: a "versão anterior/flag" não vem da aplicação remota servindo um estado antigo (o servidor mostra sempre `[REDACTED]`); ela é obtida do repositório Git dumpado localmente, dando `git checkout`/`git show` no commit anterior para ler o `index.php` antes da remoção.
 
 **Testando na máquina do hackingclub:**
 
@@ -695,7 +701,7 @@ git gc --prune=now --aggressive
 
 - Deploy = só arquivos de produção
 - .gitignore = seu melhor amigo
-- Git Exposed = mais comum do que deveria (hackerone que o diga)
+- Git Exposed = mais comum do que deveria (HackerOne que o diga)
 
 ---
 

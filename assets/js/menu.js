@@ -76,13 +76,27 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  syncReadingButton();
-
-  readingBtn.addEventListener('click', function () {
-    const on = document.documentElement.classList.toggle('reading-mode');
+  function setReadingMode(on) {
+    document.documentElement.classList.toggle('reading-mode', on);
     try {
       localStorage.setItem('reading-mode', on ? 'true' : 'false');
     } catch (e) {}
     syncReadingButton();
+  }
+
+  syncReadingButton();
+
+  readingBtn.addEventListener('click', function () {
+    setReadingMode(!document.documentElement.classList.contains('reading-mode'));
+  });
+
+  // ESC sai do modo leitura — mas NÃO se houver uma imagem aberta (magnific-popup),
+  // pra não conflitar com o fechamento do lightbox.
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' && e.keyCode !== 27) return;
+    if (document.querySelector('.mfp-wrap, .mfp-ready')) return;
+    if (document.documentElement.classList.contains('reading-mode')) {
+      setReadingMode(false);
+    }
   });
 });

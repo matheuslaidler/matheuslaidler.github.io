@@ -4,13 +4,13 @@ description: "Jornada completa pela programação Python baseada na experiência
 author: matheus
 date: 2021-10-07 12:00:00 -0300
 last_modified_at: 2025-12-17 20:00:00 -0300
-categories: ["Road2Tech", "Development", "Programação"]
-tags: ["python", "programming", "programacao", "guia", "complete-guide", "iniciante", "ufrj", "sockets", "segurança"]
+categories: ["Programação", "Python"]
+tags: ["Python", "programação", "guia", "iniciante", "UFRJ", "sockets", "POO"]
 pin: false
 math: true
 ---
 
-# Python para Marinheiros de Primeira Viagem
+## Python para Marinheiros de Primeira Viagem
 
 > Documentação completa e definitiva baseada na experiência prática de laboratório e redação na UFRJ. Desde a instalação até conceitos de estruturas de dados, preservando o estilo didático e explicações claras que fizeram desta jornada uma experiência única de aprendizado.
 
@@ -199,7 +199,7 @@ print("Fim")  # Sem espaços = fora do if, sempre executa
 
 Isso parece estranho no início, mas força código bem organizado.
 
-2. **Dinâmico não significa bagunçado** - Python é fortemente tipada, só não exige que você declare o tipo explicitamente. Ela deduz sozinha.
+2. **Dinâmico não significa bagunçado** - Python é **dinamicamente tipada**: não exige que você declare o tipo explicitamente, ela deduz sozinha. Mas é também **fortemente tipada**, no sentido de não fazer conversões implícitas silenciosas entre tipos incompatíveis (por exemplo, `"a" + 1` dá erro em vez de "adivinhar" o resultado). Vale notar que "forte/fraca" e "estática/dinâmica" são eixos diferentes: o primeiro fala sobre o quanto a linguagem mistura tipos incompatíveis, o segundo sobre quando o tipo é verificado (ao escrever o código vs. ao executar).
 
 3. **Erros são professores** - Mensagens de erro em Python são bem descritivas. Leia com calma, elas geralmente dizem exatamente o que está errado.
 
@@ -281,7 +281,7 @@ python primeiro.py
 ```
 
 Se aparecer:
-```
+```text
 Python está funcionando!
 Eu tenho 25 anos
 ```
@@ -487,9 +487,11 @@ Antes de avançar, vamos garantir que conhecemos todos os operadores:
 
 **Divisão `/` vs `//`:**
 - `/` sempre retorna decimal: `10 / 3` = `3.333...`
-- `//` arredonda pra baixo: `10 / 3` = `3`
+- `//` arredonda pra baixo: `10 // 3` = `3`
 
-Lembro de anotar: "Sempre que tiver a divisão `/` será em decimal, para inteiro fazer com `//` - sem ligar pro resto." E sobre potência: "Dá pra tirar raiz, já que uma raíz é elevar a uma fração. Exemplo: `9 ** (1/2)` → raiz quadrada. Mas precisa dos parênteses!"
+O `//` faz *floor* (arredonda para -infinito), não simplesmente "corta" a parte decimal. Para positivos dá no mesmo, mas com negativos a diferença aparece: `-10 // 3` = `-4` (e não `-3`).
+
+Lembro de anotar: "Sempre que tiver a divisão `/` será em decimal, para inteiro fazer com `//` - sem ligar pro resto." E sobre potência: "Dá pra tirar raiz, já que uma raiz é elevar a uma fração. Exemplo: `9 ** (1/2)` → raiz quadrada. Mas precisa dos parênteses!"
 
 **Operador `%` (módulo):**
 
@@ -539,7 +541,7 @@ def raizes(a, b, c):
     """Calcula as duas raízes da equação"""
     delta = calcular_delta(a, b, c)
     
-    # Se delta for negativo, não existe raíz real
+    # Se delta for negativo, não existe raiz real
     if delta < 0:
         return None, None  # Ou poderia usar números complexos
     
@@ -624,7 +626,7 @@ Até agora, nossos programas eram como uma receita de bolo bem simples - faziam 
 
 Imagine uma máquina de refrigerantes: ela precisa verificar se você colocou dinheiro suficiente antes de liberar a bebida. Isso é uma **condicional** - o programa toma decisões baseado em condições.
 
-Nas anotações de aula, tinhamos: "if → condicional. Dependendo do código, melhor um laço for ou while. elif → else if, sempre dependente do if; se não for, criar outro if normal."
+Nas anotações de aula, tínhamos: "if → condicional. Dependendo do código, melhor um laço for ou while. elif → else if, sempre dependente do if; se não for, criar outro if normal."
 
 #### Entendendo `if`, `elif`, `else`
 
@@ -1407,7 +1409,7 @@ Uma matriz é basicamente uma "lista de listas" - imagine uma tabela com linhas 
 
 #### Visualizando uma Matriz
 
-```
+```text
         Coluna 0  Coluna 1  Coluna 2
           ↓         ↓         ↓
 Linha 0 → [   1   ,   2    ,   3   ]
@@ -2003,7 +2005,7 @@ O `with` é como um "guarda-costas" - garante que o arquivo será fechado mesmo 
 
 O arquivo `receitas.txt` tinha esse formato:
 
-```
+```text
 Receita: Bolo
 Tipo: Doce
 - Ovos: 3 unidades
@@ -2268,7 +2270,7 @@ for i in range(len(frutas)):
 for i, fruta in enumerate(frutas):
     print(f"{i}: {fruta}")
 
-# Començar de outro número:
+# Começar de outro número:
 for i, fruta in enumerate(frutas, start=1):
     print(f"{i}: {fruta}")  # 1, 2, 3 em vez de 0, 1, 2
 ```
@@ -2678,7 +2680,7 @@ print(matriz_original)  # [[999, 2], [3, 4]] - ORIGINAL MUDOU!
 **Por que isso acontece?** O `.copy()` copia a lista externa, mas as listas internas continuam sendo as mesmas. É como fazer cópia de uma lista de endereços - você tem duas listas de papel, mas ambas apontam para as mesmas casas.
 
 **Visualizando:**
-```
+```text
 original → [ ponteiro1, ponteiro2 ]
                  ↓           ↓
 copia    → [ ponteiro1, ponteiro2 ]  ← MESMOS ponteiros!
@@ -3265,7 +3267,7 @@ asyncio.run(main())
 ```
 
 **Saída:**
-```
+```text
 Buscando site1.com...
 Buscando site2.com...
 Buscando site3.com...
@@ -3456,7 +3458,7 @@ pytest test_calculadora.py -v
 ```
 
 Saída:
-```
+```text
 test_calculadora.py::test_soma_positivos PASSED
 test_calculadora.py::test_soma_negativos PASSED
 test_calculadora.py::test_soma_zero PASSED
@@ -3547,7 +3549,7 @@ A maioria desses erros não é "burrice" - são armadilhas da linguagem que pega
 
 Quando Python dá erro, ele mostra uma mensagem. **Não entre em pânico!** Veja como ler:
 
-```
+```text
 Traceback (most recent call last):
   File "meu_programa.py", line 5, in <module>
     print(idade + 1)
@@ -3558,7 +3560,7 @@ TypeError: can only concatenate str (not "int") to str
 1. `File "meu_programa.py", line 5` = O erro está na linha 5 do arquivo
 2. `print(idade + 1)` = Esta é a linha com problema
 3. `TypeError` = Tipo de erro (problema com tipos de dados)
-4. `can only concatenate str...` = Explicção: tentou somar string com número
+4. `can only concatenate str...` = Explicação: tentou somar string com número
 
 **Dica:** A última linha sempre explica o que deu errado. Leia ela primeiro!
 

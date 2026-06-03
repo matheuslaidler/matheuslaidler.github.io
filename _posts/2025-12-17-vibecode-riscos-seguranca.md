@@ -4,8 +4,8 @@ description: "Análise completa de vulnerabilidades em projetos gerados por IA e
 date: 2025-12-17 20:00:00 -0300
 last_modified_at: 2025-12-18 12:00:00 -0300
 author: matheus
-categories: ["WayOfSec", "AppSec", "Hacking", "Development", "Programação", "SecLab"]
-tags: ["segurança", "vulnerabilidades", "vibecode", "nocode", "lowcode", "lovable", "ia", "supply-chain", "dependabot", "cve", "owasp", "XSS"]
+categories: ["Segurança", "AppSec"]
+tags: ["segurança", "vibe-coding", "IA", "lovable", "supply-chain", "OWASP", "LGPD", "XSS"]
 pin: false
 comments: true
 math: false
@@ -15,9 +15,9 @@ image:
   alt: "Vibe Coding — análise de riscos de segurança em projetos gerados por IA"
 ---
 
-# A festa dos sonhos que pode virar pesadelo
+## A festa dos sonhos que pode virar pesadelo
 
-> Uma análise profunda sobre os riscos de segurança em projetos gerados por IA, plataformas no-code e o fenômeno "vibe coding". Baseado em um estudo de caso real de um sistema escolar com 11 alertas de segurança detectados pelo Dependabot (4 de alta severidade) - e mais dezena de vulnerabilidades que nenhuma ferramenta encontrou. Esse caso real não é de uma escola de verdade, mas bem que poderia ser se as coisas continuarem assim. Eu mesmo que criei esse projeto na plataforma Lovable há 7 meses, e aqui vai meu relatório final - ou seja, quando falarmos neste artigo sobre dados de usuários (crianças ou professores) vazados, relaxem que estes não serão verdadeiros, o que quero mostrar é a possibilidade de ser.
+> Uma análise profunda sobre os riscos de segurança em projetos gerados por IA, plataformas no-code e o fenômeno "vibe coding". Baseado em um estudo de caso real de um sistema escolar com 11 alertas de segurança detectados pelo Dependabot (4 de alta severidade) - e mais de uma dezena de vulnerabilidades que nenhuma ferramenta encontrou. Esse caso real não é de uma escola de verdade, mas bem que poderia ser se as coisas continuarem assim. Eu mesmo que criei esse projeto na plataforma Lovable há 7 meses, e aqui vai meu relatório final - ou seja, quando falarmos neste artigo sobre dados de usuários (crianças ou professores) vazados, relaxem que estes não serão verdadeiros, o que quero mostrar é a possibilidade de ser.
 
 ---
 
@@ -39,7 +39,7 @@ image:
 
 ## Introdução
 
-Lembro da primeira vez que tive a experiência de um "chat-bot inteligente" conversar comigo via texto... era mágico e em pouquíssimo tempo já estava conseguindo me gerar códigos ou corrigir meus erros de programação sem que eu recorresse ao stack overflow. Tempos depois meu irmão me apresentou um tipo de VSCode com diversas dessas IAs (como Cursor), pois estavam usando como ferramenta auxiliar na corporação que ele trabalha... e logo depois também foi surgindo então plataformas que criavam toda uma aplicação para você, até com banco de dados e hospedagem direto, tudo isso via prompt (como lovable) - ou seja, a pessoa descreve o que quer em português, e em segundos tem um sistema aparentemente funcionando. "Isso é o futuro!", muitos pensariam... e meio que é mesmo - mas como todo futuro, vem com suas armadilhas, cuidados e aprendizados.
+Lembro da primeira vez que tive a experiência de um "chat-bot inteligente" conversar comigo via texto... era mágico e em pouquíssimo tempo já estava conseguindo me gerar códigos ou corrigir meus erros de programação sem que eu recorresse ao Stack Overflow. Tempos depois meu irmão me apresentou um tipo de VSCode com diversas dessas IAs (como Cursor), pois estavam usando como ferramenta auxiliar na corporação que ele trabalha... e logo depois também foi surgindo então plataformas que criavam toda uma aplicação para você, até com banco de dados e hospedagem direto, tudo isso via prompt (como lovable) - ou seja, a pessoa descreve o que quer em português, e em segundos tem um sistema aparentemente funcionando. "Isso é o futuro!", muitos pensariam... e meio que é mesmo - mas como todo futuro, vem com suas armadilhas, cuidados e aprendizados.
 
 Nos últimos meses, um fenômeno tomou conta do mundo dev: o **vibe coding**. A ideia é simples e sedutora - você descreve o que quer, a IA gera e você ajusta "no feeling" até funcionar. Plataformas como Lovable, Bolt, v0 e outras prometem criar aplicações completas em minutos. E cumprem! O problema é que "funcionar" e "ser seguro" são coisas muito diferentes (não vamos nem comentar em como essa bolha dev vibecoder está para estourar, vou deixar isso para o Akita).
 
@@ -49,7 +49,7 @@ Esse texto não é um ataque às ferramentas de IA ou plataformas no-code - elas
 
 Vou usar como estudo de caso concreto/real de estudo: um sistema escolar chamado "Escola em Foco" totalmente gerado com a plataforma Lovable. Em apenas 7 meses de existência, o Dependabot do GitHub detectou **11 vulnerabilidades de segurança** nas dependências - incluindo 4 de severidade **HIGH**. E isso é só a ponta do iceberg.
 
-Spoiler: analisando o código manualmente, encontrei aproximadamente mais duas **dezenas de vulnerabilidades** que nenhuma ferramenta automatizada detectou. Algumas tão básicas que dá até vergonha de mencionar.
+Spoiler: analisando o código manualmente, encontrei mais de uma **dezena de vulnerabilidades** (15+) que nenhuma ferramenta automatizada detectou. Algumas tão básicas que dá até vergonha de mencionar.
 
 **Metodologia:** Este estudo foi conduzido através de análise estática manual do código fonte, revisão sistemática dos alertas do Dependabot, mapeamento de fluxos de dados sensíveis, identificação de padrões inseguros comuns e **testes práticos de algumas vulnerabilidades durante o desenvolvimento**. Algumas funcionalidades foram testadas ativamente na época da criação do projeto - incluindo bypass de autenticação, manipulação de IDs em URLs e injeção de payloads em campos de upload. O projeto analisado foi criado por mim mesmo há 7 meses na plataforma Lovable e **não está em produção real** - serve apenas como case study para demonstrar os riscos. Todas as vulnerabilidades documentadas são reproduzíveis no código original.
 
@@ -81,7 +81,9 @@ A **Lei Geral de Proteção de Dados (LGPD)** tem disposições específicas sob
 
 E aqui mora a ironia: quem usa vibe coding pra criar um "SaaS rapidinho" geralmente nem sabe que a LGPD existe. Não configura termos de uso, não implementa mecanismos de consentimento, não tem política de privacidade. O sistema funciona, o dinheiro entra, e a bomba-relógio fica ticando.
 
-Quando (não "se") os dados vazarem, não adianta dizer "mas eu não sabia que tinha vulnerabilidade". A responsabilidade é objetiva. **Ignorância não é defesa.**
+Quando (não "se") os dados vazarem, não adianta dizer "mas eu não sabia que tinha vulnerabilidade". Pode haver responsabilização. **Ignorância não é defesa.**
+
+*(não sou advogado; isto não é aconselhamento jurídico)*
 
 Com esse contexto legal em mente, vamos entender o que está gerando esses sistemas vulneráveis.
 
@@ -106,8 +108,8 @@ O ciclo típico de vibe coding é mais ou menos assim:
 
 ```mermaid
 flowchart LR
-    A["1. Descreve\n'quero um sistema...'"] --> B["2. IA Gera\nmilhares de linhas"]
-    B --> C["3. Testa\n'funciona!'"] 
+    A["1. Descreve<br>'quero um sistema...'"] --> B["2. IA Gera<br>milhares de linhas"]
+    B --> C["3. Testa<br>'funciona!'"] 
     C --> D["4. Deploy"]
     D --> E["5. Próxima feature"]
     E --> A
@@ -129,7 +131,7 @@ Percebe o que tá faltando aí? **Entender o que foi gerado**, **Conceitos de De
 
 A galera confia na IA como se ela fosse um especialista infalível. "Se ela gerou assim, deve estar certo." Só que não tá. Muitas vezes tá longe de estar certo.
 
-### Por que abstrair Não resolve
+### Por que abstrair não resolve
 
 Deixa eu usar uma analogia que gosto. Imagina que você quer construir uma casa e contrata uma empresa que usa impressora 3D gigante. Em um dia a casa tá "pronta". Parece perfeita por fora. Você entra, tem parede, tem teto, tem porta.
 
@@ -169,8 +171,8 @@ Mas quando você abre o capô...
 | Dependências (HIGH) | 4 | Dependabot |
 | Dependências (MODERATE) | 3 | Dependabot |
 | Dependências (LOW) | 4 | Dependabot |
-| Código (Graves) | 14+ | Análise Manual |
-| **Total** | **25+** | - |
+| Código (Graves) | 15+ | Análise Manual |
+| **Total** | **26+** | - |
 
 E isso em um projeto pequeno criado há uns **7 meses** atrás e já tendo falhas sendo alertadas no segundo mês. Imagina projetos maiores ou mais antigos. O mais assustador é que as notificações do Dependabot continuam chegando - conforme novas vulnerabilidades são descobertas nas bibliotecas, mais alertas aparecem. É uma corrida que você nunca ganha se não ficar de olho.
 
@@ -216,7 +218,7 @@ O GitHub tem uma ferramenta chamada Dependabot que fica monitorando suas depend�
 | CVE-2025-57810 | jsPDF | Trava o browser com PNG malicioso |
 | CVE-2025-57810 | jsPDF | (duplicado no package-lock) |
 | CVE-2025-64756 | glob | Executa comandos via nomes de arquivos |
-| CVE-2025-65945 | jws | Permite forjar tokens de autenticação |
+| CVE-2025-65945 | jws | Alerta transitivo; não explorável via jsonwebtoken neste setup |
 
 #### 🟠 Moderadas (MODERATE) - 3 alertas
 
@@ -392,6 +394,9 @@ private static generateToken(userId: string, role: string): string {
 O token carrega o ID e o **role** (cargo) do usuário. Se você consegue forjar tokens, pode criar um token que diz `role: 'ADMIN'` - e pronto, virou administrador do sistema inteiro.
 
 **Pra quem quer entender mais a fundo:** A vulnerabilidade específica acontece quando você usa `jws.createVerify()` (não `jws.verify()`) com algoritmos HMAC e busca a chave secreta baseado em dados do próprio token. É um cenário específico, mas o projeto usa `jsonwebtoken` que depende do `jws`, então vale ficar atento.
+
+> **Importante:** quem usa `jsonwebtoken` (interface `jws.verify()`) **não é afetado** por esta CVE — ela só atinge `jws.createVerify()` com HMAC + segredo vindo de dado do usuário. Ou seja: o Dependabot alerta o `jws` transitivo, mas neste projeto o vetor nem é explorável. O risco real do token aqui continua sendo o **segredo previsível** no `.env`. (Ótimo exemplo de "não sei o que não sei": o alerta existe, mas interpretá-lo certo exige conhecimento.)
+{: .prompt-info }
 
 **Créditos:** Vulnerabilidade descoberta por Félix Charette (agradecimentos da Okta/Auth0).
 
@@ -654,7 +659,7 @@ A IA não tem a noção de "isso é código de desenvolvimento" vs "isso vai pra
 
 Com toda certeza isso foi feito para desenvolvimento e como é algo visual facilmente seria retirado pelo usuário a partir de um prompt... mas e se acabar ficando como um comentário na página? Não seria nada novo... quem lembra dos casos de credenciais comentadas no código do Ministério da Saúde em plena pandemia?
 
-Enfim, por mais que possamos desconsiderar essa parte por ser algo que não iria para o servido de produção de verdade, eu quis colocar aqui pois teria o risco de acabar acontecendo com quem não tem o mínimo de informação de desenvolvimento e quer ganhar dinheiro com seu micro-SaaS.
+Enfim, por mais que possamos desconsiderar essa parte por ser algo que não iria para o servidor de produção de verdade, eu quis colocar aqui pois teria o risco de acabar acontecendo com quem não tem o mínimo de informação de desenvolvimento e quer ganhar dinheiro com seu micro-SaaS.
 
 ---
 
@@ -1296,7 +1301,7 @@ Sem logs, você está voando às cegas. Quando perceber que foi atacado, os dado
 
 ---
 
-## Afinal, por que a IA gera Código tão Inseguro?
+## Afinal, por que a IA gera código tão inseguro?
 
 Você deve estar se perguntando: "se a IA é tão inteligente, por que erra tanto em segurança?"
 

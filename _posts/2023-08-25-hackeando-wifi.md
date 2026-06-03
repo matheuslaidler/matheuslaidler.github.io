@@ -2,13 +2,13 @@
 title: Invadindo rede wifi na prática
 description: Mostrando como hackeei a rede wifi de uma vizinha da minha mãe
 author: matheus
-tags: ["Wifi Hacking", "Shell Script", "Brute Force", "video"]
-categories: ["SecLab", "WayOfSec", "Hacking"]
+tags: ["WiFi", "Aircrack-ng", "brute force", "Shell Script", "wordlist", "handshake", "WPA2"]
+categories: ["Segurança", "Redes e WiFi"]
 pin: false
 comments: true
 ---
 
-# Hackeando redes WiFi
+## Hackeando redes WiFi
 
 Neste artigo vou mostrar para vocês como funciona na prática a invasão de uma rede wireless, e como foi minha experiência hackeando uma rede wifi real que não faz parte de uma "lab" pessoal ou familiar.
 
@@ -16,7 +16,7 @@ Talvez seja legal que você já saiba o básico de redes wireless, pois eles ain
 
 ### O que esperar desta publicação
 
-Nesta postagem será esperado algumas explicações mais _práticas_ - com as ferramentas utilizadas no processo, por ter foco prático de uma **invasão em redes wireless** alheias utilizando pacote **Aircrakc-ng**, enquanto mostro *como foi a minha experiência descobrindo uma falha nas credenciais padrões de roteadores de uma grande operadora*, que me permitia **descobrir e ter acesso a qualquer rede que não tivesse alterado as credencias padrões**. Então, para mostrar como vi essa falha e explorei ela, estarei mostrando como um ataque a rede wireless funciona na prática também.
+Nesta postagem será esperado algumas explicações mais _práticas_ - com as ferramentas utilizadas no processo, por ter foco prático de uma **invasão em redes wireless** alheias utilizando pacote **Aircrack-ng**, enquanto mostro *como foi a minha experiência descobrindo uma falha nas credenciais padrões de roteadores de uma grande operadora*, que me permitia **descobrir e ter acesso a qualquer rede que não tivesse alterado as credencias padrões**. Então, para mostrar como vi essa falha e explorei ela, estarei mostrando como um ataque a rede wireless funciona na prática também.
 
 >*Vale já esclarecer que o intuito deste tópico é totalmente educativo e não me responsabilizo por nenhum ato de terceiro.* 
 
@@ -68,7 +68,7 @@ Ambientificação de wifi hacking na prática & achando vulnerabilidade em redes
 
  Em seguida, seu dispositivo se aproxima do roteador e diz: “Oi, eu sou o *‘DispositivoA’*, posso conversar/dançar com você?”. Sendo uma resposta positiva, acaba se equivalendo a quando você coloca a senha correta. Em outras palavras, isso é semelhante a quando você insere a senha da rede Wi-Fi, pois se a senha estiver correta, o roteador reconhece seu dispositivo como um “convidado” confiável e permite que ele “entre na conversa” ou aceite o pedido de dança. Quando isso acontece e a pessoa é reconhecida, eles apertam as mãos e isso é o que chamamos de “handshake”.
  
- Podendo ser mais esclarecedor uma senha no exemplo da situação, imagine que o evento aconteça dentro de uma região barra pesada e que neste evento existem vários grupos fechados em que apenas pessoas verificadas e confiáveis entram. Cada grupo tem uma identificação própria - como uma tatuágem específica -, como um código secreto de detecção de membros. O *‘DispositivoA’*, assim que ele percebeu que a *‘Rede KLANU_2G1Z672U’* estava disponível para dançar ou conversar, precisaria ter esta tatuagem para que ela aceitasse dançar com ele, já que só assim ela saberia que ele era confiável e não de um grupo rival. E de praste, *todos fazem aperto de mão específico do grupo para começar*.
+ Podendo ser mais esclarecedor uma senha no exemplo da situação, imagine que o evento aconteça dentro de uma região barra pesada e que neste evento existem vários grupos fechados em que apenas pessoas verificadas e confiáveis entram. Cada grupo tem uma identificação própria - como uma tatuagem específica -, como um código secreto de detecção de membros. O *‘DispositivoA’*, assim que ele percebeu que a *‘Rede KLANU_2G1Z672U’* estava disponível para dançar ou conversar, precisaria ter esta tatuagem para que ela aceitasse dançar com ele, já que só assim ela saberia que ele era confiável e não de um grupo rival. E de praxe, *todos fazem aperto de mão específico do grupo para começar*.
 
  Uma vez que a “conversa” foi estabelecida, seu dispositivo e o roteador podem começar a trocar informações. Eles tendo uma longa e animada conversa na festa é basicamente como navegar na internet, assistir a vídeos, enviar e-mails, etc.
 
@@ -84,7 +84,7 @@ Ambientificação de wifi hacking na prática & achando vulnerabilidade em redes
 
  O **monitoramento** é o processo de observar e registrar a atividade em uma rede. No hacking de Wi-Fi, isso geralmente envolve colocar a interface de rede sem fio em “modo de monitoramento” para capturar o tráfego de rede.
 
- **Desautenticação** *(Deauth)* é um tipo de ataque que interrompe a conexão entre um dispositivo e a rede Wi-Fi (ou de uma rede inteira). Isso é feito enviando pacotes de desautenticação para o dispositivo e o ponto de acesso (AP), fazendo com que o dispositivo se desconecte. Quando um usuário é autêntico de uma rede, ao ser forçadamente dissociado (como por exemplo sair do alcance da rede) ele pode se associar automaticamente sem precisar recolocar a senha. Assim temos o processo de Auth e DeAuth. Ao forçar um DeAuth em alguém, ela de autenticará novamente e será possível capturar o aperto de mão deles para um atacante. O atacante também pode manter o usuário ou rede sem funcionar com ataques de DeAuth sem parar.
+ **Desautenticação** *(Deauth)* é um tipo de ataque que interrompe a conexão entre um dispositivo e a rede Wi-Fi (ou de uma rede inteira). Isso é feito enviando pacotes de desautenticação para o dispositivo e o ponto de acesso (AP), fazendo com que o dispositivo se desconecte. Quando um usuário é autenticado em uma rede, ao ser forçadamente dissociado (como por exemplo sair do alcance da rede) ele pode se associar automaticamente sem precisar recolocar a senha. Assim temos o processo de Auth e DeAuth. Ao forçar um DeAuth em alguém, ela de autenticará novamente e será possível capturar o aperto de mão deles para um atacante. O atacante também pode manter o usuário ou rede sem funcionar com ataques de DeAuth sem parar.
 
  O **handshake** é o processo de estabelecer uma conexão segura entre o dispositivo e o ponto de acesso, durante ela que eles trocam informações de autenticação. Capturar o handshake é um passo crucial no hacking de Wi-Fi, pois ele contém a “prova” criptografada da senha da rede.
  Contextualizando mais sobre os nossos exemplos, para que tenha sentido sair testando várias senhas até acertar, o usuário saber o *"aperto de mão específico do grupo"* acaba sendo de extrema importância, pois pode parecer que você apenas esqueceu ou é novo no grupo.
@@ -103,11 +103,11 @@ Vamos começar com o conteúdo prática, mas ainda explicando algumas coisas.
 
  A fase de reconhecimento acaba sendo muito de ficar monitorando as redes alheias, seus comportamentos, possíveis vulnerabilidades aparente e anotando as informações dos alvos.
 
- `Recon` é um passo crucial em hacking, e não seria diferente quando se fala em invasão de redes sem fio. ÉJá que é nessa etapa que os invasores coletam informações sobre a rede que desejam invadir. Isso pode incluir a identificação de redes disponíveis - como bssid (endereço fisico) e o canal de atuação -, a determinação do tipo de criptografia usada - como WPA2-PSK - e/ou até identificação de possíveis alvos vulneráves.
+ `Recon` é um passo crucial em hacking, e não seria diferente quando se fala em invasão de redes sem fio. Já que é nessa etapa que os invasores coletam informações sobre a rede que desejam invadir. Isso pode incluir a identificação de redes disponíveis - como bssid (endereço físico) e o canal de atuação -, a determinação do tipo de criptografia usada - como WPA2-PSK - e/ou até identificação de possíveis alvos vulneráveis.
 
- Um exemplo interessante de possíveis alvos vulneráveis envolve aquela minha análise das credenciais usadas em certos modems de uma empresa, q é o q explocaremos aqui neste artigo. Observei que os nomes das redes seguiam um padrão com caracteres aleatórios ao final. As senhas sempre tinham 8 dígitos com 6 deles sendo exibidos nessa parte final do essid (nome da rede).  Em outras palavras, o início do nome da rede era sempre igual, mudando o que vinha após do 2G (ou 5G), o que também fazia com que o nome da rede sempre tivesse também o mesmo número de caractere. Além disso, esses dígitos aleatórios eram sempre uma combinação de letras maiúsculas e números, apenas. Assim como no nosso exemplo fictício:  `KLANU_2G1Z672U`
+ Um exemplo interessante de possíveis alvos vulneráveis envolve aquela minha análise das credenciais usadas em certos modems de uma empresa, q é o q exploraremos aqui neste artigo. Observei que os nomes das redes seguiam um padrão com caracteres aleatórios ao final. As senhas sempre tinham 8 dígitos com 6 deles sendo exibidos nessa parte final do essid (nome da rede).  Em outras palavras, o início do nome da rede era sempre igual, mudando o que vinha após do 2G (ou 5G), o que também fazia com que o nome da rede sempre tivesse também o mesmo número de caractere. Além disso, esses dígitos aleatórios eram sempre uma combinação de letras maiúsculas e números, apenas. Assim como no nosso exemplo fictício:  `KLANU_2G1Z672U`
  
- Foi assim que veio crescendo a ideia de tentar criar um script que faz a wordlist perfeita para essas redes, apenas como teste, até porque o trabalho de uma wordlist grande e ficaz já foi reduzido sozinho. De uma determinada forma, a identificação do padrão de login/senha da rede faz parte de uma análise de reconhecimento também, acredito eu. Neste documento não apenas teremos o "passo a passo", como também mostraremos uma criação de shellscript para fazer a wordlist de qualquer rede vulnerável.
+ Foi assim que veio crescendo a ideia de tentar criar um script que faz a wordlist perfeita para essas redes, apenas como teste, até porque o trabalho de uma wordlist grande e eficaz já foi reduzido sozinho. De uma determinada forma, a identificação do padrão de login/senha da rede faz parte de uma análise de reconhecimento também, acredito eu. Neste documento não apenas teremos o "passo a passo", como também mostraremos uma criação de shellscript para fazer a wordlist de qualquer rede vulnerável.
 
 
 ### Anotação de informações
@@ -228,6 +228,8 @@ sleep 0.2s
 echo "Arquivo salvo como wl"
 ```
 
+ > **Contexto:** esse `cut -d "G" -f 2` foi feito sob medida para o padrão de nome das redes da época (ex.: `KLANU_2G...`, `CLARONET_2G...`), em que a senha de fábrica vinha logo após o `2G`. O comando pega justamente o que vem depois do "G" pra montar a wordlist, explorando a previsibilidade do nome e da senha padrão da operadora daquele período - por isso funciona certinho para esse padrão.
+
  Ao abrir o script (`chmod +x < nome do script >` + `./< nome do script >`) e digitar o nome da rede alvo, ele te retornará o arquivo `wl` feito.
  Agora podemos passar para a real fase de exploração, uma vez que já temos uma wordlist pronta para o uso.
 
@@ -245,7 +247,7 @@ sudo aircrack-ng -a2 -e < "ESSID_Rede" > < "NomeArquivoCap*" > -w < wordlist >
  - [x] KLANU_2G1Z672U:325G672U [ESSID:PASSWD]
 
 
-## Fase de pós-exploração de uma situação real (alerta de perígo)
+## Fase de pós-exploração de uma situação real (alerta de perigo)
  Nessa etapa temos os reais problemas de alguém dentro de um ambiente restrito. Imagine que temos um espião de uma empresa rival dentro da sala de reunião da sua empresa? ouvindo e gravando tudo? ou pior, se está fazendo parte de uma reunião de emergência da sua empresa que você não está presente, e faz parecer que você o colocou como uma peça importante para ditar como certas coisas serão feitas... pois é, seria um desastre, né?
 
  Uma pessoa na sua rede wifi pode estar entre sua conexão e a do roteador, pode estar entre sua conexão e a de algum servidor, pode até mesmo fazer modificação no DNS local para alterar a página oficial de uma rede social para uma página fake dele (isto é, fazer com que o endereço original 'twitter.com' / ou 'x.com' seja redirecionado para a página falsa dele).

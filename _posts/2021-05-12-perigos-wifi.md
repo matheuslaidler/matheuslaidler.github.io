@@ -2,12 +2,12 @@
 title: Conheça os perigos em uma WiFi
 description: Compreenda os principais riscos e perigos ocultos de uma rede WiFi
 author: matheus
-tags: ["Redes", "WiFi", "Hacking"]
-categories: ["WayOfSec", "Hacking"]
+tags: ["WiFi", "WPA2", "WPA3", "MITM", "ARP", "DNS", "segurança"]
+categories: ["Segurança", "Redes e WiFi"]
 pin: false
 comments: true
 ---
-# Além do Sinal: Conhecendo os principais perigos de uma rede wireless
+## Além do Sinal: Conhecendo os principais perigos de uma rede wireless
  As 'Ameaças Invisíveis' que te farão compreender os principais riscos das redes sem fio (wireless). Será apresentado alguns dos "Perigos Ocultos" ignorados pela maioria da população. 
 
  É comum ouvirmos coisas que soam como:
@@ -15,7 +15,7 @@ comments: true
  _"Aah, qual o problema de usar wifis alheias e compartilhar minha rede com qualquer pessoa? Essa galerinha de segurança complicam tudo... cheios de regrinha chata!"_
 
 
- Por isso acho importante uma publicação como esta, que mostrará alguns riscos de segurança que podem estar presente em diversas situações 'banais' do dia-a-dia. Entretando, nesta publicação ainda não terá algo prático, apenas em outras publicações e vídeos.
+ Por isso acho importante uma publicação como esta, que mostrará alguns riscos de segurança que podem estar presentes em diversas situações 'banais' do dia-a-dia. Entretanto, nesta publicação ainda não terá algo prático, apenas em outras publicações e vídeos.
 
 
 ### Sobre o que será apresentado
@@ -48,7 +48,7 @@ As redes wireless usam diferentes protocolos de segurança para criptografar os 
 - Criptografia individualizada em redes públicas
 - Melhor proteção para dispositivos IoT
 
-### WiFi 6 e WiFi 6E - Novas considerções:
+### WiFi 6 e WiFi 6E - Novas considerações:
 
 **WiFi 6 (802.11ax)** e **WiFi 6E** trouxeram não apenas melhor performance, mas também:
 - Segurança aprimorada por padrão
@@ -56,7 +56,7 @@ As redes wireless usam diferentes protocolos de segurança para criptografar os 
 - Redução de interferências
 - **Atenção**: Maior alcance pode significar maior superfície de ataque
 
-O WPA - WPA2 ou WPA3 - é um protocolo mais moderno e seguro, que usa um algoritmo mais complexo para gerar a chave de criptografia, que muda a cada conexão. No entanto, WPA2 ainda pode ser invadido se o usuário escolher uma senha padrão ou fraca, já que pode ser descoberta por programas que testam milhares de combinações possíveis até encontrar a correta. Esse método é chamado de brute force (força bruta) e o arquivo que armazena as senhas geralmente é chamado de wordlist. Inclusive, foi assim que invadi a rede WiFi de uma vizinha utilizando o pacote aircrack e gerando uma wordlist com crunch. 
+O WPA - WPA2 ou WPA3 - é um protocolo mais moderno e seguro, que usa um algoritmo mais complexo para gerar a chave de criptografia, que muda a cada conexão. No entanto, WPA2 ainda pode ser invadido se o usuário escolher uma senha padrão ou fraca, já que pode ser descoberta por programas que testam milhares de combinações possíveis até encontrar a correta. Esse método é chamado de brute force (força bruta) e o arquivo que armazena as senhas geralmente é chamado de wordlist. Inclusive, foi assim que invadi a rede WiFi de uma vizinha utilizando o pacote aircrack e gerando uma wordlist com crunch. Vale deixar claro que essa vizinha já compartilhava a rede comigo e havia autorizado o teste - ou seja, foi um acesso consentido, e não uma invasão não autorizada. 
 
 ### Minha primeira invasão a uma WIFI
 
@@ -74,11 +74,11 @@ Afinal, o que de ruim pode mesmo acontecer se alguém entrar na sua rede privada
 
 Bom... se um invasor conseguir se conectar à sua rede wireless, ele pode fazer várias coisas maliciosas, como:
 
- - Fazer um ataque de ARP Spoofing/Poisonning, que consiste em enganar os dispositivos da rede sobre qual é o endereço físico / MAC (Media Access Control) do roteador, fazendo com que eles enviem os dados para o invasor em vez do roteador. Assim, ele pode controlar todo o tráfego da rede e assim fazer um MITM.
+ - Fazer um ataque de ARP Spoofing/Poisoning, que consiste em enganar os dispositivos da rede sobre qual é o endereço físico / MAC (Media Access Control) do roteador, fazendo com que eles enviem os dados para o invasor em vez do roteador. Assim, ele pode controlar todo o tráfego da rede e assim fazer um MITM.
  
  - Fazer um ataque de MITM (Man In The Middle), que consiste em interceptar os dados que você envia e recebe pela rede, podendo ler, modificar ou bloquear as informações - inclusive podendo fazer o envenenamento de DNS. Por exemplo, ele pode conseguir forma de ver quais sites você visita, quais mensagens você envia ou recebe, quais arquivos você baixa ou compartilha, etc (tá aí a importância da criptografia).
  
- - Fazer um ataque de DNS Spoofing/Poisonning, que consiste em alterar o endereço IP (Internet Protocol) associado a um nome de domínio no DNS (Domain Name System) local da rede, fazendo com que os dispositivos da rede acessem um site falso em vez do verdadeiro. Por exemplo, ele pode fazer com que você acesse um site falso do seu banco, que tem a mesma aparência do original, mas que na verdade é uma armadilha para capturar seus dados bancários com phishing (pois é, neste caso não adianta saber que é o link original).
+ - Fazer um ataque de DNS Spoofing/Poisoning, que consiste em alterar o endereço IP (Internet Protocol) associado a um nome de domínio no DNS (Domain Name System) local da rede, fazendo com que os dispositivos da rede acessem um site falso em vez do verdadeiro. Por exemplo, ele pode fazer com que você acesse um site falso do seu banco, que tem a mesma aparência do original, mas que na verdade é uma armadilha para capturar seus dados bancários com phishing (pois é, neste caso não adianta saber que é o link original).
 	
  - Fazer um SSL Stripping, que se resume no invasor removendo a criptografia SSL/TLS do tráfego da vítima, permitindo que ele leia e manipule o tráfego.
 	
@@ -97,7 +97,7 @@ Bom... se um invasor conseguir se conectar à sua rede wireless, ele pode fazer 
 
  - **Karma Attack**: Dispositivos procuram automaticamente por redes conhecidas. O atacante responde a todas essas solicitações, fazendo o dispositivo se conectar achando que é uma rede confiável.
 	
- . Um bônus que podemos falar sobre ataques é de um em que não necessariamente o atacante estará já com acesso garantido em sua rede, mas apenas alcance a mesma. Este ataque é chamado de DeAuth e neste caso se resume em te derrubar da rede, fazendo sua conexão cair e te forçando a reconectar, mas pode ser feito de forma que você não de reconecte por muito tempo. Este ataque pode ser uma etapa importante para um wifi hacking, que para poder capturar o que chamamos de handshake é preciso esperar alguém se conectar ou forçando uma vítima a cair e voltar rapidamente com desautenticação. As explicações mais técnicas estarão em outra publicação, mas resumidamente este ataque fica enviando pacotes de dissociação/desautenticação para desconectar dispositivos da rede wireless.
+ . Um bônus que podemos falar sobre ataques é de um em que não necessariamente o atacante estará já com acesso garantido em sua rede, mas apenas alcance a mesma. Este ataque é chamado de DeAuth e neste caso se resume em te derrubar da rede, fazendo sua conexão cair e te forçando a reconectar, mas pode ser feito de forma que você não se reconecte por muito tempo. Este ataque pode ser uma etapa importante para um wifi hacking, que para poder capturar o que chamamos de handshake é preciso esperar alguém se conectar ou forçando uma vítima a cair e voltar rapidamente com desautenticação. As explicações mais técnicas estarão em outra publicação, mas resumidamente este ataque fica enviando pacotes de dissociação/desautenticação para desconectar dispositivos da rede wireless.
  
 ### Resumindo a ópera dos riscos em poucas palavras
  Fazendo um resumo sobre os principais riscos comentado de forma simples.
@@ -183,7 +183,7 @@ Por fim, verifique a segurança dos sites que você acessa, procurando por um ca
 
 ## Considerações finais
 
-Seguindo essas dicas, você pode aumentar a sua segurança e a da sua rede wireless, e evitar que seus dados sejam expostos ou roubados por hackers. Lembre-se que a internet é um lugar maravilhoso, mas também perigoso, e que você deve estar sempre atento e protegido. As últimas dicas colocadas servem para outros cenários, não apenas para redes wireless corporativas e/ou residensiais. Talvez algumas coisas possam parecer um exagero dependendo da sua realidade, porém em muitos casos a coisa não pode ser vista assim - principalmente se estivermos falando de uma empresa - e cabe a você decidir isso agora que sabe de muitos dos riscos. Nesses casos empresariais, colocar uma rede de visitante separado de qualquer sistema interno é super importante, não é recomendado compartilhar a mesma rede usada pelos funcionários para os clientes. 
+Seguindo essas dicas, você pode aumentar a sua segurança e a da sua rede wireless, e evitar que seus dados sejam expostos ou roubados por hackers. Lembre-se que a internet é um lugar maravilhoso, mas também perigoso, e que você deve estar sempre atento e protegido. As últimas dicas colocadas servem para outros cenários, não apenas para redes wireless corporativas e/ou residenciais. Talvez algumas coisas possam parecer um exagero dependendo da sua realidade, porém em muitos casos a coisa não pode ser vista assim - principalmente se estivermos falando de uma empresa - e cabe a você decidir isso agora que sabe de muitos dos riscos. Nesses casos empresariais, colocar uma rede de visitante separado de qualquer sistema interno é super importante, não é recomendado compartilhar a mesma rede usada pelos funcionários para os clientes. 
 
 Espero que este post, com essas dicas, tenha sido útil e esclarecedor para você e sua empresa. Então, caso tenha gostado deste conteúdo, compartilhe com seus amigos nas redes sociais e deixe seu comentário abaixo.
 

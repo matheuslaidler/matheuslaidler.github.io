@@ -2,15 +2,15 @@
 title: Vulnversity - Desafio Hacker [TryHackMe]
 description: 'Resolvendo máquina da TryHackMe através de enumeração com Nmap, fuzzing de diretórios, bypass de upload e privilege escalation via SUID'
 author: matheus
-tags: ["tryhackme", "WriteUps", "nmap", "gobuster", "reverse shell", "SUID", "Privilege Escalation"]
-categories: ["SecLab", "WayOfSec", "Hacking", "Write Ups"]
+tags: ["TryHackMe", "WriteUps", "Nmap", "Gobuster", "SUID", "privilege escalation", "reverse shell", "pentesting"]
+categories: ["Segurança", "CTF e Writeups"]
 pin: false
 comments: true
 last_modified_at: 2025-12-19
 
 ---
 
-# Vulnversity - Writeup
+## Vulnversity - Writeup
 
 ### Enumeração com Nmap, Directory Bruteforce, Upload Bypass e Privilege Escalation via SUID
 
@@ -193,8 +193,10 @@ Aqui estão os parâmetros mais úteis do GoBuster:
 Vamos usar o GoBuster para encontrar diretórios interessantes no servidor web que descobrimos:
 
 ```bash
-gobuster dir -u http://10.10.84.129:3333 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+gobuster dir -u http://10.10.84.129:3333 -w common.txt
 ```
+
+> **Nota:** Na seção anterior comentei que a `directory-list-2.3-medium.txt` costuma ser um bom equilíbrio, e ela funciona bem aqui. Mas, na execução que ficou registrada na saída abaixo, eu acabei rodando com a `common.txt` (uma wordlist menor, do SecLists, em `/usr/share/wordlists/dirb/common.txt`) — por isso o comando e a saída mostram `common.txt`. Para esta máquina, se eu não me engano, qualquer uma das duas encontra o `/internal/`, que é o diretório que interessa.
 
 **Resultado:**
 

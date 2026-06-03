@@ -2,13 +2,13 @@
 title: CyberHeroes - Desafio hacker [TryHackMe]
 description: 'Resolvendo Máquina do TryHackMe em português'
 author: matheus
-tags: ["tryhackme", "WriteUps"]
-categories: ["SecLab", "WayOfSec", "Hacking", "Write Ups"]
+tags: ["TryHackMe", "WriteUps", "CTF", "web", "JavaScript", "client-side"]
+categories: ["Segurança", "CTF e Writeups"]
 pin: false
 comments: true
 ---
 
-# CyberHeroes — Writeup em Português
+## CyberHeroes — Writeup em Português
 
 ### Resolução desafio hacker fácil do TryHackMe
 

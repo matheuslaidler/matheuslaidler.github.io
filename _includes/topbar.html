@@ -55,17 +55,6 @@
       {% endif %}
     </div>
 
-    <button
-      type="button"
-      id="reading-mode-trigger"
-      class="btn btn-link"
-      aria-label="Modo leitura (tela cheia)"
-      aria-pressed="false"
-      title="Modo leitura — esconde as laterais e foca no texto"
-    >
-      <i class="fas fa-expand fa-fw"></i>
-    </button>
-
     <button type="button" id="search-trigger" class="btn btn-link" aria-label="Buscar">
       <i class="fas fa-search fa-fw"></i>
     </button>
@@ -83,6 +72,17 @@
     </search>
     <button type="button" class="btn btn-link text-decoration-none" id="search-cancel">
       {{- site.data.locales[include.lang].search.cancel -}}
+    </button>
+
+    <button
+      type="button"
+      id="reading-mode-trigger"
+      class="btn btn-link"
+      aria-label="Modo leitura (tela cheia)"
+      aria-pressed="false"
+      title="Modo leitura — esconde as laterais e foca no texto (ESC para sair)"
+    >
+      <i class="fas fa-expand fa-fw"></i>
     </button>
   </div>
 </header>

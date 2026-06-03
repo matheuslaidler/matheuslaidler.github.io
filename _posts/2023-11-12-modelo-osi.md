@@ -2,13 +2,13 @@
 title: Conhecendo o Modelo OSI
 description: 'Resumo introdutório sobre o modelo OSI'
 author: matheus
-tags: ["Redes", "Modelo OSI", "TCP", "UDP", "IP", "FTP", "DNS", "SMTP", "Protocolos"]
-categories: ["Road2Tech", "Redes de Computadores"]
+tags: ["Redes", "OSI", "TCP", "UDP", "IP", "DNS", "protocolos"]
+categories: ["Redes e Sistemas", "Redes"]
 pin: false
 comments: true
 ---
 
-# Redes: Modelo OSI à primeira vista
+## Redes: Modelo OSI à primeira vista
 
 Se você está entrando no mundo de redes de computadores, provavelmente já ouviu falar do famoso "modelo OSI". É aquele negócio das 7 camadas que aparece em toda prova, certificação e entrevista de emprego na área. Mas calma, não é tão complicado quanto parece - vamos descomplicar isso juntos.
 
@@ -34,14 +34,6 @@ Os protocolos mais comuns aqui são HTTP/HTTPS (navegação web), FTP (transfer�
 
 Quando você digita `google.com` no navegador, é aqui que a mágica começa.
 
-### Camada 6 - Apresentação (Presentation Layer)
-
-**Função:** Formatação, criptografia e compressão dos dados.
-
-**Características:**
-- Tradução de dados entre formatos
-- Criptografia e descriptografia
-- Compressão e descompressão
 ### Camada 6 - Apresentação
 
 Essa camada cuida da formatação dos dados. Pensa nela como um tradutor: ela pega os dados da aplicação e prepara pra viagem, fazendo criptografia, compressão e conversão de formatos.

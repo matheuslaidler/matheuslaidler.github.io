@@ -522,25 +522,73 @@ footer .text-muted {
   color: #00ff88;
 }
 
-#pagination a,
-.page-number {
-  background: linear-gradient(135deg,
-    rgba(115, 255, 232, 0.1),
-    rgba(0, 255, 136, 0.05));
-  border: 1px solid rgba(115, 255, 232, 0.3);
-  color: rgba(115, 255, 232, 0.8);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+/* ===== PAGINAÇÃO DA HOME (.pagination .page-link) — tema ciano ===== */
+.pagination .page-link {
+  transition: all 0.25s ease;
 }
 
-#pagination a:hover,
-.page-number.active {
-  background: linear-gradient(135deg,
-    rgba(115, 255, 232, 0.25),
-    rgba(0, 255, 136, 0.15));
-  border-color: #73ffe8;
+.pagination .page-item.active .page-link {
+  background: linear-gradient(135deg, rgba(115, 255, 232, 0.25), rgba(0, 255, 136, 0.15)) !important;
+  color: #73ffe8 !important;
+  box-shadow: 0 0 14px rgba(115, 255, 232, 0.3);
+}
+
+.pagination .page-item:not(.active) .page-link:hover {
+  box-shadow: inset rgba(115, 255, 232, 0.5) 0 0 0 1px !important;
   color: #73ffe8;
-  box-shadow: 0 0 20px rgba(115, 255, 232, 0.4);
-  transform: scale(1.05);
+}
+
+html[data-mode='light'] .pagination .page-item.active .page-link {
+  background: linear-gradient(135deg, rgba(0, 157, 178, 0.18), rgba(0, 184, 148, 0.12)) !important;
+  color: #009db2 !important;
+  box-shadow: 0 0 12px rgba(0, 157, 178, 0.2);
+}
+
+html[data-mode='light'] .pagination .page-item:not(.active) .page-link:hover {
+  box-shadow: inset rgba(0, 157, 178, 0.5) 0 0 0 1px !important;
+  color: #009db2;
+}
+
+/* ===== HOVER DE TAGS — trocar o azul-acinzentado antigo por ciano/teal ===== */
+html:not([data-mode]),
+html[data-mode='dark'] {
+  --tag-hover: rgba(115, 255, 232, 0.16);
+}
+
+html[data-mode='light'] {
+  --tag-hover: rgba(0, 157, 178, 0.12);
+}
+
+/* ===== BOTÕES PREV/NEXT DE POST (btn-outline-primary) — eram azul #007bff ===== */
+.btn.btn-outline-primary {
+  --bs-btn-color: #73ffe8;
+  --bs-btn-border-color: rgba(115, 255, 232, 0.4);
+  --bs-btn-hover-color: #0f1419;
+  --bs-btn-hover-bg: #73ffe8;
+  --bs-btn-hover-border-color: #73ffe8;
+  --bs-btn-active-color: #0f1419;
+  --bs-btn-active-bg: #00ff88;
+  --bs-btn-active-border-color: #00ff88;
+  --bs-btn-focus-shadow-rgb: 115, 255, 232;
+}
+
+.btn.btn-outline-primary:not(.disabled):hover {
+  border-color: #73ffe8 !important;
+}
+
+html[data-mode='light'] .btn.btn-outline-primary {
+  --bs-btn-color: #009db2;
+  --bs-btn-border-color: rgba(0, 157, 178, 0.4);
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: #009db2;
+  --bs-btn-hover-border-color: #009db2;
+  --bs-btn-active-bg: #00b894;
+  --bs-btn-active-border-color: #00b894;
+  --bs-btn-focus-shadow-rgb: 0, 157, 178;
+}
+
+html[data-mode='light'] .btn.btn-outline-primary:not(.disabled):hover {
+  border-color: #009db2 !important;
 }
 
 /* ===== VIDEOS ===== */
@@ -562,13 +610,9 @@ footer .text-muted {
   display: inline-block;
 }
 
-#sidebar.show ~ #main-wrapper #topbar #sidebar-trigger i,
-body.sidebar-show #topbar #sidebar-trigger i,
-#sidebar.show ~ #topbar #sidebar-trigger i,
-.sidebar-trigger.active i,
-#sidebar-trigger.active i,
-#sidebar.show ~ #sidebar-trigger i,
-body.sidebar-show #sidebar-trigger i {
+/* O Chirpy coloca o atributo `sidebar-display` no <body> quando a sidebar abre.
+   Com a sidebar aberta, o chevron ">" rotaciona para "<" (fechar). */
+body[sidebar-display] #sidebar-trigger i {
   transform: rotate(180deg);
 }
 
@@ -755,13 +799,26 @@ html[data-mode='dark'] ::-webkit-scrollbar-thumb:hover {
   border-bottom-color: #73ffe8;
 }
 
+/* dropdown como "glass": fundo translúcido + blur do que está atrás,
+   garantindo leitura sobre qualquer background da página */
+#cssmenu .has-sub ul {
+  background: rgba(15, 20, 25, 0.92);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(115, 255, 232, 0.25);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
 #cssmenu .has-sub ul li a {
-  background: #14313a; /* dropdown harmonizado (antes #51b5a4) */
+  background: transparent; /* deixa o blur do container aparecer */
   color: #c9fff4;
 }
 
 #cssmenu .has-sub ul li a:hover {
-  background: rgba(115, 255, 232, 0.25);
+  background: rgba(115, 255, 232, 0.18);
   color: #ffffff;
 }
 
@@ -773,7 +830,10 @@ html[data-mode='dark'] ::-webkit-scrollbar-thumb:hover {
 @media all and (min-width: 850px) {
   #reading-mode-trigger {
     display: block;
-    margin-left: auto; /* empurra para a direita, junto da busca */
+  }
+  /* mantém Home à esquerda e agrupa busca + botão à direita do container */
+  #topbar search {
+    margin-left: auto;
   }
 }
 
@@ -784,25 +844,28 @@ html[data-mode='dark'] ::-webkit-scrollbar-thumb:hover {
 }
 
 /* --- ESTADO MODO LEITURA: esconde as duas colunas laterais e foca no texto --- */
-/*     (o menu superior #cssmenu permanece visível)                             */
-html.reading-mode #sidebar {
-  transform: translateX(-100%);
-}
+/*     (menu superior #cssmenu permanece; só no desktop ≥850px, onde sidebar/   */
+/*      painel ocupam espaço — no mobile nada muda, o painel continua visível). */
+@media all and (min-width: 850px) {
+  html.reading-mode #sidebar {
+    transform: translateX(-100%);
+  }
 
-html.reading-mode #main-wrapper {
-  margin-left: 0 !important;
-}
+  html.reading-mode #main-wrapper {
+    margin-left: 0 !important;
+  }
 
-html.reading-mode #panel-wrapper {
-  display: none !important;
-}
+  html.reading-mode #panel-wrapper {
+    display: none !important;
+  }
 
-/* Conteúdo (post + comentários) ocupa a largura total do container, centralizado */
-html.reading-mode #main-wrapper main,
-html.reading-mode #main-wrapper #tail-wrapper {
-  flex: 0 0 100%;
-  width: 100%;
-  max-width: 100%;
+  /* Conteúdo (post + comentários) ocupa a largura total do container */
+  html.reading-mode #main-wrapper main,
+  html.reading-mode #main-wrapper #tail-wrapper {
+    flex: 0 0 100%;
+    width: 100%;
+    max-width: 100%;
+  }
 }
 
 /* ===================================================================== */
@@ -815,14 +878,17 @@ html {
   scroll-padding-top: calc(8vh + 3.5rem);
 }
 
-/* --- Menu superior: botão ativo/hover preenche até a borda inferior --- */
-/*     (remove o "gap" entre o botão e a linha ciano).                    */
-#cssmenu > ul > li > a {
-  height: 8vh;
-  display: inline-flex;
-  align-items: center;
-  line-height: normal;
-  box-sizing: border-box;
+/* --- Menu superior (DESKTOP ≥981px): botão ativo/hover preenche até a borda --- */
+/*     inferior (remove o "gap" entre o botão e a linha ciano).                  */
+/*     Escopado para não quebrar os botões verticais do menu mobile.             */
+@media (min-width: 981px) {
+  #cssmenu > ul > li > a {
+    height: 8vh;
+    display: inline-flex;
+    align-items: center;
+    line-height: normal;
+    box-sizing: border-box;
+  }
 }
 
 /* --- Botão de tema (mode-toggle): mesma borda circular dos demais --- */
