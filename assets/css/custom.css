@@ -239,10 +239,12 @@ html[data-mode='dark'] #sidebar {
   overflow-x: hidden;
 }
 
-/* evita qualquer scroll horizontal residual (sintoma: footer "cortado"); clip não vira scroll-container -> não quebra o position:sticky do menu/topbar */
-html {
-  overflow-x: clip;
-}
+/* reserva a calha da barra de rolagem -> evita o "pulo" de ~6px que deixava o footer levemente cortado */
+html { scrollbar-gutter: stable; }
+
+/* tabelas largas (markdown e código) NÃO podem estourar a página (era o que cortava o footer) -> rolam internamente */
+.content table:not(.rouge-table) { display: block; max-width: 100%; overflow-x: auto; }
+.content .highlight { max-width: 100%; }
 
 html[data-mode='dark'] #topbar-wrapper {
   border-bottom: 2px solid rgba(115, 255, 232, 0.3);
@@ -1069,16 +1071,14 @@ html.page-projetos #search-result-wrapper {
 html.page-projetos #topbar search,
 html.page-projetos #search-trigger,
 html.page-projetos #search-cancel { display: none !important; }
-/* "Projetos" centralizado no mobile (theme-toggle à esquerda; sem search-trigger à direita) */
+/* "Projetos" centralizado no mobile (sem itens nas pontas do topbar nessa página) */
 @media (max-width: 849px) {
   html.page-projetos #topbar-title { position: absolute; left: 50%; transform: translateX(-50%); width: auto; }
 }
-/* botão de tema no topbar SÓ na /projetos (substitui o sidebar-trigger escondido; mantém "Projetos" centralizado no mobile) */
-#projetos-mode-toggle { display: none; }
-html.page-projetos #projetos-mode-toggle { display: inline-flex; align-items: center; }
 
-/* filtro de projetos (na página; funciona desktop + mobile) */
-.projetos-filter { position: relative; max-width: 420px; margin-top: 1rem; }
+/* barra da página: filtro (cresce) + botão de tema na OUTRA PONTA, mesma linha */
+.projetos-toolbar { display: flex; align-items: center; gap: 0.75rem; margin-top: 1rem; }
+.projetos-filter { position: relative; flex: 1 1 auto; max-width: 520px; }
 .projetos-filter i { position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); color: var(--text-muted-color); font-size: 0.9rem; pointer-events: none; }
 .projetos-filter input {
   width: 100%; padding: 0.5rem 0.9rem 0.5rem 2.3rem; border-radius: 10px;
@@ -1086,6 +1086,13 @@ html.page-projetos #projetos-mode-toggle { display: inline-flex; align-items: ce
 }
 .projetos-filter input::placeholder { color: var(--text-muted-color); }
 .projetos-filter input:focus { outline: none; border-color: rgba(115, 255, 232, 0.6); }
+#projetos-mode-toggle {
+  flex: 0 0 auto; margin-left: auto;
+  width: 2.4rem; height: 2.4rem; border-radius: 10px; cursor: pointer; text-decoration: none;
+  background: rgba(115, 255, 232, 0.06); border: 1px solid rgba(115, 255, 232, 0.25); color: #73ffe8;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+#projetos-mode-toggle:hover { background: rgba(115, 255, 232, 0.14); text-decoration: none; }
 
 .projetos-head { margin-bottom: 1.4rem; }
 .projetos-head .projetos-title { margin-bottom: 0.2rem; }
@@ -1096,9 +1103,17 @@ html.page-projetos #projetos-mode-toggle { display: inline-flex; align-items: ce
 }
 .projetos-donate h2 { font-size: 1.3rem; margin-bottom: 0.3rem; }
 
-/* cards de projeto: como os posts (capa na lateral), borda ciano sutil (não a branca padrão), info + tags */
-#projetos-list .proj-card { border: 1px solid rgba(115, 255, 232, 0.16); }
+/* cards de projeto: capa na lateral; SEM contorno branco; card um pouco mais escuro que o fundo; imagem preenche o card */
+#projetos-list .proj-card {
+  border: none;
+  background: rgba(0, 0, 0, 0.22);
+  border-radius: 10px;
+  overflow: hidden;
+}
+html[data-mode='light'] #projetos-list .proj-card { background: rgba(0, 0, 0, 0.05); }
+#projetos-list .proj-card .post-preview img { width: 100%; height: 100%; object-fit: cover; }
 #projetos-list .card-title { font-size: 1.2rem; display: flex; align-items: center; gap: 0.4rem; }
+html[data-mode='light'] #projetos-list .card-title { color: #0c7d6e; }   /* legível no modo claro */
 #projetos-list .card-title .proj-pin { font-size: 0.8rem; color: #73ffe8; }
 #projetos-list .card-text.content { display: block; }
 #projetos-list .card-text.content p { color: var(--text-muted-color); margin: 0; }

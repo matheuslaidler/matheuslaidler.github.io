@@ -25,7 +25,7 @@
 
 #cssmenu a {
   display: inline-block;
-  padding: 0.75vh 2.2rem; /*botão: largura em rem (vh aqui causava overflow horizontal -> footer cortado)*/
+  padding: 0.75vh clamp(2rem, 3.4vw, 4.5rem); /*grande, mas escalado p/ CABER (sem vh, sem estourar a largura -> footer não corta)*/
   line-height: 6vh; /*botão altura*/
   color: #fff;
   text-decoration: none;
