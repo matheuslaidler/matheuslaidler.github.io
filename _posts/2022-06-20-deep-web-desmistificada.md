@@ -6,6 +6,7 @@ tags: ["deep web", "dark web", "Tor", "I2P", "privacidade", "anonimato", "Redes"
 categories: ["Segurança", "Privacidade e Anonimato"]
 pin: false
 comments: true
+image: /assets/img/covers/deep-web-desmistificada.png
 ---
 
 ## Vamos acabar com essa neura de uma vez

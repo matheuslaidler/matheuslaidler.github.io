@@ -6,6 +6,7 @@ tags: ["WiFi", "WPA2", "WPA3", "MITM", "ARP", "DNS", "segurança"]
 categories: ["Segurança", "Redes e WiFi"]
 pin: false
 comments: true
+image: /assets/img/covers/perigos-wifi.png
 ---
 ## Além do Sinal: Conhecendo os principais perigos de uma rede wireless
  As 'Ameaças Invisíveis' que te farão compreender os principais riscos das redes sem fio (wireless). Será apresentado alguns dos "Perigos Ocultos" ignorados pela maioria da população. 

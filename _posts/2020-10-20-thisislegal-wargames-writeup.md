@@ -6,6 +6,7 @@ tags: ["CTF", "wargames", "ThisIsLegal", "WriteUps", "web security", "LFI", "SQL
 categories: ["Segurança", "CTF e Writeups"]
 pin: false
 comments: true
+image: /assets/img/covers/thisislegal-wargames-writeup.png
 ---
 
 ## O que diabos é um Wargame?

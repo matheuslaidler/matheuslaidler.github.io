@@ -24,6 +24,15 @@ O foco é sempre a **prática** e explicar o *porquê* das coisas, não apenas o
 
 > Este projeto reúne, sob o meu nome, materiais que antes ficavam espalhados em outros projetos — *Road2Tech* (meu projeto de TI antigo), *WayOfSec* (Meu fórum de sec - projeto antigo) e *SecLab* (meu projeto antigo de estudo prático em laboratório) — hoje unificados tudo aqui no Acervo de TI.
 
+## ☕ Apoie o projeto
+
+O **Acervo de TI** é gratuito, sem anúncios e sem fins lucrativos. Se algum conteúdo te ajudou e você quiser retribuir, considere apoiar — ajuda a manter o projeto vivo e os guias abertos pra todo mundo:
+
+<div class="donate-row" markdown="0">
+  <a class="donate-btn gh" href="https://github.com/sponsors/matheuslaidler" target="_blank" rel="noopener">💖 GitHub Sponsors</a>
+  <a class="donate-btn pp" href="https://www.paypal.com/donate/?hosted_button_id=SJYYS28HZPU9A" target="_blank" rel="noopener">☕ Doar via PayPal</a>
+</div>
+
 ## Aviso
 
 Embora eu me esforce para fornecer informações precisas e úteis sobre tecnologia e segurança da informação, não me responsabilizo por ações tomadas por terceiros com base no conteúdo compartilhado. Use as informações com discernimento e responsabilidade. Repudio quaisquer atos antiéticos — eles não são incentivados pelo projeto Acervo de TI nem por seu proprietário.

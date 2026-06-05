@@ -16,7 +16,7 @@ Esta é uma série de estudo de **bug bounty / segurança ofensiva web**, escrit
 
 > Os exemplos são **fictícios-realistas e anonimizados** — baseados em *padrões* de falhas reais, sem expor alvos, empresas ou dados de ninguém.
 
-> 📥 **[Baixe o guia completo em PDF](/assets/pdf/guia-completo-de-bug-bounty.pdf)** — os 26 capítulos num arquivo só (381 páginas), com a identidade do Acervo de TI, pra ler offline.
+> 📥 **[Baixe o guia completo em PDF](/assets/pdf/guia-completo-de-bug-bounty.pdf)** — os 26 capítulos num arquivo só (388 páginas), com a identidade do Acervo de TI, pra ler offline.
 {: .prompt-info }
 
 ## Como usar (trilha sugerida)

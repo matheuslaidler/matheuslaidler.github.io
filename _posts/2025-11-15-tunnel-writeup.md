@@ -7,9 +7,7 @@ categories: ["Segurança", "CTF e Writeups"]
 pin: false
 comments: true
 
-image:
-  path: https://github.com/user-attachments/assets/47dffbac-2eea-4c65-b6b7-f51d8582842b
-  alt: "Tunnel (Hacking Club) — h2c request smuggling, RCE e Docker escape"
+image: /assets/img/covers/tunnel-writeup.png
 ---
 
 ## Writeup: Tunnel (HackingClub Machine)

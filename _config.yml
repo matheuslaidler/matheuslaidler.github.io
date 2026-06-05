@@ -93,7 +93,7 @@ avatar: "../assets/img/perfil.jpg"
 
 # The URL of the site-wide social preview image used in SEO `og:image` meta tag.
 # It can be overridden by a customized `page.image` in front matter.
-social_preview_image: "/assets/img/perfil.jpg" # fallback de og:image; troque por um card 1200x630 quando tiver
+social_preview_image: "/assets/img/default-cover.png" # fallback og:image: card "Acervo de TI" (default-cover.svg renderizado), distinto das capas de post
 
 # boolean type, the global switch for TOC in posts.
 toc: true

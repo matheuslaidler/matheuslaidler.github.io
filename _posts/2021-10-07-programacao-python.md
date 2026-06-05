@@ -8,6 +8,7 @@ categories: ["Programação", "Python"]
 tags: ["Python", "programação", "guia", "iniciante", "UFRJ", "sockets", "POO"]
 pin: false
 math: true
+image: /assets/img/covers/programacao-python.png
 ---
 
 ## Python para Marinheiros de Primeira Viagem

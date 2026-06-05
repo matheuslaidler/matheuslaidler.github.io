@@ -6,6 +6,7 @@ tags: ["Blender", "modelagem 3D", "UV map", "normais", "game dev", "tutorial"]
 categories: ["Programação", "Game Dev"]
 pin: false
 comments: true
+image: /assets/img/covers/blender-problemas-modelagem.png
 ---
 
 ## Problemas comuns no Blender que acabam com a cabeça de iniciantes

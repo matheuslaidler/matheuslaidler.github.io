@@ -8,6 +8,7 @@ pin: false
 comments: true
 last_modified_at: 2025-12-19
 
+image: /assets/img/covers/vulnversity-writeup.png
 ---
 
 ## Vulnversity - Writeup

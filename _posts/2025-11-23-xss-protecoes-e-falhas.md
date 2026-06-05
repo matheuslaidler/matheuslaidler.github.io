@@ -10,6 +10,7 @@ comments: true
 permalink: /posts/xss-protecoes-e-falhas/
 redirect_from:
   - /posts/xss-guia-completo/
+image: /assets/img/covers/xss-protecoes-e-falhas.png
 ---
 
 ## O que é XSS (e por que este post foca nas DEFESAS)

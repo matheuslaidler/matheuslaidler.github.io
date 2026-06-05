@@ -7,6 +7,7 @@ categories: ["Segurança", "Incidentes"]
 pin: false
 comments: true
 
+image: /assets/img/covers/FalhaCrowdStrike.png
 ---
 
 ## Entendendo a Falha da CrowdStrike e suas Consequências

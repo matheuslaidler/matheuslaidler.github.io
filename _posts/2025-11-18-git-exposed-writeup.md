@@ -7,6 +7,7 @@ categories: ["Segurança", "CTF e Writeups"]
 pin: false
 comments: true
 
+image: /assets/img/covers/git-exposed-writeup.png
 ---
 
 ## Git Exposed (HackingClub Machine)

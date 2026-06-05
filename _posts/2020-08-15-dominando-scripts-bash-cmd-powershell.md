@@ -6,6 +6,7 @@ tags: ["Bash", "PowerShell", "CMD", "Batch", "scripting", "automação", "Linux"
 categories: ["Programação", "Shell Script"]
 pin: false
 comments: true
+image: /assets/img/covers/dominando-scripts-bash-cmd-powershell.png
 ---
 
 ## Por que você PRECISA aprender a fazer scripts

@@ -6,6 +6,7 @@ tags: ["Unreal Engine", "Unity", "Blender", "Blueprints", "C++", "game dev", "in
 categories: ["Programação", "Game Dev"]
 pin: false
 comments: true
+image: /assets/img/covers/desenvolvimento-games-unreal.png
 ---
 
 ## O sonho de criar seu próprio jogo

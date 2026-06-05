@@ -6,6 +6,7 @@ tags: ["WiFi", "Aircrack-ng", "brute force", "Shell Script", "wordlist", "handsh
 categories: ["Segurança", "Redes e WiFi"]
 pin: false
 comments: true
+image: /assets/img/covers/hackeando-wifi.png
 ---
 
 ## Hackeando redes WiFi

@@ -10,9 +10,7 @@ pin: false
 comments: true
 math: false
 mermaid: true
-image:
-  path: https://github.com/user-attachments/assets/3392e1ea-3634-4590-83a9-57b6794d150d
-  alt: "Vibe Coding — análise de riscos de segurança em projetos gerados por IA"
+image: /assets/img/covers/vibecode-riscos-seguranca.png
 ---
 
 ## A festa dos sonhos que pode virar pesadelo

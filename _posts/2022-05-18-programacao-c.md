@@ -8,6 +8,7 @@ categories: ["Programação", "C/C++"]
 tags: ["C/C++", "GCC", "ponteiros", "system calls", "Make", "Linux", "guia"]
 pin: false
 math: true
+image: /assets/img/covers/programacao-c.png
 ---
 
 ## Desbravando C: Programação de Forma Didática

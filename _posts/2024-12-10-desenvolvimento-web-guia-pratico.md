@@ -6,6 +6,7 @@ tags: ["PHP", "MySQL", "JavaScript", "desenvolvimento web", "web security", "SQL
 categories: ["Programação", "Desenvolvimento Web"]
 pin: false
 comments: true
+image: /assets/img/covers/desenvolvimento-web-guia-pratico.png
 ---
 
 ## O que você vai aprender aqui

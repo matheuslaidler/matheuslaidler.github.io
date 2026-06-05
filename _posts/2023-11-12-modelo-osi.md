@@ -6,6 +6,7 @@ tags: ["Redes", "OSI", "TCP", "UDP", "IP", "DNS", "protocolos"]
 categories: ["Redes e Sistemas", "Redes"]
 pin: false
 comments: true
+image: /assets/img/covers/modelo-osi.png
 ---
 
 ## Redes: Modelo OSI à primeira vista

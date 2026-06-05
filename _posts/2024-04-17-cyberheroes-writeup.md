@@ -6,6 +6,7 @@ tags: ["TryHackMe", "WriteUps", "CTF", "web", "JavaScript", "client-side"]
 categories: ["Segurança", "CTF e Writeups"]
 pin: false
 comments: true
+image: /assets/img/covers/cyberheroes-writeup.png
 ---
 
 ## CyberHeroes — Writeup em Português

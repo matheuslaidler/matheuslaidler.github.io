@@ -9,9 +9,7 @@ categories: ["Segurança", "Web Security"]
 pin: false
 comments: true
 math: true
-image:
-  path: https://github.com/user-attachments/assets/3f7278d7-4aa5-4e30-89a3-1df50cb958e8
-  alt: "SQL Injection — exploração prática na máquina Lion do Hacking Club"
+image: /assets/img/covers/sql-injection-definitivo.png
 ---
 
 ## A "velha guarda" que ainda tem força para afetar "vibe sistemas"

@@ -7,6 +7,7 @@ categories: ["Segurança", "AppSec"]
 pin: false
 comments: true
 
+image: /assets/img/covers/code-review-seguranca.png
 ---
 
 ## A prevenção sendo a arte de encontrar pelo em ovo (potencial perigo no código)

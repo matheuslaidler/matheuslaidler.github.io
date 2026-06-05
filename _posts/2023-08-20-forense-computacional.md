@@ -6,6 +6,7 @@ tags: ["Forense Digital", "análise forense", "recuperação de dados", "estegan
 categories: ["Segurança", "Forense Digital"]
 pin: false
 comments: true
+image: /assets/img/covers/forense-computacional.png
 ---
 
 ## Computação Forense à primeira vista

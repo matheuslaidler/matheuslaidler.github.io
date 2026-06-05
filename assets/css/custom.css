@@ -963,3 +963,79 @@ html[data-mode='light'] .sidebar-bottom button:hover {
   box-shadow: 0 0 16px rgba(0, 157, 178, 0.3);
 }
 
+/* ===== NOTA DE APOIO (fim de cada post) + CARD DE DOAÇÃO (Sobre) ===== */
+.support-note {
+  margin: 2.2rem 0 0.5rem;
+  padding: 0.85rem 1.15rem;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--text-muted-color, #828282);
+  border: 1px dashed rgba(115, 255, 232, 0.3);
+  border-radius: 10px;
+  background: rgba(115, 255, 232, 0.04);
+}
+.support-note a {
+  color: #1ad6bb;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.support-note a:hover { text-decoration: underline; }
+html[data-mode='light'] .support-note {
+  border-color: rgba(0, 157, 178, 0.3);
+  background: rgba(0, 157, 178, 0.05);
+}
+html[data-mode='light'] .support-note a { color: #009db2; }
+
+.donate-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin: 1rem 0 0.5rem;
+}
+.donate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.15rem;
+  border-radius: 10px;
+  font-weight: 600;
+  text-decoration: none !important;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.donate-btn.gh { background: #21262d; color: #db61a2 !important; border: 1px solid rgba(219, 97, 162, 0.4); }
+.donate-btn.pp { background: #003087; color: #ffffff !important; border: 1px solid #0070ba; }
+.donate-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3); }
+
+/* ===== TOPBAR: campo de busca com largura automática (>=850px) ===== */
+/* preenche a faixa do topo de ponta a ponta, encolhendo só pra respeitar o breadcrumb (home > página) */
+@media (min-width: 850px) {
+  #topbar search {
+    max-width: none;
+    flex: 1 1 auto;          /* cresce pra ocupar o espaço entre breadcrumb e botões */
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+  #topbar #breadcrumb {
+    flex: 0 1 auto;          /* não cresce; pode encolher (com ellipsis) pra dar espaço ao search */
+    min-width: 0;
+  }
+}
+@media (min-width: 1200px) {
+  #topbar search { margin-right: 1rem; }  /* sobrescreve o margin-right:4rem do Chirpy, que brigava com o flex */
+}
+
+/* ===== CAPA DO POST (.preview-img): não cortar em ~768–850px ===== */
+/* o gem usa height:100% + object-fit:cover; em telas médias a altura vinha do pai e a imagem era cortada. */
+/* fixando o aspect-ratio 1200/630 e height:auto, o container tem a proporção certa e a imagem preenche sem cortar. */
+.preview-img {
+  aspect-ratio: 1200 / 630;
+  width: 100%;
+  height: auto;
+}
+.preview-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+

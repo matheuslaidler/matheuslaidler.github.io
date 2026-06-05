@@ -6,6 +6,7 @@ tags: ["Redes", "protocolos", "TCP", "UDP", "DNS", "HTTP", "TCP/IP"]
 categories: ["Redes e Sistemas", "Redes"]
 pin: false
 comments: true
+image: /assets/img/covers/dadosProtocolos.png
 ---
 
 ## Comunicação de dados e Protocolos
