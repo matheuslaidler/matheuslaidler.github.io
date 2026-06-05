@@ -18,7 +18,7 @@ Hoje, **a maior parte da superfície de ataque de qualquer produto é API**. App
 
 Neste post a gente percorre o **[OWASP API Security Top 10 — edição 2023](https://owasp.org/API-Security/editions/2023/en/0x11-t10/)** inteiro, com um exemplo prático de cada classe, uma seção dedicada a **GraphQL** (que tem armadilhas exclusivas) e a metodologia de como **achar e testar** uma API do zero. Vários posts da série já tocaram pedaços disso — aqui a gente costura tudo na visão "API first".
 
-> 💡 **API** (Application Programming Interface): o "contrato" pelo qual dois sistemas conversam — geralmente HTTP devolvendo JSON. É o back-end falando direto, sem a maquiagem do front. Mais no [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **API** (Application Programming Interface): o "contrato" pelo qual dois sistemas conversam — geralmente HTTP devolvendo JSON. É o back-end falando direto, sem a maquiagem do front. Mais no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 ## O que muda quando o bug é "de API"
 
@@ -30,7 +30,7 @@ Três características fazem o bug de API ser diferente:
 2. **A resposta é crua.** O JSON traz tudo que o back-end serializou. Se o dev mandou o objeto inteiro, você vê o objeto inteiro — campos sensíveis incluídos.
 3. **É feita pra automação.** API existe pra ser chamada em loop, em escala. O que é "uma tela por vez" no browser vira "10.000 requisições por minuto" no Burp Intruder.
 
-> 💡 **Serializar**: transformar um objeto interno (um registro do banco, por exemplo) em JSON pra mandar na resposta. O perigo é serializar o objeto **inteiro** em vez de escolher campo a campo. [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **Serializar**: transformar um objeto interno (um registro do banco, por exemplo) em JSON pra mandar na resposta. O perigo é serializar o objeto **inteiro** em vez de escolher campo a campo. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 ## O Top 10 de API, em uma tabela
 
@@ -57,7 +57,7 @@ Repare em uma coisa: **três das dez são controle de acesso** (API1, API3, API5
 
 É o **IDOR**, com nome de API. É o item **número 1** do ranking e, na prática, a falha que mais aparece e mais paga.
 
-> 💡 **IDOR** (Insecure Direct Object Reference): você troca um identificador na requisição (`id=1` por `id=2`) e acessa o dado de outra pessoa porque o servidor não checou se aquele objeto era seu. [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **IDOR** (Insecure Direct Object Reference): você troca um identificador na requisição (`id=1` por `id=2`) e acessa o dado de outra pessoa porque o servidor não checou se aquele objeto era seu. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 A raiz é sempre a mesma: o servidor recebe um identificador de objeto do cliente e **não checa se aquele objeto é seu**.
 
@@ -90,14 +90,14 @@ Aqui o problema é o **mecanismo que prova quem você é**: login, recuperação
 
 - **Endpoint de senha sem autenticação.** Existe `POST /autenticacao/api/v1/resetar-senha` que troca a senha de **qualquer** usuário sem exigir sessão válida nem código real. Crítico, ATO direto — em **CVSS v3.1** isso é **9.1 (Crítico)** (`AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N`); o vetor equivalente em **CVSS v4.0** é `CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:N/SC:N/SI:N/SA:N`, também faixa **Crítico**.
 
-> 💡 **ATO** (Account Takeover / tomada de conta): você consegue assumir o controle da conta de outra pessoa — o tipo de impacto que mais paga em bug bounty. [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **ATO** (Account Takeover / tomada de conta): você consegue assumir o controle da conta de outra pessoa — o tipo de impacto que mais paga em bug bounty. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 - **Sem rate limit no login** → brute force de credencial ou de OTP.
 
 > 💡 **OTP** (One-Time Password): código de uso único e curta validade enviado por SMS/app (o "código de verificação"). Sem rate limit, dá pra adivinhá-lo na força bruta.
 - **JWT mal validado.** Esse merece um zoom.
 
-> 💡 **JWT** (JSON Web Token): um token no formato `header.payload.signature`, cada parte em Base64URL. O `payload` carrega claims (ex.: `{"sub":"123","role":"user"}`) e a `signature` garante que ninguém adulterou. Detalhe no [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **JWT** (JSON Web Token): um token no formato `header.payload.signature`, cada parte em Base64URL. O `payload` carrega claims (ex.: `{"sub":"123","role":"user"}`) e a `signature` garante que ninguém adulterou. Detalhe no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 O `payload` de um JWT é **só Base64, não é criptografia** — qualquer um decodifica e lê. A segurança está na **assinatura**. Os erros campeões:
 
@@ -122,7 +122,7 @@ Esse é o mais subestimado e provavelmente o que vai te render report fácil. O 
 
 ### 3a) Mass Assignment — escrever campo que não era pra você
 
-> 💡 **Mass Assignment**: quando o framework "pega tudo" do JSON da requisição e joga direto nos atributos do objeto/modelo, sem filtrar. Se você adicionar um campo a mais, ele cola. [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **Mass Assignment**: quando o framework "pega tudo" do JSON da requisição e joga direto nos atributos do objeto/modelo, sem filtrar. Se você adicionar um campo a mais, ele cola. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 A ideia é mandar **mais campos do que o formulário envia**. O dev fez um endpoint de atualizar perfil esperando `nome` e `telefone`. Mas o modelo `User` também tem `role` e `isAdmin`. Se o back-end faz algo como `user.update(request.body)` sem allowlist, você escala:
 
@@ -169,7 +169,7 @@ Content-Type: application/json
 
 > ⚠️ **Regra de ouro do API3:** o atacante não usa o navegador, usa o **JSON cru**. "Esconder no front" não esconde nada. Sempre compare *o que a tela mostra* × *o que a resposta traz*.
 
-> 💡 **PII** (Personally Identifiable Information): dado pessoal que identifica alguém — CPF, e-mail, telefone, endereço. Vazar PII costuma elevar a severidade do report. [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **PII** (Personally Identifiable Information): dado pessoal que identifica alguém — CPF, e-mail, telefone, endereço. Vazar PII costuma elevar a severidade do report. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 A causa, segundo a [OWASP](https://owasp.org/API-Security/editions/2023/en/0xa3-broken-object-property-level-authorization/), é o dev usar **serialização genérica** ("manda o objeto inteiro") em vez de escolher campo a campo ("cherry-pick"). Combine `excessive data exposure` com um BOLA e você tem vazamento de PII em massa.
 
@@ -177,9 +177,9 @@ A causa, segundo a [OWASP](https://owasp.org/API-Security/editions/2023/en/0xa3-
 
 A API não limita o quanto você pode consumir: sem **rate limit**, sem **paginação**, sem teto de tamanho de upload, sem limite em operações em lote. Resultado: **DoS** e, pior, **custo** — porque cada chamada pode disparar SMS, e-mail ou uma API paga de terceiro.
 
-> 💡 **DoS** (Denial of Service / negação de serviço): sobrecarregar ou travar o sistema a ponto de ele parar de atender usuários legítimos. [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **DoS** (Denial of Service / negação de serviço): sobrecarregar ou travar o sistema a ponto de ele parar de atender usuários legítimos. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
-> 💡 **Rate limit**: teto de quantas requisições uma origem (IP/usuário/token) pode fazer num intervalo. Sem ele, um loop seu vira uma enxurrada. [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **Rate limit**: teto de quantas requisições uma origem (IP/usuário/token) pode fazer num intervalo. Sem ele, um loop seu vira uma enxurrada. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 Exemplo direto da [OWASP](https://owasp.org/API-Security/editions/2023/en/0xa4-unrestricted-resource-consumption/): um endpoint de reset que manda SMS a cada chamada, a US$ 0,05 a mensagem — automatize e a conta do alvo explode em minutos. Outro padrão clássico, de baixo impacto mas ainda pagável, é login sem rate limit:
 
@@ -244,7 +244,7 @@ SSRF é um post inteiro — bypasses de filtro, metadata da AWS/GCP, SSRF cego c
 
 Configuração frouxa: **CORS** permissivo (`Access-Control-Allow-Origin` refletindo qualquer origem com credenciais), modo **debug/stacktrace** ligado, headers de segurança faltando, métodos HTTP a mais habilitados, defaults nunca trocados, painéis e actuators expostos.
 
-> 💡 **CORS** (Cross-Origin Resource Sharing): conjunto de headers que diz **quais sites de origem** podem ler a resposta da sua API via JavaScript. Mal configurado (`Allow-Origin` refletido + `Allow-Credentials: true`), deixa um site malicioso ler dados autenticados da vítima. [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **CORS** (Cross-Origin Resource Sharing): conjunto de headers que diz **quais sites de origem** podem ler a resposta da sua API via JavaScript. Mal configurado (`Allow-Origin` refletido + `Allow-Credentials: true`), deixa um site malicioso ler dados autenticados da vítima. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 Exemplo de CORS perigoso — o servidor ecoa a origem do atacante:
 
@@ -265,7 +265,7 @@ Misconfiguration cobre um universo (Spring Boot Actuator/`heapdump` exposto, `.g
 
 A empresa **perdeu a conta** das próprias APIs. Sobrou uma `/v1` antiga rodando ao lado da `/v2` nova — só que a `/v1` não recebeu os patches nem o rate limit. Ou existe uma **shadow API** (host de beta/staging) com a mesma funcionalidade e **sem as proteções** da produção.
 
-> 💡 **Shadow API**: endpoint/host que existe e funciona, mas não está no inventário oficial nem na documentação — staging, beta, versão legada. Some da vista de quem defende, não da de quem ataca. [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **Shadow API**: endpoint/host que existe e funciona, mas não está no inventário oficial nem na documentação — staging, beta, versão legada. Some da vista de quem defende, não da de quem ataca. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 O exemplo da [OWASP](https://owasp.org/API-Security/editions/2023/en/0xa9-improper-inventory-management/) é exatamente esse: um host de **beta** com a mesma função da produção, mas **sem rate limit**, permitindo brute force de token de reset que na produção era bloqueado.
 
@@ -280,7 +280,7 @@ inurl:apidocs | inurl:api-docs | inurl:swagger | inurl:api-explorer site:alvo.co
 - **Troque a versão** num endpoint conhecido: se `/api/v2/users` é bem protegido, teste `/api/v1/users` e `/api/v3/users`.
 - **Documentação exposta** (swagger/OpenAPI) muitas vezes lista endpoints que o app nem usa mais — ouro pra enumerar.
 
-> 💡 **Swagger / OpenAPI**: especificação que descreve toda a API (rotas, parâmetros, modelos) em JSON/YAML. Ótimo pra dev — e mapa do tesouro pro atacante quando fica público. [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **Swagger / OpenAPI**: especificação que descreve toda a API (rotas, parâmetros, modelos) em JSON/YAML. Ótimo pra dev — e mapa do tesouro pro atacante quando fica público. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 Recon de subdomínios e hosts esquecidos: **[01-recon-discovery.md](/posts/recon-discovery/)** e **[23-subdomain-takeover-broken-link-hijacking.md](/posts/subdomain-takeover-broken-link-hijacking/)**.
 
@@ -310,7 +310,7 @@ Caminhos comuns: `/graphql`, `/api`, `/api/graphql`, `/graphql/api`, `/graphql/g
 ```
 Se voltar algo como `{"data": {"__typename": "Query"}}` (o nome do root type pode variar — ex.: `RootQuery`), achou um GraphQL. Vale testar métodos diferentes: `POST application/json`, `GET` e `POST x-www-form-urlencoded` — alguns aceitam alternativas (e isso também abre CSRF).
 
-> 💡 **Introspection**: recurso do GraphQL que permite **perguntar ao próprio servidor** qual é o schema completo (tipos, queries, mutations, campos). Ótimo em dev, perigoso em produção. [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **Introspection**: recurso do GraphQL que permite **perguntar ao próprio servidor** qual é o schema completo (tipos, queries, mutations, campos). Ótimo em dev, perigoso em produção. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 ### Introspection — baixar o schema inteiro
 
@@ -365,7 +365,7 @@ query isValidDiscount($code: Int) {
 
 GraphQL **não é imune a injection**. Os argumentos das queries/mutations chegam ao banco igual a qualquer input. Se o resolver concatena na query, é SQLi/NoSQLi normal:
 
-> 💡 **Resolver**: a função no back-end que "resolve" cada campo da query GraphQL — é ela que vai ao banco buscar o dado. Se concatena seu input na consulta, abre injection. [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **Resolver**: a função no back-end que "resolve" cada campo da query GraphQL — é ela que vai ao banco buscar o dado. Se concatena seu input na consulta, abre injection. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 ```graphql
 query {
@@ -430,7 +430,7 @@ grep -rEoh 'https?://[a-zA-Z0-9./_-]+' app_out/ | sort -u | grep -i 'api\|v1\|gr
 
 **3. Atacar com o Top 10 como checklist.** Pra cada endpoint, passe a lista: dá pra trocar ID (BOLA)? Mandar campo extra (mass assignment)? A resposta traz campo a mais (excessive data)? Tem rate limit? A função aceita meu perfil (BFLA)?
 
-> 💡 **Deeplink**: link que abre direto uma tela específica do app (`app://pagamento?valor=...`). No mobile, deeplinks expostos às vezes pulam telas de autorização — vale testar como uma "rota escondida" do app. [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **Deeplink**: link que abre direto uma tela específica do app (`app://pagamento?valor=...`). No mobile, deeplinks expostos às vezes pulam telas de autorização — vale testar como uma "rota escondida" do app. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 ## Defesa em camadas
 

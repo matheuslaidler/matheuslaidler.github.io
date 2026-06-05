@@ -57,10 +57,10 @@ O impacto escala em degraus bem definidos — e o bounty acompanha:
 
 - **Leitura de config e segredos.** Ler `/etc/passwd` já confirma a falha, mas o ouro está em `config.php`, `.env`, `application.yml`, `web.config`, `wp-config.php`: ali moram credenciais de banco, chaves de API, secrets de JWT. De posse disso, você pivota pra dentro.
 
-  > 💡 **JWT** (JSON Web Token): token de sessão em 3 partes `header.payload.signature` (Base64URL); o *secret* assina ele. Detalhe no [Glossário](/posts/fundamentos-web-hacking/).
+  > 💡 **JWT** (JSON Web Token): token de sessão em 3 partes `header.payload.signature` (Base64URL); o *secret* assina ele. Detalhe no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 - **Leitura de código-fonte.** Com `php://filter` dá pra baixar o **fonte** da aplicação em base64 (veja adiante). Código na mão = mapa de outras vulnerabilidades.
 
-  > 💡 **Base64**: forma de representar bytes só com letras/números (não é criptografia — qualquer um decodifica). Detalhe no [Glossário](/posts/fundamentos-web-hacking/).
+  > 💡 **Base64**: forma de representar bytes só com letras/números (não é criptografia — qualquer um decodifica). Detalhe no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 - **Vazamento de PII / arquivos de outros usuários.** Path traversal num endpoint de download pode ler arquivos de outros clientes (cruza com [IDOR — post 10](/posts/broken-access-control-idor-bola-bfla/)). (**PII** = dados pessoais identificáveis: nome, CPF, e-mail.)
 - **LFI → RCE.** O topo da cadeia. Quando você consegue fazer o servidor **executar** o que controla (log poisoning, wrappers), virou execução remota de comando — severidade **crítica**.
 

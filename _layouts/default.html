@@ -15,7 +15,7 @@ layout: compress
 
 
 <!-- `site.alt_lang` can specify a language different from the UI -->
-<html lang="{{ page.lang | default: site.alt_lang | default: site.lang }}" {{ prefer_mode }}>
+<html lang="{{ page.lang | default: site.alt_lang | default: site.lang }}" {{ prefer_mode }}{% if page.layout == 'projetos' %} class="page-projetos"{% endif %}>
 
   {% include head.html %}
 
@@ -37,8 +37,8 @@ layout: compress
     <span class="bar"></span>
   </div>
   <ul>
-    <li class="active"><a href="{{ site.baseurl }}" target="_parent">Acervo</a></li>
-    <li><a href="{{ site.baseurl }}/projetos" target="_parent">Projetos</a></li>
+    <li class="{% unless page.layout == 'projetos' %}active{% endunless %}"><a href="{{ site.baseurl }}" target="_parent">Acervo</a></li>
+    <li class="{% if page.layout == 'projetos' %}active{% endif %}"><a href="{{ site.baseurl }}/projetos" target="_parent">Projetos</a></li>
     <li><a href="https://matheuslaidler.github.io/cryptool/" target="_parent">Cryptool</a></li>
     <li class="has-sub">
     <a href="#" data-toggle="dropdown">Páginas</a>
@@ -138,5 +138,9 @@ layout: compress
     {% endif %}
 
     {% include_cached search-loader.html lang=lang %}
+
+    {% if page.layout == 'projetos' %}
+      <script src="{{ '/assets/js/projetos.js' | relative_url }}" defer></script>
+    {% endif %}
   </body>
 </html>

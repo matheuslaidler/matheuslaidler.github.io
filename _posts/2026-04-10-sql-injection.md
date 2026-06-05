@@ -57,7 +57,7 @@ SQLi é alto impacto por natureza, porque o banco é onde mora o que vale ouro:
 > 💡 **CVSS**: escala numérica de 0–10 pra severidade da falha (existem v3.1 e v4.0).
 {: .prompt-tip }
 
-Por isso costuma ser classificado como **Alto/Crítico** (veja [Severidade, Impacto e Triagem](/posts/severidade-impacto-triagem/) pra calibrar o CVSS). Em programas reais, um SQLi confirmado paga tipicamente de **R$1.000** (injeção em alvo de baixo valor, só leitura de metadados) a **R$20.000+** (dump de PII — dados pessoais como CPF, e-mail, cartão; mais no [Glossário](/posts/fundamentos-web-hacking/) — em escala ou RCE). Um SQLi UNION-based num produto exposto — tipo um painel de inventário desatualizado — fechando em algumas milhares de reais é um cenário bem comum.
+Por isso costuma ser classificado como **Alto/Crítico** (veja [Severidade, Impacto e Triagem](/posts/severidade-impacto-triagem/) pra calibrar o CVSS). Em programas reais, um SQLi confirmado paga tipicamente de **R$1.000** (injeção em alvo de baixo valor, só leitura de metadados) a **R$20.000+** (dump de PII — dados pessoais como CPF, e-mail, cartão; mais no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série) — em escala ou RCE). Um SQLi UNION-based num produto exposto — tipo um painel de inventário desatualizado — fechando em algumas milhares de reais é um cenário bem comum.
 
 > ⚠️ Antes de comemorar: **não rode `sqlmap` agressivo nem dê `DROP`/`DELETE` num alvo de produção.** SQLi mal conduzido corrompe dados de gente de verdade. Voltamos a isso na nota ética.
 
@@ -266,7 +266,7 @@ Quando nem a resposta muda visivelmente, o **tempo** vira seu canal. Você condi
 
 Resposta levou ~5s → o 1º caractere é `a`. Levou <1s → não é. Mesma lógica do boolean, só que medindo relógio em vez de comparar conteúdo.
 
-> 💡 **WAF**: firewall de aplicação web, um filtro que tenta barrar payloads maliciosos antes de chegarem ao app ([Glossário](/posts/fundamentos-web-hacking/)).
+> 💡 **WAF**: firewall de aplicação web, um filtro que tenta barrar payloads maliciosos antes de chegarem ao app ([Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)).
 >
 > Se `SLEEP` estiver bloqueado por WAF, o MySQL tem um plano B: `BENCHMARK(N, expr)` repete uma expressão `N` vezes pra **queimar CPU** e atrasar a resposta — ex.: `BENCHMARK(5000000, MD5('a'))`. Não é um atraso fixo como `SLEEP` (depende da CPU do alvo), mas dá o mesmo sinal de tempo.
 

@@ -18,7 +18,7 @@ Você leu sobre [recon](/posts/recon-discovery/), [Broken Access Control](/posts
 
 O objetivo não é decorar os comandos — é ver o **raciocínio**. Por que parei naquele subdomínio? Por que abandonei aquela pista? O que fez o sino tocar? Bug bounty não é rodar scanner; é **perceber padrões que os outros não percebem**. Vamos lá.
 
-> 💡 **Primitiva**: na gíria de segurança, uma "primitiva" é uma capacidade-base que o atacante ganha (ex.: "ler um arquivo", "fazer o servidor mandar uma request", "ler o objeto de outro usuário"). Você encadeia primitivas pra chegar no impacto. Detalhe no [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **Primitiva**: na gíria de segurança, uma "primitiva" é uma capacidade-base que o atacante ganha (ex.: "ler um arquivo", "fazer o servidor mandar uma request", "ler o objeto de outro usuário"). Você encadeia primitivas pra chegar no impacto. Detalhe no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 ---
 
@@ -48,7 +48,7 @@ Três coisas que eu já anoto na hora:
 2. **IDOR e business logic em pagamento "pagam bem"** → o programa está me dizendo onde olhar. Vou priorizar fluxos de dado sensível e dinheiro.
 3. **Rate limit de ~5 req/s** → preciso segurar a mão nas ferramentas (vou usar `-t` baixo no [ffuf](/posts/recon-discovery/) e no Intruder), senão tomo block — ou pior, derrubo algo e violo a regra de "no DoS".
 
-> 💡 **Escopo (in-scope / out-of-scope)**: a lista do que você **pode** e **não pode** testar num programa. Testar fora dela não paga e pode te expulsar — além de poder ser crime. [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **Escopo (in-scope / out-of-scope)**: a lista do que você **pode** e **não pode** testar num programa. Testar fora dela não paga e pode te expulsar — além de poder ser crime. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 > ⚠️ Existe programa que coloca **IDOR fora de escopo** e outro que paga ótimo nele. Ler isso **antes** evita gastar dias num bug que ninguém vai aceitar. A regra é simples: o escopo manda.
 
@@ -90,7 +90,7 @@ https://staging-app.exemplo.com[200] [App (staging)]      [nginx, React]   # <- 
 
 O olho treina pra parar em duas linhas: `staging-app` (ambiente de homologação, costuma ter menos camadas de proteção) e `reports` (relatórios = downloads = dado em massa = onde IDOR adora morar). Anotei as duas.
 
-> 💡 **Recon passivo vs. ativo**: passivo coleta de fontes de terceiros (não toca no alvo); ativo manda request direto. Comece sempre pelo passivo — é silencioso e não queima rate limit. [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **Recon passivo vs. ativo**: passivo coleta de fontes de terceiros (não toca no alvo); ativo manda request direto. Comece sempre pelo passivo — é silencioso e não queima rate limit. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 ### 1.2 — URLs históricas e arquivos JS (o tesouro)
 
@@ -124,7 +124,7 @@ Três achados num único arquivo:
 - `POST /v1/reports/download` com `{reportId}` no corpo → o clássico padrão de **download de relatório por ID** (campeão de token-swap; ver post [10](/posts/broken-access-control-idor-bola-bfla/)).
 - `/v1/admin/accounts/block` → uma rota de **admin** referenciada no JS que o cliente comum baixa. Candidata a **BFLA** (executar função de admin com perfil comum).
 
-> 💡 **Endpoint / rota**: um endereço específico que a aplicação atende (ex.: `/v1/billing/statement`). Mapear endpoints = mapear onde dá pra interagir com o sistema. [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **Endpoint / rota**: um endereço específico que a aplicação atende (ex.: `/v1/billing/statement`). Mapear endpoints = mapear onde dá pra interagir com o sistema. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 ### 1.3 — Logo de cara, autenticado
 

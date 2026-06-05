@@ -12,7 +12,7 @@ comments: true
 
 ## A falha que mais paga nasce no recon, não no payload
 
-Tem um mito de iniciante que diz que bug bounty é decorar payload. Não é. O caçador experiente sabe que **80% do resultado vem de onde quase ninguém olha**: aquele subdomínio esquecido de homologação, o endpoint de API que só aparece num arquivo JavaScript minificado, o `.env` que vazou num commit de três anos atrás. (Endpoint = um endereço/rota específico da aplicação que recebe requisições, tipo `/api/v1/users`. Mais no [Glossário](/posts/fundamentos-web-hacking/).) O payload é o último 20% — e ele só funciona se você **achou a porta certa primeiro**.
+Tem um mito de iniciante que diz que bug bounty é decorar payload. Não é. O caçador experiente sabe que **80% do resultado vem de onde quase ninguém olha**: aquele subdomínio esquecido de homologação, o endpoint de API que só aparece num arquivo JavaScript minificado, o `.env` que vazou num commit de três anos atrás. (Endpoint = um endereço/rota específico da aplicação que recebe requisições, tipo `/api/v1/users`. Mais no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).) O payload é o último 20% — e ele só funciona se você **achou a porta certa primeiro**.
 
 Existe um relato recorrente nesse mundo: o caçador que ganhou **cinco dígitos** num único bounty não usou nenhum exploit mirabolante. Ele integrou uma fonte de dados que poucos conheciam à sua ferramenta de enumeração de subdomínios, encontrou um host que **nenhuma outra ferramenta pegou**, mapeou um fluxo que a maioria ignorava e chegou num **Account Takeover**. Resumindo a lição dele: *"não precisa de exploit avançado, precisa saber onde olhar"*.
 
@@ -31,7 +31,7 @@ A primeira grande divisão que você precisa entender:
 | **Passivo** | Coleta dados de **fontes de terceiros** (Google, logs de certificado, arquivos web archive) | **Não** — você nunca manda pacote pro alvo | `crt.sh`, `gau`, `subfinder` (com APIs) |
 | **Ativo** | Manda requisições **direto pro alvo** pra confirmar, resolver e descobrir | **Sim** | `httpx`, `ffuf`, `katana`, brute-force de subdomínio |
 
-> 💡 **Por que a ordem importa:** sempre comece **passivo**. Ele é silencioso, não dispara WAF (*Web Application Firewall* — o "porteiro" que filtra tráfego malicioso e pode te bloquear; mais no [Glossário](/posts/fundamentos-web-hacking/)), não consome rate limit e te dá uma lista enorme de candidatos de graça. Só depois você parte pro **ativo** pra confirmar o que está vivo. Inverter a ordem é gastar ruído (e risco de block) com alvos que talvez nem existam.
+> 💡 **Por que a ordem importa:** sempre comece **passivo**. Ele é silencioso, não dispara WAF (*Web Application Firewall* — o "porteiro" que filtra tráfego malicioso e pode te bloquear; mais no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)), não consome rate limit e te dá uma lista enorme de candidatos de graça. Só depois você parte pro **ativo** pra confirmar o que está vivo. Inverter a ordem é gastar ruído (e risco de block) com alvos que talvez nem existam.
 
 ## Por que isso importa (e quanto paga)
 
@@ -240,7 +240,7 @@ Você acabou de descobrir o **padrão** `/internal/admin/<recurso>/<id>/<ação>
 
 Detalhe avançado do mesmo caso: nem sempre a rota responde de cara. No bug real, a rota identificada no JS **não retornava 200** no contexto normal — foi preciso um **bypass com o caractere `;`** numa parte específica do path pra acessá-la (técnica de path confusion que veremos em posts futuros). Lição: *não desista se um path não responde 200 de primeira; persista se a intuição apontar.*
 
-> ⚠️ **Cuidado com falso-positivo de segredo.** Achar uma "secret key" do Vue/React no JS **quase sempre não vale nada** — são variáveis públicas de build (`VUE_APP_*`), sitekeys de reCAPTCHA, public keys do Stripe (`pk_live_`...). O que importa é identificar um **token/credencial realmente sensível** (um `PERSONAL_ACCESS_TOKEN`, um JWT de serviço — token em 3 partes `header.payload.signature`; detalhe no [Glossário](/posts/fundamentos-web-hacking/)). Valide o que achou antes de comemorar.
+> ⚠️ **Cuidado com falso-positivo de segredo.** Achar uma "secret key" do Vue/React no JS **quase sempre não vale nada** — são variáveis públicas de build (`VUE_APP_*`), sitekeys de reCAPTCHA, public keys do Stripe (`pk_live_`...). O que importa é identificar um **token/credencial realmente sensível** (um `PERSONAL_ACCESS_TOKEN`, um JWT de serviço — token em 3 partes `header.payload.signature`; detalhe no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)). Valide o que achou antes de comemorar.
 
 ### Etapa 5 — Fuzzing de conteúdo e parâmetros
 
@@ -432,7 +432,7 @@ const OPS = "https://old-panel.alvo.com/internal/v1";
 fetch(`${OPS}/reports/${id}/export`);   // <- padrão: /internal/v1/<recurso>/<id>/<ação>
 ```
 
-**Passo 4 — Validar.** O endpoint de export, por analogia ao padrão, aceita requisição sem o cookie de admin (falha de autorização). Confirmo no Burp Repeater que `GET /internal/v1/reports/1001/export` devolve um relatório com PII (*Personally Identifiable Information* — dados pessoais como nome, CPF, e-mail; mais no [Glossário](/posts/fundamentos-web-hacking/)). **A partir daqui vira um caso de Broken Access Control** — veja [Broken Access Control: IDOR, BOLA e BFLA](/posts/broken-access-control-idor-bola-bfla/).
+**Passo 4 — Validar.** O endpoint de export, por analogia ao padrão, aceita requisição sem o cookie de admin (falha de autorização). Confirmo no Burp Repeater que `GET /internal/v1/reports/1001/export` devolve um relatório com PII (*Personally Identifiable Information* — dados pessoais como nome, CPF, e-mail; mais no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)). **A partir daqui vira um caso de Broken Access Control** — veja [Broken Access Control: IDOR, BOLA e BFLA](/posts/broken-access-control-idor-bola-bfla/).
 
 **O que a tela mostraria:** o terminal do httpx com o `old-panel` destacado em `401`; o Burp Repeater com a request `/internal/v1/reports/1001/export` à esquerda e, à direita, um `200 OK` devolvendo JSON com dados que não deveriam ser acessíveis sem privilégio.
 

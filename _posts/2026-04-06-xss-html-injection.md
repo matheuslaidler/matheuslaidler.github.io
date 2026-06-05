@@ -110,7 +110,7 @@ document.getElementById('saudacao').innerHTML = 'Olá, ' + nome;  // sink: inner
 
 Abrindo `?nome=<img src=x onerror=alert(document.domain)>`, o `innerHTML` interpreta a tag e o `onerror` dispara. Repare: **o payload pode nem chegar ao servidor** se você usar o fragmento (`#`), porque o que vem depois do `#` não é enviado na request HTTP — só o navegador vê. Por isso DOM XSS muitas vezes passa batido por WAF e por log de servidor.
 
-> 💡 **WAF** (Web Application Firewall): filtro na frente da aplicação que tenta barrar requisições maliciosas por padrões/assinaturas. Detalhe no [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **WAF** (Web Application Firewall): filtro na frente da aplicação que tenta barrar requisições maliciosas por padrões/assinaturas. Detalhe no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 Segundo o [OWASP DOM-based XSS Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html), os **sinks** mais perigosos são:
 

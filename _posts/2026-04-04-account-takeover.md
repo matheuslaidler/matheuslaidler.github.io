@@ -53,7 +53,7 @@ Quase todo ATO mora em um destes quatro pontos do ciclo de vida da identidade:
 2. **Emissão de token** — login, **refresh token**, troca de token. Se a aplicação emite um token de sessão a partir de um dado controlável (e-mail/token de outra conta), dá ATO.
 3. **Validação de token** — **JWT**. Se a assinatura não é verificada de verdade (alg=none, segredo fraco, confusão de algoritmo), você forja um token de quem quiser.
 
-> 💡 **JWT**: token em 3 partes `header.payload.signature` (Base64URL — só formato, não criptografia, qualquer um lê). A `signature` é o que impede edição. Anatomia completa no Vetor 3; base no [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **JWT**: token em 3 partes `header.payload.signature` (Base64URL — só formato, não criptografia, qualquer um lê). A `signature` é o que impede edição. Anatomia completa no Vetor 3; base no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 4. **Federação/segundo fator** — **OAuth** e **2FA/OTP**. Se o `state` falta, se o `redirect_uri` vaza o código, se o OTP não tem rate limit ou a validação é client-side, você contorna o fator extra.
 

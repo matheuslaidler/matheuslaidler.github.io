@@ -26,7 +26,7 @@ O:4:"User":2:{s:4:"name";s:5:"alice";s:4:"role";s:4:"user";}
 
 Isso não é JSON, não é XML. É um **objeto PHP serializado** — e o servidor vai pegar esse texto e **reconstruir um objeto a partir dele**. Se ele faz isso sem desconfiar do que veio do cliente, você acabou de encontrar a porta de entrada para uma das falhas mais brutais da web: **Insecure Deserialization** (deserialização insegura). No melhor cenário, dá pra mexer no `role` e virar admin. No pior — e mais comum do que parece —, dá pra chegar a **RCE**: rodar comando no servidor.
 
-> 💡 **RCE (Remote Code Execution)**: a falha mais grave da web — o atacante executa código/comandos arbitrários no servidor da vítima (ler arquivos, abrir shell, pivotar). Saiba mais no [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **RCE (Remote Code Execution)**: a falha mais grave da web — o atacante executa código/comandos arbitrários no servidor da vítima (ler arquivos, abrir shell, pivotar). Saiba mais no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 Deserialização insegura era uma categoria própria no OWASP Top 10 de 2017 (**A8:2017 — Insecure Deserialization**) e, na edição de 2021, foi absorvida pela categoria mais ampla **A08:2021 — Software and Data Integrity Failures** do [OWASP Top 10](https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/) (CWE relacionada: **CWE-502 — Deserialization of Untrusted Data**). Não aparece em todo alvo — depende da tecnologia —, mas quando aparece, costuma ser **crítica** e pagar muito bem. Quando a deserialização leva a RCE não-autenticada, o score reflete isso: **CVSS v3.1 ≈ 9.8** (`AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H`) e o equivalente **CVSS v4.0 ≈ 9.3** (`AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N`) — *Critical* nas duas versões. Neste post a gente vai do "o que diabos é serializar" até montar uma **gadget chain** que chega a RCE, linguagem por linguagem, com as ferramentas que o mercado usa de verdade.
 
@@ -413,7 +413,7 @@ RCE é o tipo de falha em que um passo em falso vira incidente real. Tudo aqui �
 - [CVE-2017-5941 — node-serialize RCE](https://nvd.nist.gov/vuln/detail/CVE-2017-5941)
 
 ---
-*Relacionado na série: [RCE: Command Injection, SSTI e Upload](/posts/rce-command-injection-ssti/) · [SSRF](/posts/ssrf/) · [LFI / Path Traversal](/posts/lfi-path-traversal/) · [Chaining de Vulnerabilidades](/posts/chaining-vulnerabilidades/) · [Broken Access Control (IDOR/BOLA/BFLA)](/posts/broken-access-control-idor-bola-bfla/) · base: [Recon & Discovery](/posts/recon-discovery/) · [Glossário](/posts/fundamentos-web-hacking/)*
+*Relacionado na série: [RCE: Command Injection, SSTI e Upload](/posts/rce-command-injection-ssti/) · [SSRF](/posts/ssrf/) · [LFI / Path Traversal](/posts/lfi-path-traversal/) · [Chaining de Vulnerabilidades](/posts/chaining-vulnerabilidades/) · [Broken Access Control (IDOR/BOLA/BFLA)](/posts/broken-access-control-idor-bola-bfla/) · base: [Recon & Discovery](/posts/recon-discovery/) · [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)*
 
 ---
 

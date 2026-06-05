@@ -12,7 +12,7 @@ comments: true
 
 ## O mesmo bug, dois bounties diferentes
 
-> 💡 **IDOR** (e **PII**): IDOR é trocar um identificador na request (`?id=1001` → `?id=1002`) e acessar dado que não é seu; PII são dados pessoais (CPF, cartão, telefone). Detalhe no [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **IDOR** (e **PII**): IDOR é trocar um identificador na request (`?id=1001` → `?id=1002`) e acessar dado que não é seu; PII são dados pessoais (CPF, cartão, telefone). Detalhe no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 Dois caçadores acham o **mesmo** IDOR no mesmo programa. O primeiro escreve: *"dá pra trocar o `id` e ver o perfil de outro usuário"*. Recebe **R$500** e um "obrigado". O segundo escreve: *"qualquer usuário autenticado lê nome, CPF e telefone de **todos** os clientes; enumerei 2.000 contas em 4 minutos — vazamento de PII em massa, violação de LGPD"*, anexa o vetor `CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N` (6.5, Medium) com a justificativa de subir pra High pela escala, e cita a [CWE-639](https://cwe.mitre.org/data/definitions/639.html). Recebe **R$5.000**.
 

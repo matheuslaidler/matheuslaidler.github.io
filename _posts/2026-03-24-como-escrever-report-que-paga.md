@@ -14,7 +14,7 @@ comments: true
 
 Você passou a madrugada no Burp, trocou um `id`, viu a fatura de outro cliente aparecer na tela e o coração disparou: **IDOR confirmado**. Aí você abre a plataforma, escreve três linhas — *"dá pra ver dados de outro usuário trocando o id"* — anexa um print borrado e manda. Duas semanas depois volta um `Need More Info` ou, pior, um `Informative`. Zero bounty.
 
-> 💡 **IDOR**: falha de autorização em que você troca um identificador (ex.: `id`) e acessa o objeto de outro usuário. Detalhe no [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **IDOR**: falha de autorização em que você troca um identificador (ex.: `id`) e acessa o objeto de outro usuário. Detalhe no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 Acontece o tempo todo. O bug era real, mas o **report** não estava. Bug bounty é um jogo de comunicação tanto quanto de técnica: do outro lado tem um **triador** que recebe dezenas de reports por dia, não conhece a sua aplicação tão bem quanto o time de produto, e precisa **reproduzir, validar e classificar** o seu achado no menor tempo possível. Se ele não conseguir reproduzir em poucos minutos, ou não entender o impacto no negócio, o seu report perde prioridade — ou cai pra `Informative`.
 
@@ -35,7 +35,7 @@ A própria [HackerOne descreve um report de qualidade](https://docs.hackerone.co
 Não é só sobre "ser aceito" — a qualidade do report mexe direto no bolso:
 
 - **Triagem mais rápida = menos chance de duplicado.** Em programas movimentados, o primeiro report **válido e reproduzível** de um bug leva o bounty; os seguintes viram `Duplicate`. Um report confuso fica parado em `Need More Info` enquanto outro pesquisador manda o mesmo bug bem-feito e leva a grana.
-- **Impacto bem demonstrado puxa a severidade pra cima.** O mesmo IDOR pode ser classificado como `Médio` ("dá pra ver um dado de outro usuário") ou `Crítico` ("vaza PII de toda a base, violando a LGPD"). *(PII = dado pessoal identificável: nome, CPF, e-mail, telefone — ver [Glossário](/posts/fundamentos-web-hacking/).)* A diferença entre esses dois é **quase só o report** — quem mostra escala e nomeia o dado sensível recebe a faixa de cima.
+- **Impacto bem demonstrado puxa a severidade pra cima.** O mesmo IDOR pode ser classificado como `Médio` ("dá pra ver um dado de outro usuário") ou `Crítico` ("vaza PII de toda a base, violando a LGPD"). *(PII = dado pessoal identificável: nome, CPF, e-mail, telefone — ver [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).)* A diferença entre esses dois é **quase só o report** — quem mostra escala e nomeia o dado sensível recebe a faixa de cima.
 - **Boa reputação destrava convites privados.** Reports limpos elevam seu *signal* na plataforma; signal alto traz convites pra programas privados, que pagam mais e têm menos concorrência.
 
 Na prática, falhas como IDOR/Broken Access Control pagam de algumas **centenas** (impacto baixo, dado pouco sensível) a **dezenas de milhares** (PII em escala, ação crítica). E aqui vai a regra de ouro do dinheiro:
@@ -74,7 +74,7 @@ Exemplos:
 [SQLi] - Injeção time-based no parâmetro `search` do /api/v1/produtos
 ```
 
-- **Classe entre colchetes**: IDOR, XSS, SSRF, RCE, BFLA... ajuda o triador a rotear. *(BFLA = abuso de função restrita — ex.: usuário comum executa ação de admin; ver [Glossário](/posts/fundamentos-web-hacking/).)*
+- **Classe entre colchetes**: IDOR, XSS, SSRF, RCE, BFLA... ajuda o triador a rotear. *(BFLA = abuso de função restrita — ex.: usuário comum executa ação de admin; ver [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).)*
 - **Concreto, não genérico**: "Exposição de faturas (PII)" é melhor que "Falha de segurança grave". O [guia da Bugcrowd](https://www.bugcrowd.com/resources/levelup/how-to-write-excellent-reports-techniques-that-save-triagers-time-and-mistakes-that-should-be-avoided-in-reports/) pede título **descritivo e conciso**, identificando tipo, local e impacto.
 
 ### 2. Resumo — o risco **para o negócio** (não a parte técnica)

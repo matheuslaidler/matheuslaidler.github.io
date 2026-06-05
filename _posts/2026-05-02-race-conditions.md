@@ -38,7 +38,7 @@ O impacto é quase sempre **financeiro e direto**, o que faz o programa entender
 - **Estados inconsistentes:** transferir o mesmo dinheiro pra duas contas, confirmar um pedido duas vezes, criar dois recursos que deviam ser únicos.
 - **Bypass de segurança em sub-estados:** janelas onde a sessão já existe mas o 2FA ainda não foi marcado como obrigatório (falaremos disso adiante).
 
-> 💡 **2FA/MFA**: autenticação de dois/múltiplos fatores — além da senha, exige um segundo fator (código, app, SMS). Mais no [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **2FA/MFA**: autenticação de dois/múltiplos fatores — além da senha, exige um segundo fator (código, app, SMS). Mais no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 A faixa de bounty varia muito com o **impacto provado**: um race em algo cosmético (avaliar uma vez a mais) costuma ser **Low** e paga de **R$200 a R$500**; um race que deixa **sacar/transferir dinheiro além do saldo** ou **multiplicar crédito** salta pra **High/Critical** e pode pagar **vários milhares de reais**. O que muda o número é sempre: *dá pra transformar isso em dinheiro ou em dano real, e em que escala?*
 
@@ -79,7 +79,7 @@ Req B:        SELECT (usado=0? sim) ── aplicaDesconto ── UPDATE usado=1
 
 As duas leram `usado = 0` **na mesma janela**, as duas aplicaram o desconto, e só então as duas escreveram `usado = 1`. O `UPDATE` final nem reclama — ele só seta `1` duas vezes. O dano já foi feito **entre o SELECT e o UPDATE**.
 
-Do lado de fora (atacante), o que você faz é simplesmente disparar várias requisições idênticas **o mais simultâneas possível** (o header `Authorization: Bearer <token>` é a sua credencial de sessão que prova quem você é — ver [Glossário](/posts/fundamentos-web-hacking/)):
+Do lado de fora (atacante), o que você faz é simplesmente disparar várias requisições idênticas **o mais simultâneas possível** (o header `Authorization: Bearer <token>` é a sua credencial de sessão que prova quem você é — ver [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)):
 
 ```http
 POST /api/cupom/resgatar HTTP/2
@@ -106,14 +106,14 @@ A grande sacada da pesquisa moderna (Kettle, *Smashing the State Machine*, Black
 
 ## Recon — como encontrar candidatos
 
-Antes de atirar requests em paralelo, você **prediz** onde pode haver colisão. A metodologia oficial do PortSwigger é **Predict → Probe → Prove** (prever, sondar, provar). Procure endpoints (cada URL/rota da API que recebe uma requisição — detalhe no [Glossário](/posts/fundamentos-web-hacking/)) que:
+Antes de atirar requests em paralelo, você **prediz** onde pode haver colisão. A metodologia oficial do PortSwigger é **Predict → Probe → Prove** (prever, sondar, provar). Procure endpoints (cada URL/rota da API que recebe uma requisição — detalhe no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)) que:
 
 - **Operam sobre o mesmo registro** com "uma vez só" embutido: resgate de cupom, aplicar voucher, votar, avaliar, "curtir", confirmar pagamento, sacar, transferir, resgatar pontos.
 - **Têm um limite numérico** que decrementa: saldo, estoque, quantidade de usos, créditos.
 - **Têm regra de unicidade de negócio:** "1 por CPF", "1 cadastro por e-mail", "só pode aplicar 1 cupom".
 - **Fluxos de conta sensíveis:** confirmar e-mail, habilitar/exigir 2FA, trocar senha — onde existem estados intermediários.
 
-Sinais no tráfego (olhe no proxy do Burp — o intermediário que intercepta e mostra cada request; ver [Glossário](/posts/fundamentos-web-hacking/)):
+Sinais no tráfego (olhe no proxy do Burp — o intermediário que intercepta e mostra cada request; ver [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)):
 
 ```text
 # parâmetros e paths que cheiram a "ação única / limite"

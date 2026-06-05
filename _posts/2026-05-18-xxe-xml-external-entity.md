@@ -535,7 +535,7 @@ Tudo aqui é pra **testes autorizados**: bug bounty dentro do escopo, pentests c
 - [OWASP Top 10 — A05:2021 Security Misconfiguration](https://owasp.org/Top10/A05_2021-Security_Misconfiguration/)
 
 ---
-*Relacionado na série: [SSRF](/posts/ssrf/) · [LFI / Path Traversal](/posts/lfi-path-traversal/) · [XSS & HTML Injection](/posts/xss-html-injection/) · [API Security](/posts/api-security/) · [Denial of Service de aplicação](/posts/denial-of-service-aplicacao/) · base: [Fundamentos / Glossário](/posts/fundamentos-web-hacking/) · [Recon & Discovery](/posts/recon-discovery/)*
+*Relacionado na série: [SSRF](/posts/ssrf/) · [LFI / Path Traversal](/posts/lfi-path-traversal/) · [XSS & HTML Injection](/posts/xss-html-injection/) · [API Security](/posts/api-security/) · [Denial of Service de aplicação](/posts/denial-of-service-aplicacao/) · base: [Fundamentos / Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série) · [Recon & Discovery](/posts/recon-discovery/)*
 
 ---
 

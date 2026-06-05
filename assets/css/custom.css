@@ -859,21 +859,26 @@ html[data-mode='dark'] ::-webkit-scrollbar-thumb:hover {
 /*     (menu superior #cssmenu permanece; só no desktop ≥850px, onde sidebar/   */
 /*      painel ocupam espaço — no mobile nada muda, o painel continua visível). */
 @media all and (min-width: 850px) {
-  html.reading-mode #sidebar {
+  html.reading-mode #sidebar,
+  html.page-projetos #sidebar {
     transform: translateX(-100%);
   }
 
-  html.reading-mode #main-wrapper {
+  html.reading-mode #main-wrapper,
+  html.page-projetos #main-wrapper {
     margin-left: 0 !important;
   }
 
-  html.reading-mode #panel-wrapper {
+  html.reading-mode #panel-wrapper,
+  html.page-projetos #panel-wrapper {
     display: none !important;
   }
 
-  /* Conteúdo (post + comentários) ocupa a largura total do container */
+  /* Conteúdo ocupa a largura total do container (modo leitura OU página de projetos) */
   html.reading-mode #main-wrapper main,
-  html.reading-mode #main-wrapper #tail-wrapper {
+  html.reading-mode #main-wrapper #tail-wrapper,
+  html.page-projetos #main-wrapper main,
+  html.page-projetos #main-wrapper #tail-wrapper {
     flex: 0 0 100%;
     width: 100%;
     max-width: 100%;
@@ -1043,6 +1048,48 @@ html[data-mode='light'] .support-note a { color: #009db2; }
    No MODO LEITURA (conteúdo full-width) ela ficava enorme -> limita e centraliza: "um pouco maior que o normal", sem exagero. */
 html.reading-mode .preview-img {
   max-width: 820px;
+}
+
+/* ===== PÁGINA /projetos: sempre tela cheia, sem breadcrumb/ícone; busca filtra projetos ===== */
+html.page-projetos #breadcrumb,
+html.page-projetos #reading-mode-trigger,
+html.page-projetos #sidebar-trigger {
+  display: none !important;           /* sem "Home > ...", sem botão fullscreen, sem abrir a sidebar (inclusive mobile) */
+}
+html.page-projetos #search-result-wrapper {
+  display: none !important;           /* a busca filtra os cards de projeto, não mostra resultados de POSTS */
+}
+html.page-projetos #topbar search {
+  margin-left: auto;                  /* search alinhado à direita (não há breadcrumb) */
+}
+
+.projetos-head { margin-bottom: 1.4rem; }
+.projetos-head .projetos-title { margin-bottom: 0.2rem; }
+.projetos-donate {
+  margin-top: 3rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid rgba(115, 255, 232, 0.15);
+}
+.projetos-donate h2 { font-size: 1.3rem; margin-bottom: 0.3rem; }
+
+/* cards de projeto: compacto e alinhado (preview do GitHub é 2:1, fundo claro) */
+#projetos-list .post-preview img { max-height: 190px; object-fit: cover; width: 100%; }
+#projetos-list .card-title { font-size: 1.25rem; }
+#projetos-list .card-text.content { display: block; }
+#projetos-list .card-text.content p { color: var(--text-muted-color); margin: 0; }
+@media (max-width: 849px) {
+  html.page-projetos .projetos-title { display: none; }  /* mobile já mostra "Projetos" no topbar */
+}
+
+/* logo do menu NÃO deve ter o efeito de hover dos botões */
+#cssmenu td a,
+#cssmenu td a:hover,
+#cssmenu td a:focus,
+#cssmenu .logotipo,
+#cssmenu .logotipo:hover {
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 /* ===== CARDS "LEIA MAIS" (related-posts): capa + hover revelando título/descrição ===== */

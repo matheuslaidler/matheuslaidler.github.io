@@ -18,7 +18,7 @@ Isso é **Subdomain Takeover**: um registro de DNS "pendurado" (*dangling*) que 
 
 Os dois exploram a mesma falha humana: **alguém criou uma referência pra um recurso externo e nunca a removeu quando o recurso morreu.** Neste post a gente vai do "o que é DNS dangling" até provar um takeover de verdade com uma PoC segura, passando por recon, fingerprinting e defesa. Sem saltos.
 
-> 💡 **PoC** (*Proof of Concept*): a prova mínima de que a falha existe — aqui, servir uma página inofensiva sob o domínio da vítima. Detalhe no [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **PoC** (*Proof of Concept*): a prova mínima de que a falha existe — aqui, servir uma página inofensiva sob o domínio da vítima. Detalhe no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 ## O que é (e a diferença entre os dois)
 
@@ -44,7 +44,7 @@ O estrago vem de uma coisa só: **confiança herdada**. O navegador, o cookie e 
 
 - **Servir conteúdo arbitrário sob o domínio legítimo:** HTML/JS controlado por você sendo entregue por `promo.alvo.com`. Defacement (desfiguração da página oficial), phishing convincente ("é o domínio real da empresa, deve ser seguro").
 - **Roubo de cookie / sessão:** se a aplicação setou cookies com `Domain=.alvo.com` (escopo de domínio inteiro, não de host), o subdomínio sequestrado **lê esses cookies**. Daí pode sair ATO (*Account Takeover*, sequestro de conta). (Falamos de roubo de sessão no post [Account Takeover](/posts/account-takeover/).)
-- **Bypass de listas de origem confiáveis:** CORS e CSP (regras do navegador que dizem quais origens podem ler dados ou carregar scripts — ex.: `script-src *.alvo.com`), allowlists de redirect — tudo que confia em "qualquer subdomínio nosso" passa a confiar **em você**. (Mais no [Glossário](/posts/fundamentos-web-hacking/).)
+- **Bypass de listas de origem confiáveis:** CORS e CSP (regras do navegador que dizem quais origens podem ler dados ou carregar scripts — ex.: `script-src *.alvo.com`), allowlists de redirect — tudo que confia em "qualquer subdomínio nosso" passa a confiar **em você**. (Mais no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).)
 - **BLH:** se passar pela marca em redes sociais, capturar tráfego de quem clica em links oficiais antigos, phishing direcionado.
 
 Em programas reais, essa família costuma pagar de **algumas centenas** (takeover sem dado sensível, classificado como informativo/baixo) a **alguns milhares de reais** (subdomínio usado em fluxo de auth, cookies de escopo de domínio, marca grande). Faixa típica: **R$500 a R$5.000**, dependendo do impacto que você **demonstrar**.

@@ -14,7 +14,7 @@ comments: true
 
 O HTTP parece simples: você manda um texto, o servidor responde outro texto. Mas é justamente nessa simplicidade que mora o perigo. O protocolo é **delimitado por caracteres invisíveis** — uma quebra de linha aqui, uma sequência de bytes ali — e cada servidor, proxy, CDN e load balancer no caminho **interpreta esses delimitadores do seu jeito**. Quando dois deles discordam sobre "onde termina um header" ou "onde termina uma request", o atacante entra no meio e brinca de mestre de marionetes.
 
-> 💡 **Proxy / CDN / load balancer**: intermediários que ficam entre você e o servidor de aplicação — recebem sua request, talvez filtram/cacheiam, e repassam pra trás (o "front-end" do post). Detalhe de proxy no [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **Proxy / CDN / load balancer**: intermediários que ficam entre você e o servidor de aplicação — recebem sua request, talvez filtram/cacheiam, e repassam pra trás (o "front-end" do post). Detalhe de proxy no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 Este post junta dois bugs que parecem distintos mas têm a **mesma raiz**: abusar de como o HTTP é parseado.
 
@@ -381,7 +381,7 @@ A causa é **ambiguidade entre servidores**. As defesas:
    #  "reject ambiguous requests" — habilite-a)
    ```
 
-   > 💡 **WAF**: Web Application Firewall — filtro que inspeciona requests e bloqueia padrões maliciosos antes de chegarem na aplicação. Detalhe no [Glossário](/posts/fundamentos-web-hacking/).
+   > 💡 **WAF**: Web Application Firewall — filtro que inspeciona requests e bloqueia padrões maliciosos antes de chegarem na aplicação. Detalhe no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 3. **Front-end e back-end com o MESMO servidor/regra.** Quanto mais homogêneo o stack, menor a chance de desync. Mantenha proxies e servidores **atualizados** (muitas correções de desync vêm em patches).
 4. **Desabilitar reuso de conexão back-end** mitiga (não elimina) alguns ataques, com custo de performance.

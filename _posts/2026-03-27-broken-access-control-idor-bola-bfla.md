@@ -44,7 +44,7 @@ Resumindo a diferença que mais confunde:
 
 O impacto é direto e fácil de explicar pro programa — por isso paga bem:
 
-- **Vazamento de PII em massa** (PII = dado pessoal identificável: nome, CPF, e-mail, endereço — [Glossário](/posts/fundamentos-web-hacking/)): enumerar IDs sequenciais e baixar dados de **todos** os clientes (nome, CPF, endereço, faturas).
+- **Vazamento de PII em massa** (PII = dado pessoal identificável: nome, CPF, e-mail, endereço — [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)): enumerar IDs sequenciais e baixar dados de **todos** os clientes (nome, CPF, endereço, faturas).
 - **Account Takeover (ATO)**: trocar um identificador num fluxo de reset/refresh de senha e assumir a conta de qualquer um.
 - **Ações privilegiadas**: um cliente comum bloqueando/alterando recursos que só o admin deveria mexer (BFLA).
 
@@ -72,7 +72,7 @@ return json($pedido);   // entrega pra qualquer um autenticado
 
 O servidor sabe que você é o Usuário B (token válido), mas entrega o pedido `1001` mesmo que ele seja do Usuário A. **Faltou a checagem de propriedade** (`WHERE id = ? AND dono_id = usuario_logado`).
 
-> 💡 **Token / `Authorization: Bearer`**: a credencial que prova quem você é em cada request (sem ele, você não está "logado"). Costuma ser um **JWT** (`header.payload.signature` em Base64URL). Detalhe no [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **Token / `Authorization: Bearer`**: a credencial que prova quem você é em cada request (sem ele, você não está "logado"). Costuma ser um **JWT** (`header.payload.signature` em Base64URL). Detalhe no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 ## Tipos e variações
 

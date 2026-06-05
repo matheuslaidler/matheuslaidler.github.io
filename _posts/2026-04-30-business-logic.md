@@ -42,7 +42,7 @@ Agora me diz: qual payload detecta que **"quantidade negativa gera crédito"**? 
 
 Tradução pra bolso: **menos competição**. A galera roda scanner e reporta o que ele cospe. Quem senta, entende o fluxo e percebe a suposição quebrada acha bug que mais ninguém viu. Em programas reais, falhas de lógica pagam de **algumas centenas de reais/euros** (um bypass de limite de baixo impacto — faixa de **€150–€300** numa plataforma europeia, ou **~$500** num bypass de regra de negócio Médio) até **R$5.000+** quando a lógica quebrada toca dinheiro, autenticação ou PII em escala (um *account takeover* via falha de fluxo, por exemplo, cai nessa faixa alta). A variação é enorme justamente porque **o preço acompanha o impacto concreto**, não a "técnica" — voltamos nisso no [CVSS do caso prático](#caso-real-fictício-cupom-que-empilha--preço-no-corpo).
 
-> 💡 **PII**: dados pessoais identificáveis (nome, CPF, e-mail, etc.). Detalhe no [Glossário](/posts/fundamentos-web-hacking/).
+> 💡 **PII**: dados pessoais identificáveis (nome, CPF, e-mail, etc.). Detalhe no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 > ⚠️ **O estado do ativo mexe no bolso (lição de triagem).** Uma falha de lógica aceita como **Alto** numa funcionalidade que estava **fora de produção** (que seria só descontinuada) pode pagar a pontuação do Alto **sem nenhum bônus** — enquanto o mesmo Alto num fluxo *em produção* renderia mais. A severidade técnica não muda; a **recompensa** sim. Antes de queimar horas num fluxo, confirme que ele está **vivo e em produção**. (Mais sobre precificar achado no [post 02 — Severidade, Impacto e Triagem](/posts/severidade-impacto-triagem/).)
 

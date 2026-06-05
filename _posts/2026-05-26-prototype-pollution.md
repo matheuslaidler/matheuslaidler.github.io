@@ -442,7 +442,7 @@ Prototype pollution server-side **altera o processo inteiro** e pode derrubar o 
 - [GitHub Advisory — Prototype Pollution in lodash (CVE-2019-10744)](https://github.com/advisories/GHSA-jf85-cpcp-j695)
 
 ---
-*Relacionado na série: [XSS e HTML Injection](/posts/xss-html-injection/) · [RCE: Command Injection, SSTI e Upload](/posts/rce-command-injection-ssti/) · [Chaining de Vulnerabilidades](/posts/chaining-vulnerabilidades/) · [Segurança de APIs](/posts/api-security/) · [Fundamentos & Glossário](/posts/fundamentos-web-hacking/)*
+*Relacionado na série: [XSS e HTML Injection](/posts/xss-html-injection/) · [RCE: Command Injection, SSTI e Upload](/posts/rce-command-injection-ssti/) · [Chaining de Vulnerabilidades](/posts/chaining-vulnerabilidades/) · [Segurança de APIs](/posts/api-security/) · [Fundamentos & Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)*
 
 ---
 

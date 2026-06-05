@@ -18,9 +18,9 @@ Tem gente que olha pra um programa de bug bounty com escopo mobile (um `*.apk`, 
 
 Um app de banco, de delivery ou de rede social é, na prática, um **cliente bonito** que conversa com uma API REST/GraphQL. Quando você consegue colocar o **Burp no meio** dessa conversa, o "alvo mobile" vira o **mesmo alvo web** que você já ataca nos posts [10](/posts/broken-access-control-idor-bola-bfla/), [12](/posts/account-takeover/) e [20](/posts/business-logic/): IDOR, BFLA, business logic, tudo. O que muda é (1) **como interceptar** esse tráfego (o app não tem uma barra de URL, e muitas vezes usa **pinning** pra te bloquear) e (2) um conjunto de falhas **específicas do device** (segredos no APK, armazenamento inseguro, deeplink inseguro, WebView perigosa).
 
-> 💡 **IDOR / BOLA**: você troca o ID de um recurso na request (ex.: `accountId=1001`→`1002`) e acessa o dado de **outro usuário** porque o servidor não checa se aquilo é seu. **BFLA**: você chama uma **função/endpoint que não devia** (ex.: rota de admin) com seu token comum, e o servidor deixa. ([Glossário](/posts/fundamentos-web-hacking/))
+> 💡 **IDOR / BOLA**: você troca o ID de um recurso na request (ex.: `accountId=1001`→`1002`) e acessa o dado de **outro usuário** porque o servidor não checa se aquilo é seu. **BFLA**: você chama uma **função/endpoint que não devia** (ex.: rota de admin) com seu token comum, e o servidor deixa. ([Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série))
 
-> 💡 **Pinning** (SSL/certificate pinning): o app só confia num certificado específico, "fixado" no código — por isso o certificado do Burp não cola e a interceptação quebra. Vamos derrubar isso já já. [Glossário](/posts/fundamentos-web-hacking/)
+> 💡 **Pinning** (SSL/certificate pinning): o app só confia num certificado específico, "fixado" no código — por isso o certificado do Burp não cola e a interceptação quebra. Vamos derrubar isso já já. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)
 
 Este post cobre **do básico ao avançado**: setup completo, panorama OWASP (Mobile Top 10 + MASVS), os achados que mais aparecem, e o **pulo do gato** de levar o tráfego interceptado pro seu arsenal web.
 
@@ -60,7 +60,7 @@ Você precisa de um **Android controlável**:
 - **Emulador** — o jeito mais fácil é um **AVD (Android Virtual Device)** do Android Studio. **Dica de ouro:** crie uma imagem **"Google APIs" e NÃO "Google Play"** — as imagens *sem* Play Store vêm **rootadas** (você consegue `adb root`), o que facilita instalar o certificado como CA de sistema e rodar o `frida-server`.
 - **Dispositivo físico rootado** — mais realista (alguns apps detectam emulador), mas requer root (Magisk).
 
-> 💡 **`adb`** (Android Debug Bridge): a ferramenta de linha de comando que conecta seu PC ao device/emulador (instalar apps, mexer em arquivos, abrir shell). Vem no Android SDK Platform Tools. [Glossário](/posts/fundamentos-web-hacking/)
+> 💡 **`adb`** (Android Debug Bridge): a ferramenta de linha de comando que conecta seu PC ao device/emulador (instalar apps, mexer em arquivos, abrir shell). Vem no Android SDK Platform Tools. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)
 
 Confirme que o device aparece:
 
@@ -82,7 +82,7 @@ Pronto: **o tráfego HTTP já cai no Burp**. O **HTTPS**, porém, vai dar erro d
 
 ### Passo 2 — Instalar o certificado CA do Burp no Android
 
-> 💡 **CA (Certificate Authority)**: a "autoridade" em quem o sistema confia pra assinar certificados HTTPS. O Burp gera o seu próprio CA; pro app aceitar o HTTPS interceptado, o Android precisa **confiar nesse CA**. [Glossário](/posts/fundamentos-web-hacking/)
+> 💡 **CA (Certificate Authority)**: a "autoridade" em quem o sistema confia pra assinar certificados HTTPS. O Burp gera o seu próprio CA; pro app aceitar o HTTPS interceptado, o Android precisa **confiar nesse CA**. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)
 
 Exporte o CA do Burp em **formato DER**: Proxy → Proxy settings → *Import / export CA certificate* → *Certificate in DER format* → salve como `cacert.der`.
 
@@ -97,7 +97,7 @@ Existem dois "níveis" de CA:
 
 **Por que isso acontece?** Existe um arquivo opcional, o **`network_security_config`** (XML no `res/xml/`, referenciado no `AndroidManifest.xml`), onde o dev declara em quais CAs o app confia. Sem ele, o padrão do Android 7+ é: *só `system`*. Por isso, pra interceptar a maioria dos apps, você precisa instalar o CA do Burp como **CA de sistema** (num device/emulador rootado).
 
-> 💡 **`network_security_config`**: o XML onde o app declara política de rede/TLS (quais CAs confiar, se permite cleartext, se faz pinning). Ler esse arquivo já te diz se o app vai dar trabalho. [Glossário](/posts/fundamentos-web-hacking/)
+> 💡 **`network_security_config`**: o XML onde o app declara política de rede/TLS (quais CAs confiar, se permite cleartext, se faz pinning). Ler esse arquivo já te diz se o app vai dar trabalho. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)
 
 **Instalando como System CA (emulador rootado):**
 
@@ -127,7 +127,7 @@ Mesmo com o CA de sistema instalado, alguns apps **se recusam** a falar com o Bu
 
 **A solução é instrumentação dinâmica: o Frida.**
 
-> 💡 **Frida**: um toolkit que **injeta JavaScript dentro de um processo em execução** e "engancha" (hooks) funções em tempo real — você consegue trocar o que uma função retorna sem recompilar o app. É o canivete suíço do mobile testing. [Glossário](/posts/fundamentos-web-hacking/)
+> 💡 **Frida**: um toolkit que **injeta JavaScript dentro de um processo em execução** e "engancha" (hooks) funções em tempo real — você consegue trocar o que uma função retorna sem recompilar o app. É o canivete suíço do mobile testing. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)
 
 **Instalar o `frida-server` no device** (precisa de root). Baixe o binário do release que bate com a arquitetura do passo 0 (ex.: `frida-server-XX.X.X-android-x86_64`):
 
@@ -148,7 +148,7 @@ frida-ps -U
 
 Agora, **derrubar o pinning** — o jeito mais fácil é com o **objection**, que é uma camada por cima do Frida com comandos prontos:
 
-> 💡 **objection**: ferramenta construída sobre o Frida que dá comandos prontos ("explore" um app sem escrever script) — bypass de pinning, ler armazenamento, listar activities, tudo num REPL. [Glossário](/posts/fundamentos-web-hacking/)
+> 💡 **objection**: ferramenta construída sobre o Frida que dá comandos prontos ("explore" um app sem escrever script) — bypass de pinning, ler armazenamento, listar activities, tudo num REPL. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)
 
 ```bash
 pip install objection
@@ -242,7 +242,7 @@ adb shell "su -c cat /data/data/com.exemplo.app/shared_prefs/prefs.xml"
 
 Esse é o **pão com manteiga** do iniciante em mobile, e rende rápido. Devs esquecem chaves dentro do app achando que "ninguém vai abrir". Mas o APK é só um ZIP, e decompilar é trivial.
 
-> 💡 **jadx**: decompilador que transforma o bytecode Dalvik (`.dex`) do APK de volta em **Java legível** — tem versão CLI (`jadx`) e GUI (`jadx-gui`). **apktool**: descompacta o APK em recursos + **smali** (assembly do Dalvik) e remonta — bom pra ler `AndroidManifest.xml` e `res/`. [Glossário](/posts/fundamentos-web-hacking/)
+> 💡 **jadx**: decompilador que transforma o bytecode Dalvik (`.dex`) do APK de volta em **Java legível** — tem versão CLI (`jadx`) e GUI (`jadx-gui`). **apktool**: descompacta o APK em recursos + **smali** (assembly do Dalvik) e remonta — bom pra ler `AndroidManifest.xml` e `res/`. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)
 
 Fluxo de caça:
 
@@ -292,7 +292,7 @@ Com `API_KEY_BACKOFFICE` você bate direto na [API por trás](/posts/api-securit
 
 Apps Android expõem **componentes** (Activities, Services, BroadcastReceivers, ContentProviders) que **outros apps** podem chamar. Se um componente sensível está **`exported`** sem proteção, um app malicioso (ou um link) pode acioná-lo.
 
-> 💡 **Deeplink**: uma URL especial (ex.: `exemploapp://...` ou `https://exemplo.com/...` via App Links) que **abre direto uma tela do app**. É ótimo pra UX — e perigoso quando a tela aberta confia cegamente no que veio na URL. [Glossário](/posts/fundamentos-web-hacking/)
+> 💡 **Deeplink**: uma URL especial (ex.: `exemploapp://...` ou `https://exemplo.com/...` via App Links) que **abre direto uma tela do app**. É ótimo pra UX — e perigoso quando a tela aberta confia cegamente no que veio na URL. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)
 
 Onde olhar: o `AndroidManifest.xml` (extraído com apktool). Procure `android:exported="true"` e `<intent-filter>` com `<data android:scheme="...">` (deeplinks) e a categoria `android.intent.category.BROWSABLE` (significa que um **link no navegador** consegue abrir).
 
@@ -364,7 +364,7 @@ Content-Type: application/json
 4. **Business logic** (post [20](/posts/business-logic/)): manipule valores que o app "trava" na tela (preço, quantidade, status de pagamento, cupom). O servidor revalida?
 5. **Mass assignment**: adicione campos extras ao JSON (`"role":"admin"`, `"isVerified":true`) e veja se o backend aceita.
 
-> 💡 **Mass assignment**: quando a API liga automaticamente os campos do JSON aos atributos do objeto no servidor — se você injeta um campo que não deveria controlar (ex.: `role`), pode escalar privilégio. [Glossário](/posts/fundamentos-web-hacking/)
+> 💡 **Mass assignment**: quando a API liga automaticamente os campos do JSON aos atributos do objeto no servidor — se você injeta um campo que não deveria controlar (ex.: `role`), pode escalar privilégio. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)
 
 > 💡 **Regra de ouro do mobile:** o app é só uma "capa" da API. Tudo que você aprendeu de web vale **igualzinho** — e a API mobile costuma ser **menos testada** que o site, então sobram IDOR e BFLA. (Uma trilha dedicada a API vem no post de [API Security](/posts/api-security/) da série.)
 

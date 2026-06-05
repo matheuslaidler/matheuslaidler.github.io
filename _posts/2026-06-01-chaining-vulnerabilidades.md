@@ -18,7 +18,7 @@ Uma semana depois você percebe que aquele mesmo redirect mora **dentro do fluxo
 
 Não mudou a falha. Mudou a **história**. Esse é o coração do *chaining*: o que importa não é a severidade isolada de cada bug, é o **impacto da cadeia inteira**. Um caçador júnior reporta falhas avulsas; um sênior **conecta** falhas e entrega um impacto que o programa não tem como ignorar.
 
-> 💡 **ATO (Account Takeover)**: tomada de conta — o atacante passa a controlar a conta de outro usuário (logar como ele, agir como ele). É o impacto "crítico" clássico. ([Glossário](/posts/fundamentos-web-hacking/))
+> 💡 **ATO (Account Takeover)**: tomada de conta — o atacante passa a controlar a conta de outro usuário (logar como ele, agir como ele). É o impacto "crítico" clássico. ([Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série))
 
 > Este é um post avançado. Se algum elo aqui for novidade, cada cadeia linka pro post dedicado da série. Vale ler [Severidade, impacto e triagem](/posts/severidade-impacto-triagem/) antes — chaining é, no fundo, engenharia de impacto.
 
@@ -36,7 +36,7 @@ Por que isso multiplica o bounty e impressiona o triador:
 
 > 📊 **A regra de ouro do CVSS numa chain: pontue o RESULTADO, não as peças.** Cada elo, isolado, tem um score baixo — um open redirect dá `CVSS:3.1` ~6.1, um info disclosure de UUID, ~5.3. Some-os e você ainda tem "vários médios". O erro é reportar a **média** ou os elos separados. A cadeia inteira é **um** achado, e seu vetor descreve o **impacto final**: se o resultado é ATO de qualquer conta, o vetor é o de ATO (`C:H/I:H` ou `VC:H/VI:H` em v4.0), não o do redirect. Ao longo do post, cada cadeia mostra o **v3.1 e o v4.0 do impacto final** — é assim que você justifica o "Crítico" sem inflar. O **v4.0** ([FIRST, 2023](https://www.first.org/cvss/calculator/4.0)) é especialmente útil aqui porque separa impacto **no sistema** (`VC/VI/VA`) de impacto **subsequente** (`SC/SI/SA`) — e chain é, por definição, dano que pula de um sistema/contexto pro outro. Calibragem fina no post [Severidade & Impacto](/posts/severidade-impacto-triagem/).
 
-> 💡 **Primitiva**: o "poder bruto" que uma falha te dá (ler um arquivo, escrever num campo, forçar uma requisição). É o tijolo com que você constrói a cadeia. [Glossário](/posts/fundamentos-web-hacking/)
+> 💡 **Primitiva**: o "poder bruto" que uma falha te dá (ler um arquivo, escrever num campo, forçar uma requisição). É o tijolo com que você constrói a cadeia. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)
 
 ## Pensa em primitivas, não em "bugs"
 
@@ -54,7 +54,7 @@ A virada de chave mental do chaining é parar de pensar *"que bug é esse?"* e c
 | [LFI/Path Traversal](/posts/lfi-path-traversal/) | **Ler arquivos arbitrários** do servidor |
 | [Subdomain Takeover](/posts/subdomain-takeover-broken-link-hijacking/) | **Servir conteúdo seu sob um host legítimo** do alvo |
 
-> 💡 **SSRF (Server-Side Request Forgery)**: você faz o **servidor** do alvo disparar uma requisição pra um endereço que você escolhe — útil pra alcançar serviços internos que você nunca acessaria de fora. ([Glossário](/posts/fundamentos-web-hacking/))
+> 💡 **SSRF (Server-Side Request Forgery)**: você faz o **servidor** do alvo disparar uma requisição pra um endereço que você escolhe — útil pra alcançar serviços internos que você nunca acessaria de fora. ([Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série))
 
 A pergunta-motor do chaining é simples e você repete o tempo todo:
 
@@ -68,9 +68,9 @@ Daqui pra frente, cada cadeia segue o mesmo esqueleto: **Primitiva inicial → p
 
 A clássica que abriu o post. Sozinho, o open redirect quase não vale; ligado ao login social, vira ATO.
 
-> 💡 **OAuth**: protocolo de "login com Google/Facebook/etc." e de autorização entre apps. Em vez de dar sua senha pro app, o provedor devolve um **token** pra ele. [Glossário](/posts/fundamentos-web-hacking/)
+> 💡 **OAuth**: protocolo de "login com Google/Facebook/etc." e de autorização entre apps. Em vez de dar sua senha pro app, o provedor devolve um **token** pra ele. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)
 
-> 💡 **`redirect_uri`**: o endereço pra onde o provedor OAuth manda o `code`/`token` depois que você autoriza. É **o** parâmetro que o atacante quer controlar. [Glossário](/posts/fundamentos-web-hacking/)
+> 💡 **`redirect_uri`**: o endereço pra onde o provedor OAuth manda o `code`/`token` depois que você autoriza. É **o** parâmetro que o atacante quer controlar. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)
 
 **Primitivas:** open redirect em `app.exemplo.com` + validação fraca de `redirect_uri` no fluxo OAuth.
 
@@ -105,11 +105,11 @@ A clássica que abriu o post. Sozinho, o open redirect quase não vale; ligado a
 
 A cadeia que transforma um "o servidor faz uma request estranha" em **comprometimento da infra**.
 
-> 💡 **Cloud metadata**: um serviço interno que toda VM em nuvem expõe num IP fixo (`169.254.169.254`) com dados da instância — incluindo, às vezes, **credenciais temporárias** da role atribuída a ela. [Glossário](/posts/fundamentos-web-hacking/)
+> 💡 **Cloud metadata**: um serviço interno que toda VM em nuvem expõe num IP fixo (`169.254.169.254`) com dados da instância — incluindo, às vezes, **credenciais temporárias** da role atribuída a ela. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)
 
 **Primitivas:** SSRF (forço o servidor a fazer requests) + um endpoint de metadados que devolve credenciais + uma role com permissões generosas.
 
-> 💡 **IMDS / IMDSv2**: o *Instance Metadata Service* — é justamente esse serviço de metadados em `169.254.169.254`. A **v2** exige pegar um token antes de ler (um freio anti-SSRF); a v1 não exigia nada. ([Glossário](/posts/fundamentos-web-hacking/))
+> 💡 **IMDS / IMDSv2**: o *Instance Metadata Service* — é justamente esse serviço de metadados em `169.254.169.254`. A **v2** exige pegar um token antes de ler (um freio anti-SSRF); a v1 não exigia nada. ([Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série))
 
 **O passo a passo (AWS, IMDSv2):**
 
@@ -140,9 +140,9 @@ A cadeia que transforma um "o servidor faz uma request estranha" em **comprometi
 
 XSS refletido isolado costuma pagar pouco (e às vezes é classificado como *Low*). Encadeado, vira controle de conta.
 
-> 💡 **Sessão**: a credencial que mantém você "logado" entre requests — normalmente um cookie ou token. Quem rouba a sessão **vira você** sem precisar da senha. [Glossário](/posts/fundamentos-web-hacking/)
+> 💡 **Sessão**: a credencial que mantém você "logado" entre requests — normalmente um cookie ou token. Quem rouba a sessão **vira você** sem precisar da senha. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)
 
-> 💡 **CSRF (Cross-Site Request Forgery)**: enganar o navegador da vítima pra disparar uma ação autenticada que ela não quis (a request sai com os cookies dela). A "proteção CSRF" é um token secreto que valida que a ação partiu da página legítima. ([Glossário](/posts/fundamentos-web-hacking/))
+> 💡 **CSRF (Cross-Site Request Forgery)**: enganar o navegador da vítima pra disparar uma ação autenticada que ela não quis (a request sai com os cookies dela). A "proteção CSRF" é um token secreto que valida que a ação partiu da página legítima. ([Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série))
 
 **Primitivas:** XSS (executo JS na origem da vítima) + ausência de `HttpOnly`/proteção CSRF + um fluxo sensível (trocar e-mail/senha).
 
@@ -211,7 +211,7 @@ fetch('/api/account/email', {
 
 CRLF injection sozinho ("consegui injetar um header") costuma ser *Low*. Encadeado, vira XSS sem campo de input — ou pior, **envenena o cache pra todo mundo**.
 
-> 💡 **Cache poisoning**: fazer um proxy/CDN **guardar** uma resposta maliciosa e **servi-la a outros usuários** que nem chegaram a tocar no seu payload. [Glossário](/posts/fundamentos-web-hacking/)
+> 💡 **Cache poisoning**: fazer um proxy/CDN **guardar** uma resposta maliciosa e **servi-la a outros usuários** que nem chegaram a tocar no seu payload. [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)
 
 **Primitivas:** CRLF (`%0d%0a` injeta na resposta) → controlar headers e/ou o corpo da resposta.
 
