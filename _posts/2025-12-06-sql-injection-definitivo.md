@@ -1553,6 +1553,7 @@ Enquanto houver desenvolvedores que ignoram a base, sempre haverá uma shell esp
 
 ## Leia também
 
+- **[SQL Injection — o capítulo de referência (série Bug Bounty)](/posts/sql-injection/)** (a metodologia completa: multi-SGBD, blind, error-based, sqlmap, NoSQLi e a defesa que mata a classe)
 - [Desenvolvimento Web na Prática com PHP](/posts/desenvolvimento-web-guia-pratico/)
-- [XSS e HTML Injection — Tipos e Exploração](/posts/xss-guia-completo/)
+- [XSS e HTML Injection — Tipos e Exploração](/posts/xss-html-injection/)
 - [Secure Code Review com exercícios práticos](/posts/code-review-seguranca/)

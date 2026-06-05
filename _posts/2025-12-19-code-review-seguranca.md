@@ -97,6 +97,7 @@ A correção ideal seria usar uma whitelist de páginas/caminhos permitidos. Se 
 ```php
 <?php
 $dn = $_GET['host'];
+$filter = "(|(sn=$person*)(givenname=$person*))";
 $justthese = array("ou", "sn", "givenname", "mail");
 $sr = ldap_search($ds, $dn, $dn, $justthese);
 $info = ldap_get_entries($ds, $sr);
@@ -648,5 +649,5 @@ Então se você tá começando em bug bounty e quer se destacar da massa que só
 ## Leia também
 
 - [SQL Injection da teoria à prática](/posts/sql-injection-definitivo/)
-- [XSS e HTML Injection — Tipos e Exploração](/posts/xss-guia-completo/)
+- [XSS e HTML Injection — Tipos e Exploração](/posts/xss-html-injection/)
 - [Desenvolvimento Web na Prática com PHP](/posts/desenvolvimento-web-guia-pratico/)

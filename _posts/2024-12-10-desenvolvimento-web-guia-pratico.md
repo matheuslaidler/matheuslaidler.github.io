@@ -1944,5 +1944,5 @@ Você pode baixar ou ver o código-fonte completo deste sistema no repositório 
 ## Leia também
 
 - [SQL Injection da teoria à prática](/posts/sql-injection-definitivo/)
-- [XSS e HTML Injection — Tipos e Exploração](/posts/xss-guia-completo/)
+- [XSS e HTML Injection — Tipos e Exploração](/posts/xss-html-injection/)
 - [Secure Code Review com exercícios práticos](/posts/code-review-seguranca/)

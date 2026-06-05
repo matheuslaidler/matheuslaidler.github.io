@@ -22,7 +22,7 @@ O foco é sempre a **prática** e explicar o *porquê* das coisas, não apenas o
 
 `Matheus Laidler` — Desenvolvedor e Pesquisador de Segurança, sempre atrás de novos desafios para aprender e aprimorar conhecimentos. Atualmente transforma estudo em conteúdo, sem fins lucrativos: além do blog, mantenho um canal no [YouTube](https://youtube.com/@matheuslaidler).
 
-> Este projeto reúne, sob o meu nome, materiais que antes ficavam espalhados em outros projetos — *Road2Tech* (meu projeto de TI antigo), *WayOfSec* (Meu antigo fórum de sec - projeto antigo) e *SecLab* (meu projeto antigo de estudo prático em laboratório) — hoje unificados tudo aqui no Acervo de TI.
+> Este projeto reúne, sob o meu nome, materiais que antes ficavam espalhados em outros projetos — *Road2Tech* (meu projeto de TI antigo), *WayOfSec* (Meu fórum de sec - projeto antigo) e *SecLab* (meu projeto antigo de estudo prático em laboratório) — hoje unificados tudo aqui no Acervo de TI.
 
 ## Aviso
 
