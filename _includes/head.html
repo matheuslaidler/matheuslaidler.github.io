@@ -3,12 +3,12 @@
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f7f7">
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1b1b1e">
 
-  <!-- Modo leitura é PADRÃO ao entrar; só fica off se o usuário desativou. -->
-  <!-- Restaura antes do paint (evita flash da sidebar). -->
+  <!-- Modo leitura é OPCIONAL (OFF por padrão): a visão normal (com sidebar + painel) é o padrão. -->
+  <!-- Só liga se o usuário ativou o botão antes. Restaura antes do paint (evita flash). -->
   <script>
     (function () {
       try {
-        if (localStorage.getItem('reading-mode') !== 'false') {
+        if (localStorage.getItem('reading-mode') === 'true') {
           document.documentElement.classList.add('reading-mode');
         }
       } catch (e) {}

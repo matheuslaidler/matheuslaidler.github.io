@@ -828,12 +828,16 @@ html[data-mode='dark'] ::-webkit-scrollbar-thumb:hover {
 }
 
 @media all and (min-width: 850px) {
+  /* fullscreen vai pra ESQUERDA do topbar (via order), pra NÃO empurrar o search do lugar dele.
+     assim o tema volta a ter só breadcrumb (esq.) + search (dir., alinhado à coluna do painel). */
   #reading-mode-trigger {
     display: block;
+    order: -1;
+    margin-right: 0.4rem;
   }
-  /* mantém Home à esquerda e agrupa busca + botão à direita do container */
-  #topbar search {
-    margin-left: auto;
+  /* o breadcrumb empurra o search pra direita (alinhado ao painel, como o tema faz com 2 itens) */
+  #topbar #breadcrumb {
+    margin-right: auto;
   }
 }
 
@@ -866,6 +870,10 @@ html[data-mode='dark'] ::-webkit-scrollbar-thumb:hover {
     width: 100%;
     max-width: 100%;
   }
+
+  /* no modo leitura (painéis escondidos) o SEARCH fica GRANDE, ocupando a faixa livre */
+  html.reading-mode #topbar #breadcrumb { width: auto; max-width: 45%; margin-right: 1rem; }
+  html.reading-mode #topbar search { max-width: none; flex: 1 1 auto; margin-right: 1rem; }
 }
 
 /* ===================================================================== */
@@ -1005,24 +1013,6 @@ html[data-mode='light'] .support-note a { color: #009db2; }
 .donate-btn.gh { background: #21262d; color: #db61a2 !important; border: 1px solid rgba(219, 97, 162, 0.4); }
 .donate-btn.pp { background: #003087; color: #ffffff !important; border: 1px solid #0070ba; }
 .donate-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3); }
-
-/* ===== TOPBAR: campo de busca com largura automática (>=850px) ===== */
-/* preenche a faixa do topo de ponta a ponta, encolhendo só pra respeitar o breadcrumb (home > página) */
-@media (min-width: 850px) {
-  #topbar search {
-    max-width: none;
-    flex: 1 1 auto;          /* cresce pra ocupar o espaço entre breadcrumb e botões */
-    margin-left: 1rem;
-    margin-right: 1rem;
-  }
-  #topbar #breadcrumb {
-    flex: 0 1 auto;          /* não cresce; pode encolher (com ellipsis) pra dar espaço ao search */
-    min-width: 0;
-  }
-}
-@media (min-width: 1200px) {
-  #topbar search { margin-right: 1rem; }  /* sobrescreve o margin-right:4rem do Chirpy, que brigava com o flex */
-}
 
 /* ===== CAPA DO POST (.preview-img): não cortar em ~768–850px ===== */
 /* o gem usa height:100% + object-fit:cover; em telas médias a altura vinha do pai e a imagem era cortada. */
