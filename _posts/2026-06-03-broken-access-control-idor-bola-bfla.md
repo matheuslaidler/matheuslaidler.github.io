@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:55:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["IDOR", "BOLA", "BFLA", "broken access control", "OWASP", "bug bounty", "web security", "Burp Suite", "API security"]
+image: /assets/img/covers/broken-access-control-idor-bola-bfla.png
 pin: false
 comments: true
 ---
@@ -58,7 +59,7 @@ A raiz quase sempre é a mesma: o servidor **confia em um identificador que veio
 Fluxo vulnerável típico:
 
 ```http
-GET /api/pedidos/1001 HTTP/2
+GET /api/pedidos?id=1001 HTTP/2
 Host: alvo.com
 Authorization: Bearer eyJhbGciOi...   # <- você está autenticado como Usuário B
 ```

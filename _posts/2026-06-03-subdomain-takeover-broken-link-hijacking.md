@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:42:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["subdomain takeover", "broken link hijacking", "dangling DNS", "CNAME", "DNS", "recon", "bug bounty", "web security", "nuclei", "subjack"]
+image: /assets/img/covers/subdomain-takeover-broken-link-hijacking.png
 pin: false
 comments: true
 ---

@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:59:00 -0300
 categories: [Bug Bounty, Fundamentos]
 tags: ["fundamentos", "HTTP", "autenticação", "autorização", "OWASP", "bug bounty", "web security", "Burp Suite", "mindset"]
+image: /assets/img/covers/fundamentos-web-hacking.png
 pin: false
 comments: true
 ---
@@ -104,7 +105,7 @@ O método diz **a intenção** da request. Os que você mais vai mexer:
 
 Dois conceitos da especificação que valem ouro pro hunter (definições da [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods)):
 
-- **Seguro (safe):** o método **não altera o estado** do servidor — só lê. `GET`, `HEAD`, `OPTIONS` são seguros.
+- **Seguro (safe):** o método **não altera o estado** do servidor — só lê. `GET`, `HEAD`, `OPTIONS` e `TRACE` são seguros (na prática, o TRACE costuma vir desabilitado, por causa de *Cross-Site Tracing*).
 - **Idempotente:** chamar **N vezes** dá o mesmo efeito de chamar **uma vez**. `GET`, `PUT`, `DELETE` são idempotentes; `POST` e `PATCH` **não** são.
 
 > 💡 **Por que isso importa na caça:** se uma aplicação valida autorização no `GET /pedido/1001` mas esquece de validar no `POST`, `PUT` ou `DELETE` do mesmo recurso, você acabou de achar uma falha. **Sempre teste todos os métodos** — muita gente checa só o método "óbvio".

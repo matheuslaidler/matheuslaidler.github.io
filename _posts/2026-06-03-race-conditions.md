@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:44:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["race condition", "TOCTOU", "limit-overrun", "single-packet attack", "Turbo Intruder", "Burp Suite", "business logic", "web security", "bug bounty"]
+image: /assets/img/covers/race-conditions.png
 pin: false
 comments: true
 ---

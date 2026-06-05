@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:36:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["cloud security", "AWS", "S3", "IAM", "IMDSv2", "leaked keys", "SSRF", "Cognito", "OWASP", "bug bounty", "web security", "ScoutSuite", "Pacu"]
+image: /assets/img/covers/cloud-aws-misconfiguration.png
 pin: false
 comments: true
 ---

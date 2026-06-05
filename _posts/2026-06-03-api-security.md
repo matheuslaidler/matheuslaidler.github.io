@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:40:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["API security", "OWASP API Top 10", "BOLA", "mass assignment", "excessive data exposure", "GraphQL", "JWT", "bug bounty", "web security"]
+image: /assets/img/covers/api-security.png
 pin: false
 comments: true
 ---
@@ -299,12 +300,15 @@ GraphQL é um "balcão único": em vez de vários endpoints REST, existe **um en
 
 ### Achar o endpoint
 
+> 💡 **CSRF** (Cross-Site Request Forgery): força o navegador da vítima a enviar uma requisição autenticada sem ela saber. XSS pode encadear com CSRF.
+{: .prompt-tip }
+
 Caminhos comuns: `/graphql`, `/api`, `/api/graphql`, `/graphql/api`, `/graphql/graphql`. O **probe universal** — qualquer endpoint GraphQL responde a isto:
 
 ```json
 {"query": "{__typename}"}
 ```
-Se voltar `{"data": {"__typename": "Query"}}`, achou um GraphQL. Vale testar métodos diferentes: `POST application/json`, `GET` e `POST x-www-form-urlencoded` — alguns aceitam alternativas (e isso também abre CSRF).
+Se voltar algo como `{"data": {"__typename": "Query"}}` (o nome do root type pode variar — ex.: `RootQuery`), achou um GraphQL. Vale testar métodos diferentes: `POST application/json`, `GET` e `POST x-www-form-urlencoded` — alguns aceitam alternativas (e isso também abre CSRF).
 
 > 💡 **Introspection**: recurso do GraphQL que permite **perguntar ao próprio servidor** qual é o schema completo (tipos, queries, mutations, campos). Ótimo em dev, perigoso em produção. [Glossário](/posts/fundamentos-web-hacking/).
 
@@ -355,6 +359,9 @@ query isValidDiscount($code: Int) {
 **Batching** é a mesma ideia por outra via: mandar um **array** de queries num único POST. Os dois servem pra burlar rate limit e fazer brute force de OTP/cupom/credencial. A própria OWASP avisa: *rate limit de rede não enxerga esses ataques* — a defesa precisa ser **por objeto/operação**, no código.
 
 ### Injection no GraphQL
+
+> 💡 **NoSQLi** (NoSQL Injection): injeção em bancos não-SQL (ex.: MongoDB) via operadores como {$ne: null}. Mesmos riscos do SQLi, sintaxe diferente.
+{: .prompt-tip }
 
 GraphQL **não é imune a injection**. Os argumentos das queries/mutations chegam ao banco igual a qualquer input. Se o resolver concatena na query, é SQLi/NoSQLi normal:
 

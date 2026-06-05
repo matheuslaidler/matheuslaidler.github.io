@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:52:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["XSS", "HTML Injection", "cross-site scripting", "reflected XSS", "stored XSS", "DOM XSS", "CSP", "WAF bypass", "DOMPurify", "OWASP", "bug bounty", "web security"]
+image: /assets/img/covers/xss-html-injection.png
 pin: false
 comments: true
 ---
@@ -38,6 +39,9 @@ Antes de conseguir rodar script, muita vez você só consegue injetar **HTML** �
 HTML Injection é o **teste de fumaça** do XSS: se o HTML é interpretado, falta pouco pro JavaScript. Em programas reais, um HTML Injection simples (link refletido num e-mail, por exemplo) costuma pagar de **R$250 a R$500** (severidade baixa); o XSS pleno escala a partir daí. A diferença é só *quanto* da sua entrada o navegador interpreta.
 
 ## Por que importa (e quanto paga)
+
+> 💡 **CSRF** (Cross-Site Request Forgery): força o navegador da vítima a enviar uma requisição autenticada sem ela saber. XSS pode encadear com CSRF.
+{: .prompt-tip }
 
 Quando o seu JavaScript roda no contexto do site, você herda os poderes da vítima:
 
@@ -384,6 +388,10 @@ el.textContent = 'Olá, ' + nome;
 Por que funciona: `innerHTML` faz o navegador **parsear o conteúdo como HTML** (e disparar handlers); `textContent` só escreve **texto** — o navegador nunca interpreta como markup. Mesma lógica vale pra fugir de `eval`, `document.write` e `setTimeout(string)`.
 
 ### 3. Precisa aceitar HTML do usuário? **Sanitize com DOMPurify**
+
+> 💡 **WYSIWYG** (What You See Is What You Get): editor visual que gera HTML rico. Aumenta a superfície de XSS se a sanitização for fraca.
+{: .prompt-tip }
+
 Se o produto exige HTML rico (um editor WYSIWYG, por exemplo), não dá pra escapar tudo. Aí use uma lib de sanitização madura — **nunca** regex caseira:
 
 ```javascript
@@ -455,6 +463,9 @@ Set-Cookie: sessao=...; HttpOnly; Secure; SameSite=Lax
 - [ ] Conferi que XSS **está no escopo** do programa.
 
 ## Pegadinhas / o que NÃO funciona
+
+> 💡 **SSTI / CSTI**: Server-Side / Client-Side Template Injection — injeção no motor de templates (servidor/cliente). Resultado parecido com XSS, mecanismo diferente.
+{: .prompt-tip }
 
 - **`alert` não dispara, mas o código executa:** pode ser iframe cross-origin (Chrome 92+ bloqueia `alert`). Troque por `print()` ou `console.log`/`fetch` pra confirmar.
 - **HTML Injection ≠ XSS:** se só o `<b>` renderiza mas `<script>`/handlers são escapados, você tem HTML Injection (impacto menor), não XSS. Reporte como o que é.

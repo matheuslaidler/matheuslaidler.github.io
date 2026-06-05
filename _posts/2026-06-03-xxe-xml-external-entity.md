@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:39:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["XXE", "XML External Entity", "XML", "DTD", "SSRF", "OOB", "blind XXE", "XInclude", "SVG", "SAML", "billion laughs", "OWASP", "bug bounty", "web security", "Burp Collaborator"]
+image: /assets/img/covers/xxe-xml-external-entity.png
 pin: false
 comments: true
 ---

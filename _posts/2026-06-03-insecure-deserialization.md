@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:38:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["insecure deserialization", "desserialização insegura", "RCE", "gadget chain", "POP chain", "ysoserial", "PHPGGC", "Pickle", "phar", "Marshal", "OWASP", "bug bounty", "web security"]
+image: /assets/img/covers/insecure-deserialization.png
 pin: false
 comments: true
 ---

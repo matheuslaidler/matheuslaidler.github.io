@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:41:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["mobile", "Android", "iOS", "bug bounty", "OWASP MASVS", "OWASP Mobile Top 10", "Frida", "Objection", "SSL pinning", "Jadx", "Apktool", "API security"]
+image: /assets/img/covers/mobile-bug-bounty.png
 pin: false
 comments: true
 ---
@@ -333,7 +334,13 @@ webView.getSettings().setJavaScriptEnabled(true);
 webView.addJavascriptInterface(new NativeBridge(), "AndroidBridge");
 ```
 
+> 💡 **CVE** (Common Vulnerabilities and Exposures): identificador público de uma falha conhecida (ex.: CVE-2012-6636).
+{: .prompt-tip }
+
 Historicamente (antes do **API 17 / Android 4.2**, CVE-2012-6636) isso era **RCE direto** (Remote Code Execution — rodar código arbitrário no dispositivo da vítima, o pior cenário) via reflection. Do API 17 em diante, **só métodos anotados com `@JavascriptInterface`** ficam expostos — o que reduz o risco, mas **não elimina**: se o bridge tem um método poderoso (ex.: que pega um token, lê um arquivo, abre uma URL), o JS malicioso ainda abusa dele. (E se o app mira API < 17, ou usa um SDK compilado pra API < 17, o RCE clássico volta.)
+
+> 💡 **LFI** (Local File Inclusion): ler arquivos locais via parâmetro (ex.: ?file=../../etc/passwd). Em WebView, risco de ler arquivos do sandbox do app.
+{: .prompt-tip }
 
 **b) `setAllowFileAccess(true)` + carregamento de URL externa.** Permite que a página acesse `file://` no sandbox do app — combinado com um handler que lê arquivos, vira **leitura arbitrária** de dados do app (parecido com [LFI](/posts/lfi-path-traversal/), mas no device). Procure `setAllowFileAccess`, `setAllowUniversalAccessFromFileURLs`, `setAllowFileAccessFromFileURLs` no código.
 
@@ -455,7 +462,7 @@ Tudo aqui é pra **alvos autorizados**: programas de bug bounty com app **no esc
 - [WithSecure — WebView addJavascriptInterface RCE](https://labs.withsecure.com/publications/webview-addjavascriptinterface-remote-code-execution)
 
 ---
-*Relacionado na série: [Broken Access Control — IDOR/BOLA/BFLA](/posts/broken-access-control-idor-bola-bfla/) · [Account Takeover](/posts/account-takeover/) · [Business Logic Flaws](/posts/business-logic/) · base: [Recon & Discovery](/posts/recon-discovery/) · pra reportar: [Como escrever um report que paga](/posts/como-escrever-report-que-paga/)*
+*Relacionado na série: [Broken Access Control — IDOR/BOLA/BFLA](/posts/broken-access-control-idor-bola-bfla/) · [Account Takeover](/posts/account-takeover/) · [Segurança de APIs](/posts/api-security/) · [Business Logic Flaws](/posts/business-logic/) · [Security Misconfiguration](/posts/security-misconfiguration-cve-hunting/) · [LFI / Path Traversal](/posts/lfi-path-traversal/) · [Subdomain Takeover](/posts/subdomain-takeover-broken-link-hijacking/) · base: [Recon & Discovery](/posts/recon-discovery/) · pra reportar: [Como escrever um report que paga](/posts/como-escrever-report-que-paga/)*
 
 ---
 

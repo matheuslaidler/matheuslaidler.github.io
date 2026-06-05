@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:58:00 -0300
 categories: [Bug Bounty, Fundamentos]
 tags: ["recon", "subdomain enumeration", "httpx", "gau", "ffuf", "katana", "nuclei", "JS analysis", "google dorks", "bug bounty", "web security"]
+image: /assets/img/covers/recon-discovery.png
 pin: false
 comments: true
 ---
@@ -188,6 +189,9 @@ gau alvo.com --subs --o urls-historicas.txt
 go install github.com/tomnomnom/waybackurls@latest
 cat all-subs.txt | waybackurls > wayback.txt
 ```
+
+> 💡 **LFI** (Local File Inclusion): ler arquivos do servidor (ex.: /etc/passwd) por parâmetros como ?file=../../etc/passwd.
+{: .prompt-tip }
 
 > 💡 **Por que isso é poderoso:** essas URLs vêm carregadas de **parâmetros antigos** (`?id=`, `?file=`, `?redirect=`) e de **endpoints removidos da UI mas vivos no servidor**. Um parâmetro que o frontend não usa mais é um parâmetro que **ninguém testa** — terreno fértil pra IDOR, LFI e open redirect.
 

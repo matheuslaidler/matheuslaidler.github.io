@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:56:00 -0300
 categories: [Bug Bounty, Fundamentos]
 tags: ["report writing", "bug bounty", "triagem", "impacto", "CVSS", "HackerOne", "Bugcrowd", "web security"]
+image: /assets/img/covers/como-escrever-report-que-paga.png
 pin: false
 comments: true
 ---
@@ -97,6 +98,9 @@ BOM:   "Qualquer cliente autenticado consegue ler faturas e notas fiscais
 Diga **onde** (programa, domínio, app — ex.: `app.exemplo.com`) e **qual módulo/funcionalidade** é afetado e por quê. Contexto curto orienta o triador: *"Módulo Financeiro → Faturas, acessível a qualquer conta de cliente após login."*
 
 ### 5. Criticidade / Severidade — justificada, não chutada
+
+> 💡 **CVSS** (Common Vulnerability Scoring System): escala de 0–10 que quantifica o risco; vem com um vetor que descreve a falha (calculadora em first.org).
+{: .prompt-tip }
 
 Não escreva só "Crítico". **Justifique** com um framework reconhecido, porque é isso que o programa usa pra calibrar bounty:
 

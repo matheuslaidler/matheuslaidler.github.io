@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:51:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["SQL Injection", "SQLi", "UNION-based", "blind SQLi", "SQLMap", "NoSQL injection", "OWASP", "bug bounty", "web security", "Burp Suite"]
+image: /assets/img/covers/sql-injection.png
 pin: false
 comments: true
 ---
@@ -51,7 +52,10 @@ SQLi é alto impacto por natureza, porque o banco é onde mora o que vale ouro:
 - **Vazamento em massa:** ler tabelas inteiras de usuários, senhas (hashes), e-mails, CPF, dados de pagamento.
 - **Bypass de autenticação:** entrar como `administrator` sem saber a senha.
 - **Escrita/destruição:** em alguns contextos, alterar ou apagar dados (`UPDATE`/`DELETE`).
-- **RCE:** em SGBDs (Sistemas Gerenciadores de Banco de Dados, ex.: MySQL, PostgreSQL) mal configurados dá pra escalar para execução de comando no SO (ex.: `xp_cmdshell` no MSSQL, escrita de arquivo via `INTO OUTFILE` no MySQL).
+- **RCE:** em SGBDs (Sistemas Gerenciadores de Banco de Dados, ex.: MySQL, PostgreSQL) mal configurados dá pra escalar para execução de comando no SO (ex.: `xp_cmdshell` no MSSQL, escrita de arquivo arbitrário via `INTO OUTFILE` no MySQL — que vira webshell **se** o destino for um diretório executável).
+
+> 💡 **CVSS**: escala numérica de 0–10 pra severidade da falha (existem v3.1 e v4.0).
+{: .prompt-tip }
 
 Por isso costuma ser classificado como **Alto/Crítico** (veja [Severidade, Impacto e Triagem](/posts/severidade-impacto-triagem/) pra calibrar o CVSS). Em programas reais, um SQLi confirmado paga tipicamente de **R$1.000** (injeção em alvo de baixo valor, só leitura de metadados) a **R$20.000+** (dump de PII — dados pessoais como CPF, e-mail, cartão; mais no [Glossário](/posts/fundamentos-web-hacking/) — em escala ou RCE). Um SQLi UNION-based num produto exposto — tipo um painel de inventário desatualizado — fechando em algumas milhares de reais é um cenário bem comum.
 

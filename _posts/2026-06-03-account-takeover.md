@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:53:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["account takeover", "ATO", "JWT", "OAuth", "password reset", "2FA", "broken authentication", "OWASP", "bug bounty", "web security", "hashcat"]
+image: /assets/img/covers/account-takeover.png
 pin: false
 comments: true
 ---
@@ -60,6 +61,12 @@ Vamos passar por cada um. A espinha dorsal é sempre a mesma pergunta: **"qual d
 
 ## Tipos e variações
 
+> 💡 **HS256 / RS256 / ES256**: algoritmos de assinatura de JWT. HS256 é simétrico (segredo compartilhado); RS256/ES256 são assimétricos (par de chaves privada/pública).
+{: .prompt-tip }
+
+> 💡 **HMAC** (Hash-based Message Authentication Code): assina dados com um segredo. Se o segredo for fraco (dicionário), dá pra quebrar offline (ex.: hashcat).
+{: .prompt-tip }
+
 | Vetor | Falha central | Resultado |
 |---|---|---|
 | **Reset de senha inseguro** | Token previsível / sem expiração / alvo controlável / Host header injection | Resetar a senha de qualquer um |
@@ -87,7 +94,7 @@ Ferramentas que aparecem aqui:
 - **jwt.io** — cola o token e ele decodifica `header.payload.signature` num clique. Ótimo pra inspecionar sem instalar nada.
 - **Burp Suite** — Repeater (refazer requests trocando dados), Intruder (brute force de OTP/IDs) e a extensão **JWT Editor** (assina e forja JWT com um clique, indispensável pros ataques avançados).
 - **jwt_tool** ([ticarpi/jwt_tool](https://github.com/ticarpi/jwt_tool)) — canivete suíço de JWT em linha de comando: testa alg=none, confusão de algoritmo, etc.
-- **hashcat** — pra crackear o segredo HMAC (veremos o modo exato).
+- **hashcat** — pra crackear o segredo HMAC (modo `-m 16500`, que cobre **HS256**; pra HS384/HS512 use o `jwt_tool`).
 
 > 💡 **Regra de ouro:** trabalhe **sempre com 2 contas** (Conta A = você/atacante, Conta B = vítima). Quase todo PoC de ATO é "com a Conta A, consegui virar a Conta B". Sem a segunda conta, você não tem como provar o impacto.
 
@@ -213,7 +220,7 @@ O hashcat re-assina header+payload com cada palavra da wordlist e compara com a 
 
 **3c. Algorithm confusion (RS256 → HS256) — usando a chave pública como segredo.** Esse é o pulo do gato. Em **RS256** o token é assinado com a chave **privada** (só o servidor tem) e verificado com a **pública** (pode ser pública mesmo). Parece seguro — e é, *se o servidor só aceitar RS256*.
 
-O bug: muitas libs têm um `verify()` genérico que escolhe o algoritmo **pelo header do token**. Se o servidor guarda a chave pública pra verificar RS256, mas você manda um token com `alg:HS256`, a lib usa a **mesma chave pública como segredo HMAC**. E a chave pública... é pública! Você a tem. Então você assina o token em HS256 usando a chave pública como segredo, e o servidor verifica com a mesma chave pública. **Bate.**
+O bug: muitas libs têm um `verify()` genérico que escolhe o algoritmo **pelo header do token**. Se o servidor guarda a chave pública pra verificar RS256, mas você manda um token com `alg:HS256`, a lib usa a **mesma chave pública como segredo HMAC**. E a chave pública... é pública! Você a tem. Então você assina o token em HS256 usando a chave pública como segredo, e o servidor verifica com a mesma chave pública. **Bate.** (Pré-condição: a app entrega a chave pública ao `verify()` como **string/PEM** — a mesma forma que vira segredo HMAC; libs que tipam a chave como objeto/`KeyObject`, ou que travam o algoritmo aceito, não caem nisso.)
 
 Passo a passo (com Burp JWT Editor, conforme a [PortSwigger Academy](https://portswigger.net/web-security/jwt/algorithm-confusion)):
 
@@ -350,6 +357,9 @@ Segredo fraco quebrado: `supersecret123`.
 **Passo 3 — Usar o token.** Substituo o JWT no Local Storage (ou mando uma request com `Authorization: Bearer <jwt_forjado>`). Recarrego: estou dentro da **conta da vítima** — vejo o telefone dela, posso trocar a senha. Forjando um `exp` distante, ganho **sessão infinita**.
 
 **O que a tela mostraria:** o painel do jwt.io com `alg:HS256`, o `userId` destacado no payload e o segredo preenchido no *VERIFY SIGNATURE* mostrando *"Signature Verified"*; e a aplicação logada exibindo dados que não são da sua conta.
+
+> 💡 **LGPD** (Lei Geral de Proteção de Dados, Brasil): regula privacidade; torna a exposição de **PII** (dados pessoais: CPF, e-mail, telefone) crítica. Equivale ao GDPR europeu.
+{: .prompt-tip }
 
 **Passo 4 — Report.** Título `[ATO] Forja de JWT via segredo HMAC fraco permite assumir qualquer conta`. Resumo no risco ao negócio: *"qualquer usuário autenticado quebra o segredo e forja um token válido de qualquer outro userId, assumindo a conta (PII, troca de senha) — viola a LGPD"*. Passos numerados + prints, **sem expor o segredo real no report público**. Severidade **Alta** — o vetor exige uma conta logada pra obter o token (`PR:L`): `CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N` = **8.1** · `CVSS:4.0/AV:N/AC:L/AT:N/PR:L/UI:N/VC:H/VI:H/VA:N/SC:N/SI:N/SA:N` = **8.6**. Na descrição, **frise a escala** ("afeta TODAS as contas") — muitos programas sobem o pagamento pra faixa de Crítico por causa do impacto, mesmo com o vetor em Alto. (Veja [Como escrever um report que paga](/posts/como-escrever-report-que-paga/).)
 

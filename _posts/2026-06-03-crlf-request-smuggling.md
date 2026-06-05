@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:47:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["CRLF injection", "request smuggling", "HTTP desync", "response splitting", "OWASP", "bug bounty", "web security", "Burp Suite"]
+image: /assets/img/covers/crlf-request-smuggling.png
 pin: false
 comments: true
 ---

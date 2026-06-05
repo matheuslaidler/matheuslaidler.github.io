@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:43:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["denial of service", "DoS", "ReDoS", "regex", "GraphQL", "rate limiting", "zip bomb", "resource exhaustion", "OWASP", "bug bounty", "web security"]
+image: /assets/img/covers/denial-of-service-aplicacao.png
 pin: false
 comments: true
 ---

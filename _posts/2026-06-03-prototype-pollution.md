@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:37:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["prototype pollution", "JavaScript", "Node.js", "DOM XSS", "RCE", "OWASP", "bug bounty", "web security"]
+image: /assets/img/covers/prototype-pollution.png
 pin: false
 comments: true
 ---

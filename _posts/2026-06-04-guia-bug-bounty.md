@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-04 09:00:00 -0300
 categories: [Bug Bounty]
 tags: ["bug bounty", "web security", "OWASP", "roadmap", "índice", "estudo"]
+image: /assets/img/covers/guia-bug-bounty.png
 pin: true
 comments: true
 ---
@@ -15,7 +16,7 @@ Esta é uma série de estudo de **bug bounty / segurança ofensiva web**, escrit
 
 > Os exemplos são **fictícios-realistas e anonimizados** — baseados em *padrões* de falhas reais, sem expor alvos, empresas ou dados de ninguém.
 
-> 📥 **Versão completa em PDF** (todos os capítulos num arquivo só, pra ler offline): _em breve — gerada a partir desta série._
+> 📥 **[Baixe o guia completo em PDF](/assets/pdf/guia-completo-de-bug-bounty.pdf)** — os 26 capítulos num arquivo só (381 páginas), com a identidade do Acervo de TI, pra ler offline.
 {: .prompt-info }
 
 ## Como usar (trilha sugerida)

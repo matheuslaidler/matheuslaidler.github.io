@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:35:00 -0300
 categories: [Bug Bounty, Avançado]
 tags: ["vulnerability chaining", "exploit chain", "OAuth", "SSRF", "XSS", "IDOR", "CRLF", "subdomain takeover", "hardcoded password", "2FA", "RCE", "CVSS", "primitives", "bug bounty", "web security"]
+image: /assets/img/covers/chaining-vulnerabilidades.png
 pin: false
 comments: true
 ---
@@ -89,12 +90,12 @@ A clássica que abriu o post. Sozinho, o open redirect quase não vale; ligado a
    ```
    Uso `response_type=token` (fluxo *implicit*): o token volta no **fragmento** (`#access_token=...`) da URL.
 4. **Engano a vítima** a clicar no link enquanto está logada no provedor. Ela autoriza (ou já autorizou antes — aí nem clica em nada), o provedor responde `302 Location: https://app.exemplo.com/go?next=//atacante.com#access_token=...`, e o `/go` **redireciona pro meu servidor levando o fragmento junto**.
-   > 💡 **Por que o `#access_token` sobrevive ao redirect:** o fragmento (`#...`) nunca é enviado ao servidor — fica no browser. Mas, por [RFC 9110 §10.2.2](https://www.rfc-editor.org/rfc/rfc9110#name-location), quando o `Location` de um `3xx` **não tem fragmento próprio**, o navegador **reanexa o fragmento da URL original** ao novo destino. Como `//atacante.com` não traz fragmento, o `#access_token=...` é herdado e cai no meu domínio. É exatamente esse comportamento que faz a cadeia funcionar.
+   > 💡 **Por que o `#access_token` sobrevive ao redirect:** o fragmento (`#...`) nunca é enviado ao servidor — fica no browser. Mas, por **convenção dos navegadores** (comportamento do WHATWG Fetch/URL — a [RFC 9110 §10.2.2](https://www.rfc-editor.org/rfc/rfc9110#name-location) define o `Location` como *partial-URI*, mas **não exige** isso), quando o `Location` de um `3xx` **não tem fragmento próprio**, o navegador **reanexa o fragmento da URL original** ao novo destino. Como `//atacante.com` não traz fragmento, o `#access_token=...` é herdado e cai no meu domínio. É exatamente esse comportamento que faz a cadeia funcionar.
 5. **Capturo o token.** Meu servidor (ou um pouco de JS lendo `location.hash` na minha página) recebe `#access_token=...`. Com ele, chamo a API do provedor **como a vítima**. Account Takeover.
 
 **Por que funciona:** o provedor validou só que o `redirect_uri` *começava* com o host confiável — e o host confiável tinha um redirect aberto. Detalhes do fluxo no post de [Account Takeover](/posts/account-takeover/) e do trampolim em [Open Redirect](/posts/open-redirect/).
 
-> 📊 **Como pontuar (resultado = ATO via roubo de token):** sozinho, o open redirect é `CVSS:3.1` ~6.1 (Médio); ninguém paga crítico por ele. Mas o **impacto da chain** é tomar a conta de qualquer usuário, então você pontua o ATO: **v3.1 8.2 (Alto)** `AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:N` · **v4.0 ~8.7 (Alto)** `CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:A/VC:H/VI:H/VA:N/SC:H/SI:H/SA:N`. O `UI:R`/`UI:A` (interação) é o que segura abaixo de 9 — a vítima precisa abrir o link. Se o consentimento já foi dado antes (não há clique de autorização) e o ataque dispara sozinho, dá pra argumentar `UI:N` e o score sobe pra faixa de Crítico. Note: o `S:C` (v3.1) e o `SC:H/SI:H` (v4.0) refletem que o dano acontece **num outro sistema** — a conta da vítima no provedor —, exatamente o que o trampolim faz.
+> 📊 **Como pontuar (resultado = ATO via roubo de token):** sozinho, o open redirect é `CVSS:3.1` ~6.1 (Médio); ninguém paga crítico por ele. Mas o **impacto da chain** é tomar a conta de qualquer usuário, então você pontua o ATO: **v3.1 9.3 (Crítico)** `AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:N` · **v4.0 9.3 (Crítico)** `CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:A/VC:H/VI:H/VA:N/SC:H/SI:H/SA:N`. Repare: **mesmo com `UI:R`** (a vítima precisa abrir o link) já é **Crítico** — quem puxa pra 9.3 é a combinação `Scope:Changed` + `C:H/I:H` (o dano cai na conta da vítima, *outro* sistema), não a interação. Se o ataque dispara sozinho (`UI:N`), beira **10.0**. Note: o `S:C` (v3.1) e o `SC:H/SI:H` (v4.0) refletem que o dano acontece **num outro sistema** — a conta da vítima no provedor —, exatamente o que o trampolim faz.
 
 > ⚠️ Mesmo no fluxo *authorization code*, dá pra encadear. Aqui o `code` volta na **query string** (`?code=...`), não no fragmento — então a captura é diferente: ou o open redirect repassa a query inteira pro atacante, ou um recurso externo na página de callback **vaza o `code` via header `Referer`**. De posse do `code`, o atacante o troca por token. (PortSwigger documenta as duas variantes em [OAuth](https://portswigger.net/web-security/oauth).)
 
@@ -129,7 +130,7 @@ A cadeia que transforma um "o servidor faz uma request estranha" em **comprometi
 
 **Por que funciona:** SSRF dá o poder de bater no `169.254.169.254`, que normalmente só a própria VM alcança — e esse endpoint distribui credenciais. A primitiva "request server-side" virou "credenciais de produção" — e, com a permissão IAM certa, virou **comando executado no servidor**. Aprofundamento em [SSRF](/posts/ssrf/), na superfície cloud em [Cloud / AWS Misconfiguration](/posts/cloud-aws-misconfiguration/) e no salto pra execução em [RCE](/posts/rce-command-injection-ssti/).
 
-> 📊 **Como pontuar (resultado = comprometimento da infra / RCE):** o SSRF "cego" isolado costuma cair em Médio; aqui o impacto final é credenciais de produção (e, com IAM folgada, RCE), então você pontua o **comprometimento**: **v3.1 9.1–9.9** ex.: `AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:H` (9.9, role over-privileged, exige só uma conta logada pra acionar o SSRF) · **v4.0 ~9.3 (Crítico)** `CVSS:4.0/AV:N/AC:L/AT:N/PR:L/UI:N/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H`. Se o SSRF é acionável **sem autenticação** (`PR:N`), sobe pra 10.0/9.5. O `SC/SI/SA:H` do v4.0 captura bem o caso: o estrago vaza da app pra **toda a conta cloud**.
+> 📊 **Como pontuar (resultado = comprometimento da infra / RCE):** o SSRF "cego" isolado costuma cair em Médio; aqui o impacto final é credenciais de produção (e, com IAM folgada, RCE), então você pontua o **comprometimento**: **v3.1 9.1–9.9** ex.: `AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:H` (9.9, role over-privileged, exige só uma conta logada pra acionar o SSRF) · **v4.0 9.4 (Crítico)** `CVSS:4.0/AV:N/AC:L/AT:N/PR:L/UI:N/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H`. Se o SSRF é acionável **sem autenticação** (`PR:N`), vai a **10.0**. O `SC/SI/SA:H` do v4.0 captura bem o caso: o estrago vaza da app pra **toda a conta cloud**.
 
 > ⚠️ **IMDSv2 não é mágica.** Ele mitiga SSRFs simples (só-URL) porque exige o `PUT`+token e nega `PUT` com `X-Forwarded-For`. Mas SSRFs que controlam método/headers ainda chegam lá. A defesa de verdade é **bloquear `169.254.169.254` na saída** e **forçar IMDSv2 com hop limit 1**.
 
@@ -172,7 +173,7 @@ fetch('/api/account/email', {
 
 > 💡 **Padrão de impacto que o triador adora:** um XSS sozinho às vezes é *Low*; "XSS no host X **mais** o swap de sessão que rouba o JWT (JSON Web Token — um token de sessão/login assinado, transportado em cookie ou header) ou o cookie" costuma ser o que **destrava** o impacto alto. Sem o vetor de roubo, a story fica fraca.
 
-> 📊 **Como pontuar (resultado = ATO):** um reflected XSS isolado é ~6.1 (Médio). Encadeado até tomar a conta, você pontua o ATO **com a interação que o XSS exige** (a vítima abre o link/página): **v3.1 8.3 (Alto)** `AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:N` · **v4.0 ~8.7 (Alto)** `CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:A/VC:H/VI:H/VA:N/SC:H/SI:H/SA:N`. Se for **stored** XSS num lugar que a vítima visita no fluxo normal (sem link enviado), dá pra defender `UI:N`/`UI:P` e o score sobe. O Caminho B (XSS executa a ação) tem o mesmo impacto final, mesmo com `HttpOnly` — o cookie não sai, mas a conta cai igual.
+> 📊 **Como pontuar (resultado = ATO):** um reflected XSS isolado é ~6.1 (Médio). Encadeado até tomar a conta, você pontua o ATO **com a interação que o XSS exige** (a vítima abre o link/página): **v3.1 9.3 (Crítico)** `AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:N` · **v4.0 9.3 (Crítico)** `CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:A/VC:H/VI:H/VA:N/SC:H/SI:H/SA:N`. Se for **stored** XSS num lugar que a vítima visita no fluxo normal (sem link enviado), dá pra defender `UI:N`/`UI:P` e o score sobe. O Caminho B (XSS executa a ação) tem o mesmo impacto final, mesmo com `HttpOnly` — o cookie não sai, mas a conta cai igual.
 
 ---
 
@@ -202,7 +203,7 @@ fetch('/api/account/email', {
 
 **Por que funciona:** o IDOR sempre teve a primitiva de leitura; faltava o **espaço de busca**. O disclosure preencheu. Como reportar IDOR com impacto e escala está em [Broken Access Control](/posts/broken-access-control-idor-bola-bfla/).
 
-> 📊 **Como pontuar (resultado = vazamento de PII em massa):** um IDOR de leitura isolado já é ~6.5; o que sobe o score é o **escopo cruzar pra outras contas** + a **escala**. Vetor: **v3.1 7.7 (Alto)** `AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:N/A:N` (o `S:C` reflete dado de *outro* usuário; só confidencialidade, daí `I:N/A:N`) · **v4.0 ~8.7 (Alto)** `CVSS:4.0/AV:N/AC:L/AT:N/PR:L/UI:N/VC:H/VI:N/VA:N/SC:H/SI:N/SA:N`. Muitos programas pagam como **Crítico** pela escala + LGPD, mesmo com o vetor em Alto — argumente o **número de registros** e a sensibilidade (CPF), como detalhado em [Severidade & Impacto](/posts/severidade-impacto-triagem/).
+> 📊 **Como pontuar (resultado = vazamento de PII em massa):** um IDOR de leitura isolado já é ~6.5; o que sobe o score é o **escopo cruzar pra outras contas** + a **escala**. Vetor: **v3.1 7.7 (Alto)** `AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:N/A:N` (o `S:C` reflete dado de *outro* usuário; só confidencialidade, daí `I:N/A:N`) · **v4.0 8.3 (Alto)** `CVSS:4.0/AV:N/AC:L/AT:N/PR:L/UI:N/VC:H/VI:N/VA:N/SC:H/SI:N/SA:N`. Muitos programas pagam como **Crítico** pela escala + LGPD, mesmo com o vetor em Alto — argumente o **número de registros** e a sensibilidade (CPF), como detalhado em [Severidade & Impacto](/posts/severidade-impacto-triagem/).
 
 ---
 
@@ -268,7 +269,7 @@ Essa cadeia mostra que chaining não é só primitiva web clássica: aqui os elo
 
 **Por que funciona:** cada peça é "pequena" — uma senha exposta, uma lista de e-mails pública, um 2FA que confia em quem chega primeiro. Juntas, contornam autenticação **e** o segundo fator. O detalhe que fecha a cadeia é o **2FA registrável sem prova de posse**: se o app exigisse a senha *atual* (não a padrão) ou verificasse posse antes de enrolar o fator, o último elo cairia. Fluxo de ATO e bypass de 2FA a fundo em [Account Takeover](/posts/account-takeover/).
 
-> 📊 **Como pontuar (resultado = ATO de contas internas, sem login prévio):** o atacante é anônimo até logar, então o vetor é de ATO não-autenticado: **v3.1 9.8 (Crítico)** `AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H` (conta o lock-out do dono como `A:H`) · **v4.0 ~9.3 (Crítico)** `CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N`. Mesmo que "só" funcione em quem não trocou a senha-padrão, o impacto por conta tomada é total.
+> 📊 **Como pontuar (resultado = ATO de contas internas, sem login prévio):** o atacante é anônimo até logar, então o vetor é de ATO não-autenticado: **v3.1 9.8 (Crítico)** `AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H` (conta o lock-out do dono como `A:H`) · **v4.0 9.3 (Crítico)** `CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N`. Mesmo que "só" funcione em quem não trocou a senha-padrão, o impacto por conta tomada é total.
 
 > ⚠️ **Pare no PoC mínimo.** Esta cadeia mira **contas reais de pessoas**. Demonstre com **uma** conta (idealmente de teste/sua, ou com autorização explícita do programa), não enumere a base inteira. Logar em conta alheia sem autorização é crime — veja a [Nota ética](#nota-ética).
 
@@ -360,7 +361,7 @@ Cadeias amplificam impacto — e impacto real causa dano real. Tudo aqui é pra 
 - [AWS — How Instance Metadata Service Version 2 works (IMDSv2)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-metadata-v2-how-it-works.html) (token, `169.254.169.254`, `iam/security-credentials/`).
 - [AWS — Defense in depth contra SSRF no IMDS](https://aws.amazon.com/blogs/security/defense-in-depth-open-firewalls-reverse-proxies-ssrf-vulnerabilities-ec2-instance-metadata-service/) (por que o IMDSv2 nega `PUT` com `X-Forwarded-For` e usa hop limit 1).
 - [FIRST — CVSS v4.0 Calculator](https://www.first.org/cvss/calculator/4.0) e [Specification](https://www.first.org/cvss/v4.0/specification-document) — pontuar o impacto final da chain (sistema vs. subsequente).
-- [RFC 9110 §10.2.2 — Location](https://www.rfc-editor.org/rfc/rfc9110#name-location) (herança do fragmento no redirect — base da Cadeia 1).
+- [RFC 9110 §10.2.2 — Location](https://www.rfc-editor.org/rfc/rfc9110#name-location) (reanexação do fragmento pelos navegadores no redirect — base da Cadeia 1).
 - [PortSwigger — Cross-site scripting (XSS)](https://portswigger.net/web-security/cross-site-scripting) e [Web cache poisoning](https://portswigger.net/web-security/web-cache-poisoning).
 - [OWASP — CRLF Injection](https://owasp.org/www-community/vulnerabilities/CRLF_Injection).
 - [reddelexc/hackerone-reports](https://github.com/reddelexc/hackerone-reports) — reports divulgados pra estudar cadeias reais.

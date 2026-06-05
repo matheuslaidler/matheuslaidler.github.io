@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:45:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["business logic", "logic flaws", "OWASP", "WSTG", "bug bounty", "web security", "Burp Suite", "price manipulation", "workflow bypass"]
+image: /assets/img/covers/business-logic.png
 pin: false
 comments: true
 ---
@@ -69,6 +70,9 @@ $saldo = $usuario->saldo - $total;            // saldo - (-100) = saldo + 100  -
 Não tem injeção. Tem aritmética honesta sobre uma entrada que **nunca deveria existir** — e que o servidor nunca proibiu.
 
 ## Tipos e variações
+
+> 💡 **WSTG** (Web Security Testing Guide): o guia de testes de segurança web do OWASP, organizado por classe de falha.
+{: .prompt-tip }
 
 Vou organizar pelo *jeito de raciocinar*, com referência aos exemplos oficiais da PortSwigger e às seções do OWASP WSTG (Business Logic Testing, seção **4.10**: dez casos de teste — de *Test Business Logic Data Validation* (`4.10.1` / `WSTG-BUSL-01`) a *Test Payment Functionality* (`4.10.10`, presente na versão *latest*); a versão *stable* v4.2 vai até `4.10.9` / `WSTG-BUSL-09`):
 
@@ -151,6 +155,9 @@ Content-Type: application/json
 
 {"orderId": 5012}
 ```
+
+> 💡 **MFA / 2FA**: autenticação de múltiplos fatores — exige 2+ fatores pra logar (ex.: senha + código do app autenticador).
+{: .prompt-tip }
 
 Se o pedido vira `CONFIRMED`/`PAID` sem nunca ter passado por `/api/order/pay`, **a máquina de estado não foi validada no servidor**. Mesmo raciocínio vale pra pular **KYC**, pular **verificação de e-mail**, ou pular a etapa de **MFA** num login.
 

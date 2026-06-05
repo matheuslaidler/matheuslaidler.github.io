@@ -20,7 +20,7 @@ O foco é sempre a **prática** e explicar o *porquê* das coisas, não apenas o
 
 ## Quem sou eu
 
-`Matheus Laidler` — Desenvolvedor e Pesquisador de Segurança, sempre atrás de novos desafios para aprender e aprimorar conhecimentos. Atualmente transforma estudo em conteúdo, sem fins lucrativos: além do blog, mantenho um canal no [YouTube](https://youtube.com/@matheuslaidler).
+`Matheus Laidler` — **Desenvolvedor Web** com formação em **Segurança da Informação**. Construo aplicações e também as quebro: atuo como **bug hunter** (*security researcher*) em programas autorizados e sou um **profissional de cibersegurança** apaixonado por entender como as coisas funcionam — e como burlá-las, de forma ética. Transformo estudo em conteúdo, sem fins lucrativos: além do blog, mantenho um canal no [YouTube](https://youtube.com/@matheuslaidler).
 
 > Este projeto reúne, sob o meu nome, materiais que antes ficavam espalhados em outros projetos — *Road2Tech* (meu projeto de TI antigo), *WayOfSec* (Meu fórum de sec - projeto antigo) e *SecLab* (meu projeto antigo de estudo prático em laboratório) — hoje unificados tudo aqui no Acervo de TI.
 

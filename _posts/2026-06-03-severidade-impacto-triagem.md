@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:57:00 -0300
 categories: [Bug Bounty, Fundamentos]
 tags: ["CVSS", "CWE", "VRT", "Bugcrowd", "severidade", "triagem", "bug bounty", "web security", "report writing"]
+image: /assets/img/covers/severidade-impacto-triagem.png
 pin: false
 comments: true
 ---
@@ -163,6 +164,9 @@ Citar o CWE certo faz três coisas pelo seu report: mostra que você **sabe o qu
 > 💡 **Como referenciar:** escreva `CWE-639: Authorization Bypass Through User-Controlled Key` e linke pra `https://cwe.mitre.org/data/definitions/639.html`. Não invente o nome — pega o **canônico** direto da MITRE. Nome errado mina sua credibilidade na hora.
 
 ## VRT da Bugcrowd: prevendo a classificação ANTES de reportar
+
+> 💡 **ATO** (Account Takeover): comprometimento total da conta da vítima (sessão, brute force, phishing) — acesso aos dados e ações dela.
+{: .prompt-tip }
 
 Aqui está o segredo que economiza horas: o [**VRT (Vulnerability Rating Taxonomy)**](https://bugcrowd.com/vulnerability-rating-taxonomy) da Bugcrowd é uma tabela pública que diz, pra cada classe de falha, **qual prioridade a Bugcrowd tende a dar por padrão**. É literalmente o "gabarito" que os triadores usam. Ler o VRT antes de reportar é como **ver as respostas da prova** — você já sabe se aquilo vale P1 ou P5.
 
@@ -338,8 +342,6 @@ Classificar severidade é ferramenta de **comunicação responsável** com progr
 
 ---
 *Próximo na série: [Como escrever um report que paga](/posts/como-escrever-report-que-paga/) · base: [Broken Access Control: IDOR, BOLA e BFLA](/posts/broken-access-control-idor-bola-bfla/)*
-</content>
-</invoke>
 
 ---
 

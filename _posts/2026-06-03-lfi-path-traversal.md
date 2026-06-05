@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:48:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["LFI", "path traversal", "directory traversal", "RFI", "file inclusion", "PHP wrappers", "log poisoning", "OWASP", "bug bounty", "web security"]
+image: /assets/img/covers/lfi-path-traversal.png
 pin: false
 comments: true
 ---
@@ -56,7 +57,7 @@ O impacto escala em degraus bem definidos — e o bounty acompanha:
 
 - **Leitura de config e segredos.** Ler `/etc/passwd` já confirma a falha, mas o ouro está em `config.php`, `.env`, `application.yml`, `web.config`, `wp-config.php`: ali moram credenciais de banco, chaves de API, secrets de JWT. De posse disso, você pivota pra dentro.
 
-  > 💡 **JWT**: token de sessão em 3 partes `header.payload.signature` (Base64URL); o *secret* assina ele. Detalhe no [Glossário](/posts/fundamentos-web-hacking/).
+  > 💡 **JWT** (JSON Web Token): token de sessão em 3 partes `header.payload.signature` (Base64URL); o *secret* assina ele. Detalhe no [Glossário](/posts/fundamentos-web-hacking/).
 - **Leitura de código-fonte.** Com `php://filter` dá pra baixar o **fonte** da aplicação em base64 (veja adiante). Código na mão = mapa de outras vulnerabilidades.
 
   > 💡 **Base64**: forma de representar bytes só com letras/números (não é criptografia — qualquer um decodifica). Detalhe no [Glossário](/posts/fundamentos-web-hacking/).
@@ -406,7 +407,7 @@ Se o `web.config` voltar com `<connectionStrings>`, você tem credenciais de ban
 - **Leitura arbitrária de arquivo, sem autenticação** (o que foi comprovado aqui): `CWE-22` (Path Traversal).
   - **CVSS v3.1:** `7.5` (Alto) — `AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N` (pela rede, sem login, sem interação; só confidencialidade — você lê, não escreve).
   - **CVSS v4.0 (CVSS-B):** `8.7` — `CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N` (mesmo perfil; o estrago fica no sistema vulnerável, sem impacto subsequente — é o vetor do Heartbleed, exemplo oficial do FIRST).
-- **Se escalar pra RCE** (log poisoning/wrapper executando comando): aí muda de classe — `CWE-98` (PHP File Inclusion) e o vetor canônico de RCE remoto sobe pra **v3.1 `9.8`** (`AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H`) / **v4.0 `9.3`** (`CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N`).
+- **Se escalar pra RCE** (log poisoning/wrapper executando comando): aí muda de classe — `CWE-98` (*Improper Control of Filename for Include/Require em PHP* — o nome oficial enfatiza *PHP Remote File Inclusion*) e o vetor canônico de RCE remoto sobe pra **v3.1 `9.8`** (`AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H`) / **v4.0 `9.3`** (`CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N`).
 
 > ⚠️ **Não copie o número da v3.1 pra v4.0** — recalcule na [calculadora oficial v4.0](https://www.first.org/cvss/calculator/4.0). E reporte o que **provou**: se só leu arquivo, é `7.5`/`8.7`; só suba pra `9.8`/`9.3` quando demonstrar execução de comando. (Como calibrar score e citar CWE: [post 02 — Severidade & Impacto](/posts/severidade-impacto-triagem/); como estruturar o report pra pagar: [post 03 — Report que paga](/posts/como-escrever-report-que-paga/).)
 

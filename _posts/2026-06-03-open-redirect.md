@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:46:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["open redirect", "unvalidated redirect", "OAuth", "redirect_uri", "phishing", "SSRF", "CRLF", "chaining", "OWASP", "bug bounty", "web security", "Burp Suite"]
+image: /assets/img/covers/open-redirect.png
 pin: false
 comments: true
 ---
@@ -54,7 +55,7 @@ A nota técnica conta uma história parecida: **baixa/média sozinho, crítica e
 | Cenário | CVSS v3.1 | CVSS v4.0 | Leitura |
 |---|---|---|---|
 | **Open redirect isolado** | **6.1 — Médio**<br>`AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N` | **~5.3 — Médio**<br>`AV:N/AC:L/AT:N/PR:N/UI:A/VC:N/VI:L/VA:N/SC:N/SI:L/SA:N` | Exige **interação** da vítima (clicar); impacto é integridade/confiança, não dado direto. O `S:C` (escopo alterado) do v3.1 é o que segura em Médio. |
-| **Chain: open redirect → roubo de `code`/token OAuth → ATO** | **8.0–9.3 — Alto/Crítico**<br>ex.: `AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:N` (8.2) | **8.3–9.3 — Alto/Crítico**<br>ex.: `…/VC:H/VI:H/VA:N/SC:H/SI:H/…` | O impacto **não é do redirect** — é da conta tomada. Aqui você pontua o **resultado da chain** (ATO), não o gadget. |
+| **Chain: open redirect → roubo de `code`/token OAuth → ATO** | **8.0–9.3 — Alto/Crítico**<br>ex.: `AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:N` (9.3) | **8.3–9.3 — Alto/Crítico**<br>ex.: `…/VC:H/VI:H/VA:N/SC:H/SI:H/…` | O impacto **não é do redirect** — é da conta tomada. Aqui você pontua o **resultado da chain** (ATO), não o gadget. |
 
 > 💡 **Por que dois scores?** O **v3.1** ainda é o que a maioria dos programas usa; o **v4.0** ([FIRST, 2023](https://www.first.org/cvss/v4.0/specification-document)) trocou o `S` (Scope) por métricas separadas de impacto **no sistema** (`VC/VI/VA`) e **subsequente** (`SC/SI/SA`) — o que **descreve melhor um trampolim**, em que o dano acontece num *outro* sistema (a conta da vítima, um serviço interno). Para open redirect, a [referência da PortSwigger](https://portswigger.net/kb/issues/00500100_open-redirection-reflected) classifica a severidade do issue isolado como **Low/Information**, justamente porque o impacto direto depende de engenharia social — outra razão pra **pontuar a chain**, não o gadget.
 
@@ -238,7 +239,7 @@ Quando o valor do parâmetro vai **cru pro header `Location`** e o servidor **n�
 https://alvo.com/logout?redirect_uri=%0d%0a%0d%0a<script>alert(document.domain)</script>
 ```
 
-**Por que funciona:** o `%0d%0a%0d%0a` fecha os headers e abre o **corpo** da resposta; se o `Content-Type` for `text/html`, o navegador renderiza o que vier depois — virando **XSS refletido**. Esse foi exatamente o padrão de um caso real anonimizado: um gateway corporativo refletia o parâmetro `post_logout_redirect_uri` do endpoint de logout sem sanitizar CRLF, e um payload com `%0D%0A%0D%0A<body onload=...>` executava JS no domínio do alvo (classe pública [CVE-2023-24488](https://cwe.mitre.org/data/definitions/601.html)). Aqui a severidade **sobe sozinha**, sem precisar de outra falha: XSS no domínio do alvo já é Alto.
+**Por que funciona:** o `%0d%0a%0d%0a` fecha os headers e abre o **corpo** da resposta; se o `Content-Type` for `text/html`, o navegador renderiza o que vier depois — virando **XSS refletido**. Esse foi exatamente o padrão de um caso real anonimizado: um gateway corporativo refletia o parâmetro `post_logout_redirect_uri` do endpoint de logout sem sanitizar CRLF, e um payload com `%0D%0A%0D%0A<body onload=...>` executava JS no domínio do alvo (o [CVE-2023-24488](https://nvd.nist.gov/vuln/detail/CVE-2023-24488) é classificado como XSS/CWE-79, não open redirect). Aqui a severidade **sobe sozinha**, sem precisar de outra falha: XSS no domínio do alvo já é Alto.
 
 > 💡 Antes de cravar "só open redirect", sempre teste **um `%0d%0a` no parâmetro**. Se a quebra de linha passa pro `Location`, você pode ter CRLF/XSS no colo — um achado bem mais valioso. A mecânica completa está em [CRLF Injection e HTTP Request Smuggling](/posts/crlf-request-smuggling/).
 
@@ -272,6 +273,9 @@ Fluxo do ataque:
 2. O provedor autentica e redireciona pra `https://alvo.com/login/callback?next=//evil.com&code=AUTH_CODE`.
 3. O endpoint `/login/callback` do alvo, vulnerável, segue o `next` e redireciona pra `//evil.com` **carregando o `code` junto** (no query ou via `Referer`).
 4. O atacante captura o `code` em `evil.com` e troca por um token → **ATO**.
+
+> 💡 **fragment**: a parte da URL após o # (ex.: #access_token=abc). O navegador a lê, mas ela NÃO é enviada ao servidor.
+{: .prompt-tip }
 
 Variante ainda mais direta com o **implicit grant** (`response_type=token`): aí o **access token** vem na **fragment** (`#access_token=...`) da URL de callback. Como a PortSwigger nota, *"the access token is sent from the OAuth service to the client application via the user's browser as a URL fragment"* — e fragment é lido por JS no browser, então um open redirect client-side no callback vaza o token direto. O detalhe que faz a chain fechar: **o navegador reanexa a fragment ao seguir um redirect**, então quando o open redirect leva pra `evil.com`, o `#access_token=...` vai junto; em `evil.com` um `document.location.hash` captura o token e reenvia pro atacante (é assim que o lab da PortSwigger exfiltra).
 

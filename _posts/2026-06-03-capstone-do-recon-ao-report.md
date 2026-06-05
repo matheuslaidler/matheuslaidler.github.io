@@ -5,6 +5,7 @@ author: matheus
 date: 2026-06-03 23:34:00 -0300
 categories: [Bug Bounty, Avançado]
 tags: ["bug bounty", "walkthrough", "recon", "IDOR", "BOLA", "business logic", "chaining", "report writing", "web security", "metodologia"]
+image: /assets/img/covers/capstone-do-recon-ao-report.png
 pin: false
 comments: true
 ---
