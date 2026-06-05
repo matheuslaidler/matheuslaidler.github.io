@@ -273,3 +273,7 @@ Tudo aqui é pra **testes autorizados** — programas de bug bounty (dentro do e
 
 ---
 *Próximo na série: [Account Takeover — JWT, reset de senha e OAuth](/posts/account-takeover/) · base: [Recon & Discovery](/posts/recon-discovery/)*
+
+---
+
+*📚 Parte do **[Guia Completo de Bug Bounty](/posts/guia-bug-bounty/)** — o índice da série, do básico ao avançado.*

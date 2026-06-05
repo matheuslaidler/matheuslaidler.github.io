@@ -443,3 +443,7 @@ Tudo aqui é pra **testes autorizados** — bug bounty dentro do escopo, pentest
 
 ---
 *Próximo/relacionado na série: [Como escrever um report que paga](/posts/como-escrever-report-que-paga/) · base: [Recon & Discovery](/posts/recon-discovery/) · severidade: [Severidade e impacto](/posts/severidade-impacto-triagem/)*
+
+---
+
+*📚 Parte do **[Guia Completo de Bug Bounty](/posts/guia-bug-bounty/)** — o índice da série, do básico ao avançado.*

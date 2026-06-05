@@ -442,3 +442,7 @@ Prototype pollution server-side **altera o processo inteiro** e pode derrubar o 
 
 ---
 *Relacionado na série: [XSS e HTML Injection](/posts/xss-html-injection/) · [RCE: Command Injection, SSTI e Upload](/posts/rce-command-injection-ssti/) · [Chaining de Vulnerabilidades](/posts/chaining-vulnerabilidades/) · [Segurança de APIs](/posts/api-security/) · [Fundamentos & Glossário](/posts/fundamentos-web-hacking/)*
+
+---
+
+*📚 Parte do **[Guia Completo de Bug Bounty](/posts/guia-bug-bounty/)** — o índice da série, do básico ao avançado.*

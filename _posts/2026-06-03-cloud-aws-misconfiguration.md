@@ -521,3 +521,7 @@ Cloud é o terreno onde "passar do ponto" deixa de ser deselegante e vira **crim
 
 ---
 *Relacionado na série: [SSRF](/posts/ssrf/) · [Subdomain Takeover & Broken Link Hijacking](/posts/subdomain-takeover-broken-link-hijacking/) · [Security Misconfiguration & CVE Hunting](/posts/security-misconfiguration-cve-hunting/) · [API Security](/posts/api-security/) · [Mobile Bug Bounty](/posts/mobile-bug-bounty/) · [Como escrever um report que paga](/posts/como-escrever-report-que-paga/)*
+
+---
+
+*📚 Parte do **[Guia Completo de Bug Bounty](/posts/guia-bug-bounty/)** — o índice da série, do básico ao avançado.*

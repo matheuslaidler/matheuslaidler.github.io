@@ -462,3 +462,7 @@ Tudo aqui é pra **alvos autorizados** — programas de bug bounty dentro do esc
 
 ---
 *Relacionado na série: [Índice da série](/posts/guia-bug-bounty/) · [Recon & Discovery](/posts/recon-discovery/) · [Broken Access Control: IDOR, BOLA e BFLA](/posts/broken-access-control-idor-bola-bfla/) · [Business Logic](/posts/business-logic/) · [Segurança de APIs](/posts/api-security/) · [Chaining](/posts/chaining-vulnerabilidades/) · [Severidade & Impacto](/posts/severidade-impacto-triagem/) · [Como escrever um report que paga](/posts/como-escrever-report-que-paga/)*
+
+---
+
+*📚 Parte do **[Guia Completo de Bug Bounty](/posts/guia-bug-bounty/)** — o índice da série, do básico ao avançado.*

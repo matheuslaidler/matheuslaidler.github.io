@@ -537,3 +537,7 @@ Tudo aqui é para **testes autorizados** — bug bounty dentro do escopo, pentes
 
 ---
 *Próximo/relacionado na série: [Security Misconfiguration e Caça a CVEs/1-day](/posts/security-misconfiguration-cve-hunting/) · base: [Recon & Discovery](/posts/recon-discovery/) · reportar: [Como escrever um report que paga](/posts/como-escrever-report-que-paga/)*
+
+---
+
+*📚 Parte do **[Guia Completo de Bug Bounty](/posts/guia-bug-bounty/)** — o índice da série, do básico ao avançado.*

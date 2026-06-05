@@ -539,3 +539,7 @@ Tudo aqui é pra **alvos autorizados**: programas de bug bounty dentro do escopo
 
 ---
 *Próximo na série: [Broken Access Control: IDOR, BOLA e BFLA](/posts/broken-access-control-idor-bola-bfla/) — onde os subdomínios e endpoints que você achou aqui viram bug de verdade.*
+
+---
+
+*📚 Parte do **[Guia Completo de Bug Bounty](/posts/guia-bug-bounty/)** — o índice da série, do básico ao avançado.*

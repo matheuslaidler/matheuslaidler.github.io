@@ -456,3 +456,7 @@ Tudo aqui é pra **alvos autorizados**: programas de bug bounty com app **no esc
 
 ---
 *Relacionado na série: [Broken Access Control — IDOR/BOLA/BFLA](/posts/broken-access-control-idor-bola-bfla/) · [Account Takeover](/posts/account-takeover/) · [Business Logic Flaws](/posts/business-logic/) · base: [Recon & Discovery](/posts/recon-discovery/) · pra reportar: [Como escrever um report que paga](/posts/como-escrever-report-que-paga/)*
+
+---
+
+*📚 Parte do **[Guia Completo de Bug Bounty](/posts/guia-bug-bounty/)** — o índice da série, do básico ao avançado.*

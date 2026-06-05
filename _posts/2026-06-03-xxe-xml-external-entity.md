@@ -535,3 +535,7 @@ Tudo aqui é pra **testes autorizados**: bug bounty dentro do escopo, pentests c
 
 ---
 *Relacionado na série: [SSRF](/posts/ssrf/) · [LFI / Path Traversal](/posts/lfi-path-traversal/) · [XSS & HTML Injection](/posts/xss-html-injection/) · [API Security](/posts/api-security/) · [Denial of Service de aplicação](/posts/denial-of-service-aplicacao/) · base: [Fundamentos / Glossário](/posts/fundamentos-web-hacking/) · [Recon & Discovery](/posts/recon-discovery/)*
+
+---
+
+*📚 Parte do **[Guia Completo de Bug Bounty](/posts/guia-bug-bounty/)** — o índice da série, do básico ao avançado.*

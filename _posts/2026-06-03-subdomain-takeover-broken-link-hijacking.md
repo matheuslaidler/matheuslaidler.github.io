@@ -436,3 +436,7 @@ Tudo aqui é pra **testes autorizados** — bug bounty dentro do escopo, pentest
 
 ---
 *Próximo/relacionado na série: [Security Misconfiguration & CVE Hunting](/posts/security-misconfiguration-cve-hunting/) · nuvem/S3: [Cloud & AWS Misconfiguration](/posts/cloud-aws-misconfiguration/) · base: [Recon & Discovery](/posts/recon-discovery/) · impacto: [Account Takeover](/posts/account-takeover/)*
+
+---
+
+*📚 Parte do **[Guia Completo de Bug Bounty](/posts/guia-bug-bounty/)** — o índice da série, do básico ao avançado.*

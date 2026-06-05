@@ -479,3 +479,7 @@ Tudo aqui é pra **testes autorizados** — bug bounty dentro do escopo, pentest
 
 ---
 *Anterior na série: [Broken Access Control — IDOR, BOLA e BFLA](/posts/broken-access-control-idor-bola-bfla/) · base: [Recon & Discovery](/posts/recon-discovery/)*
+
+---
+
+*📚 Parte do **[Guia Completo de Bug Bounty](/posts/guia-bug-bounty/)** — o índice da série, do básico ao avançado.*

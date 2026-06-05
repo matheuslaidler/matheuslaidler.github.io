@@ -346,3 +346,7 @@ Tudo aqui é pra **testes autorizados** — programas de bug bounty (dentro do e
 
 ---
 *Próximo/relacionado na série: [Severidade & Impacto na Triagem](/posts/severidade-impacto-triagem/) · base: [Recon & Discovery](/posts/recon-discovery/) · reportar: [Como escrever um report que paga](/posts/como-escrever-report-que-paga/)*
+
+---
+
+*📚 Parte do **[Guia Completo de Bug Bounty](/posts/guia-bug-bounty/)** — o índice da série, do básico ao avançado.*

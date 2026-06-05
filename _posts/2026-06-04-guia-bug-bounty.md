@@ -71,8 +71,8 @@ Esta é uma série de estudo de **bug bounty / segurança ofensiva web**, escrit
 
 ## Conectando tudo
 
-- Os pilares **CIA** (post `00`) dizem **qual** propriedade a falha quebra; o post `02` transforma isso em **severidade/bounty**; o `03` ensina a **comunicar** pro programa pagar. Os posts `10`–`23` são o **como achar e explorar** cada classe.
-- Boa parte das classes **se combinam** (chaining): Open Redirect → roubo de token; SSRF → RCE; XSS → ATO. Quando terminar a série, o pulo do gato é justamente **encadear**.
+- Os pilares **CIA** ([Fundamentos](/posts/fundamentos-web-hacking/)) dizem **qual** propriedade a falha quebra; a [Severidade & Impacto](/posts/severidade-impacto-triagem/) transforma isso em **bounty**; o [Report que paga](/posts/como-escrever-report-que-paga/) ensina a **comunicar**. Os capítulos **`10`–`25` e `28`–`31`** são o **como achar e explorar** cada classe — do [Broken Access Control](/posts/broken-access-control-idor-bola-bfla/) ao [Cloud & AWS](/posts/cloud-aws-misconfiguration/).
+- E os capítulos **`26`** ([Chaining](/posts/chaining-vulnerabilidades/)) e **`27`** ([Anatomia de uma Caçada](/posts/capstone-do-recon-ao-report/)) fecham a série: boa parte das classes **se combina** — Open Redirect → roubo de token (OAuth), SSRF → RCE / credenciais de cloud, XSS → Account Takeover, IDOR + Business Logic → fraude. Depois de dominar cada classe, o pulo do gato é **encadear**.
 
 ## Nota ética
 

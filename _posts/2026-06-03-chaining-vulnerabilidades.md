@@ -367,3 +367,7 @@ Cadeias amplificam impacto — e impacto real causa dano real. Tudo aqui é pra 
 
 ---
 *Relacionado na série: [Open Redirect](/posts/open-redirect/) · [SSRF](/posts/ssrf/) · [Cloud / AWS Misconfiguration](/posts/cloud-aws-misconfiguration/) · [RCE, Command Injection e SSTI](/posts/rce-command-injection-ssti/) · [XSS e HTML Injection](/posts/xss-html-injection/) · [Account Takeover](/posts/account-takeover/) · [Broken Access Control (IDOR/BOLA/BFLA)](/posts/broken-access-control-idor-bola-bfla/) · [CRLF e Request Smuggling](/posts/crlf-request-smuggling/) · [Subdomain Takeover](/posts/subdomain-takeover-broken-link-hijacking/) · [Severidade e triagem](/posts/severidade-impacto-triagem/) · [Como escrever um report que paga](/posts/como-escrever-report-que-paga/)*
+
+---
+
+*📚 Parte do **[Guia Completo de Bug Bounty](/posts/guia-bug-bounty/)** — o índice da série, do básico ao avançado.*

@@ -413,3 +413,7 @@ RCE é o tipo de falha em que um passo em falso vira incidente real. Tudo aqui �
 
 ---
 *Relacionado na série: [RCE: Command Injection, SSTI e Upload](/posts/rce-command-injection-ssti/) · [SSRF](/posts/ssrf/) · [LFI / Path Traversal](/posts/lfi-path-traversal/) · [Chaining de Vulnerabilidades](/posts/chaining-vulnerabilidades/) · [Broken Access Control (IDOR/BOLA/BFLA)](/posts/broken-access-control-idor-bola-bfla/) · base: [Recon & Discovery](/posts/recon-discovery/) · [Glossário](/posts/fundamentos-web-hacking/)*
+
+---
+
+*📚 Parte do **[Guia Completo de Bug Bounty](/posts/guia-bug-bounty/)** — o índice da série, do básico ao avançado.*

@@ -536,3 +536,7 @@ Tudo aqui é pra **alvos autorizados** — bug bounty dentro do escopo, pentests
 
 ---
 *Relacionado na série: [Broken Access Control: IDOR, BOLA e BFLA](/posts/broken-access-control-idor-bola-bfla/) · [Account Takeover](/posts/account-takeover/) · [Business Logic](/posts/business-logic/) · [SSRF](/posts/ssrf/) · [Security Misconfiguration](/posts/security-misconfiguration-cve-hunting/) · [Denial of Service](/posts/denial-of-service-aplicacao/) · [Recon & Discovery](/posts/recon-discovery/)*
+
+---
+
+*📚 Parte do **[Guia Completo de Bug Bounty](/posts/guia-bug-bounty/)** — o índice da série, do básico ao avançado.*

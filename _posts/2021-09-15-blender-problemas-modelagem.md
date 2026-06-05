@@ -43,10 +43,10 @@ Pronto. Agora seu modelo vai mostrar as faces em duas cores:
 
 Se você ver vermelho onde deveria ser azul, achou o problema.
 
-![Face Orientation mostrando normais corretas - apenas parte interna da luva em vermelho](/_drafts/.gitbook/assets/image%20(2).png)
+![Face Orientation mostrando normais corretas - apenas parte interna da luva em vermelho](/assets/img/blender/image%20(2).png)
 *Exemplo de modelo correto: só a parte de dentro da luva está vermelha, como esperado*
 
-![Faces totalmente invertidas](/_drafts/.gitbook/assets/image%20(11).png)
+![Faces totalmente invertidas](/assets/img/blender/image%20(11).png)
 *Exemplo de problema: faces visíveis invertidas, tudo que deveria ser azul tá vermelho*
 
 ### Consertando as normais
@@ -63,13 +63,13 @@ Se você tem poucas faces problemáticas e sabe exatamente quais são:
 
 Ou usa o atalho **Alt+N** pra abrir o menu de normais direto.
 
-![Menu de normais via Mesh](/_drafts/.gitbook/assets/image%20(5).png)
+![Menu de normais via Mesh](/assets/img/blender/image%20(5).png)
 *Menu de normais acessível via Mesh*
 
-![Menu de normais expandido](/_drafts/.gitbook/assets/image%20(16).png)
+![Menu de normais expandido](/assets/img/blender/image%20(16).png)
 *Opções disponíveis no menu de normais*
 
-![Atalho Alt+N](/_drafts/.gitbook/assets/image%20(3).png)
+![Atalho Alt+N](/assets/img/blender/image%20(3).png)
 *Menu acessível via atalho Alt+N*
 
 **Opção 2: Recalcular automaticamente**
@@ -90,14 +90,14 @@ Eu tinha acabado de modelar o pé esquerdo do personagem. Pra não ter que model
 
 Só que... quando ativei o Face Orientation, o pé novo tava todo vermelho.
 
-![Pé com normais invertidas após mirror](/_drafts/.gitbook/assets/image%20(13).png)
+![Pé com normais invertidas após mirror](/assets/img/blender/image%20(13).png)
 *O pé espelhado ficou com todas as normais invertidas*
 
 O que acontece é que o Mirror inverte a geometria, e junto com ela, as normais. Então toda face que apontava pra fora agora aponta pra dentro. É um comportamento esperado, mas se você não souber disso, vai exportar o modelo e ter um pé invisível na engine.
 
 A solução é simples: seleciona todos os vértices do objeto espelhado (com X-Ray ligado pra pegar tudo, ou usa L se a malha for conectada) e manda um **Shift+N**.
 
-![Pé corrigido após recalcular normais](/_drafts/.gitbook/assets/image%20(14).png)
+![Pé corrigido após recalcular normais](/assets/img/blender/image%20(14).png)
 *Após Shift+N, as normais voltam ao normal (trocadilho intencional)*
 
 **Dica importante:** sempre que você usar Mirror, Scale negativo, ou qualquer transformação que "inverta" a geometria, lembra de checar as normais depois. É o tipo de coisa que passa despercebido no Blender mas aparece na engine.
@@ -112,10 +112,10 @@ Cenário: você tem um personagem dividido em várias malhas separadas - corpo, 
 
 O cabelo assume a textura do corpo. O corpo fica com a textura distorcida. Algumas partes ficam com cores trocadas. Um verdadeiro Frankenstein digital.
 
-![Antes de juntar - texturas corretas](/_drafts/.gitbook/assets/image%20(6).png)
+![Antes de juntar - texturas corretas](/assets/img/blender/image%20(6).png)
 *Antes: corpo e pé com texturas corretas*
 
-![Antes de juntar - outro exemplo](/_drafts/.gitbook/assets/image%20(7).png)
+![Antes de juntar - outro exemplo](/assets/img/blender/image%20(7).png)
 *Outro exemplo: cabelo e pena separados, texturas ok*
 
 ### Por que isso acontece?
@@ -139,16 +139,16 @@ A solução é garantir que todas as malhas que você vai juntar tenham UV Maps 
 3. Encontra a seção **UV Maps**
 4. Anota o nome do UV Map (ou renomeia pra algo padrão tipo "UVMap")
 
-![Onde encontrar UV Maps](/_drafts/.gitbook/assets/image%20(17).png)
+![Onde encontrar UV Maps](/assets/img/blender/image%20(17).png)
 *Painel de Object Data Properties mostrando UV Maps*
 
 5. Repete o processo pra todos os objetos que vai juntar, garantindo que todos tenham o mesmo nome de UV Map
 6. Agora sim, junta as malhas com Ctrl+J
 
-![Resultado após corrigir nomes](/_drafts/.gitbook/assets/image%20(15).png)
+![Resultado após corrigir nomes](/assets/img/blender/image%20(15).png)
 *Após padronizar os nomes dos UV Maps, as texturas se mantêm corretas*
 
-![Outro exemplo corrigido](/_drafts/.gitbook/assets/image%20(1).png)
+![Outro exemplo corrigido](/assets/img/blender/image%20(1).png)
 *Mais um exemplo: corpo e cabelo juntos com texturas ok*
 
 ### Casos que encontrei
@@ -157,15 +157,15 @@ Pra ilustrar melhor, alguns exemplos reais que aconteceram comigo:
 
 **Caso 1:** Juntei a malha do corpo com o pé. O pé tinha UV Map chamado "UVMap", o corpo tinha "DiffuseUV". Resultado: textura do pé ficou completamente distorcida, assumindo o mapeamento do corpo.
 
-![Textura bugada após juntar corpo e pé](/_drafts/.gitbook/assets/image%20(10).png)
+![Textura bugada após juntar corpo e pé](/assets/img/blender/image%20(10).png)
 *Resultado do Caso 1: textura do pé totalmente distorcida*
 
 **Caso 2:** Juntei o cabelo com uma pena decorativa. Cabelo tinha "UVMap", pena tinha "UVChannel_1". O cabelo e a faixa na testa mudaram de cor, pegando a textura errada.
 
-![Textura bugada após juntar cabelo e pena](/_drafts/.gitbook/assets/image%20(4).png)
+![Textura bugada após juntar cabelo e pena](/assets/img/blender/image%20(4).png)
 *Resultado do Caso 2: cores trocadas no cabelo*
 
-![Outro ângulo do bug](/_drafts/.gitbook/assets/image.png)
+![Outro ângulo do bug](/assets/img/blender/image.png)
 *Mesmo problema visto de outro ângulo*
 
 **Caso 3:** Juntei cabelo com corpo. Mesma história - nomes diferentes de UV Map, textura do corpo inteiro ficou zoada.

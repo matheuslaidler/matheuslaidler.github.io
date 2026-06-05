@@ -477,4 +477,8 @@ RCE é a classe mais perigosa pra explorar: um comando errado **derruba ou danif
 
 ---
 *Anterior na série: [Account Takeover — JWT, reset de senha e OAuth](/posts/account-takeover/) · base: [Recon & Discovery](/posts/recon-discovery/) · relacionado: [Security Misconfiguration & CVE hunting](/posts/security-misconfiguration-cve-hunting/)*
+
+---
+
+*📚 Parte do **[Guia Completo de Bug Bounty](/posts/guia-bug-bounty/)** — o índice da série, do básico ao avançado.*
 {% endraw %}

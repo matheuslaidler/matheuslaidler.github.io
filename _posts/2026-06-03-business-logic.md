@@ -396,3 +396,7 @@ Tudo aqui é pra **testes autorizados** — bug bounty dentro do escopo, pentest
 
 ---
 *Próximo na série: [Race Conditions e ataques de concorrência](/posts/race-conditions/) · relacionados: [Broken Access Control — IDOR/BOLA/BFLA](/posts/broken-access-control-idor-bola-bfla/) · [API Security](/posts/api-security/) · [Recon & Discovery](/posts/recon-discovery/) · [Como escrever um report que paga](/posts/como-escrever-report-que-paga/)*
+
+---
+
+*📚 Parte do **[Guia Completo de Bug Bounty](/posts/guia-bug-bounty/)** — o índice da série, do básico ao avançado.*

@@ -412,3 +412,7 @@ DoS é a classe onde a linha entre **pesquisa** e **crime** é mais fina. Tudo a
 
 ---
 *Próximo/relacionado na série: [Broken Access Control: IDOR, BOLA e BFLA](/posts/broken-access-control-idor-bola-bfla/) · base: [Recon & Discovery](/posts/recon-discovery/) · pra reportar: [Como escrever um report que paga](/posts/como-escrever-report-que-paga/)*
+
+---
+
+*📚 Parte do **[Guia Completo de Bug Bounty](/posts/guia-bug-bounty/)** — o índice da série, do básico ao avançado.*

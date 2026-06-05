@@ -559,3 +559,7 @@ Tudo aqui é pra **testes autorizados** — bug bounty dentro do escopo, pentest
 
 ---
 *Próximo na série: [CRLF Injection e HTTP Request Smuggling: quebrando o protocolo](/posts/crlf-request-smuggling/) · relacionados: [SSRF — fazendo o servidor bater onde você quer](/posts/ssrf/) · [Security Misconfiguration & CVE Hunting](/posts/security-misconfiguration-cve-hunting/) · [IDOR/BOLA/BFLA](/posts/broken-access-control-idor-bola-bfla/) · base: [Recon & Discovery](/posts/recon-discovery/)*
+
+---
+
+*📚 Parte do **[Guia Completo de Bug Bounty](/posts/guia-bug-bounty/)** — o índice da série, do básico ao avançado.*

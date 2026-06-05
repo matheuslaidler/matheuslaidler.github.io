@@ -340,3 +340,7 @@ Classificar severidade é ferramenta de **comunicação responsável** com progr
 *Próximo na série: [Como escrever um report que paga](/posts/como-escrever-report-que-paga/) · base: [Broken Access Control: IDOR, BOLA e BFLA](/posts/broken-access-control-idor-bola-bfla/)*
 </content>
 </invoke>
+
+---
+
+*📚 Parte do **[Guia Completo de Bug Bounty](/posts/guia-bug-bounty/)** — o índice da série, do básico ao avançado.*

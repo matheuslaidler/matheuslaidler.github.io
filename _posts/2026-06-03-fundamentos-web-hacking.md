@@ -465,3 +465,7 @@ Tudo aqui é pra **testes autorizados**: programas de bug bounty (dentro do esco
 
 ---
 *Próximo na série: [Broken Access Control — IDOR, BOLA e BFLA](/posts/broken-access-control-idor-bola-bfla/) · base recomendada antes de caçar: este post.*
+
+---
+
+*📚 Parte do **[Guia Completo de Bug Bounty](/posts/guia-bug-bounty/)** — o índice da série, do básico ao avançado.*

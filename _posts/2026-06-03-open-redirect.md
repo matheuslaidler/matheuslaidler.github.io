@@ -478,3 +478,7 @@ Tudo aqui é pra **testes autorizados** — programas de bug bounty (dentro do e
 
 ---
 *Este post é o **trampolim** da série — ele alimenta três outros: [Account Takeover](/posts/account-takeover/) (onde a chain de `redirect_uri` → roubo de `code`/token vira ATO), [SSRF](/posts/ssrf/) (onde o redirect fura a allowlist de saída) e [Chaining de Vulnerabilidades](/posts/chaining-vulnerabilidades/) (onde ele entra como gadget de chains maiores). Vizinho de classe: [CRLF Injection](/posts/crlf-request-smuggling/). Base: [Recon & Discovery](/posts/recon-discovery/) · calibre o impacto em [Severidade & Impacto](/posts/severidade-impacto-triagem/).*
+
+---
+
+*📚 Parte do **[Guia Completo de Bug Bounty](/posts/guia-bug-bounty/)** — o índice da série, do básico ao avançado.*
