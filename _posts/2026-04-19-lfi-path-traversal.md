@@ -2,7 +2,7 @@
 title: "LFI e Path Traversal: lendo arquivos que não deviam"
 description: "Como sair de um inocente ../ até ler /etc/passwd, código-fonte e, com sorte, virar RCE — achando, explorando e corrigindo Path Traversal e Local File Inclusion."
 author: matheus
-date: 2026-06-03 23:48:00 -0300
+date: 2026-04-19 15:07:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["LFI", "path traversal", "directory traversal", "RFI", "file inclusion", "PHP wrappers", "log poisoning", "OWASP", "bug bounty", "web security"]
 image: /assets/img/covers/lfi-path-traversal.png

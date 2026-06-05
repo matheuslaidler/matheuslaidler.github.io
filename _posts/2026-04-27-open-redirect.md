@@ -2,7 +2,7 @@
 title: "Open Redirect: o trampolim subestimado"
 description: "Por que um redirect 'bobo' costuma valer pouco sozinho — mas vira crítico quando você o usa de trampolim pra roubar token OAuth, fazer SSRF ou montar phishing perfeito."
 author: matheus
-date: 2026-06-03 23:46:00 -0300
+date: 2026-04-27 13:41:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["open redirect", "unvalidated redirect", "OAuth", "redirect_uri", "phishing", "SSRF", "CRLF", "chaining", "OWASP", "bug bounty", "web security", "Burp Suite"]
 image: /assets/img/covers/open-redirect.png

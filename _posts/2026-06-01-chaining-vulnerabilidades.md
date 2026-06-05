@@ -2,7 +2,7 @@
 title: "Chaining de Vulnerabilidades: somando falhas 'pequenas' em algo crítico"
 description: "Como pensar em primitivas e encadear bugs de baixa severidade até um impacto crítico — open redirect → roubo de token OAuth, SSRF → cloud metadata → credenciais → RCE, XSS → account takeover, senha hardcoded → 2FA → ATO e outras cadeias clássicas, com CVSS v3.1 e v4.0, anonimizadas e passo a passo."
 author: matheus
-date: 2026-06-03 23:35:00 -0300
+date: 2026-06-01 08:48:00 -0300
 categories: [Bug Bounty, Avançado]
 tags: ["vulnerability chaining", "exploit chain", "OAuth", "SSRF", "XSS", "IDOR", "CRLF", "subdomain takeover", "hardcoded password", "2FA", "RCE", "CVSS", "primitives", "bug bounty", "web security"]
 image: /assets/img/covers/chaining-vulnerabilidades.png

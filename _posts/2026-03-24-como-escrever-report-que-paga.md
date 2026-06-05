@@ -2,7 +2,7 @@
 title: "Como Escrever um Report que Paga: do título à defesa do impacto"
 description: "A estrutura de report que não gera questionamento na triagem — título, resumo de negócio, passos reproduzíveis, impacto em PII e como defender o bounty quando o triador contesta."
 author: matheus
-date: 2026-06-03 23:56:00 -0300
+date: 2026-03-24 11:51:00 -0300
 categories: [Bug Bounty, Fundamentos]
 tags: ["report writing", "bug bounty", "triagem", "impacto", "CVSS", "HackerOne", "Bugcrowd", "web security"]
 image: /assets/img/covers/como-escrever-report-que-paga.png

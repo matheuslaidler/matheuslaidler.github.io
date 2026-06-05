@@ -2,7 +2,7 @@
 title: "Severidade, Impacto e Triagem: falando a língua do programa"
 description: "Como impacto define o bounty, como calcular CVSS 3.1/4.0 passo a passo, referenciar CWE, prever a classificação com o VRT da Bugcrowd e argumentar com o triador."
 author: matheus
-date: 2026-06-03 23:57:00 -0300
+date: 2026-03-20 18:34:00 -0300
 categories: [Bug Bounty, Fundamentos]
 tags: ["CVSS", "CWE", "VRT", "Bugcrowd", "severidade", "triagem", "bug bounty", "web security", "report writing"]
 image: /assets/img/covers/severidade-impacto-triagem.png

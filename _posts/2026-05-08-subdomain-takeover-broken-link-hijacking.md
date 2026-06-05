@@ -2,7 +2,7 @@
 title: "Subdomain Takeover e Broken Link Hijacking: herdando o que ficou pra trás"
 description: "Como achar DNS 'dangling' apontando pra recursos abandonados (S3, GitHub Pages, Heroku, Azure) e links/handles quebrados — confirmar com dig, fingerprintar com nuclei/subjack e provar o takeover com uma página inofensiva."
 author: matheus
-date: 2026-06-03 23:42:00 -0300
+date: 2026-05-08 09:49:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["subdomain takeover", "broken link hijacking", "dangling DNS", "CNAME", "DNS", "recon", "bug bounty", "web security", "nuclei", "subjack"]
 image: /assets/img/covers/subdomain-takeover-broken-link-hijacking.png

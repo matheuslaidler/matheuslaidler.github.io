@@ -2,7 +2,7 @@
 title: "Account Takeover (ATO): assumindo qualquer conta"
 description: "Do reset de senha inseguro ao JWT forjado, OAuth mal configurado e bypass de 2FA — como atacantes assumem contas alheias e como blindar cada camada."
 author: matheus
-date: 2026-06-03 23:53:00 -0300
+date: 2026-04-04 14:42:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["account takeover", "ATO", "JWT", "OAuth", "password reset", "2FA", "broken authentication", "OWASP", "bug bounty", "web security", "hashcat"]
 image: /assets/img/covers/account-takeover.png

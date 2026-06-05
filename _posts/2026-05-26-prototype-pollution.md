@@ -2,7 +2,7 @@
 title: "Prototype Pollution: envenenando o Object do JavaScript"
 description: "Como uma única propriedade injetada no prototype contamina todos os objetos do JavaScript — e vira DOM XSS no navegador ou até RCE no Node."
 author: matheus
-date: 2026-06-03 23:37:00 -0300
+date: 2026-05-26 10:14:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["prototype pollution", "JavaScript", "Node.js", "DOM XSS", "RCE", "OWASP", "bug bounty", "web security"]
 image: /assets/img/covers/prototype-pollution.png

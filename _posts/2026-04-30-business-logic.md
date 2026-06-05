@@ -2,7 +2,7 @@
 title: "Business Logic Flaws: quando a regra de negócio é a vulnerabilidade"
 description: "Por que scanners não acham falha de lógica de negócio — e como mapear o fluxo, abusar das suposições erradas do dev e provar o impacto, do preço negativo ao workflow bypass."
 author: matheus
-date: 2026-06-03 23:45:00 -0300
+date: 2026-04-30 18:58:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["business logic", "logic flaws", "OWASP", "WSTG", "bug bounty", "web security", "Burp Suite", "price manipulation", "workflow bypass"]
 image: /assets/img/covers/business-logic.png

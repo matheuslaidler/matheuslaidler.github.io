@@ -2,7 +2,7 @@
 title: "Anatomia de uma Caçada: do Recon ao Report (walkthrough completo)"
 description: "O post-finale da série: uma caçada fictícia-realista de ponta a ponta — ler o escopo, mapear a superfície, escolher onde atacar, achar um IDOR (com os becos sem saída), medir impacto, encadear e escrever o report. Como tudo se conecta na prática."
 author: matheus
-date: 2026-06-03 23:34:00 -0300
+date: 2026-06-03 13:05:00 -0300
 categories: [Bug Bounty, Avançado]
 tags: ["bug bounty", "walkthrough", "recon", "IDOR", "BOLA", "business logic", "chaining", "report writing", "web security", "metodologia"]
 image: /assets/img/covers/capstone-do-recon-ao-report.png

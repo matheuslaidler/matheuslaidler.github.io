@@ -2,7 +2,7 @@
 title: "XXE (XML External Entity): abusando do parser de XML"
 description: "Do básico ao avançado: como uma feature antiga do XML (entidades externas) lê /etc/passwd, vira SSRF, exfiltra dados às cegas e se esconde em uploads de SVG e Office — com payloads exatos e defesa por linguagem."
 author: matheus
-date: 2026-06-03 23:39:00 -0300
+date: 2026-05-18 12:40:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["XXE", "XML External Entity", "XML", "DTD", "SSRF", "OOB", "blind XXE", "XInclude", "SVG", "SAML", "billion laughs", "OWASP", "bug bounty", "web security", "Burp Collaborator"]
 image: /assets/img/covers/xxe-xml-external-entity.png

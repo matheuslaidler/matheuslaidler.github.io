@@ -2,7 +2,7 @@
 title: "CRLF Injection e HTTP Request Smuggling: quebrando o protocolo"
 description: "Como abusar da forma que o HTTP é parseado — injetar headers com %0d%0a (CRLF) e dessincronizar front-end e back-end (request smuggling) — para envenenar respostas, burlar controles e capturar requests de outros usuários."
 author: matheus
-date: 2026-06-03 23:47:00 -0300
+date: 2026-04-22 08:24:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["CRLF injection", "request smuggling", "HTTP desync", "response splitting", "OWASP", "bug bounty", "web security", "Burp Suite"]
 image: /assets/img/covers/crlf-request-smuggling.png

@@ -2,7 +2,7 @@
 title: "Recon & Discovery: encontrando a superfície de ataque"
 description: "Do recon passivo ao ativo: subdomínios, probing com httpx, URLs históricas, análise de JavaScript, fuzzing e dorks — como mapear tudo que um alvo expõe antes de testar a primeira falha."
 author: matheus
-date: 2026-06-03 23:58:00 -0300
+date: 2026-03-17 13:17:00 -0300
 categories: [Bug Bounty, Fundamentos]
 tags: ["recon", "subdomain enumeration", "httpx", "gau", "ffuf", "katana", "nuclei", "JS analysis", "google dorks", "bug bounty", "web security"]
 image: /assets/img/covers/recon-discovery.png

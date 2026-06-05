@@ -2,7 +2,7 @@
 title: "Segurança de APIs: o OWASP API Security Top 10 na prática (REST e GraphQL)"
 description: "Por que as APIs concentram a maioria dos bugs hoje — e como achar, explorar e corrigir as 10 classes do OWASP API Security Top 10 2023, com exemplos práticos em REST e GraphQL."
 author: matheus
-date: 2026-06-03 23:40:00 -0300
+date: 2026-05-15 19:23:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["API security", "OWASP API Top 10", "BOLA", "mass assignment", "excessive data exposure", "GraphQL", "JWT", "bug bounty", "web security"]
 image: /assets/img/covers/api-security.png

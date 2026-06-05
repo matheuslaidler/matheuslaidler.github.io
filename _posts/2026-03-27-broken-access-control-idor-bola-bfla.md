@@ -2,7 +2,7 @@
 title: "Broken Access Control na Prática: IDOR, BOLA e BFLA do Básico ao Avançado"
 description: "Por que controle de acesso quebrado é a falha que mais paga em bug bounty — e como achar, explorar e corrigir IDOR, BOLA e BFLA passo a passo."
 author: matheus
-date: 2026-06-03 23:55:00 -0300
+date: 2026-03-27 16:08:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["IDOR", "BOLA", "BFLA", "broken access control", "OWASP", "bug bounty", "web security", "Burp Suite", "API security"]
 image: /assets/img/covers/broken-access-control-idor-bola-bfla.png

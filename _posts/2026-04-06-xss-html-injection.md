@@ -2,7 +2,7 @@
 title: "XSS e HTML Injection: do espelho ao controle do navegador"
 description: "A versão definitiva e didática: do HTML Injection ao XSS, os três tipos, por que o payload muda por contexto, bypasses de WAF, blind XSS e defesa em camadas com CSP, encoding e DOMPurify."
 author: matheus
-date: 2026-06-03 23:52:00 -0300
+date: 2026-04-06 19:59:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["XSS", "HTML Injection", "cross-site scripting", "reflected XSS", "stored XSS", "DOM XSS", "CSP", "WAF bypass", "DOMPurify", "OWASP", "bug bounty", "web security"]
 image: /assets/img/covers/xss-html-injection.png

@@ -2,7 +2,7 @@
 title: "SQL Injection: extraindo o banco da teoria à prática"
 description: "A versão definitiva e didática de SQLi — detecção, UNION, blind, diferenças entre SGBDs, sqlmap, NoSQLi e como blindar com queries parametrizadas."
 author: matheus
-date: 2026-06-03 23:51:00 -0300
+date: 2026-04-10 12:16:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["SQL Injection", "SQLi", "UNION-based", "blind SQLi", "SQLMap", "NoSQL injection", "OWASP", "bug bounty", "web security", "Burp Suite"]
 image: /assets/img/covers/sql-injection.png

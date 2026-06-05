@@ -2,7 +2,7 @@
 title: "Insecure Deserialization: de objeto serializado a RCE"
 description: "Como um dado serializado vindo do cliente vira execução de código no servidor — e por que deserializar input não-confiável é uma das falhas mais perigosas da web."
 author: matheus
-date: 2026-06-03 23:38:00 -0300
+date: 2026-05-23 17:57:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["insecure deserialization", "desserialização insegura", "RCE", "gadget chain", "POP chain", "ysoserial", "PHPGGC", "Pickle", "phar", "Marshal", "OWASP", "bug bounty", "web security"]
 image: /assets/img/covers/insecure-deserialization.png

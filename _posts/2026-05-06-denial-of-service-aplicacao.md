@@ -2,7 +2,7 @@
 title: "Denial of Service em nível de aplicação (com responsabilidade)"
 description: "Como provar vetores de DoS de aplicação — ReDoS, zip bomb, GraphQL aninhado, falta de paginação e rate limit — sem derrubar produção, com PoC controlada e defesa em camadas."
 author: matheus
-date: 2026-06-03 23:43:00 -0300
+date: 2026-05-06 16:32:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["denial of service", "DoS", "ReDoS", "regex", "GraphQL", "rate limiting", "zip bomb", "resource exhaustion", "OWASP", "bug bounty", "web security"]
 image: /assets/img/covers/denial-of-service-aplicacao.png

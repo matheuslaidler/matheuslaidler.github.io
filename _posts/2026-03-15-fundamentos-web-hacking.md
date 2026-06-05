@@ -2,7 +2,7 @@
 title: "Fundamentos de Web Hacking & Bug Bounty: do zero ao primeiro alvo"
 description: "A base que todo caçador precisa: como a web funciona, anatomia do HTTP, autenticação vs autorização, o mapa do OWASP Top 10 2021, ética de bug bounty e o setup do Burp Suite — passo a passo, do zero."
 author: matheus
-date: 2026-06-03 23:59:00 -0300
+date: 2026-03-15 08:00:00 -0300
 categories: [Bug Bounty, Fundamentos]
 tags: ["fundamentos", "HTTP", "autenticação", "autorização", "OWASP", "bug bounty", "web security", "Burp Suite", "mindset"]
 image: /assets/img/covers/fundamentos-web-hacking.png

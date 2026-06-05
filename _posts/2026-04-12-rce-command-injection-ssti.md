@@ -2,7 +2,7 @@
 title: "RCE: Command Injection, SSTI e Upload que viram shell"
 description: "Os caminhos que levam à Remote Code Execution — injeção de comando no SO, Server-Side Template Injection, upload inseguro e desserialização — com detecção, exploração e defesa em camadas."
 author: matheus
-date: 2026-06-03 23:50:00 -0300
+date: 2026-04-12 17:33:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["RCE", "command injection", "SSTI", "file upload", "insecure deserialization", "OWASP", "bug bounty", "web security", "Burp Suite"]
 image: /assets/img/covers/rce-command-injection-ssti.png

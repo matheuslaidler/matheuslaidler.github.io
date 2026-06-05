@@ -2,7 +2,7 @@
 title: "Bug Bounty em Mobile: testando apps Android/iOS (e a API por trás)"
 description: "Do setup (emulador, Burp, certificado CA, bypass de SSL pinning) aos achados clássicos de app mobile — e o pulo do gato: testar a API por trás com todo o arsenal web."
 author: matheus
-date: 2026-06-03 23:41:00 -0300
+date: 2026-05-11 14:06:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["mobile", "Android", "iOS", "bug bounty", "OWASP MASVS", "OWASP Mobile Top 10", "Frida", "Objection", "SSL pinning", "Jadx", "Apktool", "API security"]
 image: /assets/img/covers/mobile-bug-bounty.png

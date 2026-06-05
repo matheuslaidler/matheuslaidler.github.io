@@ -2,7 +2,7 @@
 title: "Race Conditions: explorando a janela entre checar e usar"
 description: "Como a janela de milissegundos entre verificar uma regra e aplicá-la deixa você usar um cupom, um saque ou um voto várias vezes — e como achar, explorar (single-packet attack) e corrigir."
 author: matheus
-date: 2026-06-03 23:44:00 -0300
+date: 2026-05-02 11:15:00 -0300
 categories: [Bug Bounty, Vulnerabilidades]
 tags: ["race condition", "TOCTOU", "limit-overrun", "single-packet attack", "Turbo Intruder", "Burp Suite", "business logic", "web security", "bug bounty"]
 image: /assets/img/covers/race-conditions.png
