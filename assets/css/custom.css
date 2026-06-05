@@ -239,6 +239,11 @@ html[data-mode='dark'] #sidebar {
   overflow-x: hidden;
 }
 
+/* evita qualquer scroll horizontal residual (sintoma: footer "cortado"); clip não vira scroll-container -> não quebra o position:sticky do menu/topbar */
+html {
+  overflow-x: clip;
+}
+
 html[data-mode='dark'] #topbar-wrapper {
   border-bottom: 2px solid rgba(115, 255, 232, 0.3);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
@@ -833,18 +838,19 @@ html[data-mode='dark'] ::-webkit-scrollbar-thumb:hover {
     display: block;
     margin-left: 0.5rem;
   }
-  /* breadcrumb à esquerda: trunca com "…" e NUNCA quebra linha; empurra o grupo (search+botão) pra direita.
-     resolve "título longo quebrando linha ao lado do search" e "search no meio quando só tem Home". */
+  /* breadcrumb ocupa o espaço livre e trunca SÓ o fim (título longo) — "Home" sempre aparece inteiro */
   #topbar #breadcrumb {
-    margin-right: auto;
-    width: auto;
-    max-width: 58%;
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-right: 1rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  /* search compacto, colado ao botão no canto (sobrescreve o margin-right:4rem do tema que dava gap esquisito) */
+  /* search com largura FIXA e menor, pra sobrar espaço pro breadcrumb (não corta o "Home") */
   #topbar search {
+    flex: 0 0 auto;
+    max-width: 170px;
     margin-right: 0.5rem;
   }
 }
@@ -885,7 +891,7 @@ html[data-mode='dark'] ::-webkit-scrollbar-thumb:hover {
   }
 
   /* no modo leitura (painéis escondidos) o SEARCH fica GRANDE, ocupando a faixa livre */
-  html.reading-mode #topbar #breadcrumb { width: auto; max-width: 45%; margin-right: 1rem; }
+  html.reading-mode #topbar #breadcrumb { flex: 0 1 auto; max-width: 45%; margin-right: 1rem; }
   html.reading-mode #topbar search { max-width: none; flex: 1 1 auto; margin-right: 1rem; }
 }
 
@@ -1059,9 +1065,27 @@ html.page-projetos #sidebar-trigger {
 html.page-projetos #search-result-wrapper {
   display: none !important;           /* a busca filtra os cards de projeto, não mostra resultados de POSTS */
 }
-html.page-projetos #topbar search {
-  margin-left: auto;                  /* search alinhado à direita (não há breadcrumb) */
+/* na /projetos o search de POSTS do Chirpy (e seus controles) fica escondido; o filtro de projetos vive na página */
+html.page-projetos #topbar search,
+html.page-projetos #search-trigger,
+html.page-projetos #search-cancel { display: none !important; }
+/* "Projetos" centralizado no mobile (theme-toggle à esquerda; sem search-trigger à direita) */
+@media (max-width: 849px) {
+  html.page-projetos #topbar-title { position: absolute; left: 50%; transform: translateX(-50%); width: auto; }
 }
+/* botão de tema no topbar SÓ na /projetos (substitui o sidebar-trigger escondido; mantém "Projetos" centralizado no mobile) */
+#projetos-mode-toggle { display: none; }
+html.page-projetos #projetos-mode-toggle { display: inline-flex; align-items: center; }
+
+/* filtro de projetos (na página; funciona desktop + mobile) */
+.projetos-filter { position: relative; max-width: 420px; margin-top: 1rem; }
+.projetos-filter i { position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); color: var(--text-muted-color); font-size: 0.9rem; pointer-events: none; }
+.projetos-filter input {
+  width: 100%; padding: 0.5rem 0.9rem 0.5rem 2.3rem; border-radius: 10px;
+  border: 1px solid rgba(115, 255, 232, 0.25); background: rgba(115, 255, 232, 0.05); color: var(--text-color);
+}
+.projetos-filter input::placeholder { color: var(--text-muted-color); }
+.projetos-filter input:focus { outline: none; border-color: rgba(115, 255, 232, 0.6); }
 
 .projetos-head { margin-bottom: 1.4rem; }
 .projetos-head .projetos-title { margin-bottom: 0.2rem; }
@@ -1072,22 +1096,37 @@ html.page-projetos #topbar search {
 }
 .projetos-donate h2 { font-size: 1.3rem; margin-bottom: 0.3rem; }
 
-/* cards de projeto: compacto e alinhado (preview do GitHub é 2:1, fundo claro) */
-#projetos-list .post-preview img { max-height: 190px; object-fit: cover; width: 100%; }
-#projetos-list .card-title { font-size: 1.25rem; }
+/* cards de projeto: como os posts (capa na lateral), borda ciano sutil (não a branca padrão), info + tags */
+#projetos-list .proj-card { border: 1px solid rgba(115, 255, 232, 0.16); }
+#projetos-list .card-title { font-size: 1.2rem; display: flex; align-items: center; gap: 0.4rem; }
+#projetos-list .card-title .proj-pin { font-size: 0.8rem; color: #73ffe8; }
 #projetos-list .card-text.content { display: block; }
 #projetos-list .card-text.content p { color: var(--text-muted-color); margin: 0; }
+#projetos-list .proj-meta { color: var(--text-muted-color); font-size: 0.82rem; row-gap: 0.35rem; }
+#projetos-list .proj-tags { display: inline-flex; flex-wrap: wrap; gap: 0.35rem; }
+#projetos-list .proj-tag {
+  background: rgba(115, 255, 232, 0.1);
+  color: #9fe7d8;
+  border: 1px solid rgba(115, 255, 232, 0.22);
+  border-radius: 12px;
+  padding: 0.04rem 0.55rem;
+  font-size: 0.72rem;
+}
 @media (max-width: 849px) {
   html.page-projetos .projetos-title { display: none; }  /* mobile já mostra "Projetos" no topbar */
 }
 
 /* logo do menu NÃO deve ter o efeito de hover dos botões */
+#cssmenu table a,
+#cssmenu table a:hover,
+#cssmenu table a:focus,
 #cssmenu td a,
 #cssmenu td a:hover,
 #cssmenu td a:focus,
 #cssmenu .logotipo,
 #cssmenu .logotipo:hover {
   background: transparent !important;
+  background-image: none !important;
   box-shadow: none !important;
   transform: none !important;
 }

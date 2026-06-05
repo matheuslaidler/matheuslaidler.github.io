@@ -25,7 +25,7 @@
 
 #cssmenu a {
   display: inline-block;
-  padding: 0.75vh 7.5vh; /*botão largura*/
+  padding: 0.75vh 2.2rem; /*botão: largura em rem (vh aqui causava overflow horizontal -> footer cortado)*/
   line-height: 6vh; /*botão altura*/
   color: #fff;
   text-decoration: none;

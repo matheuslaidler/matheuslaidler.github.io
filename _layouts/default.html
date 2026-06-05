@@ -37,8 +37,8 @@ layout: compress
     <span class="bar"></span>
   </div>
   <ul>
-    <li class="{% unless page.layout == 'projetos' %}active{% endunless %}"><a href="{{ site.baseurl }}" target="_parent">Acervo</a></li>
-    <li class="{% if page.layout == 'projetos' %}active{% endif %}"><a href="{{ site.baseurl }}/projetos" target="_parent">Projetos</a></li>
+    <li class="{% unless page.layout == 'projetos' %}active{% endunless %}"><a href="{{ '/' | relative_url }}" target="_parent">Acervo</a></li>
+    <li class="{% if page.layout == 'projetos' %}active{% endif %}"><a href="{{ '/projetos/' | relative_url }}" target="_parent">Projetos</a></li>
     <li><a href="https://matheuslaidler.github.io/cryptool/" target="_parent">Cryptool</a></li>
     <li class="has-sub">
     <a href="#" data-toggle="dropdown">Páginas</a>

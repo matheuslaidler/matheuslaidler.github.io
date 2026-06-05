@@ -1,24 +1,47 @@
-# Configuração da página /projetos (renderizada do GitHub via JS — nome/descrição/stars sempre atualizados).
-# Edite aqui pra curar. Forks e repos SEM descrição são escondidos automaticamente (a menos que estejam em "pinned").
+# ═══════════════════════════════════════════════════════════════════════════
+#  PÁGINA /projetos — COMO MEXER (tutorial)
+# ───────────────────────────────────────────────────────────────────────────
+#  Os cards são montados pelo assets/js/projetos.js. Os dados (nome, descrição,
+#  stars, linguagem) vêm AO VIVO do GitHub. Você controla TUDO por este arquivo.
+#
+#  • include: []   -> MOSTRA SÓ ESTES repos, NESTA ORDEM (curadoria). É o que está ligado.
+#                     Pra adicionar um repo novo: escreva o nome exato dele aqui.
+#                     Deixe a lista VAZIA ([]) pra mostrar TODOS os repos que têm descrição.
+#  • exclude: []   -> esconde repos (só vale quando include está vazio).
+#  • pinned: []    -> fixa no topo (com 📌), nesta ordem.
+#  • overrides:    -> troca descrição/imagem/tags/linguagem de um repo:
+#       nome-do-repo: { description: "texto", image: "/assets/img/covers/proj-x.png", tags: [a, b] }
+#  • extra: []     -> itens MANUAIS (NÃO precisa ser repositório!): projetos do GitHub (?tab=projects),
+#                     sites, posts, qualquer coisa. Cada item:
+#       - { name: "Nome", description: "...", url: "https://...", image: "/assets/img/covers/x.png",
+#           language: "Web", tags: [demo], pinned: true }
+#
+#  IMAGEM (capa branded escura, estilo dos posts): por padrão usa /assets/img/covers/proj-<NomeDoRepo>.png
+#  Se não existir, cai na capa padrão (default-cover). Pra gerar/trocar uma capa, veja telegramScrapping/build-covers.py
+#  (ou passe `image:` no override/extra apontando pra qualquer PNG em /assets/img/covers/).
+#
+#  GitHub "Projects" (?tab=projects): a API deles exige token (inseguro no navegador), então
+#  NÃO são pegos automaticamente — adicione cada um à mão em `extra` (com url do board).
+# ═══════════════════════════════════════════════════════════════════════════
 
 github_user: matheuslaidler
 
-# Repos a NÃO mostrar (mesmo tendo descrição):
-exclude:
-  - resoluesh
-  - BRWIFI-Script
-
-# FIXADOS no topo (com pino), nesta ordem. (cryptool não entra: já está no menu superior.)
-pinned:
+# Curadoria ligada (mostra só estes, nesta ordem). Edite à vontade.
+include:
   - paperforge
+  - cryptool
   - ModernSidescrollerTemplate
   - PyckageTools-UFRJ
+  - WLGen-py
+  - ConDex-Script
+  - SubdT
+  - Dirfault
+  - tarefauto
+  - P3M-4-Blender
+  - UnRIG
+  - VulnDefaultPass_WiFi
 
-# Sobrescrever descrição/imagem de um repo específico (opcional):
-# overrides:
-#   nome-do-repo: { description: "texto melhor", image: "/assets/img/covers/proj-x.png" }
+exclude: []
+pinned: []
 overrides: {}
-
-# Itens MANUAIS — ex.: GitHub Projects (a API v2 de Projects exige token, então adicione à mão aqui).
-# Cada item: { name, description, url, image (opcional), language (opcional), pinned (opcional), stars (opcional) }
 extra: []
