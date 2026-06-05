@@ -828,16 +828,24 @@ html[data-mode='dark'] ::-webkit-scrollbar-thumb:hover {
 }
 
 @media all and (min-width: 850px) {
-  /* fullscreen vai pra ESQUERDA do topbar (via order), pra NÃO empurrar o search do lugar dele.
-     assim o tema volta a ter só breadcrumb (esq.) + search (dir., alinhado à coluna do painel). */
+  /* fullscreen fica na DIREITA (ponta), depois do search — como o dono prefere */
   #reading-mode-trigger {
     display: block;
-    order: -1;
-    margin-right: 0.4rem;
+    margin-left: 0.5rem;
   }
-  /* o breadcrumb empurra o search pra direita (alinhado ao painel, como o tema faz com 2 itens) */
+  /* breadcrumb à esquerda: trunca com "…" e NUNCA quebra linha; empurra o grupo (search+botão) pra direita.
+     resolve "título longo quebrando linha ao lado do search" e "search no meio quando só tem Home". */
   #topbar #breadcrumb {
     margin-right: auto;
+    width: auto;
+    max-width: 58%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* search compacto, colado ao botão no canto (sobrescreve o margin-right:4rem do tema que dava gap esquisito) */
+  #topbar search {
+    margin-right: 0.5rem;
   }
 }
 
@@ -1027,5 +1035,69 @@ html[data-mode='light'] .support-note a { color: #009db2; }
   height: 100%;
   object-fit: cover;
   display: block;
+}
+/* capa DENTRO do post não precisa ser enorme (já foi vista como card): menor e centralizada a partir de tablet.
+   no mobile (<768px) continua full-width acima do título, que o dono já curtiu. */
+@media (min-width: 768px) {
+  .preview-img {
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* ===== CARDS "LEIA MAIS" (related-posts): capa + hover revelando título/descrição ===== */
+/* Desktop (>=768px): card mostra a capa; ao passar o mouse, a imagem escurece e o texto aparece. */
+@media (min-width: 768px) {
+  #related-posts .related-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 168px;
+    border: 1px solid var(--card-border-color, rgba(115, 255, 232, 0.15));
+  }
+  #related-posts .related-cover {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    transition: filter 0.3s ease, transform 0.4s ease;
+  }
+  #related-posts .related-info {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 0.15rem;
+    padding: 0.85rem 1rem;
+    background: linear-gradient(180deg, rgba(8, 10, 14, 0.15) 0%, rgba(8, 10, 14, 0.55) 60%, rgba(8, 10, 14, 0.92) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  #related-posts .related-card:hover .related-cover,
+  #related-posts .related-card:focus-within .related-cover {
+    filter: brightness(0.32);
+    transform: scale(1.05);
+  }
+  #related-posts .related-card:hover .related-info,
+  #related-posts .related-card:focus-within .related-info {
+    opacity: 1;
+  }
+  #related-posts .related-info .related-date { color: #73ffe8; font-size: 0.72rem; }
+  #related-posts .related-info .related-title { color: #fff; font-size: 1.02rem; margin: 0.15rem 0; line-height: 1.25; }
+  #related-posts .related-info .related-desc {
+    color: #d7efe9; font-size: 0.82rem; margin: 0; line-height: 1.35;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+  }
+}
+/* Mobile (<768px): sem capa, texto normal (como o tema padrão) */
+@media (max-width: 767px) {
+  #related-posts .related-cover { display: none; }
+  #related-posts .related-info {
+    position: static; opacity: 1; background: none; padding: 1rem; display: block;
+  }
+  #related-posts .related-info .related-title { margin: 0.3rem 0; }
+  #related-posts .related-info .related-desc { color: var(--text-muted-color); }
 }
 

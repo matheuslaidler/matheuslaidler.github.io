@@ -75,14 +75,15 @@
     </h3>
     <nav class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mb-4">
       {% for post in relate_posts %}
+        {% assign src = post.image.path | default: post.image | default: '/assets/img/default-cover.svg' %}
+        {% unless src contains '//' %}{% assign src = src | relative_url %}{% endunless %}
         <article class="col">
-          <a href="{{ post.url | relative_url }}" class="post-preview card h-100">
-            <div class="card-body">
-              {% include datetime.html date=post.date lang=include.lang %}
-              <h4 class="pt-0 my-2">{{ post.title }}</h4>
-              <div class="text-muted">
-                <p>{% include post-description.html %}</p>
-              </div>
+          <a href="{{ post.url | relative_url }}" class="post-preview card h-100 related-card">
+            <div class="related-cover" style="background-image:url('{{ src }}')"></div>
+            <div class="related-info">
+              <span class="related-date">{% include datetime.html date=post.date lang=include.lang %}</span>
+              <h4 class="related-title">{{ post.title }}</h4>
+              <p class="related-desc">{% include post-description.html %}</p>
             </div>
           </a>
         </article>

@@ -1,0 +1,123 @@
+# Projetos exibidos em /projetos (cards no estilo dos posts).
+# Curadoria manual: edite à vontade — adicione/remova, ordene, marque `pinned: true` pra fixar no topo.
+# image: por padrão uso o cartão OpenGraph do GitHub (nome/desc/stars/linguagem, sempre atualizado).
+#        pra usar uma capa branded (estilo das capas de post), troque por um caminho /assets/img/covers/proj-X.png
+#        (posso gerar essas capas com o build-covers.py — é só pedir).
+
+projetos:
+  - name: Cryptool
+    description: "Ferramenta web pra converter texto em cifras, hashes, decimal e strings — direto no navegador."
+    url: https://github.com/matheuslaidler/cryptool
+    image: https://opengraph.githubassets.com/1/matheuslaidler/cryptool
+    language: JavaScript
+    stars: 2
+    pinned: true
+    tags: [web, cripto, ferramenta]
+
+  - name: PaperForge
+    description: "Gera PDF, slides de PowerPoint e papers acadêmicos (com gráficos) a partir de Markdown."
+    url: https://github.com/matheuslaidler/paperforge
+    image: https://opengraph.githubassets.com/1/matheuslaidler/paperforge
+    language: Python
+    stars: 1
+    pinned: true
+    tags: [python, automação, documentos]
+
+  - name: Modern Sidescroller Template
+    description: "Template sidescroller atualizado pra Unreal Engine 5.4 — pra economizar tempo no início do projeto."
+    url: https://github.com/matheuslaidler/ModernSidescrollerTemplate
+    image: https://opengraph.githubassets.com/1/matheuslaidler/ModernSidescrollerTemplate
+    language: Unreal Engine
+    stars: 12
+    pinned: true
+    tags: [game dev, unreal]
+
+  - name: WLGen-py
+    description: "Gerador de wordlists em Python — pra ataques de força bruta em laboratório."
+    url: https://github.com/matheuslaidler/WLGen-py
+    image: https://opengraph.githubassets.com/1/matheuslaidler/WLGen-py
+    language: Python
+    stars: 2
+    pinned: false
+    tags: [segurança, python, wordlist]
+
+  - name: BRWIFI-Script
+    description: "Ataques a redes WiFi + gerador de wordlist — para estudo de segurança de redes."
+    url: https://github.com/matheuslaidler/BRWIFI-Script
+    image: https://opengraph.githubassets.com/1/matheuslaidler/BRWIFI-Script
+    language: Shell
+    stars: 1
+    pinned: false
+    tags: [segurança, wifi, shell]
+
+  - name: ConDex-Script
+    description: "Compacta e descompacta arquivos em massa, de várias extensões, de forma rápida."
+    url: https://github.com/matheuslaidler/ConDex-Script
+    image: https://opengraph.githubassets.com/1/matheuslaidler/ConDex-Script
+    language: Shell
+    stars: 2
+    pinned: false
+    tags: [shell, ferramenta]
+
+  - name: PyckageTools-UFRJ
+    description: "Pacote de ferramentas (IPFinder, PortScan, PassManager, BruteForce FTP). Trabalho final da UFRJ."
+    url: https://github.com/matheuslaidler/PyckageTools-UFRJ
+    image: https://opengraph.githubassets.com/1/matheuslaidler/PyckageTools-UFRJ
+    language: Python
+    stars: 1
+    pinned: false
+    tags: [segurança, python]
+
+  - name: SubdT
+    description: "Subdomain tracker — busca e encontra subdomínios de um alvo."
+    url: https://github.com/matheuslaidler/SubdT
+    image: https://opengraph.githubassets.com/1/matheuslaidler/SubdT
+    language: Python
+    stars: 1
+    pinned: false
+    tags: [recon, python]
+
+  - name: Dirfault
+    description: "Procura diretórios padrão e robots.txt — recon rápido de superfície."
+    url: https://github.com/matheuslaidler/Dirfault
+    image: https://opengraph.githubassets.com/1/matheuslaidler/Dirfault
+    language: Python
+    stars: 1
+    pinned: false
+    tags: [recon, python]
+
+  - name: tarefauto
+    description: "Automação de tarefas repetitivas: grava e reproduz auto-click e auto-type, com interface gráfica."
+    url: https://github.com/matheuslaidler/tarefauto
+    image: https://opengraph.githubassets.com/1/matheuslaidler/tarefauto
+    language: Python
+    stars: 2
+    pinned: false
+    tags: [automação, python]
+
+  - name: P3M-4-Blender
+    description: "Addon do Blender pra importar e exportar modelos .p3m (Grand Chase / KOG)."
+    url: https://github.com/matheuslaidler/P3M-4-Blender
+    image: https://opengraph.githubassets.com/1/matheuslaidler/P3M-4-Blender
+    language: Python
+    stars: 1
+    pinned: false
+    tags: [blender, game dev]
+
+  - name: UnRIG
+    description: "Addon do Blender pra fazer rig de mesh compatível com a Unreal Engine 5."
+    url: https://github.com/matheuslaidler/UnRIG
+    image: https://opengraph.githubassets.com/1/matheuslaidler/UnRIG
+    language: Python
+    stars: 1
+    pinned: false
+    tags: [blender, game dev]
+
+  - name: Resoluesh
+    description: "Cria ou altera a resolução de tela — até maior que o padrão fornecido."
+    url: https://github.com/matheuslaidler/Resoluesh
+    image: https://opengraph.githubassets.com/1/matheuslaidler/Resoluesh
+    language: Shell
+    stars: 0
+    pinned: false
+    tags: [shell, ferramenta]
