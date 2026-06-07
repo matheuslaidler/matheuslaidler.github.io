@@ -3,8 +3,7 @@
 
 **[Portuguese](#pt-br) | [English](#en-us)**
 
-<img width="1905" height="924" alt="image" src="https://github.com/user-attachments/assets/896d7bba-0b14-4aaa-aa40-52b0dcfcee32" />
-
+<img width="1905" height="945" alt="image" src="https://github.com/user-attachments/assets/501fd019-13b0-4a18-a217-87cf9de26d7f" />
 
 ## pt-br
 ### Apresentação
@@ -40,6 +39,10 @@ Comentários via **Giscus** (GitHub Discussions) — autenticação GitHub integ
 
 ---
 
+<img width="1903" height="935" alt="image" src="https://github.com/user-attachments/assets/e0bfc3cf-c134-449d-8546-02907c1071b7" />
+
+
+
 ## en-us
 
 ### 📚 About
@@ -66,6 +69,12 @@ The information shared in this repository is **exclusively for academic and educ
 Comments powered by **Giscus** (GitHub Discussions) — integrated GitHub authentication.
 The articles are the result of my studies in technology and hacking and the project is a junction of my past scientific dissemination projects: Way of Security and Road 2 Technology, with the addition of forensic study.
 
+#### English Posts
+
+<img width="1901" height="412" alt="image" src="https://github.com/user-attachments/assets/4e972a49-aa6f-46e9-88ae-96f0036c61cf" />
+
+Read English posts on Medium by clicking the top menu flag (image above).
+
 # Criador/Creator & Licença/License
 
  - Criador/Creator Matheus laidler
@@ -77,3 +86,9 @@ The articles are the result of my studies in technology and hacking and the proj
 You can support me with [GithubSponsor](https://github.com/sponsors/matheuslaidler) or [Paypal](https://www.paypal.com/donate/?hosted_button_id=SJYYS28HZPU9A) :D
 
 Você pode me ajudar doando pelo [Github](https://github.com/sponsors/matheuslaidler) ou [Paypal](https://www.paypal.com/donate/?hosted_button_id=SJYYS28HZPU9A) :D
+
+# Projects / Projectos 
+
+Repositories and more in one page
+
+<img width="1918" height="943" alt="image" src="https://github.com/user-attachments/assets/f0b67ea9-d874-4453-ae92-a288a2862bb7" />
