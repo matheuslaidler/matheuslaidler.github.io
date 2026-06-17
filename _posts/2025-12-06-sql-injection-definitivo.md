@@ -272,7 +272,7 @@ Antes de entrarmos nos laboratórios, precisamos aprofundar em conceitos que vã
 
 ### O Poder do UNION (A "Cola" de Tabelas)
 
-O comando **UNION** é a principal arma do atacante para extrair dados. Para entender bem, vou usar uma analogia:
+O comando **UNION** é o jeito mais direto de despejar o banco inteiro na tela. Para entender bem, vou usar uma analogia:
 
 **Analogia do Formulário:**
 
