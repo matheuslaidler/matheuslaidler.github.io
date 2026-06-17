@@ -12,20 +12,20 @@ comments: true
 
 ## Quando uma quebra de linha vira a sua arma
 
-O HTTP parece simples: você manda um texto, o servidor responde outro texto. Mas é justamente nessa simplicidade que mora o perigo. O protocolo é **delimitado por caracteres invisíveis** — uma quebra de linha aqui, uma sequência de bytes ali — e cada servidor, proxy, CDN e load balancer no caminho **interpreta esses delimitadores do seu jeito**. Quando dois deles discordam sobre "onde termina um header" ou "onde termina uma request", o atacante entra no meio e brinca de mestre de marionetes.
+O HTTP parece simples: você manda um texto, o servidor responde outro texto. Mas é justamente nessa simplicidade que mora o perigo. O protocolo é **delimitado por caracteres invisíveis** (uma quebra de linha aqui, uma sequência de bytes ali), e cada servidor, proxy, CDN e load balancer no caminho **interpreta esses delimitadores do seu jeito**. Quando dois deles discordam sobre "onde termina um header" ou "onde termina uma request", o atacante entra no meio e brinca de mestre de marionetes.
 
 > 💡 **Proxy / CDN / load balancer**: intermediários que ficam entre você e o servidor de aplicação — recebem sua request, talvez filtram/cacheiam, e repassam pra trás (o "front-end" do post). Detalhe de proxy no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 Este post junta dois bugs que parecem distintos mas têm a **mesma raiz**: abusar de como o HTTP é parseado.
 
-1. **CRLF Injection** — você injeta uma quebra de linha (`%0d%0a`) onde o servidor não esperava e passa a **escrever headers/conteúdo na resposta**.
-2. **HTTP Request Smuggling** (também chamado de **HTTP desync**) — você faz o front-end e o back-end **discordarem sobre onde sua request termina**, e "contrabandeia" uma request escondida dentro da outra.
+1. **CRLF Injection**: você injeta uma quebra de linha (`%0d%0a`) onde o servidor não esperava e passa a **escrever headers/conteúdo na resposta**.
+2. **HTTP Request Smuggling** (também chamado de **HTTP desync**): você faz o front-end e o back-end **discordarem sobre onde sua request termina**, e "contrabandeia" uma request escondida dentro da outra.
 
-CRLF é um ótimo bug de entrada (acessível, didático, paga de algumas centenas de reais). Request smuggling é um dos bugs mais **temidos e bem pagos** do mercado — e um dos que mais confundem. A meta aqui é deixar os dois **cristalinos**, sem saltos lógicos, pra você replicar em qualquer alvo autorizado.
+CRLF é um ótimo bug de entrada (acessível, didático, paga de algumas centenas de reais). Request smuggling é um dos bugs mais **temidos e bem pagos** do mercado, e um dos que mais confundem. A meta aqui é deixar os dois **cristalinos**, sem saltos lógicos, pra você replicar em qualquer alvo autorizado.
 
 ## O que é, na real (a analogia do envelope)
 
-Imagina que toda request HTTP é um **envelope** com regras rígidas de formatação. Cada **linha** termina com dois caracteres invisíveis: `\r\n` (carriage return + line feed — o famoso **CRLF**). Uma **linha em branco** (`\r\n\r\n`) marca o fim dos headers e o começo do corpo.
+Imagina que toda request HTTP é um **envelope** com regras rígidas de formatação. Cada **linha** termina com dois caracteres invisíveis: `\r\n` (carriage return + line feed, o famoso **CRLF**). Uma **linha em branco** (`\r\n\r\n`) marca o fim dos headers e o começo do corpo.
 
 ```
 GET /perfil HTTP/1.1\r\n
@@ -38,7 +38,7 @@ Os dois bugs deste post exploram esses delimitadores:
 
 - **CRLF Injection** é quando você consegue **inserir um `\r\n` no meio de um valor** que o servidor vai copiar pra dentro da resposta (tipicamente num header `Location` de redirect ou num header refletido). É como conseguir **escrever uma linha a mais no envelope de resposta** que o servidor está montando pra você. De repente você não está mais preenchendo *o valor* de um header — você está **criando um header novo** (ou até quebrando pro corpo da resposta).
 
-- **HTTP Request Smuggling** acontece quando dois servidores no caminho **não concordam sobre onde sua request termina**. O HTTP/1.1 tem **duas formas** de dizer o tamanho do corpo: o header `Content-Length` (tamanho em bytes) e o `Transfer-Encoding: chunked` (corpo em pedaços). Se o front-end usa uma regra e o back-end usa outra, sobra um "pedaço" da sua mensagem que o back-end interpreta como **o início da próxima request** — a request de outra pessoa.
+- **HTTP Request Smuggling** acontece quando dois servidores no caminho **não concordam sobre onde sua request termina**. O HTTP/1.1 tem **duas formas** de dizer o tamanho do corpo: o header `Content-Length` (tamanho em bytes) e o `Transfer-Encoding: chunked` (corpo em pedaços). Se o front-end usa uma regra e o back-end usa outra, sobra um "pedaço" da sua mensagem que o back-end interpreta como **o início da próxima request**: a request de outra pessoa.
 
 > **Analogia do smuggling:** é como passar por dois seguranças na fila do cinema. O primeiro (front-end) só lê o título do seu ingresso e libera. O segundo (back-end) conta as poltronas. Você forja o ingresso de um jeito que o primeiro vê "1 lugar" e o segundo vê "1 lugar + um bilhete extra colado atrás". O bilhete extra (sua request contrabandeada) entra **como se fosse legítimo**, porque o primeiro segurança já "aprovou".
 
@@ -46,29 +46,29 @@ Os dois bugs deste post exploram esses delimitadores:
 
 O impacto varia bastante entre os dois:
 
-**CRLF Injection** sozinho costuma ser **Baixo a Médio** — você prova que injeta um header arbitrário na resposta. Mas o valor sobe rápido quando você **escala**:
+**CRLF Injection** sozinho costuma ser **Baixo a Médio**: você prova que injeta um header arbitrário na resposta. Mas o valor sobe rápido quando você **escala**:
 
-- **Set-Cookie malicioso / session fixation** — injetar um `Set-Cookie` que fixa a sessão da vítima (você força um ID de sessão conhecido por você no navegador dela e depois reusa).
-- **XSS via response splitting** — quebrar pro corpo da resposta e injetar HTML/JS (quando o navegador renderiza).
-- **Open redirect / cache poisoning** — manipular `Location` e/ou envenenar cache (fazer o CDN guardar uma resposta maliciosa sua e servi-la pra outros usuários).
+- **Set-Cookie malicioso / session fixation**: injetar um `Set-Cookie` que fixa a sessão da vítima (você força um ID de sessão conhecido por você no navegador dela e depois reusa).
+- **XSS via response splitting**: quebrar pro corpo da resposta e injetar HTML/JS (quando o navegador renderiza).
+- **Open redirect / cache poisoning**: manipular `Location` e/ou envenenar cache (fazer o CDN guardar uma resposta maliciosa sua e servi-la pra outros usuários).
 
 Faixa típica: de **R$150 a R$1.000** pra um CRLF refletido simples; mais se você escalar pra XSS ou poisoning.
 
 **HTTP Request Smuggling** é outro patamar. Por afetar **todos os usuários** que passam pela mesma conexão, costuma ser **Alto a Crítico** e pagar **de milhares a dezenas de milhares de reais**:
 
-- **Bypass de controles do front-end** — alcançar `/admin` que o front-end bloqueava.
-- **Captura de requests de outros usuários** — roubar cookies/tokens de quem usa o site ao mesmo tempo que você.
-- **Response queue poisoning** — embaralhar a fila de respostas e servir a resposta de A pro usuário B.
+- **Bypass de controles do front-end**: alcançar `/admin` que o front-end bloqueava.
+- **Captura de requests de outros usuários**: roubar cookies/tokens de quem usa o site ao mesmo tempo que você.
+- **Response queue poisoning**: embaralhar a fila de respostas e servir a resposta de A pro usuário B.
 - **Escalar XSS/cache poisoning** pra base inteira de usuários, sem interação.
 
 > ⚠️ **Cheque o escopo e teste com cuidado.** Smuggling pode **afetar usuários reais** (você pode envenenar a fila e derrubar requests legítimas). Muitos programas pedem cuidado redobrado; alguns proíbem testes agressivos de desync. Leia as regras antes.
 
-> 💡 **Para dimensionar a severidade no report** (calcule sempre no [contexto do seu alvo](/posts/severidade-impacto-triagem/) — os vetores abaixo são referência de um cenário comum):
+> 💡 **Para dimensionar a severidade no report** (calcule sempre no [contexto do seu alvo](/posts/severidade-impacto-triagem/); os vetores abaixo são referência de um cenário comum):
 >
-> - **CRLF refletido (header injection, sem escalada confirmada)** — geralmente **Médio**.
+> - **CRLF refletido (header injection, sem escalada confirmada)**: geralmente **Médio**.
 >   - **CVSS v3.1: 6.1** (`AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N`)
 >   - **CVSS v4.0: 5.3** (`CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:P/VC:L/VI:L/VA:N/SC:N/SI:L/SA:N`)
-> - **HTTP Request Smuggling (captura de requests / response queue poisoning)** — geralmente **Alto a Crítico**.
+> - **HTTP Request Smuggling (captura de requests / response queue poisoning)**: geralmente **Alto a Crítico**.
 >   - **CVSS v3.1: 8.7** (`AV:N/AC:H/PR:N/UI:N/S:C/C:H/I:H/A:N`)
 >   - **CVSS v4.0: 9.4** (`CVSS:4.0/AV:N/AC:H/AT:N/PR:N/UI:N/VC:H/VI:H/VA:N/SC:H/SI:H/SA:N`)
 >
@@ -158,9 +158,9 @@ A nomenclatura é **`[front-end].[back-end]`** — qual header cada um obedece:
 
 Procure **todo lugar onde sua entrada pode acabar num header de resposta**:
 
-- **Redirects** — parâmetros tipo `?url=`, `?redirect=`, `?next=`, `?returnTo=`, `?post_logout_redirect_uri=`. O valor costuma ir pro `Location`.
-- **Headers refletidos** — às vezes um parâmetro reflete num header customizado.
-- **Path e query** — alguns servidores refletem partes da URL em headers.
+- **Redirects**: parâmetros tipo `?url=`, `?redirect=`, `?next=`, `?returnTo=`, `?post_logout_redirect_uri=`. O valor costuma ir pro `Location`.
+- **Headers refletidos**: às vezes um parâmetro reflete num header customizado.
+- **Path e query**: alguns servidores refletem partes da URL em headers.
 
 Junte URLs e parâmetros com as ferramentas de recon (já vimos isso a fundo no post [Recon & Discovery](/posts/recon-discovery/)) e injete o probe em cada um:
 
@@ -181,7 +181,7 @@ O **probe de CRLF** é simples: injete um header marcador e veja se ele aparece 
 
 Aqui o sinal é **timing (atraso)**, não conteúdo refletido. Você manda uma request maliciosa e mede se o servidor **trava esperando bytes que nunca vêm**. Ferramenta certa:
 
-- **HTTP Request Smuggler** — extensão oficial do Burp (BApp Store), escrita pelo **James Kettle** (PortSwigger), que automatiza a [detecção por timing](https://github.com/PortSwigger/http-request-smuggler) de CL.TE, TE.CL, TE.TE, desync de downgrade HTTP/2 e mais. Clica com o botão direito na request → *Extensions → HTTP Request Smuggler → Smuggle probe*.
+- **HTTP Request Smuggler**: extensão oficial do Burp (BApp Store), escrita pelo **James Kettle** (PortSwigger), que automatiza a [detecção por timing](https://github.com/PortSwigger/http-request-smuggler) de CL.TE, TE.CL, TE.TE, desync de downgrade HTTP/2 e mais. Clica com o botão direito na request → *Extensions → HTTP Request Smuggler → Smuggle probe*.
 
 Mais sobre as ferramentas básicas (gau, httpx, Burp) está no post [Recon & Discovery](/posts/recon-discovery/).
 
@@ -204,7 +204,7 @@ Location:
 X-Injetado: PoC            # <- header injetado: CRLF confirmado
 ```
 
-CRLF confirmado. (Se o `%0d%0a` não passar, tente variações: `%0D%0A`, `%E5%98%8A%E5%98%8D` — bytes Unicode que alguns parsers normalizam pra CRLF — ou só `%0a`.)
+CRLF confirmado. (Se o `%0d%0a` não passar, tente variações: `%0D%0A`, `%E5%98%8A%E5%98%8D` (bytes Unicode que alguns parsers normalizam pra CRLF), ou só `%0a`.)
 
 ### CRLF — Nível 2: response splitting → XSS
 
@@ -224,7 +224,7 @@ Location:
 <script>alert(document.domain)</script>   # <- corpo controlado pelo atacante
 ```
 
-> Esse mecanismo é o mesmo do **CVE-2023-24488** (Citrix ADC / Gateway): o parâmetro `post_logout_redirect_uri` do endpoint `/oauth/idp/logout` refletia a entrada no `Location` sem filtrar CRLF, permitindo quebrar pro corpo e executar JS. A PoC pública usava um payload no estilo `?post_logout_redirect_uri=%0D%0A%0D%0A<body onload=alert(document.domain)>` (o `<script>` acima é a versão didática — o vetor é idêntico). Referência oficial: [Citrix CTX477714](https://support.citrix.com/article/CTX477714). CVSS atribuído ao CVE: **v3.1 6.1** (`AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N`, Médio). (XSS a fundo já tem post próprio na série — aqui é só pra mostrar a **escalada** do CRLF.)
+> Esse mecanismo é o mesmo do **CVE-2023-24488** (Citrix ADC / Gateway): o parâmetro `post_logout_redirect_uri` do endpoint `/oauth/idp/logout` refletia a entrada no `Location` sem filtrar CRLF, permitindo quebrar pro corpo e executar JS. A PoC pública usava um payload no estilo `?post_logout_redirect_uri=%0D%0A%0D%0A<body onload=alert(document.domain)>` (o `<script>` acima é a versão didática; o vetor é idêntico). Referência oficial: [Citrix CTX477714](https://support.citrix.com/article/CTX477714). CVSS atribuído ao CVE (NVD): **v3.0 6.1** (`AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N`, Médio — o vetor base é idêntico ao 3.1). (XSS a fundo já tem post próprio na série — aqui é só pra mostrar a **escalada** do CRLF.)
 
 ### Smuggling — Nível 3: detecção por timing (CL.TE)
 
@@ -242,7 +242,7 @@ X
 ```
 
 **O que acontece, byte a byte:**
-- O corpo (depois da linha em branco) é `1\r\nA\r\nX` — onde `1` é o tamanho do chunk (1 byte, em hexadecimal) e `A` é o conteúdo desse chunk.
+- O corpo (depois da linha em branco) é `1\r\nA\r\nX`, onde `1` é o tamanho do chunk (1 byte, em hexadecimal) e `A` é o conteúdo desse chunk.
 - O **front-end** obedece o `Content-Length: 4` → encaminha só os **4 primeiros bytes** do corpo: `1`, `\r`, `\n`, `A` (ou seja, `1\r\nA`). O `\r\nX` que sobra **não é encaminhado**.
 - O **back-end** obedece o `Transfer-Encoding: chunked` → lê o chunk de 1 byte (`A`), e como **não viu um chunk terminador `0`**, **fica esperando o próximo chunk** que nunca chega.
 - Resultado: **atraso observável**. O back-end trava esperando bytes que o front-end reteve. Isso indica CL.TE.
@@ -300,11 +300,11 @@ x=1
 - O **front-end** (TE) lê esse chunk de 113 bytes, depois o chunk `0`, e encaminha tudo.
 - O **back-end** (CL) obedece o `Content-Length: 4` → consome só `71\r\n`, e o `POST /admin...` sobra como **request seguinte**.
 
-> ⚠️ **Configuração no Burp Repeater (essencial pra TE.CL):** desmarque a opção **"Update Content-Length"** (menu do Repeater) — senão o Burp recalcula o `Content-Length` e quebra o ataque. E garanta o `\r\n\r\n` final depois do `0`.
+> ⚠️ **Configuração no Burp Repeater (essencial pra TE.CL):** desmarque a opção **"Update Content-Length"** (menu do Repeater), senão o Burp recalcula o `Content-Length` e quebra o ataque. E garanta o `\r\n\r\n` final depois do `0`.
 
 ### Smuggling — Nível 6: HTTP/2 downgrade (a fronteira moderna)
 
-O HTTP/2 **deveria** matar o smuggling: ele tem um mecanismo de tamanho **embutido e binário**, sem depender de CL/TE. O problema é o **downgrade**: muitos front-ends falam HTTP/2 com o cliente, mas **traduzem pra HTTP/1.1** ao falar com o back-end. Nessa tradução, o front-end **reconstrói** os headers `Content-Length`/`Transfer-Encoding` — e se você injetou valores conflitantes nos headers do HTTP/2, o back-end downgrade pode ser dessincronizado. São as variantes **H2.CL** e **H2.TE**, da pesquisa [HTTP/2: The Sequel is Always Worse](https://portswigger.net/research/http2) (James Kettle). Por isso a defesa moderna é **HTTP/2 fim-a-fim** (sem downgrade no caminho).
+O HTTP/2 **deveria** matar o smuggling: ele tem um mecanismo de tamanho **embutido e binário**, sem depender de CL/TE. O problema é o **downgrade**: muitos front-ends falam HTTP/2 com o cliente, mas **traduzem pra HTTP/1.1** ao falar com o back-end. Nessa tradução, o front-end **reconstrói** os headers `Content-Length`/`Transfer-Encoding`. Se você injetou valores conflitantes nos headers do HTTP/2, o back-end downgrade pode ser dessincronizado. São as variantes **H2.CL** e **H2.TE**, da pesquisa [HTTP/2: The Sequel is Always Worse](https://portswigger.net/research/http2) (James Kettle). Por isso a defesa moderna é **HTTP/2 fim-a-fim** (sem downgrade no caminho).
 
 ## Caso real-fictício: CRLF refletido num servidor de pacotes interno
 
@@ -372,7 +372,7 @@ res.setHeader('Location', encodeURI(input));
 
 A causa é **ambiguidade entre servidores**. As defesas:
 
-1. **HTTP/2 fim-a-fim, sem downgrade.** A defesa mais robusta. Sem a ginástica CL/TE, o vetor clássico evapora.
+1. **HTTP/2 fim-a-fim, sem downgrade.** A defesa mais sólida. Sem a ginástica CL/TE, o vetor clássico evapora.
 2. **Normalizar/rejeitar requests ambíguas no front-end.** Se uma request tem **`Content-Length` e `Transfer-Encoding` ao mesmo tempo**, o front-end deve **rejeitar (400)** ou normalizar antes de encaminhar. Idem pra `Transfer-Encoding` ofuscado.
 
    ```nginx
@@ -381,7 +381,7 @@ A causa é **ambiguidade entre servidores**. As defesas:
    #  "reject ambiguous requests" — habilite-a)
    ```
 
-   > 💡 **WAF**: Web Application Firewall — filtro que inspeciona requests e bloqueia padrões maliciosos antes de chegarem na aplicação. Detalhe no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
+   > 💡 **WAF** é o Web Application Firewall: um filtro que inspeciona requests e bloqueia padrões maliciosos antes de chegarem na aplicação. Detalhe no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 3. **Front-end e back-end com o MESMO servidor/regra.** Quanto mais homogêneo o stack, menor a chance de desync. Mantenha proxies e servidores **atualizados** (muitas correções de desync vêm em patches).
 4. **Desabilitar reuso de conexão back-end** mitiga (não elimina) alguns ataques, com custo de performance.
@@ -390,9 +390,9 @@ A causa é **ambiguidade entre servidores**. As defesas:
 
 ## Ferramentas + labs legais
 
-- **Burp Suite** — Repeater (com **"Update Content-Length" desmarcado** pra TE.CL), e a extensão **HTTP Request Smuggler** (detecção/automação por timing).
-- **PortSwigger Web Security Academy** — labs gratuitos e oficiais de [HTTP request smuggling](https://portswigger.net/web-security/request-smuggling) e de CRLF/response splitting. A melhor fonte pra treinar.
-- **smuggler.py** (defparam) e **h2csmuggler** — scripts auxiliares pra detecção (use só em alvos autorizados).
+- **Burp Suite**: Repeater (com **"Update Content-Length" desmarcado** pra TE.CL), e a extensão **HTTP Request Smuggler** (detecção/automação por timing).
+- **PortSwigger Web Security Academy**: labs gratuitos e oficiais de [HTTP request smuggling](https://portswigger.net/web-security/request-smuggling) e de CRLF/response splitting. A melhor fonte pra treinar.
+- **smuggler.py** (defparam) e **h2csmuggler**: scripts auxiliares pra detecção (use só em alvos autorizados).
 - **DVWA / labs próprios** pra praticar CRLF sem risco.
 
 ## Checklist do caçador
@@ -414,12 +414,12 @@ A causa é **ambiguidade entre servidores**. As defesas:
 - **Esquecer que CRLF é 2 bytes.** Ao calcular `Content-Length` no smuggling, cada `\r\n` conta **2 bytes**. Conta errada = ataque morto.
 - **Deixar o Burp recalcular o Content-Length.** Em TE.CL, se "Update Content-Length" estiver marcado, o Burp **conserta** seu payload malicioso. Desmarque.
 - **Testar no Pretty view.** O Pretty do Burp normaliza/oculta CRLF. Sempre Raw.
-- **Achar que `301`/`302` não dá XSS.** O CRLF pode injetar header mesmo num redirect; a escalada pra XSS **depende do contexto** (Content-Type, render do browser) — às vezes não vai, e tudo bem reportar só a injeção de header.
+- **Achar que `301`/`302` não dá XSS.** O CRLF pode injetar header mesmo num redirect; a escalada pra XSS **depende do contexto** (Content-Type, render do browser). Às vezes não vai, e tudo bem reportar só a injeção de header.
 - **Smuggling "às cegas".** Mandar payloads de exploração sem confirmar por timing primeiro pode **derrubar requests de usuários reais**. Confirme, depois explore com responsabilidade.
 
 ## O que você precisa lembrar
 
-- **Mesma raiz:** os dois bugs abusam de **como o HTTP é parseado** — delimitadores invisíveis (`\r\n`) e ambiguidade de tamanho (CL vs TE).
+- **Mesma raiz:** os dois bugs abusam de **como o HTTP é parseado**, ou seja, delimitadores invisíveis (`\r\n`) e ambiguidade de tamanho (CL vs TE).
 - **CRLF Injection** = você injeta `%0d%0a` e **escreve headers/conteúdo** na resposta. Escala pra Set-Cookie, response splitting (XSS) e poisoning.
 - **Request Smuggling** = front-end e back-end **discordam onde sua request termina**. Variantes **CL.TE / TE.CL / TE.TE** (e **H2.CL/H2.TE** no downgrade).
 - **Detecção:** CRLF por **reflexo de header**; smuggling por **timing**.

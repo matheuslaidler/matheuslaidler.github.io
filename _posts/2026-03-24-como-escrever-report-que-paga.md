@@ -12,15 +12,15 @@ comments: true
 
 ## Achar o bug é metade do trabalho
 
-Você passou a madrugada no Burp, trocou um `id`, viu a fatura de outro cliente aparecer na tela e o coração disparou: **IDOR confirmado**. Aí você abre a plataforma, escreve três linhas — *"dá pra ver dados de outro usuário trocando o id"* — anexa um print borrado e manda. Duas semanas depois volta um `Need More Info` ou, pior, um `Informative`. Zero bounty.
+Você passou a madrugada no Burp, trocou um `id`, viu a fatura de outro cliente aparecer na tela e o coração disparou: **IDOR confirmado**. Aí você abre a plataforma, escreve três linhas (*"dá pra ver dados de outro usuário trocando o id"*), anexa um print borrado e manda. Duas semanas depois volta um `Need More Info` ou, pior, um `Informative`. Zero bounty.
 
 > 💡 **IDOR**: falha de autorização em que você troca um identificador (ex.: `id`) e acessa o objeto de outro usuário. Detalhe no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
-Acontece o tempo todo. O bug era real, mas o **report** não estava. Bug bounty é um jogo de comunicação tanto quanto de técnica: do outro lado tem um **triador** que recebe dezenas de reports por dia, não conhece a sua aplicação tão bem quanto o time de produto, e precisa **reproduzir, validar e classificar** o seu achado no menor tempo possível. Se ele não conseguir reproduzir em poucos minutos, ou não entender o impacto no negócio, o seu report perde prioridade — ou cai pra `Informative`.
+Acontece o tempo todo. O bug era real, mas o **report** não estava. Bug bounty é um jogo de comunicação tanto quanto de técnica: do outro lado tem um **triador** que recebe dezenas de reports por dia, não conhece a sua aplicação tão bem quanto o time de produto, e precisa **reproduzir, validar e classificar** o seu achado no menor tempo possível. Se ele não conseguir reproduzir em poucos minutos, ou não entender o impacto no negócio, o seu report perde prioridade, ou cai pra `Informative`.
 
 > **Analogia:** achar o bug é como pescar um peixe enorme. O report é como você apresenta o peixe na balança. Se chegar com o peixe escondido num saco molhado e disser "confia, é grande", ninguém paga. Você precisa pôr na balança, fotografar e mostrar o número.
 
-Este post é o manual do "peixe na balança": a estrutura que faz um report ser **aceito de primeira**, o que separa report pago de report rejeitado, e — a parte que ninguém ensina — **como defender o impacto** quando o triador questiona. No fim tem um exemplo completo, anonimizado, que você pode usar de molde.
+Este post é o manual do "peixe na balança": a estrutura que faz um report ser **aceito de primeira**, o que separa report pago de report rejeitado, e (a parte que ninguém ensina) **como defender o impacto** quando o triador questiona. No fim tem um exemplo completo, anonimizado, que você pode usar de molde.
 
 ## O que é um "bom report" (e por que isso importa)
 
@@ -32,10 +32,10 @@ A própria [HackerOne descreve um report de qualidade](https://docs.hackerone.co
 
 ## Por que um report bom paga mais (e mais rápido)
 
-Não é só sobre "ser aceito" — a qualidade do report mexe direto no bolso:
+Não é só sobre "ser aceito". A qualidade do report mexe direto no bolso:
 
 - **Triagem mais rápida = menos chance de duplicado.** Em programas movimentados, o primeiro report **válido e reproduzível** de um bug leva o bounty; os seguintes viram `Duplicate`. Um report confuso fica parado em `Need More Info` enquanto outro pesquisador manda o mesmo bug bem-feito e leva a grana.
-- **Impacto bem demonstrado puxa a severidade pra cima.** O mesmo IDOR pode ser classificado como `Médio` ("dá pra ver um dado de outro usuário") ou `Crítico` ("vaza PII de toda a base, violando a LGPD"). *(PII = dado pessoal identificável: nome, CPF, e-mail, telefone — ver [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).)* A diferença entre esses dois é **quase só o report** — quem mostra escala e nomeia o dado sensível recebe a faixa de cima.
+- **Impacto bem demonstrado puxa a severidade pra cima.** O mesmo IDOR pode ser classificado como `Médio` ("dá pra ver um dado de outro usuário") ou `Crítico` ("vaza PII de toda a base, violando a LGPD"). *(PII é dado pessoal identificável: nome, CPF, e-mail, telefone; ver [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).)* A diferença entre esses dois é **quase só o report**: quem mostra escala e nomeia o dado sensível recebe a faixa de cima.
 - **Boa reputação destrava convites privados.** Reports limpos elevam seu *signal* na plataforma; signal alto traz convites pra programas privados, que pagam mais e têm menos concorrência.
 
 Na prática, falhas como IDOR/Broken Access Control pagam de algumas **centenas** (impacto baixo, dado pouco sensível) a **dezenas de milhares** (PII em escala, ação crítica). E aqui vai a regra de ouro do dinheiro:
@@ -55,11 +55,13 @@ Você envia  →  Triador lê o TÍTULO        (decide prioridade inicial)
             →  classifica: Triaged / Need More Info / Informative / Duplicate / N/A
 ```
 
-O **ponto de falha mais comum** é o "tenta reproduzir". Se nesse passo faltar uma informação (um header, qual conta usar, o valor exato do parâmetro), o triador **não consegue reproduzir** e devolve `Need More Info` — e cada ida e volta atrasa dias e esfria o report. Por isso a parte de passos é a mais importante de todas: ela tem que ser à prova de ambiguidade.
+O **ponto de falha mais comum** é o "tenta reproduzir". Se nesse passo faltar uma informação (um header, qual conta usar, o valor exato do parâmetro), o triador **não consegue reproduzir** e devolve `Need More Info`. Cada ida e volta atrasa dias e esfria o report. Por isso a parte de passos é a mais importante de todas: ela tem que ser à prova de ambiguidade.
 
 ## A estrutura do report "que não gera questionamento"
 
-Esta é a estrutura testada — derivada de dezenas de reports aceitos e dos guias oficiais. Cada plataforma tem campos diferentes, mas **estes blocos nunca podem faltar**.
+Esta é a estrutura testada, derivada de dezenas de reports aceitos e dos guias oficiais. Cada plataforma tem campos diferentes, mas **estes blocos nunca podem faltar**.
+
+Na hora de enviar, você **preenche os campos do formulário da plataforma**, não cola tudo num lugar só. A **Bugcrowd** separa em *Target*, *VRT* (você escolhe a categoria da falha, e ela já sugere a prioridade P1–P5), *Bug URL* e *Description* (é aqui que vai o seu texto: resumo, passos, PoC e impacto). A **HackerOne** usa *Title*, *Asset*, *Weakness/Severity* e *Description*. Escolher a categoria e o asset certos importa: errar isso já começa o report no pé errado. E um detalhe que pega quem está começando: **em plataforma internacional (Bugcrowd, HackerOne), escreva em inglês** — é a língua da triagem lá fora.
 
 ### 1. Título — `[Classe] - Nome curto e direto`
 
@@ -74,12 +76,12 @@ Exemplos:
 [SQLi] - Injeção time-based no parâmetro `search` do /api/v1/produtos
 ```
 
-- **Classe entre colchetes**: IDOR, XSS, SSRF, RCE, BFLA... ajuda o triador a rotear. *(BFLA = abuso de função restrita — ex.: usuário comum executa ação de admin; ver [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).)*
+- **Classe entre colchetes**: IDOR, XSS, SSRF, RCE, BFLA... ajuda o triador a rotear. *(BFLA é abuso de função restrita, ex.: usuário comum executa ação de admin; ver [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).)*
 - **Concreto, não genérico**: "Exposição de faturas (PII)" é melhor que "Falha de segurança grave". O [guia da Bugcrowd](https://www.bugcrowd.com/resources/levelup/how-to-write-excellent-reports-techniques-that-save-triagers-time-and-mistakes-that-should-be-avoided-in-reports/) pede título **descritivo e conciso**, identificando tipo, local e impacto.
 
 ### 2. Resumo — o risco **para o negócio** (não a parte técnica)
 
-Este é o erro nº 1 dos iniciantes: o resumo descreve a *mecânica* ("o endpoint não valida o dono do objeto") em vez do *risco* ("qualquer cliente autenticado lê os dados pessoais de todos os outros clientes"). O triador — e o gestor do programa que decide o bounty — pensa em **negócio**: dado vazado, dinheiro, reputação, conformidade legal.
+Este é o erro nº 1 dos iniciantes: o resumo descreve a *mecânica* ("o endpoint não valida o dono do objeto") em vez do *risco* ("qualquer cliente autenticado lê os dados pessoais de todos os outros clientes"). O triador (e o gestor do programa que decide o bounty) pensa em **negócio**: dado vazado, dinheiro, reputação, conformidade legal.
 
 ```text
 RUIM:  "O endpoint charge-details aceita um chargeId arbitrário sem checar
@@ -95,7 +97,7 @@ BOM:   "Qualquer cliente autenticado consegue ler faturas e notas fiscais
 
 ### 3. Plataforma / Alvo e 4. Contexto
 
-Diga **onde** (programa, domínio, app — ex.: `app.exemplo.com`) e **qual módulo/funcionalidade** é afetado e por quê. Contexto curto orienta o triador: *"Módulo Financeiro → Faturas, acessível a qualquer conta de cliente após login."*
+Diga **onde** (programa, domínio, app, ex.: `app.exemplo.com`) e **qual módulo/funcionalidade** é afetado e por quê. Contexto curto orienta o triador: *"Módulo Financeiro → Faturas, acessível a qualquer conta de cliente após login."*
 
 ### 5. Criticidade / Severidade — justificada, não chutada
 
@@ -128,7 +130,7 @@ CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N  →  6.5 (Médio)
 Passos numerados, escritos para que **qualquer pessoa** reproduza sem adivinhar nada. As regras:
 
 1. **Comece do zero**: "criar 2 contas (A e B)", "logar com a Conta B", etc. Não assuma estado.
-2. **Referencie a imagem dentro de cada passo** (`PRINT1`, `PRINT2`...). O triador lê o passo e olha o print correspondente — não um amontoado de prints no fim.
+2. **Referencie a imagem dentro de cada passo** (`PRINT1`, `PRINT2`...). O triador lê o passo e olha o print correspondente, não um amontoado de prints no fim.
 3. **Inclua o comando/request exato**, com o valor real usado (anonimizado no post, mas concreto no report). Marque o ponto da manipulação.
 
 ```text
@@ -146,14 +148,14 @@ Passos numerados, escritos para que **qualquer pessoa** reproduza sem adivinhar 
 
 A [Bugcrowd recomenda fortemente](https://docs.bugcrowd.com/researchers/reporting-managing-submissions/reporting-a-bug/) evidência ilustrativa, de preferência **vídeo de PoC**, ou screenshots no mínimo. Regras de print que paga:
 
-- **Seja explícito no que cada print mostra** — legenda do tipo *"resposta exibindo CPF de cliente que NÃO é a conta logada"*.
+- **Seja explícito no que cada print mostra**: legenda do tipo *"resposta exibindo CPF de cliente que NÃO é a conta logada"*.
 - **Circule/destaque** o ponto crítico (o `chargeId` trocado, o CPF que vazou).
 - **Mostre o contexto** que prova que o dado não é seu: a conta logada no canto, o nome diferente na resposta.
 - Para enumeração/escala, um **print do Burp Intruder** com várias respostas `200` de clientes distintos vale mais que mil palavras.
 
 ### 8. Impacto — nomeie o dado e mostre a escala
 
-Repita o risco de negócio do resumo, agora **detalhado**: que dado exatamente vaza (sempre destaque **PII** — CPF, e-mail, telefone, endereço, dados financeiros), **quantas** contas dá pra afetar (escala), e o que um atacante consegue fazer com isso (fraude, engenharia social, ATO — *Account Takeover*, tomada de conta da vítima). É a seção que **define a faixa de bounty**.
+Repita o risco de negócio do resumo, agora **detalhado**: que dado exatamente vaza (sempre destaque **PII** — CPF, e-mail, telefone, endereço, dados financeiros), **quantas** contas dá pra afetar (escala), e o que um atacante consegue fazer com isso (fraude, engenharia social, ATO ou *Account Takeover*, tomada de conta da vítima). É a seção que **define a faixa de bounty**.
 
 ## Aceito vs. Rejeitado: a tabela que importa
 
@@ -172,30 +174,32 @@ A lição mais repetida por quem vive de triagem: **relatório bem feito + certe
 
 ## Como DEFENDER o impacto quando o triador questiona
 
-Vai acontecer: você manda um report sólido e o triador responde *"impacto baixo"*, *"não vemos risco real"* ou rebaixa a severidade. Isso **não é o fim** — é uma negociação, e tem um roteiro que já reverteu downgrade:
+Vai acontecer: você manda um report sólido e o triador responde *"impacto baixo"*, *"não vemos risco real"* ou rebaixa a severidade. Isso **não é o fim**. É uma negociação, e tem um roteiro que já reverteu downgrade:
 
 1. **Confirme que NÃO está fora de escopo.** Releia a policy. Defender algo fora de escopo é perder tempo (e signal). Se está no escopo, siga.
 2. **Escreva um argumento detalhado do impacto.** Não responda "discordo". Explique, em termos de negócio, o pior cenário realista: *"Com enumeração de IDs sequenciais, um atacante baixa a base inteira de PII; isso é vazamento de dados pessoais sob a LGPD, com risco de multa e dano reputacional."*
-3. **Mostre que a falha é aceita/paga por outras empresas.** Diga que essa classe é reconhecida e recompensada em vários programas — não é um caso de borda.
+3. **Mostre que a falha é aceita/paga por outras empresas.** Diga que essa classe é reconhecida e recompensada em vários programas, não é um caso de borda.
 4. **Linke reports públicos da mesma classe já pagos (precedente).** Esse é o golpe de misericórdia. Repositórios como o [reddelexc/hackerone-reports](https://github.com/reddelexc/hackerone-reports) reúnem reports públicos por tipo de bug. Um link de um IDOR/PII pago num programa parecido tira o "é só teoria" da mesa.
 
 > **Analogia:** é como contestar uma multa. Não adianta dizer "achei injusto". Você junta a foto, o artigo da lei e um caso anterior em que a mesma multa foi cancelada. **Evidência + precedente** ganha a discussão.
 
 Dois aprendizados práticos sobre triagem que mudam o jogo:
 
-- **`Informative` não é necessariamente o fim.** Há casos de **bônus pago meses depois** por persistência — vale manter o report aberto e acompanhar com educação. Falhas tidas como "fracas" (rate limit, por exemplo) já renderam bounty quando bem argumentadas e dentro do escopo.
+- **`Informative` não é necessariamente o fim.** Há casos de **bônus pago meses depois** por persistência. Vale manter o report aberto e acompanhar com educação. Falhas tidas como "fracas" (rate limit, por exemplo) já renderam bounty quando bem argumentadas e dentro do escopo.
 - **Não junte achados distintos.** Um XSS em dois campos diferentes da mesma página = **dois reports**. Juntar pode fazer o programa pagar por um só. Já o mesmo bug em vários subdomínios = **um report** (juntar evita auto-duplicação).
+
+> 💡 **Caso real (report meu, aceito na NASA):** mandei um **Open Redirect** pro **VDP da NASA (no Bugcrowd)** e ele foi marcado como **Triaged** (validado na triagem). Essa classe costuma cair pra informativo, e o que segurou a severidade foi **provar que era controle faltando, não comportamento intencional**: no report eu mostrei que **endpoints-irmãos do mesmo host validavam o destino** e só aquele esquecia, ainda por cima num **host crítico de SSO** (onde o usuário digita a senha). É o roteiro acima na prática: o fato desarmando o "é de propósito". *(O endpoint e o PoC completo eu seguro até a NASA corrigir — disclosure responsável; vira um post próprio depois.)*
 
 ## Erros comuns que derrubam reports
 
-1. **Resumo técnico em vez de risco de negócio** — o erro nº 1 (já cobrimos).
-2. **Passos com buracos** — "logue e troque o id" sem dizer com qual conta nem qual valor.
-3. **Print único e ilegível** — sem destacar o ponto, sem mostrar que o dado é de outra pessoa.
-4. **Não provar escala** — mostrar 1 caso quando dava pra mostrar que afeta a base inteira (a escala é o que vira `Crítico`).
-5. **Severidade inflada** — marcar `Crítico` sem vetor CVSS coerente queima credibilidade.
-6. **Reportar sem ler o template/CVE** — nem todo achado de scanner é bug. Ferramentas como o Nuclei apontam coisas que, ao ler o que o template realmente faz, não têm impacto. **Entenda a CVE antes de reportar.**
-7. **Reportar no chute** — sem ter 100% de certeza de que é reproduzível.
-8. **Ignorar o escopo** — reportar ativo/classe fora de escopo, ou usar técnica proibida (ex.: automação pesada onde a policy proíbe).
+1. **Resumo técnico em vez de risco de negócio**: o erro nº 1 (já cobrimos).
+2. **Passos com buracos**, "logue e troque o id" sem dizer com qual conta nem qual valor.
+3. **Print único e ilegível**, sem destacar o ponto, sem mostrar que o dado é de outra pessoa.
+4. **Não provar escala**: mostrar 1 caso quando dava pra mostrar que afeta a base inteira (a escala é o que vira `Crítico`).
+5. **Severidade inflada**, marcar `Crítico` sem vetor CVSS coerente queima credibilidade.
+6. **Reportar sem ler o template/CVE**: nem todo achado de scanner é bug. Ferramentas como o Nuclei apontam coisas que, ao ler o que o template realmente faz, não têm impacto. **Entenda a CVE antes de reportar.**
+7. **Reportar no chute**, sem ter 100% de certeza de que é reproduzível.
+8. **Ignorar o escopo**: reportar ativo/classe fora de escopo, ou usar técnica proibida (ex.: automação pesada onde a policy proíbe).
 
 ## Exemplo completo de report (fictício-realista, anonimizado)
 
@@ -208,14 +212,14 @@ Dois aprendizados práticos sobre triagem que mudam o jogo:
 **Plataforma / Alvo:** HackerOne · `app.exemplo.com`
 
 **Resumo (risco ao negócio):**
-Qualquer cliente autenticado consegue ler as faturas e notas fiscais (NFS-e) de **todos** os outros clientes da plataforma — incluindo **nome completo, CPF e valores** — apenas trocando o parâmetro `chargeId` na request. Como os IDs são **sequenciais**, é possível enumerar e extrair a base inteira de PII. Vazamento de dados pessoais em massa, com violação direta da LGPD e risco de fraude/engenharia social contra os clientes.
+Qualquer cliente autenticado consegue ler as faturas e notas fiscais (NFS-e) de **todos** os outros clientes da plataforma (incluindo **nome completo, CPF e valores**) apenas trocando o parâmetro `chargeId` na request. Como os IDs são **sequenciais**, é possível enumerar e extrair a base inteira de PII. Vazamento de dados pessoais em massa, com violação direta da LGPD e risco de fraude/engenharia social contra os clientes.
 
 **Contexto:** Módulo *Financeiro → Faturas*, disponível a qualquer conta de cliente após o login. O endpoint que carrega o detalhe da cobrança não valida se o `chargeId` solicitado pertence ao usuário da sessão.
 
 **Criticidade:** **Alto → Crítico**
-- **CWE-639** — Authorization Bypass Through User-Controlled Key.
+- **CWE-639**: Authorization Bypass Through User-Controlled Key.
 - **CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N → 6.5 (Médio)** é o piso pela leitura de um único objeto. Como o acesso cruza a fronteira de **outras contas** (autorização de um componente expõe dado de outro), o vetor sobe pra **CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:N/A:N → 7.7 (Alto)** com **S:C** (*Scope Changed*).
-- **Argumento de severidade:** somando a **escala** (base inteira via IDs sequenciais) e a **sensibilidade do dado** (CPF + financeiro, sob LGPD), o impacto de negócio é tratado como **Crítico** pela maioria dos programas — é o número que defendo na seção de impacto.
+- **Argumento de severidade:** somando a **escala** (base inteira via IDs sequenciais) e a **sensibilidade do dado** (CPF + financeiro, sob LGPD), o impacto de negócio é tratado como **Crítico** pela maioria dos programas. É o número que defendo na seção de impacto.
 - VRT (Bugcrowd): *Broken Access Control → IDOR → Sensitive Data Disclosure*.
 
 **Como reproduzir:**
@@ -262,7 +266,7 @@ Leitura não autorizada de faturas e NFS-e de **toda a base de clientes**: nome 
 
 ---
 
-## Defesa em camadas (pro report ficar redondo — e pra você saber o que recomendar)
+## Defesa em camadas (pro report ficar redondo, e pra você saber o que recomendar)
 
 Um report bom também **aponta a correção**. A raiz do exemplo é falta de checagem de propriedade no servidor:
 
@@ -283,15 +287,15 @@ const fatura = await Fatura.findOne({ _id: req.query.chargeId, clienteId: req.us
 if (!fatura) return res.sendStatus(404);   // não vaza nem a existência do recurso
 ```
 
-Princípios que matam a classe inteira: **deny by default**, **nunca confiar em identificador vindo do cliente** pra decidir autorização, **IDs imprevisíveis** (UUID v4) como reforço — mas que **não substituem** a checagem de dono — e **teste de autorização no CI** ("Conta B não acessa objeto de Conta A"). (A fundo no post de [Broken Access Control](/posts/broken-access-control-idor-bola-bfla/).)
+Princípios que matam a classe inteira: **deny by default**, **nunca confiar em identificador vindo do cliente** pra decidir autorização, **IDs imprevisíveis** (UUID v4) como reforço, que **não substituem** a checagem de dono, e **teste de autorização no CI** ("Conta B não acessa objeto de Conta A"). (A fundo no post de [Broken Access Control](/posts/broken-access-control-idor-bola-bfla/).)
 
 ## Ferramentas que ajudam a montar o report
 
-- **Burp Suite** — Repeater (mostrar a troca), Intruder (provar escala), e o próprio histórico pra extrair a request exata.
-- **CVSS Calculator (FIRST.org)** — gera o vetor e o score pra justificar a severidade: [first.org/cvss/calculator/3.1](https://www.first.org/cvss/calculator/3.1).
-- **VRT da Bugcrowd** — mapeia a classe → severidade esperada: [bugcrowd.com/vulnerability-rating-taxonomy](https://bugcrowd.com/vulnerability-rating-taxonomy).
-- **Gravador de tela** (OBS, asciinema pra CLI) — vídeo de PoC é o que mais convence em casos complexos.
-- **Editor de imagem** (Flameshot, Greenshot) — pra circular/anotar prints. Print sem destaque é metade do print.
+- **Burp Suite**: Repeater (mostrar a troca), Intruder (provar escala), e o próprio histórico pra extrair a request exata.
+- **CVSS Calculator (FIRST.org)** gera o vetor e o score pra justificar a severidade: [first.org/cvss/calculator/3.1](https://www.first.org/cvss/calculator/3.1).
+- **VRT da Bugcrowd** mapeia a classe → severidade esperada: [bugcrowd.com/vulnerability-rating-taxonomy](https://bugcrowd.com/vulnerability-rating-taxonomy).
+- **Gravador de tela** (OBS, asciinema pra CLI): vídeo de PoC é o que mais convence em casos complexos.
+- **Editor de imagem** (Flameshot, Greenshot) pra circular/anotar prints. Print sem destaque é metade do print.
 
 ## Checklist do report que paga
 
@@ -310,7 +314,7 @@ Princípios que matam a classe inteira: **deny by default**, **nunca confiar em 
 
 ## O que você precisa lembrar
 
-- O report **transfere a sua certeza** pro triador — sem buracos, ele reproduz e paga.
+- O report **transfere a sua certeza** pro triador: sem buracos, ele reproduz e paga.
 - **Resumo = risco ao negócio** (PII, dinheiro, LGPD); mecânica fica nos passos.
 - **Passos reproduzíveis do zero + prints destacados** é o que mais derruba ou aprova report.
 - **Impacto + escala** definem o bounty; nomeie o dado e mostre quantas contas afeta.
@@ -320,7 +324,7 @@ Princípios que matam a classe inteira: **deny by default**, **nunca confiar em 
 
 ## Nota ética
 
-Tudo aqui é pra **testes autorizados** — programas de bug bounty dentro do escopo, pentests contratados e labs legais. Ao reportar, **respeite a policy**, não exfiltre mais dado do que o necessário pra provar o bug (em PoC de PII, mascare CPF/dados nos prints) e pratique **disclosure responsável**: dê tempo pro programa corrigir antes de tornar público. Report existe pra proteger quem usa o sistema, não pra exibir acesso indevido.
+Tudo aqui é pra **testes autorizados**: programas de bug bounty dentro do escopo, pentests contratados e labs legais. Ao reportar, **respeite a policy**, não exfiltre mais dado do que o necessário pra provar o bug (em PoC de PII, mascare CPF/dados nos prints) e pratique **disclosure responsável**: dê tempo pro programa corrigir antes de tornar público. Report existe pra proteger quem usa o sistema, não pra exibir acesso indevido.
 
 ## Referências
 

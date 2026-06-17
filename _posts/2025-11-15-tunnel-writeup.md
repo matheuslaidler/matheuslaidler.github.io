@@ -88,7 +88,7 @@ A descrição da máquina menciona **"HTTP/2 tunneling"**, indicando vulnerabili
 
 ### 4.1 Conceitos fundamentais
 
-**HTTP/2 Cleartext (h2c)** é uma extensão do protocolo HTTP/2 que permite comunicação sem TLS/SSL, utilizando o upgrade de HTTP/1.1 (**RFC 7230**) usado para negociar o h2c (**RFC 7540**).
+**HTTP/2 Cleartext (h2c)** é o HTTP/2 em texto claro (comunicação sem TLS/SSL), utilizando o upgrade de HTTP/1.1 (**RFC 7230**) usado para negociar o h2c (**RFC 7540**).
 
 **Request Smuggling** é uma técnica que explora diferenças na interpretação de requisições HTTP entre proxies/load balancers e servidores backend, permitindo bypass de controles de segurança.
 
@@ -155,7 +155,7 @@ O Spring Boot Actuator fornece endpoints de monitoramento e gestão que **nunca 
 ### Entendendo o Spring Boot Actuator
 
 **O que é o Spring Boot Actuator?**
-É um módulo que adiciona funcionalidades de produção-ready para aplicações Spring Boot, incluindo métricas, health checks, e informações sobre a aplicação.
+É um módulo que adiciona funcionalidades prontas para produção a aplicações Spring Boot, incluindo métricas, health checks, e informações sobre a aplicação.
 
 **Endpoints críticos comuns:**
 
@@ -454,7 +454,7 @@ Consultando a [documentação oficial](https://chromedevtools.github.io/devtools
 }
 ```
 
-Detectamos "parâmetros" na estrutura, assim sendo, teremos que identificar não apenas métodos quaisquer, mas algum que tenha como parâmetro alguma função de execução para injetarmos algum código malicioso, então devemos voltar para a documentação oficial, pesquisar e identificá-los.
+Detectamos "parâmetros" na estrutura, assim sendo, teremos que achar um método que receba como parâmetro alguma função de execução para injetarmos algum código malicioso, então devemos voltar para a documentação oficial, pesquisar e identificá-los.
 
 **Método aparentemente crítico para RCE identificado:**
 **`Runtime.evaluate`** indica permitir execução de JavaScript arbitrário.
@@ -894,7 +894,7 @@ Mas o mount é geralmente a técnica mais direta e confiável quando o container
 
 ### 13.3 Acesso ao host via SSH (método alternativo)
 
-Já conseguimos ver o conteúdo do host através do mount, mas vamos fazer algo mais elegante. Ao invés de só olhar os arquivos pela partição montada, que tal conseguir um shell SSH direto na máquina host? 
+Já conseguimos ver o conteúdo do host pelo mount, mas vamos fazer algo mais elegante. Ao invés de só olhar os arquivos pela partição montada, que tal conseguir um shell SSH direto na máquina host? 
 
 A ideia é simples: como temos acesso de escrita ao diretório `/root/.ssh/` do host (através do `/mnt/root/.ssh/`), podemos adicionar nossa chave pública SSH no arquivo `authorized_keys`. Depois disso, conseguimos conectar via SSH como se fôssemos um usuário legítimo.
 
@@ -1011,7 +1011,7 @@ hackingclub{d349c11e22a06b34d04e58***************6a0d302}
 
 ## 15. Investigando como tudo funcionou
 
-Agora que temos controle total do sistema, vale a pena dar uma olhada "por trás das cortinas" para entender exatamente como as configurações permitiram nossa exploração. Isso vai nos ajudar a entender melhor as falhas de segurança e como corrigi-las.
+Agora que temos controle total do sistema, vale a pena olhar os arquivos de configuração para entender exatamente como conseguimos explorar o sistema. Isso vai nos ajudar a entender melhor as falhas de segurança e como corrigi-las.
 
 Quando listamos o diretório root, vemos uma pasta `stack` - provavelmente onde estão os arquivos de configuração da aplicação:
 
@@ -1176,7 +1176,7 @@ Cada falha individual já seria problemática, mas todas juntas criaram um camin
 
 ### 16.1 Como conseguimos quebrar tudo
 
-Nossa exploração funcionou porque encontramos uma "tempestade perfeita" de configurações problemáticas:
+Nossa exploração funcionou porque várias configurações ruins se juntaram ao mesmo tempo:
 
 1. **Enumeração** → Spring Boot exposto com endpoints padrão
 2. **h2c Smuggling** → Nginx repassando headers `Upgrade` sem validação
@@ -1267,7 +1267,7 @@ Para detectar tentativas similares:
 
 ### 16.4 O que aprendemos
 
-Esta máquina mostra perfeitamente como **defense in depth** é crucial. Cada falha individual poderia ter sido mitigada:
+Esta máquina mostra bem por que **defense in depth** (defesa em camadas) importa tanto. Cada falha individual poderia ter sido mitigada:
 
 - Se o Nginx bloqueasse h2c → sem bypass do Actuator
 - Se o Actuator estivesse em localhost → sem descoberta de endpoints

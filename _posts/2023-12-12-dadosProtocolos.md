@@ -67,59 +67,27 @@ Vale lembrar que, embora o UDP seja mais leve que o TCP, ele não oferece garant
 
 ### QUIC (Quick UDP Internet Connections)
 
-**QUIC** representa uma evolução significativa baseada em UDP mas com características avançadas:
-
-- **Multiplexing sem bloqueio**: Múltiplas streams independentes
-- **Criptografia integrada**: TLS 1.3 por padrão
-- **Conexão rápida**: 0-RTT para reconexões
-- **Migração de conexão**: Sobrevive a mudanças de rede
+O QUIC é uma evolução em cima do UDP, mas com umas características bem mais avançadas: ele faz multiplexing sem bloqueio (várias streams independentes rodando ao mesmo tempo), já vem com criptografia integrada (TLS 1.3 por padrão), conecta rápido com 0-RTT pra reconexões e ainda sobrevive a mudanças de rede com a migração de conexão.
 
 ### HTTP/3 e gRPC
 
-**HTTP/3**: Nova versão do HTTP baseada em QUIC
-- Melhor performance em redes instáveis
-- Menor latência de conexão
-- Resistência a head-of-line blocking
+O HTTP/3 é a versão nova do HTTP, construída em cima do QUIC. Por causa disso ele vai melhor em redes instáveis, conecta com menos latência e resolve o head-of-line blocking que travava o HTTP/2.
 
-**gRPC**: Framework de RPC moderno
-- Baseado em HTTP/2
-- Protocol Buffers para serialização
-- Suporte a streaming bidirecional
-- Ideal para microserviços
+Já o gRPC é um framework de RPC moderno, baseado em HTTP/2, que usa Protocol Buffers pra serialização e suporta streaming bidirecional. É ideal pra microserviços.
 
 ### Protocolos de Segurança
 
-**TLS (Transport Layer Security)**:
-- Substituto do SSL
-- Criptografia em nível de transporte
-- Autenticação de servidores
-- Integridade dos dados
+O TLS (Transport Layer Security) é o substituto do SSL: faz a criptografia em nível de transporte, autentica o servidor e garante a integridade dos dados.
 
-**IPSec (Internet Protocol Security)**:
-- Segurança em nível de rede
-- VPNs corporativas
-- Autenticação e criptografia
-- Modos tunnel e transport
+Já o IPSec (Internet Protocol Security) trabalha em nível de rede, é o que sustenta as VPNs corporativas, e faz autenticação e criptografia nos modos tunnel e transport.
 
 ### QoS (Quality of Service)
 
-**Conceitos fundamentais**:
-- **Bandwidth**: Largura de banda garantida
-- **Latency**: Atraso máximo tolerado
-- **Jitter**: Variação na latência
-- **Packet Loss**: Taxa máxima de perda aceitável
+No QoS os conceitos que importam são bandwidth (largura de banda garantida), latency (atraso máximo tolerado), jitter (variação dessa latência) e packet loss (a taxa máxima de perda aceitável).
 
-**Técnicas de QoS**:
-- **Traffic Shaping**: Controle de taxa de tráfego
-- **Packet Prioritization**: Priorização de pacotes
-- **DSCP Marking**: Marcação de pacotes para classificação
-- **Queue Management**: Gerenciamento de filas
+As técnicas pra controlar isso são o traffic shaping (controle de taxa de tráfego), o packet prioritization (priorização de pacotes), o DSCP marking (marcação de pacotes pra classificação) e o queue management (gerenciamento de filas).
 
-**Aplicações práticas**:
-- Videoconferências requerem baixa latência
-- Streaming precisa de bandwidth consistente
-- Jogos online necessitam baixo jitter
-- Aplicações críticas precisam de prioridade alta
+Na prática isso aparece o tempo todo: videoconferência precisa de baixa latência, streaming precisa de bandwidth consistente, jogo online precisa de baixo jitter e aplicação crítica precisa de prioridade alta.
 
 ## Impactos na Escolha do Protocolo de Transporte
 
@@ -165,7 +133,7 @@ No cenário em que um usuário leva seu notebook à faculdade para conectar-se �
    - Camada TCP/IP: Transporte
    - Dispositivos: Notebook e servidor web.
 
-Esses protocolos desempenham papéis essenciais, proporcionando uma experiência de conectividade fluida ao usuário. O ARP, embora não seja explicitamente mencionado, é relevante no contexto do protocolo Wi-Fi para garantir a comunicação eficiente na rede sem fio.
+Cada um desses protocolos tem seu papel, e juntos é o que faz você conectar e navegar sem perceber tudo isso rodando por baixo. O ARP, embora não seja explicitamente mencionado, é relevante no contexto do protocolo Wi-Fi para garantir a comunicação eficiente na rede sem fio.
 
 _Lembrando que a conexão em uma rede wifi pública não é segura, isso porque é fácil envenenar a tabela ARP de forma que o atacante consiga se passar por outro dispositivo para coleta e leitura de pacotes, ficando entre a conexão dos dois dispositivos como um espião. Simplificando em outras palavras, o atacante pode se passar pelo roteador para o alvo e ele passar os dados do alvo ao roteador como se fosse o mesmo, porém tendo acesso a todos os pacotes nessa comunicação. Deixarei esta parte para ser melhor explorada em outro artigo focado em cibersegurança._
 

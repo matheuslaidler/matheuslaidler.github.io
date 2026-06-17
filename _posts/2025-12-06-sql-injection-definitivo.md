@@ -268,11 +268,11 @@ Quando não conseguimos ver resultados na página e nem medir tempo, mas consegu
 
 ## Parte 4: Conceitos Avançados e Ferramentas
 
-Antes de entrarmos nos laboratórios, precisamos aprofundar em conceitos que serão vitais para a resolução das máquinas.
+Antes de entrarmos nos laboratórios, precisamos aprofundar em conceitos que vão fazer falta na hora de resolver as máquinas.
 
 ### O Poder do UNION (A "Cola" de Tabelas)
 
-O comando **UNION** é a arma nuclear do atacante para extrair dados. Para entender bem, vou usar uma analogia:
+O comando **UNION** é a principal arma do atacante para extrair dados. Para entender bem, vou usar uma analogia:
 
 **Analogia do Formulário:**
 
@@ -280,7 +280,7 @@ Imagine que você trabalha no RH de uma empresa e tem acesso a um sistema que s�
 
 Agora imagine que você descobre uma brecha: o sistema permite "juntar" dados de outras tabelas no mesmo relatório, desde que você respeite o formato de 3 campos. É como se você dissesse: "me mostra os funcionários do TI, **E TAMBÉM** (`UNION`) junta nesse mesmo relatório os dados da tabela de salários".
 
-O pulo do gato: você precisa "encaixar" os dados de salário no mesmo formato de 3 campos. Então você coloca: `NomeFuncionario`, `Salario`, `DataPagamento`. Se tentar colocar 4 campos onde o sistema espera 3, dá erro.
+O detalhe que pega todo mundo: você precisa "encaixar" os dados de salário no mesmo formato de 3 campos. Então você coloca: `NomeFuncionario`, `Salario`, `DataPagamento`. Se tentar colocar 4 campos onde o sistema espera 3, dá erro.
 
 **O que o UNION realmente faz:**
 
@@ -296,7 +296,7 @@ UNION SELECT username, password, email FROM usuarios
 
 O resultado final é uma "tabela combinada" onde as primeiras linhas são produtos legítimos e as últimas linhas são os dados roubados.
 
-**A Regra de Ouro que derruba iniciantes:**
+**A regra que derruba iniciantes:**
 
 Para o `UNION` funcionar, a sua consulta injetada precisa ter **exatamente o mesmo número de colunas** da consulta original do site. Se o site pede 3 colunas (`nome`, `descrição`, `preço`) e você tenta injetar 4 colunas (`1`, `2`, `3`, `4`), o banco dá um erro fatal e a página quebra ou fica branca.
 
@@ -344,7 +344,7 @@ Quando injetamos `' UNION SELECT 1,2,3 --`, estamos literalmente pedindo pro ban
 
 **E aqui está a sacada:** nem todas as colunas são exibidas na página! O site pode ter 7 colunas na query, mas só mostrar 3 delas pro usuário. Quando você vê que apenas os números 2, 4 e 6 aparecem na tela (e 1, 3, 5, 7 não), você sabe que as colunas "visíveis" são a 2ª, 4ª e 6ª.
 
-Isso é crucial porque você só consegue ver dados extraídos se injetar nas colunas visíveis. Se você colocar `database()` na coluna 1 mas ela não é exibida, não vai ver o resultado. Precisa colocar na coluna 2, 4 ou 6.
+Isso importa porque você só consegue ver dados extraídos se injetar nas colunas visíveis. Se você colocar `database()` na coluna 1 mas ela não é exibida, não vai ver o resultado. Precisa colocar na coluna 2, 4 ou 6.
 
 #### Por que o resultado aparece naquela posição específica?
 
@@ -401,7 +401,7 @@ Quando gravamos esse arquivo no servidor, podemos passar comandos de sistema ope
 http://site.com/shell.php?cmd=whoami
 ```
 
-Isso se chama **RCE** (Remote Code Execution) e é o "Santo Graal" de uma invasão web. Do SQLi para o RCE, escalamos de "conseguir ler dados" para "conseguir executar qualquer coisa no servidor".
+Isso se chama **RCE** (Remote Code Execution) e é o que todo mundo quer numa invasão web: sair de "ler dados" para "rodar comando". Do SQLi para o RCE, escalamos de "conseguir ler dados" para "conseguir executar qualquer coisa no servidor".
 
 ### INTO OUTFILE: Escrevendo Arquivos via SQLi
 
@@ -437,7 +437,7 @@ Se o site responder com código 200 (OK) ou até 403 (Forbidden), sabemos que a 
 
 ### SQLMap: Automatizando a Exploração
 
-Fazer tudo manualmente é ótimo pra aprender, mas em cenários reais a gente usa ferramentas. O **SQLMap** é o canivete suíço do SQL Injection - ele detecta, explora e extrai dados automaticamente.
+Fazer tudo manualmente é ótimo pra aprender, mas em cenários reais a gente usa ferramentas. O **SQLMap** faz quase tudo do SQL Injection sozinho - detecta, explora e extrai dados automaticamente.
 
 **Uso básico:**
 ```bash
@@ -1259,7 +1259,7 @@ python3 -m http.server 80
 
 **Entendendo o servidor HTTP do Python:**
 
-O comando `python3 -m http.server 80` é uma mão na roda para pentesters. Vamos destrinchar:
+O comando `python3 -m http.server 80` salva muito a vida do pentester. Vamos por partes:
 
 - **`python3`** = Interpretador Python versão 3
 - **`-m`** = Flag que diz "execute este módulo como script"
@@ -1526,7 +1526,7 @@ Quer saber se sua aplicação é vulnerável? Teste você mesmo (em ambiente de 
 
 ## Conclusão
 
-Percorremos um longo caminho. Começamos entendendo a teoria da "planilha do Excel" e o perigo da concatenação de strings. Passamos pelos diferentes tipos de SQLi (In-Band, Blind, Out-of-Band), aprendemos a mecânica do UNION e do INTO OUTFILE, e praticamos em laboratórios. Enfrentamos a frustração de uma senha Bcrypt inquebrável na Lion, o que nos forçou a pivotar criativamente para uma webshell. E, finalmente, usamos conhecimento base de Linux para identificar manualmente uma permissão de arquivo errada e virar administradores.
+Foi bastante coisa. Começamos com a teoria da "planilha do Excel" e o perigo da concatenação de strings. Passamos pelos diferentes tipos de SQLi (In-Band, Blind, Out-of-Band), aprendemos a mecânica do UNION e do INTO OUTFILE, e praticamos em laboratórios. Enfrentamos a frustração de uma senha Bcrypt inquebrável na Lion, o que nos forçou a pivotar criativamente para uma webshell. E, finalmente, usamos conhecimento base de Linux para identificar manualmente uma permissão de arquivo errada e virar administradores.
 
 A lição que fica é clara: **ferramentas te ajudam, mas é o fundamento teórico que te salva** quando você precisa tomar decisões criativas. No que diz respeito a "desenvolvimento vibe-coding", se você tem o fundamento consegue pensar em prompts que forçam a IA a evitar determinadas ações que culminariam em erros como SQLi, por exemplo. No que diz respeito ao processo de exploração, saber tomar decisões como abandonar o hash cracking ou procurar vetores manuais quando os scripts falham é o que separa o script kiddie do pentester de verdade.
 

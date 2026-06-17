@@ -18,7 +18,7 @@ Você está fuçando um arquivo JavaScript de `app.exemplo.com` e, no meio do c�
 AKIAIOSFODNN7EXAMPLE   ...   wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 ```
 
-Vinte caracteres começando com `AKIA`, seguidos de uma string de 40. Quem nunca viu sabe que é só "mais um texto". Quem mexe com segurança reconhece na hora: **é uma chave de acesso da AWS** — o login programático que um sistema usa pra conversar com a nuvem da empresa. Dependendo das permissões dela, essa string pode listar bancos de dados, ler buckets de backup, criar máquinas... ou, no pior dos mundos, dar **controle total da conta AWS**.
+Vinte caracteres começando com `AKIA`, seguidos de uma string de 40. Quem nunca viu sabe que é só "mais um texto". Quem mexe com segurança reconhece na hora: **é uma chave de acesso da AWS**, o login programático que um sistema usa pra conversar com a nuvem da empresa. Dependendo das permissões dela, essa string pode listar bancos de dados, ler buckets de backup, criar máquinas... ou, no pior dos mundos, dar **controle total da conta AWS**.
 
 Cloud misconfiguration é uma das fronteiras mais lucrativas do bug bounty moderno porque **quase toda empresa hoje roda na nuvem** (AWS, Google Cloud/GCP, Azure) e a configuração dela é complexa, distribuída e fácil de errar. Este post foca em **AWS** (o provedor mais comum), com paralelos pra GCP e Azure, e cobre as cinco frentes que mais aparecem: **buckets S3**, **chaves/segredos vazados**, **metadata via SSRF**, **takeover de recursos cloud** e uma visão geral de **escalada de privilégio no IAM**.
 
@@ -28,7 +28,7 @@ Cloud misconfiguration é uma das fronteiras mais lucrativas do bug bounty moder
 
 > 💡 **Cloud (computação em nuvem):** em vez de ter servidores físicos, a empresa aluga recursos (armazenamento, máquinas, banco) de um provedor como AWS/GCP/Azure, configurando tudo por painel/API.
 
-**Cloud misconfiguration** é quando algum desses recursos foi configurado de um jeito inseguro: um armazenamento que ficou público, uma permissão larga demais, uma credencial que vazou. Não é um bug no código da AWS — a AWS funciona como projetado; **quem configurou errou**.
+**Cloud misconfiguration** é quando algum desses recursos foi configurado de um jeito inseguro: um armazenamento que ficou público, uma permissão larga demais, uma credencial que vazou. Não é um bug no código da AWS. A AWS funciona como projetado; **quem configurou errou**.
 
 > **Analogia:** a nuvem é um prédio de cofres alugados. A AWS te dá o cofre trancado e seguro por padrão. Misconfiguration é o cliente que deixou a porta do cofre encostada (bucket público), colou a senha num post-it no saguão (chave vazada no JS) ou deu cópia da chave-mestra pro estagiário (IAM permissivo demais). O prédio é seguro; o uso que se fez dele, não.
 
@@ -54,7 +54,7 @@ O impacto varia de "informativo" a "comprometimento total da empresa":
 
 Na prática, falhas dessa família costumam pagar de **algumas centenas de reais** (um bucket listável com dado pouco sensível, ou um takeover classificado como informativo) até **dezenas de milhares** (chave com acesso a dados de produção, SSRF→credenciais→pivot interno). O valor segue a regra de sempre: **impacto = sensibilidade do dado × escala × o que dá pra fazer com aquilo**.
 
-Pra falar a língua do triador, leve um **CVSS** junto — o **v3.1** (ainda o mais usado pelos programas) e o **v4.0** ao lado (que separa o impacto no **sistema vulnerável** `VC/VI/VA` do **sistema subsequente** `SC/SI/SA` — útil aqui pra distinguir "vazou só o bucket" de "a credencial roubada compromete a conta toda"). Âncoras dos cenários mais comuns:
+Pra falar a língua do triador, leve um **CVSS** junto: o **v3.1** (ainda o mais usado pelos programas) e o **v4.0** ao lado (que separa o impacto no **sistema vulnerável** `VC/VI/VA` do **sistema subsequente** `SC/SI/SA`, útil aqui pra distinguir "vazou só o bucket" de "a credencial roubada compromete a conta toda"). Âncoras dos cenários mais comuns:
 
 | Cenário | CVSS v3.1 | CVSS v4.0 |
 |---|---|---|
@@ -82,17 +82,17 @@ Três peças que você precisa entender pra não se perder:
 | **AKIA…** | Longo prazo (de um usuário IAM) — não expira até alguém revogar | `AccessKeyId` (20 chars) + `SecretAccessKey` (40 chars) |
 | **ASIA…** | **Temporário** (emitido pelo STS) — expira em minutos/horas | `AccessKeyId` + `SecretAccessKey` + `SessionToken` |
 
-É por isso que `AKIA…` num arquivo público é tão perigoso: é uma senha permanente. Já `ASIA…` é uma senha que se autodestrói — ainda útil, mas com prazo. (Confirmado na [AWS — Managing access keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html) e no [Hacking the Cloud — Using Stolen IAM Credentials](https://hackingthe.cloud/aws/general-knowledge/using_stolen_iam_credentials/).)
+É por isso que `AKIA…` num arquivo público é tão perigoso: é uma senha permanente. Já `ASIA…` é uma senha que se autodestrói: ainda útil, mas com prazo. (Confirmado na [AWS — Managing access keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html) e no [Hacking the Cloud — Using Stolen IAM Credentials](https://hackingthe.cloud/aws/general-knowledge/using_stolen_iam_credentials/).)
 
-**3. Roles e o IMDS.** Uma máquina EC2 raramente carrega uma chave `AKIA` no disco. Em vez disso, ela "veste" uma **role** (papel) e pega credenciais **temporárias** (`ASIA…`) de um serviço interno chamado **IMDS** (*Instance Metadata Service*), acessível só de dentro da máquina, no IP mágico `169.254.169.254`. Guarde esse IP — ele é o coração da seção de SSRF.
+**3. Roles e o IMDS.** Uma máquina EC2 raramente carrega uma chave `AKIA` no disco. Em vez disso, ela "veste" uma **role** (papel) e pega credenciais **temporárias** (`ASIA…`) de um serviço interno chamado **IMDS** (*Instance Metadata Service*), acessível só de dentro da máquina, no IP mágico `169.254.169.254`. Guarde esse IP: ele é o coração da seção de SSRF.
 
 ## Tipos e variações da superfície cloud
 
-1. **S3 público** — bucket listável, legível e/ou **gravável** por qualquer um.
-2. **Chave/segredo vazado** — `AKIA…` ou outro segredo em JS, repositório Git, APK ou resposta de API.
-3. **Metadata via SSRF** — uma falha de [SSRF](/posts/ssrf/) na aplicação que alcança o `169.254.169.254` e rouba as credenciais da role.
-4. **Takeover de recurso cloud** — DNS apontando pra um bucket S3 / distribuição CloudFront que não existe mais.
-5. **Outros** — snapshots EBS públicos, funções Lambda / API Gateway expostas, **Cognito** com atributo auto-editável, e **escalada de privilégio no IAM**.
+1. **S3 público**: bucket listável, legível e/ou **gravável** por qualquer um.
+2. **Chave/segredo vazado**: `AKIA…` ou outro segredo em JS, repositório Git, APK ou resposta de API.
+3. **Metadata via SSRF**: uma falha de [SSRF](/posts/ssrf/) na aplicação que alcança o `169.254.169.254` e rouba as credenciais da role.
+4. **Takeover de recurso cloud**: DNS apontando pra um bucket S3 / distribuição CloudFront que não existe mais.
+5. **Outros**: snapshots EBS públicos, funções Lambda / API Gateway expostas, **Cognito** com atributo auto-editável, e **escalada de privilégio no IAM**.
 
 ## 1. S3 buckets: achar, enumerar e testar permissões
 
@@ -102,7 +102,7 @@ Três peças que você precisa entender pra não se perder:
 
 Buckets ligados ao alvo costumam aparecer com nomes previsíveis: `alvo`, `alvo-assets`, `alvo-backups`, `alvo-prod`, `alvo-staging`, `alvo-dev`, `alvo-uploads`. Onde olhar:
 
-- **No HTML/JS e nas respostas da app** — URLs `*.s3.amazonaws.com`, `s3.<região>.amazonaws.com/<bucket>` ou `*.cloudfront.net` apontando pra origem S3. (Use as ferramentas de recon do post [Recon & Discovery](/posts/recon-discovery/): `gau`, `katana`, `httpx`.)
+- **No HTML/JS e nas respostas da app**: URLs `*.s3.amazonaws.com`, `s3.<região>.amazonaws.com/<bucket>` ou `*.cloudfront.net` apontando pra origem S3. (Use as ferramentas de recon do post [Recon & Discovery](/posts/recon-discovery/): `gau`, `katana`, `httpx`.)
 - **Google dorks:**
 
 ```text
@@ -114,7 +114,7 @@ site:amazonaws.com inurl:alvo
 
 ### 1.2 As três permissões que importam
 
-Quando você acha um bucket, teste — **na ordem do menos pro mais grave**:
+Quando você acha um bucket, teste **na ordem do menos pro mais grave**:
 
 | Permissão | O que significa | Gravidade |
 |---|---|---|
@@ -147,13 +147,13 @@ aws s3 cp poc.txt s3://alvo-uploads/poc-$(date +%s).txt --no-sign-request
 # Se subir => Write público. Apague depois e documente.
 ```
 
-> ⚠️ **No teste de Write, suba um arquivo neutro e único** (ex.: `poc-<timestamp>.txt` com um texto inofensivo), tire o print, e **apague**. Nunca sobrescreva arquivos legítimos do alvo — isso é destruir/adulterar dado, não "provar bug".
+> ⚠️ **No teste de Write, suba um arquivo neutro e único** (ex.: `poc-<timestamp>.txt` com um texto inofensivo), tire o print, e **apague**. Nunca sobrescreva arquivos legítimos do alvo. Isso é destruir/adulterar dado, não "provar bug".
 
 ### 1.4 ACL mal configurada (a causa raiz)
 
 > 💡 **ACL (Access Control List):** lista de permissões granulares de um bucket/objeto S3 ("quem pode ler/escrever").
 
-O erro clássico é dar permissão pro **grupo `AllUsers`** (literalmente "qualquer pessoa na internet") ou pro **`AuthenticatedUsers`** (qualquer pessoa com **uma conta AWS** — note: **não** "seus usuários", e sim *qualquer um dos milhões de clientes da AWS*, o que efetivamente é público). Dá pra ler a ACL anonimamente quando o bucket permite:
+O erro clássico é dar permissão pro **grupo `AllUsers`** (literalmente "qualquer pessoa na internet") ou pro **`AuthenticatedUsers`** (qualquer pessoa com **uma conta AWS**; ou seja, **não** "seus usuários", e sim *qualquer um dos milhões de clientes da AWS*, o que efetivamente é público). Dá pra ler a ACL anonimamente quando o bucket permite:
 
 ```bash
 aws s3api get-bucket-acl --bucket alvo-backups --no-sign-request
@@ -163,7 +163,7 @@ Se aparecer um *Grantee* do tipo `Group` com a URI `http://acs.amazonaws.com/gro
 
 ### 1.5 Ferramenta: s3scanner
 
-[**s3scanner**](https://github.com/sa7mon/S3Scanner) varre buckets (e equivalentes em outros provedores) e classifica as permissões automaticamente — sem precisar testar uma a uma na mão.
+[**s3scanner**](https://github.com/sa7mon/S3Scanner) varre buckets (e equivalentes em outros provedores) e classifica as permissões automaticamente, sem precisar testar uma a uma na mão.
 
 ```bash
 # Checar um bucket específico (só permissões, comportamento padrão)
@@ -176,7 +176,7 @@ s3scanner -bucket-file possiveis-buckets.txt
 s3scanner -bucket alvo-backups -enumerate
 ```
 
-> 💡 **Sintaxe:** a versão atual do s3scanner (reescrita em Go) usa flags de traço único (`-bucket`, `-bucket-file`, `-enumerate`, `-provider`). A versão antiga em Python usava `scan`/`dump` como subcomandos — se você encontrar exemplos com `scan --bucket`, são daquele tempo.
+> 💡 **Sintaxe:** a versão atual do s3scanner (reescrita em Go) usa flags de traço único (`-bucket`, `-bucket-file`, `-enumerate`, `-provider`). A versão antiga em Python usava `scan`/`dump` como subcomandos. Se você encontrar exemplos com `scan --bucket`, são daquele tempo.
 
 > 💡 **Paralelo GCP/Azure:** o equivalente do S3 é o **Google Cloud Storage** (`storage.googleapis.com/<bucket>`) e o **Azure Blob Storage** (`<conta>.blob.core.windows.net/<container>`). A lógica de "container público" é a mesma; o `s3scanner` suporta vários provedores.
 
@@ -186,7 +186,7 @@ s3scanner -bucket alvo-backups -enumerate
 
 - **Arquivos JS** servidos pelo front (variáveis de build esquecidas).
 - **Repositórios Git** públicos/expostos (`.git/` acessível, histórico de commits).
-- **Apps mobile (APK/IPA)** — descompile com `jadx` e vasculhe strings (veja [Mobile Bug Bounty](/posts/mobile-bug-bounty/)).
+- **Apps mobile (APK/IPA)**: descompile com `jadx` e vasculhe strings (veja [Mobile Bug Bounty](/posts/mobile-bug-bounty/)).
 - **Respostas de API**, mensagens de erro, arquivos de config esquecidos (`.env`, `taskDefinition.json`, `wp-config.php.save`).
 
 ### 2.2 Achando com trufflehog
@@ -201,7 +201,7 @@ trufflehog git https://github.com/exemplo/repo --only-verified
 trufflehog filesystem ./app-descompilado --only-verified
 ```
 
-A flag `--only-verified` faz o trufflehog **só mostrar segredos confirmados como vivos** — economiza horas filtrando falso-positivo.
+A flag `--only-verified` faz o trufflehog **só mostrar segredos confirmados como vivos**, economizando horas de filtragem de falso-positivo.
 
 ### 2.3 Validando uma chave AWS (o jeito certo e ético)
 
@@ -227,27 +227,27 @@ Resposta de uma chave válida:
 }
 ```
 
-O `Arn` já conta uma história: `user/build-deploy` é um usuário de pipeline — provavelmente com permissões largas. **Pare aqui.** Você tem tudo pra um report: a chave é válida, pertence à conta `123456789012` e ao usuário `build-deploy`.
+O `Arn` já conta uma história: `user/build-deploy` é um usuário de pipeline, provavelmente com permissões largas. **Pare aqui.** Você tem tudo pra um report: a chave é válida, pertence à conta `123456789012` e ao usuário `build-deploy`.
 
 > ⚠️ **`get-caller-identity` é a linha que você NÃO cruza pra dentro.** Qualquer comando além disso (`s3 ls`, `iam list-users`, etc.) usando a chave de terceiro é acesso não autorizado e gera log no **CloudTrail** (a auditoria da AWS) com o seu IP. Não vale a pena, não é ético, e não acrescenta nada ao report.
 
-> 💡 **KeyHacks:** repositório que mostra como **validar** dezenas de tipos de chave/token vazados (não só AWS — Slack, Stripe, GitHub, etc.). [streaak/keyhacks](https://github.com/streaak/keyhacks).
+> 💡 **KeyHacks:** repositório que mostra como **validar** dezenas de tipos de chave/token vazados (não só AWS: Slack, Stripe, GitHub, etc.). [streaak/keyhacks](https://github.com/streaak/keyhacks).
 
 ### 2.4 Nem todo "segredo" é segredo
 
-Cuidado pra não reportar lixo: muita coisa que *parece* chave é **pública por design** e não vale nada — `pk_live_…` do Stripe (publishable key), `VUE_APP_*` / `REACT_APP_*` (variáveis de build expostas de propósito), sitekey do reCAPTCHA, client IDs de SDK. O que importa é distinguir isso de um segredo **realmente sensível** (`AKIA…`, `sk_live_…`, *personal access token*, JWT de serviço). Na dúvida, valide com o KeyHacks antes de escrever o report — senão vira duplicado ou "informativo".
+Cuidado pra não reportar lixo: muita coisa que *parece* chave é **pública por design** e não vale nada: `pk_live_…` do Stripe (publishable key), `VUE_APP_*` / `REACT_APP_*` (variáveis de build expostas de propósito), sitekey do reCAPTCHA, client IDs de SDK. O que importa é distinguir isso de um segredo **realmente sensível** (`AKIA…`, `sk_live_…`, *personal access token*, JWT de serviço). Na dúvida, valide com o KeyHacks antes de escrever o report, senão vira duplicado ou "informativo".
 
 ## 3. Metadata e IMDS via SSRF (a joia da coroa)
 
 Aqui é onde uma falha "comum" de aplicação vira comprometimento de infra. Se você ainda não leu, o pré-requisito é [SSRF: fazendo o servidor bater na porta de dentro](/posts/ssrf/).
 
-> 💡 **SSRF (Server-Side Request Forgery):** você engana o servidor pra ele fazer uma requisição que **você** escolhe — inclusive pra endereços internos que você não alcançaria de fora.
+> 💡 **SSRF (Server-Side Request Forgery):** você engana o servidor pra ele fazer uma requisição que **você** escolhe, inclusive pra endereços internos que você não alcançaria de fora.
 
 ### 3.1 Por que o `169.254.169.254` é ouro
 
-Toda EC2 tem acesso, de dentro, a um serviço web em `http://169.254.169.254/` — o **IMDS**. Ele entrega dados da máquina e, crucialmente, as **credenciais temporárias** (`ASIA…`) da role que a máquina veste. Se você tem um SSRF que alcança esse IP, você consegue **as credenciais da aplicação**.
+Toda EC2 tem acesso, de dentro, a um serviço web em `http://169.254.169.254/`: o **IMDS**. Ele entrega dados da máquina e, o ponto-chave, as **credenciais temporárias** (`ASIA…`) da role que a máquina veste. Se você tem um SSRF que alcança esse IP, você consegue **as credenciais da aplicação**.
 
-### 3.2 IMDSv1 — o jeito antigo e vulnerável
+### 3.2 IMDSv1: o jeito antigo e vulnerável
 
 > 💡 **IMDSv1:** versão original do metadata, que responde a um **GET simples**, sem autenticação nenhuma. É justamente o que faz SSRF ser tão devastador nela.
 
@@ -277,7 +277,7 @@ Resposta (estrutura confirmada na [doc oficial de IAM roles for EC2](https://doc
 }
 ```
 
-Note o `ASIA` e o `Token` (= `SessionToken`): são credenciais temporárias. No bug bounty, mostrar que você **conseguiu obtê-las via SSRF** já é a prova — não saia usando.
+Note o `ASIA` e o `Token` (= `SessionToken`): são credenciais temporárias. No bug bounty, mostrar que você **conseguiu obtê-las via SSRF** já é a prova. Não saia usando.
 
 Quando o SSRF é num cabeçalho `Host`/URL controlada, a requisição da aplicação fica tipo:
 
@@ -287,7 +287,7 @@ Host: app.exemplo.com
 Authorization: Bearer <seu_token>
 ```
 
-### 3.3 IMDSv2 — por que ele mata o ataque
+### 3.3 IMDSv2: por que ele mata o ataque
 
 > 💡 **IMDSv2:** versão "session-oriented": antes de ler qualquer coisa, você faz um **PUT** pra pegar um token e depois manda esse token num header em cada GET.
 
@@ -305,29 +305,29 @@ curl -H "X-aws-ec2-metadata-token: $TOKEN" \
 
 Três detalhes técnicos explicam por que isso **derruba a maioria dos SSRF** (todos da doc oficial AWS):
 
-1. **Exige um PUT primeiro.** A maioria dos SSRF só consegue disparar `GET` — não dá pra fazer o PUT inicial.
+1. **Exige um PUT primeiro.** A maioria dos SSRF só consegue disparar `GET`, e não dá pra fazer o PUT inicial.
 2. **Exige um header customizado** (`X-aws-ec2-metadata-token`) no GET seguinte. Muitos SSRF não deixam você setar headers arbitrários na requisição forjada.
-3. **Hop limit = 1 por padrão.** A resposta do PUT tem TTL de rede `1` no nível do IP — ela não "atravessa" um proxy reverso ou container intermediário. Além disso, **PUTs com header `X-Forwarded-For` são rejeitados**, fechando a porta pros SSRF que passam por proxies.
+3. **Hop limit = 1 por padrão.** A resposta do PUT tem TTL de rede `1` no nível do IP, então ela não "atravessa" um proxy reverso ou container intermediário. Além disso, **PUTs com header `X-Forwarded-For` são rejeitados**, fechando a porta pros SSRF que passam por proxies.
 
-Por isso a defesa #1 é **exigir IMDSv2** (`HttpTokens: required`). Em alvos modernos você vai bater no IMDSv2; reporte a falha de SSRF em si e teste se a metadata ainda é alcançável — às vezes a instância ainda aceita v1 por compatibilidade.
+Por isso a defesa #1 é **exigir IMDSv2** (`HttpTokens: required`). Em alvos modernos você vai bater no IMDSv2; reporte a falha de SSRF em si e teste se a metadata ainda é alcançável. Às vezes a instância ainda aceita v1 por compatibilidade.
 
-> 💡 **Paralelo GCP/Azure:** o conceito de metadata interno é o mesmo. No GCP/Azure o endpoint é `http://169.254.169.254/` ou `http://metadata.google.internal/` e **exige o header `Metadata-Flavor: Google`** (GCP) / `Metadata: true` (Azure) — um detalhe que, como o token do IMDSv2, bloqueia SSRF que não setam headers.
+> 💡 **Paralelo GCP/Azure:** o conceito de metadata interno é o mesmo. No GCP/Azure o endpoint é `http://169.254.169.254/` ou `http://metadata.google.internal/` e **exige o header `Metadata-Flavor: Google`** (GCP) / `Metadata: true` (Azure). É um detalhe que, como o token do IMDSv2, bloqueia SSRF que não setam headers.
 
 ## 4. Takeover de recurso cloud (S3/CloudFront)
 
 Esse é primo direto do [Subdomain Takeover](/posts/subdomain-takeover-broken-link-hijacking/), então vou resumir aqui e mandar você pra lá pra fundo.
 
-> 💡 **Subdomain takeover:** quando um DNS (ex.: `staging-assets.alvo.com`) aponta pra um recurso cloud que **não existe mais** — e você recria esse recurso, passando a controlar o que é servido naquele subdomínio.
+> 💡 **Subdomain takeover:** quando um DNS (ex.: `staging-assets.alvo.com`) aponta pra um recurso cloud que **não existe mais**, e você recria esse recurso, passando a controlar o que é servido naquele subdomínio.
 
 O caso clássico em S3: `staging-assets.alvo.com` é um CNAME pra um bucket que foi deletado. Ao acessar, a AWS responde com um XML de erro `NoSuchBucket` ("The specified bucket does not exist"). Esse erro é a **assinatura** do takeover possível: você cria um bucket S3 com **exatamente aquele nome**, sobe um `test.html` inofensivo, e ele passa a ser servido pelo subdomínio legítimo do alvo. Daí dá pra fazer phishing, defacement ou [XSS](/posts/xss-html-injection/) "de subdomínio". Com **CloudFront**, a lógica é parecida (distribuição/origem órfã).
 
-> ⚠️ **PoC mínima e ética:** suba **só** uma página estática neutra (ex.: o texto "PoC autorizada") pra comprovar o controle. Nada de coletar credenciais de visitantes ou hospedar conteúdo malicioso real. E saiba: alguns programas classificam takeover de staging como **informativo** — confira o escopo.
+> ⚠️ **PoC mínima e ética:** suba **só** uma página estática neutra (ex.: o texto "PoC autorizada") pra comprovar o controle. Nada de coletar credenciais de visitantes ou hospedar conteúdo malicioso real. E saiba: alguns programas classificam takeover de staging como **informativo**. Confira o escopo.
 
 ## 5. Outros vetores (visão geral)
 
 ### Snapshots EBS públicos
 
-> 💡 **EBS:** os "discos" (volumes) das máquinas EC2. Um **snapshot** é uma foto do disco — que pode acidentalmente ser marcada como **pública**.
+> 💡 **EBS:** os "discos" (volumes) das máquinas EC2. Um **snapshot** é uma foto do disco, que pode acidentalmente ser marcada como **pública**.
 
 Snapshots públicos podem conter o disco inteiro de um servidor (código, configs, credenciais). Com uma chave válida da conta, dá pra listar os públicos:
 
@@ -336,19 +336,19 @@ aws ec2 describe-snapshots --restorable-by-user-ids all --region us-east-1 \
   --filters "Name=description,Values=*alvo*"
 ```
 
-(A flag certa é **`--restorable-by-user-ids all`**: lista os snapshots que **qualquer** conta pode restaurar, ou seja, os **públicos**. Cuidado: `--owner-ids` só aceita IDs de conta, `self` ou `amazon` — **não** existe `--owner-ids all`; pra restringir a um dono específico, some `--owner-ids <ID-da-conta>`. Confirmado na [doc da CLI](https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-snapshots.html) e no [Hacking the Cloud](https://hackingthe.cloud/aws/enumeration/loot_public_ebs_snapshots/).) Em bug bounty: confirme a existência/exposição; **não** monte o disco pra ler dado real de produção.
+(A flag certa é **`--restorable-by-user-ids all`**: lista os snapshots que **qualquer** conta pode restaurar, ou seja, os **públicos**. Cuidado: `--owner-ids` só aceita IDs de conta, `self` ou `amazon`. **Não** existe `--owner-ids all`; pra restringir a um dono específico, some `--owner-ids <ID-da-conta>`. Confirmado na [doc da CLI](https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-snapshots.html) e no [Hacking the Cloud](https://hackingthe.cloud/aws/enumeration/loot_public_ebs_snapshots/).) Em bug bounty: confirme a existência/exposição; **não** monte o disco pra ler dado real de produção.
 
 ### Lambda / API Gateway expostos
 
 > 💡 **Lambda:** funções que rodam "sem servidor" (você sobe só o código). **API Gateway:** o front que expõe essas funções como endpoints HTTP.
 
-Endpoints `*.execute-api.<região>.amazonaws.com` ou URLs de função Lambda às vezes ficam abertos sem autenticação, ou refletem parâmetros de forma insegura — caçáveis com a metodologia de [API Security](/posts/api-security/): enumerar stages (`/dev`, `/prod`), métodos, e testar autorização.
+Endpoints `*.execute-api.<região>.amazonaws.com` ou URLs de função Lambda às vezes ficam abertos sem autenticação, ou refletem parâmetros de forma insegura, caçáveis com a metodologia de [API Security](/posts/api-security/): enumerar stages (`/dev`, `/prod`), métodos, e testar autorização.
 
 ### Cognito mal configurado (atributo de usuário auto-editável)
 
-> 💡 **Amazon Cognito:** o serviço de "login pronto" da AWS — gerencia cadastro, autenticação e atributos (e-mail, telefone, nome) dos usuários da aplicação. Quando o front fala direto com o Cognito, o navegador carrega um **access token** do usuário logado.
+> 💡 **Amazon Cognito:** o serviço de "login pronto" da AWS, que gerencia cadastro, autenticação e atributos (e-mail, telefone, nome) dos usuários da aplicação. Quando o front fala direto com o Cognito, o navegador carrega um **access token** do usuário logado.
 
-O erro clássico aqui é a app deixar o usuário **editar atributos sensíveis dele mesmo** direto na API do Cognito, sem validação no backend. A ação `cognito-idp update-user-attributes` exige **só o access token do próprio usuário** (escopo `aws.cognito.signin.user.admin`) — então, se você consegue esse token (ele costuma estar no `localStorage`/numa request da app), dá pra trocar o seu e-mail por **um endereço que já pertence a outra conta**, ou setar um valor arbitrário:
+O erro clássico aqui é a app deixar o usuário **editar atributos sensíveis dele mesmo** direto na API do Cognito, sem validação no backend. A ação `cognito-idp update-user-attributes` exige **só o access token do próprio usuário** (escopo `aws.cognito.signin.user.admin`). Então, se você consegue esse token (ele costuma estar no `localStorage`/numa request da app), dá pra trocar o seu e-mail por **um endereço que já pertence a outra conta**, ou setar um valor arbitrário:
 
 ```bash
 # Pega o access-token do usuário logado (no DevTools: localStorage / request da app)
@@ -363,16 +363,16 @@ aws cognito-idp update-user-attributes \
 
 Dois impactos reais já vistos nesse padrão (anonimizados):
 
-1. **DoS / sequestro de conta:** ao apontar seu e-mail pro endereço da vítima, você "ocupa" aquele e-mail na base do Cognito. A vítima deixa de receber e-mail de **reset de senha**/verificação (a entrega quebra ou vai pra conta errada), inutilizando a recuperação dela. Segundo a [doc da AWS](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_UpdateUserAttributes.html), trocar o e-mail por `update-user-attributes` marca `email_verified` como **não verificado** e dispara um código — mas o **estrago no cadastro já aconteceu**.
+1. **DoS / sequestro de conta:** ao apontar seu e-mail pro endereço da vítima, você "ocupa" aquele e-mail na base do Cognito. A vítima deixa de receber e-mail de **reset de senha**/verificação (a entrega quebra ou vai pra conta errada), inutilizando a recuperação dela. Segundo a [doc da AWS](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_UpdateUserAttributes.html), trocar o e-mail por `update-user-attributes` marca `email_verified` como **não verificado** e dispara um código, mas o **estrago no cadastro já aconteceu**.
 2. **MFA / login confusion:** com dois cadastros colidindo no mesmo e-mail, o fluxo de MFA e de login fica ambíguo.
 
-Pontuação típica: **Médio a Crítico** conforme o que dá pra fazer — DoS de conta isolado tende a **Médio**; quando vira sequestro efetivo (a vítima perde acesso e você assume), sobe. Use o `UI:N`/`PR:L` (você precisa de uma conta logada): algo como **CVSS v3.1 `6.5` / Médio** (`AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N`) pro caso de DoS por alteração de atributo, calibrando pra cima se demonstrar takeover. (Comportamento confirmado na [doc do Cognito — UpdateUserAttributes](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_UpdateUserAttributes.html) e na [doc de atributos de usuário](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html); cruza com [Account Takeover](/posts/account-takeover/).)
+Pontuação típica: **Médio a Crítico** conforme o que dá pra fazer. DoS de conta isolado tende a **Médio**; quando vira sequestro efetivo (a vítima perde acesso e você assume), sobe. Use o `UI:N`/`PR:L` (você precisa de uma conta logada): algo como **CVSS v3.1 `6.5` / Médio** (`AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N`) pro caso de DoS por alteração de atributo, calibrando pra cima se demonstrar takeover. (Comportamento confirmado na [doc do Cognito — UpdateUserAttributes](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_UpdateUserAttributes.html) e na [doc de atributos de usuário](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html); cruza com [Account Takeover](/posts/account-takeover/).)
 
 > ⚠️ **Linha ética:** prove com **suas próprias contas de teste** (Conta A e Conta B que você criou). Nunca aponte um atributo pro e-mail real de um terceiro — isso indisponibiliza a conta de uma pessoa real.
 
 ### Escalada de privilégio no IAM (visão geral)
 
-Quando você (legitimamente, num pentest/lab) tem credenciais de baixo privilégio, certas combinações de permissões IAM permitem **virar admin**. Exemplos clássicos: `iam:CreatePolicyVersion` (criar uma nova versão de policy dando tudo a si mesmo), `iam:PassRole` + `lambda:CreateFunction` (rodar código vestindo uma role mais poderosa), `iam:CreateAccessKey` em outro usuário. São dezenas de caminhos — o [Pacu](https://github.com/RhinoSecurityLabs/pacu) tem módulos que mapeiam isso automaticamente, e a [Rhino Security Labs documentou 21 métodos de privesc no IAM](https://rhinosecuritylabs.com/aws/aws-privilege-escalation-methods-mitigation/). Em bug bounty isso quase sempre está **fora de escopo** (é "usar a conta") — relevante mais pra entender o impacto e pra pentest contratado.
+Quando você (legitimamente, num pentest/lab) tem credenciais de baixo privilégio, certas combinações de permissões IAM permitem **virar admin**. Exemplos clássicos: `iam:CreatePolicyVersion` (criar uma nova versão de policy dando tudo a si mesmo), `iam:PassRole` + `lambda:CreateFunction` (rodar código vestindo uma role mais poderosa), `iam:CreateAccessKey` em outro usuário. São dezenas de caminhos. O [Pacu](https://github.com/RhinoSecurityLabs/pacu) tem módulos que mapeiam isso automaticamente, e a [Rhino Security Labs documentou 21 métodos de privesc no IAM](https://rhinosecuritylabs.com/aws/aws-privilege-escalation-methods-mitigation/). Em bug bounty isso quase sempre está **fora de escopo** (é "usar a conta"). Vale mais pra entender o impacto e pra pentest contratado.
 
 ## Caso real-fictício: chave AKIA no JS → report
 
@@ -386,7 +386,7 @@ echo "https://app.exemplo.com" | gau | grep '\.js$' | sort -u > js.txt
 trufflehog filesystem ./js-baixados --only-verified
 ```
 
-**Passo 1 — Achado.** O trufflehog reporta um `AWS` verificado dentro de `main.a1b2c3.js`:
+**Passo 1, o achado.** O trufflehog reporta um `AWS` verificado dentro de `main.a1b2c3.js`:
 
 ```
 ✅ Found verified result 🐷🔑
@@ -396,7 +396,7 @@ Raw result: AKIAIOSFODNN7EXAMPLE
 File: ./js-baixados/main.a1b2c3.js
 ```
 
-**Passo 2 — Confirmar identidade (e SÓ isso).**
+**Passo 2, confirmar identidade (e SÓ isso).**
 
 ```bash
 export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
@@ -413,23 +413,23 @@ aws sts get-caller-identity
 }
 ```
 
-Chave **válida**, conta `123456789012`, usuário `frontend-deploy`. **Você para aqui** — não lista buckets, não toca em nada.
+Chave **válida**, conta `123456789012`, usuário `frontend-deploy`. **Você para aqui**: não lista buckets, não toca em nada.
 
 **O que a tela mostraria:** o DevTools/editor com a linha do `main.a1b2c3.js` contendo o `AKIA…` destacada, e o terminal com o JSON do `get-caller-identity` provando que a credencial é ativa (com o `SecretAccessKey` borrado no print).
 
-**Passo 3 — Report.** Título `[Sensitive Data Exposure] Chave de acesso AWS (AKIA) válida exposta em main.*.js`. Resumo focado no risco: *"qualquer pessoa consegue uma credencial programática ativa da conta AWS 123456789012; o impacto depende das permissões da chave, mas chaves de pipeline costumam ter acesso amplo a S3/ECR/deploy"*. Inclua: o arquivo, a chave parcialmente mascarada (`AKIAIOSF…MPLE`), e o output do `get-caller-identity` **sem** o secret. Recomende rotação imediata. Severidade: **Alta a Crítica** conforme as permissões.
+**Passo 3, o report.** Título `[Sensitive Data Exposure] Chave de acesso AWS (AKIA) válida exposta em main.*.js`. Resumo focado no risco: *"qualquer pessoa consegue uma credencial programática ativa da conta AWS 123456789012; o impacto depende das permissões da chave, mas chaves de pipeline costumam ter acesso amplo a S3/ECR/deploy"*. Inclua: o arquivo, a chave parcialmente mascarada (`AKIAIOSF…MPLE`), e o output do `get-caller-identity` **sem** o secret. Recomende rotação imediata. Severidade: **Alta a Crítica** conforme as permissões.
 
-CVSS (chave válida, exposta publicamente, **antes** de demonstrar o que ela faz — ou seja, confidencialidade da própria credencial):
+CVSS (chave válida, exposta publicamente, **antes** de demonstrar o que ela faz, ou seja, confidencialidade da própria credencial):
 - **CVSS v3.1:** `7.5 — Alto` · `AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N` (rede, sem autenticação, sem interação; vaza um segredo de alto valor).
 - **CVSS v4.0:** `8.7 — Alto` · `CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N`.
 
-Se você **comprovar** (em escopo) que a chave tem permissões de escrita/admin, o score sobe pra **Crítico** porque entram integridade e disponibilidade — pontue o que **provou**, não o teórico, e descreva o pior caso em texto. Os decimais foram conferidos na [calculadora oficial do FIRST](https://www.first.org/cvss/calculator/3.1) ([v4.0 aqui](https://www.first.org/cvss/calculator/4.0)). (Como estruturar: [Como escrever um report que paga](/posts/como-escrever-report-que-paga/) e [Severidade & Triagem](/posts/severidade-impacto-triagem/).)
+Se você **comprovar** (em escopo) que a chave tem permissões de escrita/admin, o score sobe pra **Crítico** porque entram integridade e disponibilidade. Pontue o que **provou**, não o teórico, e descreva o pior caso em texto. Os decimais foram conferidos na [calculadora oficial do FIRST](https://www.first.org/cvss/calculator/3.1) ([v4.0 aqui](https://www.first.org/cvss/calculator/4.0)). (Como estruturar: [Como escrever um report que paga](/posts/como-escrever-report-que-paga/) e [Severidade & Triagem](/posts/severidade-impacto-triagem/).)
 
 ## Defesa em camadas
 
 A correção real é na configuração da nuvem, e em camadas que se reforçam.
 
-**1. S3 — Block Public Access (a trava mestra):**
+**1. S3, o Block Public Access (a trava mestra):**
 Ative as **quatro** opções do [S3 Block Public Access](https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html), de preferência no **nível da conta inteira** (não só por bucket):
 
 | Setting | O que faz |
@@ -445,7 +445,7 @@ aws s3api put-public-access-block --bucket alvo-backups \
   BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
 ```
 
-**2. IAM — privilégio mínimo (*least privilege*):** cada usuário/role recebe **só** as permissões que precisa, nada de `*:*`. Use roles temporárias em vez de chaves `AKIA` de longo prazo sempre que der.
+**2. IAM com privilégio mínimo (*least privilege*):** cada usuário/role recebe **só** as permissões que precisa, nada de `*:*`. Use roles temporárias em vez de chaves `AKIA` de longo prazo sempre que der.
 
 **3. IMDSv2 obrigatório:** force `HttpTokens: required` em toda EC2 (mata a maioria dos SSRF→metadata):
 
@@ -455,7 +455,7 @@ aws ec2 modify-instance-metadata-options \
   --http-tokens required --http-endpoint enabled --http-put-response-hop-limit 1
 ```
 
-**4. Segredos — nunca no código:** use **AWS Secrets Manager** / **Parameter Store**; injete via variável de ambiente em runtime; **rotacione** credenciais periodicamente; e bote um **secret scanner no CI** (trufflehog, gitleaks) pra barrar commit de chave. Se vazou, **rotacione já** — assuma que está comprometida.
+**4. Segredos nunca no código:** use **AWS Secrets Manager** / **Parameter Store**; injete via variável de ambiente em runtime; **rotacione** credenciais periodicamente; e bote um **secret scanner no CI** (trufflehog, gitleaks) pra barrar commit de chave. Se vazou, **rotacione já** e assuma que está comprometida.
 
 **5. Auditoria contínua:** rode **ScoutSuite** / **Prowler** pra mapear misconfig na sua própria conta, ligue o **CloudTrail** (auditoria) e alerte em chamadas anômalas (ex.: `GetCallerIdentity` de uma identidade que nunca fez isso).
 
@@ -463,12 +463,12 @@ aws ec2 modify-instance-metadata-options \
 
 ## Ferramentas + labs legais
 
-- **[AWS CLI](https://docs.aws.amazon.com/cli/latest/reference/)** — a base de tudo (`s3`, `sts`, `ec2`, `iam`).
-- **[s3scanner](https://github.com/sa7mon/S3Scanner)** — enumerar/classificar buckets (multi-provedor).
-- **[trufflehog](https://github.com/trufflesecurity/trufflehog)** — achar e **verificar** segredos em repos/arquivos/APKs.
-- **[KeyHacks](https://github.com/streaak/keyhacks)** — validar chaves/tokens de dezenas de serviços.
-- **[ScoutSuite](https://github.com/nccgroup/ScoutSuite)** — auditoria de postura (AWS/GCP/Azure), gera relatório do que está exposto.
-- **[Pacu](https://github.com/RhinoSecurityLabs/pacu)** — framework de exploração AWS (pós-acesso; **só em ambiente autorizado/seu**).
+- **[AWS CLI](https://docs.aws.amazon.com/cli/latest/reference/)**: a base de tudo (`s3`, `sts`, `ec2`, `iam`).
+- **[s3scanner](https://github.com/sa7mon/S3Scanner)**: enumerar/classificar buckets (multi-provedor).
+- **[trufflehog](https://github.com/trufflesecurity/trufflehog)**: achar e **verificar** segredos em repos/arquivos/APKs.
+- **[KeyHacks](https://github.com/streaak/keyhacks)**: validar chaves/tokens de dezenas de serviços.
+- **[ScoutSuite](https://github.com/nccgroup/ScoutSuite)**: auditoria de postura (AWS/GCP/Azure), gera relatório do que está exposto.
+- **[Pacu](https://github.com/RhinoSecurityLabs/pacu)**: framework de exploração AWS (pós-acesso; **só em ambiente autorizado/seu**).
 - **Labs autorizados:** [flaws.cloud](http://flaws.cloud/) e [flaws2.cloud](http://flaws2.cloud/) (o clássico pra treinar S3/IAM/metadata legalmente), [CloudGoat](https://github.com/RhinoSecurityLabs/cloudgoat) (cenários vulneráveis "de propósito" da Rhino), [AWS free tier](https://aws.amazon.com/free/) (sua própria conta de testes).
 
 ## Checklist do caçador
@@ -478,10 +478,10 @@ aws ec2 modify-instance-metadata-options \
 - [ ] No Write, subi só PoC neutra e **apaguei** depois.
 - [ ] Rodei `trufflehog --only-verified` em JS, repos e APKs.
 - [ ] Distingui segredo real (`AKIA`, `sk_live_`) de chave pública (`pk_live_`, `VUE_APP_*`).
-- [ ] Validei chave AWS **só** com `aws sts get-caller-identity` — **nada além disso**.
+- [ ] Validei chave AWS **só** com `aws sts get-caller-identity`, **nada além disso**.
 - [ ] Em falha de SSRF, testei alcançar `169.254.169.254` e a metadata (IMDSv1 vs v2).
-- [ ] Procurei DNS apontando pra bucket/CloudFront órfão (`NoSuchBucket`) — takeover.
-- [ ] Se a app usa **Cognito**, testei editar atributo sensível (e-mail) com o **meu** access token (`update-user-attributes`) — só com contas de teste minhas.
+- [ ] Procurei DNS apontando pra bucket/CloudFront órfão (`NoSuchBucket`), o sinal de takeover.
+- [ ] Se a app usa **Cognito**, testei editar atributo sensível (e-mail) com o **meu** access token (`update-user-attributes`), só com contas de teste minhas.
 - [ ] Conferi que o ativo cloud **está no escopo** e que a ação que fiz não cruzou a linha "usar a conta".
 
 ## Pegadinhas / o que NÃO funciona
@@ -494,11 +494,11 @@ aws ec2 modify-instance-metadata-options \
 
 ## O que você precisa lembrar
 
-- A nuvem é segura por padrão; o que vaza é **configuração** — bucket público, chave esquecida, permissão larga.
+- A nuvem é segura por padrão; o que vaza é **configuração**: bucket público, chave esquecida, permissão larga.
 - **Confirmar ≠ acessar.** Em chave AWS, a linha que você não cruza é `aws sts get-caller-identity`.
-- O impacto segue **sensibilidade do dado × escala × o que dá pra fazer** — um SSRF→IMDS pode valer dez buckets listáveis.
+- O impacto segue **sensibilidade do dado × escala × o que dá pra fazer**: um SSRF→IMDS pode valer dez buckets listáveis.
 
-> 💡 **Dica de ouro:** no recon, todo `AKIA…` (20 chars) é uma parada obrigatória, e todo SSRF deve **sempre** apontar pra `169.254.169.254/latest/meta-data/iam/security-credentials/`. Esses dois reflexos — reconhecer a chave e mirar a metadata — separam quem "achou um info" de quem **transforma uma falha de app em comprometimento de infra** (e reporta com responsabilidade).
+> 💡 **Dica de ouro:** no recon, todo `AKIA…` (20 chars) é uma parada obrigatória, e todo SSRF deve **sempre** apontar pra `169.254.169.254/latest/meta-data/iam/security-credentials/`. Esses dois reflexos (reconhecer a chave e mirar a metadata) separam quem "achou um info" de quem **transforma uma falha de app em comprometimento de infra** (e reporta com responsabilidade).
 
 ## Nota ética
 

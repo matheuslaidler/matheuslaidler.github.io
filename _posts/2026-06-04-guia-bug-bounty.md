@@ -12,11 +12,11 @@ comments: true
 
 ## Sobre esta série
 
-Esta é uma série de estudo de **bug bounty / segurança ofensiva web**, escrita do **básico ao avançado** pra qualquer pessoa acompanhar — de quem nunca interceptou uma request até quem já caça faz tempo. Cada post é **autossuficiente** (explica o que precisa), traz **teoria + como funciona por trás + exploração passo a passo + caso prático + defesa em camadas + checklist**, e tudo é **prática autorizada** (labs e programas com permissão).
+Esta é uma série de estudo de **bug bounty / segurança ofensiva web**, escrita do **básico ao avançado** pra qualquer pessoa acompanhar, de quem nunca interceptou uma request até quem já caça faz tempo. Cada post é **autossuficiente** (explica o que precisa), traz **teoria + como funciona por trás + exploração passo a passo + caso prático + defesa em camadas + checklist**, e tudo é **prática autorizada** (labs e programas com permissão).
 
-> Os exemplos são **fictícios-realistas e anonimizados** — baseados em *padrões* de falhas reais, sem expor alvos, empresas ou dados de ninguém.
+> Os exemplos são **fictícios-realistas e anonimizados**, baseados em *padrões* de falhas reais, sem expor alvos, empresas ou dados de ninguém.
 
-> 📥 **[Baixe o guia completo em PDF](/assets/pdf/guia-completo-de-bug-bounty.pdf){:target="_blank" rel="noopener"}** — os 26 capítulos num arquivo só (388 páginas), com a identidade do Acervo de TI, pra ler offline.
+> 📥 **[Abra o guia completo em PDF](/assets/pdf/guia-completo-de-bug-bounty.pdf){:target="_blank" rel="noopener"}**: os 26 capítulos num arquivo só (388 páginas), com a identidade do Acervo de TI, pra ler offline.
 {: .prompt-info }
 
 ## Como usar (trilha sugerida)
@@ -72,11 +72,11 @@ Esta é uma série de estudo de **bug bounty / segurança ofensiva web**, escrit
 
 ## Conectando tudo
 
-- Os pilares **CIA** ([Fundamentos](/posts/fundamentos-web-hacking/)) dizem **qual** propriedade a falha quebra; a [Severidade & Impacto](/posts/severidade-impacto-triagem/) transforma isso em **bounty**; o [Report que paga](/posts/como-escrever-report-que-paga/) ensina a **comunicar**. Os capítulos **`10`–`25` e `28`–`31`** são o **como achar e explorar** cada classe — do [Broken Access Control](/posts/broken-access-control-idor-bola-bfla/) ao [Cloud & AWS](/posts/cloud-aws-misconfiguration/).
-- E os capítulos **`26`** ([Chaining](/posts/chaining-vulnerabilidades/)) e **`27`** ([Anatomia de uma Caçada](/posts/capstone-do-recon-ao-report/)) fecham a série: boa parte das classes **se combina** — Open Redirect → roubo de token (OAuth), SSRF → RCE / credenciais de cloud, XSS → Account Takeover, IDOR + Business Logic → fraude. Depois de dominar cada classe, o pulo do gato é **encadear**.
+- Os pilares **CIA** ([Fundamentos](/posts/fundamentos-web-hacking/)) dizem **qual** propriedade a falha quebra; a [Severidade & Impacto](/posts/severidade-impacto-triagem/) transforma isso em **bounty**; o [Report que paga](/posts/como-escrever-report-que-paga/) ensina a **comunicar**. Os capítulos **`10`–`25` e `28`–`31`** são o **como achar e explorar** cada classe, do [Broken Access Control](/posts/broken-access-control-idor-bola-bfla/) ao [Cloud & AWS](/posts/cloud-aws-misconfiguration/).
+- E os capítulos **`26`** ([Chaining](/posts/chaining-vulnerabilidades/)) e **`27`** ([Anatomia de uma Caçada](/posts/capstone-do-recon-ao-report/)) fecham a série: boa parte das classes **se combina**: Open Redirect → roubo de token (OAuth), SSRF → RCE / credenciais de cloud, XSS → Account Takeover, IDOR + Business Logic → fraude. Depois de dominar cada classe, o pulo do gato é **encadear**.
 
 ## Nota ética
 
-Tudo aqui é pra **estudo e testes autorizados** — labs e programas de bug bounty/pentest com permissão. Testar sistemas de terceiros sem autorização é crime (no Brasil, art. 154-A do CP), além de desnecessário: existe lab de sobra pra treinar à vontade. Use pra **proteger**, reportar com responsabilidade e ensinar.
+Tudo aqui é pra **estudo e testes autorizados**: labs e programas de bug bounty/pentest com permissão. Testar sistemas de terceiros sem autorização é crime (no Brasil, art. 154-A do CP), além de desnecessário: existe lab de sobra pra treinar à vontade. Use pra **proteger**, reportar com responsabilidade e ensinar.
 
 *Bons bugs! 🐛 — [matheuslaidler.github.io](https://matheuslaidler.github.io)*

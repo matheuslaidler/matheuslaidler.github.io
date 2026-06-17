@@ -27,7 +27,7 @@ Essa é uma máquina de nível fácil do TryHackMe, perfeita para quem está com
 
 ### 1.1 O que é Nmap?
 
-O **Nmap** (Network Mapper) é, sem dúvida, uma das ferramentas mais essenciais para qualquer profissional de segurança. Com ele conseguimos descobrir hosts ativos na rede, portas abertas, serviços rodando e até mesmo o sistema operacional do alvo. Basicamente, é seu primeiro passo em qualquer pentest - antes de atacar qualquer coisa, você precisa saber o que está na sua frente.
+O **Nmap** (Network Mapper) é, sem dúvida, uma das ferramentas mais usadas por qualquer profissional de segurança. Com ele conseguimos descobrir hosts ativos na rede, portas abertas, serviços rodando e até mesmo o sistema operacional do alvo. Basicamente, é seu primeiro passo em qualquer pentest - antes de atacar qualquer coisa, você precisa saber o que está na sua frente.
 
 ### 1.2 Scan inicial
 
@@ -37,7 +37,7 @@ Assim que a máquina foi iniciada e recebi o IP alvo, já parti para o Nmap. Com
 nmap -sV 10.10.84.129
 ```
 
-Para um scan mais completo, podemos adicionar o `-Pn`:
+Para garantir que o Nmap não desista achando que o host está offline (ex.: firewall bloqueando o ping), podemos adicionar o `-Pn`:
 
 ```bash
 nmap -sV -Pn 10.10.84.129
@@ -221,7 +221,7 @@ internal             (Status 301) [Size 322] [--> http://10.10.84.129:3333/inter
 
 Analisando os diretórios encontrados, a maioria parece ser recursos estáticos do site (images, css, fonts). Mas o `/internal/` chama atenção por ser um nome sugestivo. Ao acessar `http://10.10.84.129:3333/internal/`, nos deparamos com uma página de upload!
 
-Esse tipo de descoberta é muito comum em CTFs e também em pentests reais - funcionalidades "escondidas" que não estão linkadas na página principal mas que podem ser exploradas.
+Esse tipo de descoberta é muito comum em CTFs e também em pentests reais - funcionalidades "escondidas" que não aparecem na página principal mas estão lá pra ser exploradas.
 
 ```yaml
 Resposta: /internal/
@@ -239,7 +239,7 @@ O problema é que geralmente existem filtros que bloqueiam extensões perigosas 
 
 ### 3.2 Qual tipo de arquivo é bloqueado?
 
-Testando diferentes extensões, descobrimos que arquivos `.php` são bloqueados pelo servidor. Isso é uma medida de segurança comum, mas como veremos, nem sempre é implementada corretamente.
+Testando diferentes extensões, descobrimos que arquivos `.php` são bloqueados pelo servidor. Isso é uma medida de segurança comum, só que como veremos foi mal implementada.
 
 ```yaml
 Resposta: .php
@@ -340,7 +340,7 @@ Os parâmetros são:
 
 ### 3.7 Executando o ataque
 
-Com tudo preparado, agora é a hora da verdade:
+Com tudo preparado, agora vamos fazer o ataque:
 
 1. Faça upload do arquivo `php-reverse-shell.phtml` através da página `/internal/`
 2. Navegue até o arquivo uploaded em `http://10.10.84.129:3333/internal/uploads/php-reverse-shell.phtml`
@@ -542,25 +542,25 @@ Para quem quiser ter uma visão geral do que fizemos, aqui está o fluxo complet
 
 ## 6. Lições Aprendidas
 
-Essa máquina, apesar de simples, ensina conceitos fundamentais que aparecem constantemente em CTFs e pentests reais.
+Essa máquina, apesar de simples, ensina coisas que você vai ver o tempo todo em CTFs e pentests reais.
 
 ### Sobre enumeração
 
 O Nmap é realmente o primeiro passo de qualquer pentest. Sem saber o que está rodando no alvo, você está no escuro. Além disso, não confie apenas nas portas padrão - use `-p-` quando tiver tempo, pois serviços importantes podem estar em portas não convencionais (como o web server na 3333 dessa máquina).
 
-O fuzzing de diretórios também é essencial. Muitas funcionalidades interessantes (e vulneráveis) não estão linkadas na página principal. Formulários de upload, painéis de admin, arquivos de backup - tudo isso pode estar escondido esperando ser descoberto.
+O fuzzing de diretórios também não pode faltar. Muitas funcionalidades interessantes (e vulneráveis) não estão linkadas na página principal. Formulários de upload, painéis de admin, arquivos de backup - tudo isso pode estar escondido esperando ser descoberto.
 
 ### Sobre exploração de uploads
 
 Filtros de extensão são notoriamente difíceis de implementar corretamente. Nesse caso, o desenvolvedor bloqueou `.php` mas esqueceu de `.phtml`. Existem dezenas de variantes que podem funcionar dependendo da configuração do servidor: `.php3`, `.php4`, `.php5`, `.phar`, `.inc`, etc. Sempre vale testar.
 
-O Burp Suite é uma ferramenta indispensável para esse tipo de teste. Automatizar o fuzzing de extensões economiza muito tempo e garante que você não vai perder nenhuma variante.
+O Burp Suite ajuda muito nesse tipo de teste. Automatizar o fuzzing de extensões economiza muito tempo e garante que você não vai perder nenhuma variante.
 
 ### Sobre privilege escalation
 
 A busca por arquivos SUID deveria ser um dos primeiros passos após conseguir acesso a um sistema. O comando `find / -perm -u=s -type f 2>/dev/null` vai te mostrar todos os binários com essa permissão especial.
 
-O site **GTFOBins** ([gtfobins.github.io](https://gtfobins.github.io/)) é uma referência obrigatória - ele lista técnicas de exploração para diversos binários Linux. Se você encontrar um SUID interessante, provavelmente já existe uma técnica documentada lá.
+O site **GTFOBins** ([gtfobins.github.io](https://gtfobins.github.io/)) é uma das melhores referências que tem - ele lista técnicas de exploração para diversos binários Linux. Se você encontrar um SUID interessante, provavelmente já existe uma técnica documentada lá.
 
 ### Recursos úteis
 

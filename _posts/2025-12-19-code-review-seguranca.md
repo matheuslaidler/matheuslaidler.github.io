@@ -472,7 +472,7 @@ A correção pro command injection seria usar `subprocess.run(['zipvalidator', z
 
 ## Padrões que Devem Ligar seu Alerta
 
-Antes de mergulhar nos padrões por linguagem, aqui está um resumo rápido dos casos que analisamos:
+Antes de ir pros padrões por linguagem, aqui está um resumo rápido dos casos que analisamos:
 
 | Caso | Linguagem | Vulnerabilidade Principal | CWE | Severidade |
 |------|-----------|--------------------------|-----|------------|
@@ -553,7 +553,7 @@ A vantagem do SAST é que você encontra problemas cedo, antes mesmo de rodar o 
 
 **DAST (Dynamic Application Security Testing)** é o oposto: você testa a aplicação rodando, mandando requisições maliciosas e vendo como ela responde. É basicamente o que um scanner de vulnerabilidades faz - OWASP ZAP, Burp Suite Scanner, Nikto, Nuclei. Você aponta pra URL e a ferramenta tenta explorar XSS, SQL Injection, etc.
 
-A vantagem do DAST é que encontra vulnerabilidades reais, exploráveis, no ambiente real. Se o DAST acha algo, provavelmente é um problema de verdade. A desvantagem é que precisa da aplicação rodando, é mais lento, e não te diz onde no código está o problema - só que ele existe. Também não consegue testar funcionalidades que exigem autenticação complexa ou fluxos específicos sem configuração manual.
+O ponto forte do DAST é achar falha de verdade, explorável no ambiente real - se o DAST acha algo, provavelmente é problema mesmo. Em compensação, precisa da aplicação rodando, é mais lento, e não te diz onde no código está o problema - só que ele existe. Também não consegue testar funcionalidades que exigem autenticação complexa ou fluxos específicos sem configuração manual.
 
 **SCA (Software Composition Analysis)** cuida de um problema diferente: vulnerabilidades em dependências de terceiros. Seu código pode estar perfeito, mas se você usa uma biblioteca com CVE conhecida, sua aplicação está vulnerável. Ferramentas como Dependabot, Snyk, OWASP Dependency-Check e Trivy escaneiam seu package.json, requirements.txt, pom.xml e comparam com bancos de dados de vulnerabilidades conhecidas.
 
@@ -624,7 +624,7 @@ Ao fazer code review de segurança, alguns erros são recorrentes. Aqui vão alg
 
 **Ignorar o contexto**: Uma mesma função pode ser segura ou perigosa dependendo de onde está. `htmlspecialchars()` não ajuda nada se o output vai pra um atributo JavaScript ou pra dentro de uma tag `<script>` (script).
 
-**Confiar em sanitização incompleta**: Blacklists quase sempre podem ser bypassadas. O Caso 9 do validador com `replace()` é um exemplo perfeito - remover "exec" não impede `ex\x65c` ou truques de encoding.
+**Confiar em sanitização incompleta**: Blacklists quase sempre podem ser bypassadas. O Caso 8 (download em PL/SQL) é um exemplo perfeito: o `REPLACE(filename, '..', '')` é furado pelo `....//` — depois que ele remove o `..`, sobra `../`.
 
 **Não considerar a versão**: Uma vulnerabilidade pode existir em versões antigas mas estar corrigida nas novas (como HTTP Response Splitting no PHP 5.1.2+). Sempre verifique qual versão está em uso.
 

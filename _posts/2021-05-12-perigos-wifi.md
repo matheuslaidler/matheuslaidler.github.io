@@ -51,11 +51,7 @@ As redes wireless usam diferentes protocolos de segurança para criptografar os 
 
 ### WiFi 6 e WiFi 6E - Novas considerações:
 
-**WiFi 6 (802.11ax)** e **WiFi 6E** trouxeram não apenas melhor performance, mas também:
-- Segurança aprimorada por padrão
-- Melhor gerenciamento de banda (6E opera em 6GHz)
-- Redução de interferências
-- **Atenção**: Maior alcance pode significar maior superfície de ataque
+O WiFi 6 (802.11ax) e o WiFi 6E trouxeram melhor performance e também segurança aprimorada por padrão, melhor gerenciamento de banda (o 6E opera em 6GHz) e menos interferência. Mas atenção: maior alcance também pode significar maior superfície de ataque.
 
 O WPA - WPA2 ou WPA3 - é um protocolo mais moderno e seguro, que usa um algoritmo mais complexo para gerar a chave de criptografia, que muda a cada conexão. No entanto, WPA2 ainda pode ser invadido se o usuário escolher uma senha padrão ou fraca, já que pode ser descoberta por programas que testam milhares de combinações possíveis até encontrar a correta. Esse método é chamado de brute force (força bruta) e o arquivo que armazena as senhas geralmente é chamado de wordlist. Inclusive, foi assim que invadi a rede WiFi de uma vizinha utilizando o pacote aircrack e gerando uma wordlist com crunch. Vale deixar claro que essa vizinha já compartilhava a rede comigo e havia autorizado o teste - ou seja, foi um acesso consentido, e não uma invasão não autorizada. 
 
@@ -115,19 +111,11 @@ Como você pode ver, esses ataques podem causar sérios danos à sua privacidade
 	
 * Usar um protocolo de segurança adequado para sua rede wireless. Evite usar o WEP, que é muito fraco e fácil de quebrar sem precisar de wordlist. Prefira usar o WPA2-PSK, que é mais forte e difícil de invadir. **Se possível, use a WPA3**, que é a versão mais recente e avançada da criptografia wireless com proteção contra ataques offline.
 	
-* **Sobre VPNs - Entenda as diferenças**:
-  - **VPNs Corporativas**: Conectam funcionários à rede da empresa com segurança robusta
-  - **VPNs Comerciais**: Serviços pagos para privacidade (ProtonVPN, NordVPN, etc.)
-  - **VPNs Gratuitas**: Cuidado! Muitas vendem seus dados ou têm segurança questionável
-  - **Recomendação**: Use sempre VPN em redes públicas, prefira serviços pagos confiáveis
+* Sobre VPNs, vale entender as diferenças. As corporativas conectam o funcionário à rede da empresa com mais segurança. As comerciais são serviços pagos de privacidade (ProtonVPN, NordVPN, etc.). Já as gratuitas pedem cuidado, porque muitas vendem seus dados ou têm segurança questionável. Em rede pública, use VPN sempre, e de preferência um serviço pago confiável.
 
 * Evite redes wireless públicas. Não use redes wifi públicas sem proteção, se você precisar usar uma rede wifi pública, como em um café, em um hotel ou em um aeroporto, ao menos use uma VPN (Virtual Private Network) para criptografar seus dados e impedir que eles sejam interceptados por terceiros - ProtonVPN tem versão gratuita. Também evite acessar sites sensíveis ou fazer transações financeiras nessas redes.
 
-* **Ferramentas de Análise WiFi para Administradores**:
-  - **WiFi Analyzer** (Android/Windows): Visualiza redes próximas, canais ocupados
-  - **inSSIDer**: Análise profissional de redes WiFi
-  - **Wireshark**: Captura e análise de pacotes de rede
-  - **Kismet**: Detector de redes wireless e dispositivos
+* Se você administra a rede e quer dar uma olhada nela, dá pra usar o WiFi Analyzer (Android/Windows) pra ver redes próximas e canais ocupados, o inSSIDer pra uma análise mais a fundo das redes WiFi, o Wireshark pra capturar e ler pacotes de rede e o Kismet pra detectar redes wireless e dispositivos.
   
 * Ative o filtro de endereços MAC no seu roteador. O MAC é um código único que identifica cada dispositivo que se conecta à rede wireless. Com o filtro ativado, você pode permitir ou bloquear o acesso de determinados dispositivos à sua rede, aumentando o controle e a segurança. **Atenção**: MAC addresses podem ser falsificados (spoofing), não é proteção absoluta.
 	
@@ -148,39 +136,39 @@ Como você pode ver, esses ataques podem causar sérios danos à sua privacidade
 
 ### Resumindo a ópera das medidas de segurança
 
-A segurança da rede wireless é crucial. Evite dar acesso irrestrito à sua rede, especialmente se ela alcança áreas públicas. Use protocolos de segurança robustos como WPA2-PSK ou WPA3 e evite redes públicas desprotegidas. Se necessário, use uma VPN para criptografar seus dados em redes públicas.
+A segurança da rede wireless importa muito. Evite dar acesso irrestrito à sua rede, ainda mais se ela alcança áreas públicas. Use um protocolo bom como WPA2-PSK ou, melhor, WPA3 e evite redes públicas desprotegidas. Se necessário, use uma VPN para criptografar seus dados em redes públicas.
 
 Ative o filtro de endereços MAC no roteador para controlar o acesso à rede e verifique regularmente a tabela ARP para evitar duplicações. Desative o WPS, que pode ser explorado por hackers, e mantenha o firmware do roteador atualizado para corrigir possíveis vulnerabilidades.
 
 Escolha senhas fortes e complexas para sua rede wireless e mude-as periodicamente. Mantenha um antivírus atualizado e um firewall ativo no seu dispositivo e use a autenticação de dois fatores sempre que possível.
 
-Por fim, verifique a segurança dos sites que você acessa, procurando por um cadeado ou "https" na barra de endereço. Desconfie de sites que solicitam informações sensíveis ou oferecem ofertas muito boas para serem verdadeiras. A segurança online é uma prática contínua e requer vigilância constante.
+Por fim, verifique a segurança dos sites que você acessa, procurando por um cadeado ou "https" na barra de endereço. Desconfie de sites que solicitam informações sensíveis ou oferecem ofertas muito boas para serem verdadeiras. Segurança online é coisa de manter no dia a dia, não dá pra fazer uma vez e esquecer.
 
 ## Checklist de Segurança WiFi
 
 ### Para sua rede doméstica:
-- [ ] **Protocolo**: WPA3 ou pelo menos WPA2
-- [ ] **Senha**: Complexa, única, com 16+ caracteres
-- [ ] **WPS**: Desabilitado completamente
-- [ ] **Firmware**: Atualizado regularmente
-- [ ] **SSID**: Nome único (não padrão do fabricante)
-- [ ] **Rede de convidados**: Separada da rede principal
-- [ ] **Filtro MAC**: Ativado para dispositivos conhecidos
-- [ ] **Administração remota**: Desabilitada
+- Protocolo: WPA3 ou pelo menos WPA2
+- Senha: complexa, única, com 16+ caracteres
+- WPS: desabilitado completamente
+- Firmware: atualizado regularmente
+- SSID: nome único (não o padrão do fabricante)
+- Rede de convidados: separada da rede principal
+- Filtro MAC: ativado para os dispositivos conhecidos
+- Administração remota: desabilitada
 
 ### Para redes públicas:
-- [ ] **VPN**: Sempre ativa antes de conectar
-- [ ] **HTTPS**: Verificar em todos os sites
-- [ ] **Bluetooth**: Desabilitado quando não necessário
-- [ ] **Compartilhamento**: Desativar compartilhamento de arquivos
-- [ ] **Firewall**: Ativado no dispositivo
-- [ ] **Transações financeiras**: Evitar ou usar dados móveis
+- VPN: sempre ativa antes de conectar
+- HTTPS: verificar em todos os sites
+- Bluetooth: desabilitado quando não for necessário
+- Compartilhamento: desativar o compartilhamento de arquivos
+- Firewall: ativado no dispositivo
+- Transações financeiras: evitar ou usar dados móveis
 
 ### Monitoramento e manutenção:
-- [ ] **Dispositivos conectados**: Verificar mensalmente
-- [ ] **Logs do roteador**: Revisar atividades suspeitas
-- [ ] **Senhas**: Trocar a cada 3-6 meses
-- [ ] **Backup das configurações**: Manter cópia segura
+- Dispositivos conectados: verificar mensalmente
+- Logs do roteador: revisar atividades suspeitas
+- Senhas: trocar a cada 3-6 meses
+- Backup das configurações: manter uma cópia segura
 
 ## Considerações finais
 

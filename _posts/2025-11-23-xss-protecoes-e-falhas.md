@@ -280,7 +280,7 @@ Header always set Content-Security-Policy "default-src 'self'; script-src 'self'
 
 ### Entendendo as camadas de defesa (e por que frontend sozinho não basta)
 
-Um ponto importante: se a proteção está só no frontend, dá para contorná-la? **Sim, dá.** Por isso defesa em camadas é fundamental.
+Pergunta clássica: se a proteção está só no frontend, dá pra contorná-la? **Sim, dá.** Por isso defesa em camadas faz diferença.
 
 A **primeira camada** é o backend - sanitização e validação no servidor. Essa não pode ser burlada pelo usuário e protege contra Reflected e Stored XSS. Funciona mesmo se o JavaScript do navegador estiver desabilitado.
 
@@ -303,7 +303,7 @@ Ataque: <script>alert(1)</script>
 
 Se uma falhar, as outras seguram. É tipo ter 3 fechaduras na porta.
 
-### Content Security Policy (CSP) - A barreira definitiva
+### Content Security Policy (CSP) - a rede de segurança que segura o resto
 
 CSP é tipo um segurança na porta da balada - decide quem pode entrar e quem não pode:
 
@@ -560,13 +560,16 @@ function escapar_css($input) {
 ?>
 ```
 
+> **Nota:** o `json_encode` já escapa a barra `/`, então um `</script>` injetado não fecha a tag — por isso ele dá conta de uma string **dentro de `<script>`**. Se a saída puder cair em contexto HTML (fora de uma string JS), use `json_encode($x, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_HEX_APOS)` pra escapar `< > & '` também.
+{: .prompt-tip }
+
 ### Proteção em camadas contra obfuscação
 
 Pra se proteger de payloads obfuscados, o primeiro passo é sempre decodificar HTML entities e URL encoding antes de validar o input - assim você pega o payload "real" e não a versão disfarçada. Bloqueie funções perigosas como `eval`, `atob`, `fromCharCode` e o protocolo `javascript:`. Use CSP restritivo com `script-src-attr 'none'` pra bloquear event handlers inline, force scripts específicos via nonce ou hash, e monitore tentativas de obfuscação nos logs. Se tiver WAF, configure regras específicas pra payloads ofuscados.
 
 Como identificar que alguém tá tentando obfuscar? Fique de olho em múltiplas codificações empilhadas (URL + HTML + Unicode), funções suspeitas nos inputs, quebra de palavras com comentários HTML tipo `scr<!---->ipt`, unicode escapes como `\u0061` no lugar de `a`, e Base64 aparecendo em contextos estranhos.
 
-Lembre-se: atacantes sempre encontram novas formas de obfuscar. A defesa tem que ser em camadas - validação, sanitização, CSP e monitoramento trabalhando juntos.
+E não se engane: atacante sempre acha jeito novo de obfuscar. Por isso a defesa tem que ser em camadas - validação, sanitização, CSP e monitoramento trabalhando juntos.
 
 ### Bibliotecas que fazem o trabalho pesado
 
@@ -622,7 +625,7 @@ O **DVWA** (Damn Vulnerable Web Application) é clássico e muito bom pra começ
 
 ## O que levar deste post
 
-A defesa de XSS que **funciona** cabe numa frase: **trate dado como dado** — codifique na **saída**, conforme o **contexto** (HTML, atributo, JS, URL) — e use **allowlist** (DOMPurify) pra HTML rico. CSP é a rede de segurança; cookies `HttpOnly`/`SameSite` limitam o estrago (mas não previnem o XSS).
+A defesa de XSS que **funciona** cabe numa frase: **trate dado como dado**. Codifique na **saída**, conforme o **contexto** (HTML, atributo, JS, URL), e use **allowlist** (DOMPurify) pra HTML rico. CSP é a rede de segurança; cookies `HttpOnly`/`SameSite` limitam o estrago (mas não previnem o XSS).
 
 O que **NÃO** conta como defesa, por mais que pareça: blacklist/regex de "palavras perigosas", `X-XSS-Protection`, "só validar input", detecção de obfuscação caseira, ou confiar só no WAF/CSP. Cada um falha sozinho — e vários aparecem prontos em código gerado por IA.
 

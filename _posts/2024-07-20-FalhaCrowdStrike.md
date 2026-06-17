@@ -12,7 +12,7 @@ image: /assets/img/covers/FalhaCrowdStrike.png
 
 ## Entendendo a Falha da CrowdStrike e suas Consequências
 
-Recentemente, os Estados Unidos enfrentaram os famosos "apagões cibernéticos" que foram bem significativos, trazendo à tona uma certa fragilidade dos sistemas críticos de tecnologia. O incidente envolvendo a _CrowdStrike_ e seu produto _Falcon_ ilustra bem as problemáticas e suas consequências, oferecendo uma oportunidade para refletir sobre as práticas e responsabilidades em cibersegurança. O episódio ocorreu em **19 de julho de 2024** e atingiu uma escala enorme: a própria CrowdStrike estimou que cerca de **8,5 milhões de dispositivos Windows** foram afetados em todo o mundo. Este episódio não só destacou a importância das boas práticas, mas também as consequências severas quando erros críticos ocorrem. Errar é humano, mas até que ponto é tolerável?
+Recentemente, os Estados Unidos enfrentaram os famosos "apagões cibernéticos" que foram bem significativos, trazendo à tona uma certa fragilidade dos sistemas críticos de tecnologia. O incidente envolvendo a _CrowdStrike_ e seu produto _Falcon_ ilustra bem as problemáticas e suas consequências, oferecendo uma oportunidade para refletir sobre as práticas e responsabilidades em cibersegurança. O episódio ocorreu em **19 de julho de 2024** e atingiu uma escala enorme: a própria CrowdStrike estimou que cerca de **8,5 milhões de dispositivos Windows** foram afetados em todo o mundo. Esse episódio destacou a importância das boas práticas e também o tamanho do estrago quando um erro crítico passa batido. Errar é humano, mas até que ponto é tolerável?
 
 ## Contexto e o que aconteceu
 
@@ -280,22 +280,22 @@ Criticar práticas e erros após um incidente é fácil quando estamos no confor
 - **Testes Rigorosos:** Realizar testes exaustivos antes da implementação de atualizações.
 - **Monitoramento e Resposta:** Ter sistemas de monitoramento e planos de resposta bem definidos.
 - **Comunicação e Transparência:** Desenvolver uma estratégia de comunicação eficaz para manter os usuários informados durante incidentes e atualizações.
-- **Resiliência e Recuperação:** Estabelecer planos de contingência robustos para mitigar os impactos de falhas e garantir a rápida recuperação dos sistemas afetados.
+- **Resiliência e Recuperação:** Estabelecer planos de contingência sólidos pra reduzir o impacto das falhas e garantir a rápida recuperação dos sistemas afetados.
 
 Mesmo as maiores empresas podem enfrentar erros, e a falha da CrowdStrike serve como um lembrete da importância de manter práticas rigorosas de segurança e resposta a incidentes.
 
 #### Conclusão reflexiva
 
-O incidente da CrowdStrike não somente destaca a cibersegurança como uma tarefa complexa e desafiadora, mas também é um alerta sobre a necessidade de manter padrões rigorosos nesse respeito. Do mesmo modo que pilotos e cirurgiões não podem permitir certos erros, basicamente porque as consequências podem ser letais, empresários trabalhando em segurança cibernética, também, devem seguir esse modelo. Desde que os seres humanos cometam erros e eles sejam inevitáveis, as consequências de tal “humanidade” em sistemas tão críticos podem ser insuportáveis.
+O incidente da CrowdStrike mostra como cibersegurança é uma tarefa complexa e desafiadora e, ao mesmo tempo, serve de alerta pra manter padrões rigorosos nesse respeito. Do mesmo modo que pilotos e cirurgiões não podem permitir certos erros, basicamente porque as consequências podem ser letais, empresários trabalhando em segurança cibernética, também, devem seguir esse modelo. Desde que os seres humanos cometam erros e eles sejam inevitáveis, as consequências de tal “humanidade” em sistemas tão críticos podem ser insuportáveis.
 
 Deste modo, o exemplo ressalta a importância de uma política de segurança sólida, testes abrangentes e abordagem pró-ativa à proteção cibernética. Corporações como a CrowdStrike que desempenha um papel crítico em proteger um sistema crítico precisam assegurar que suas atualizações e modificações de software sejam submetidas a processos de avaliação detalhados a fim de impedir qualquer tipo de falha.
 
-Comparações podem ser feitas com incidentes na aviação, onde falhas em sistemas críticos levaram a grandes avanços na segurança devido a uma análise minuciosa e à implementação de melhorias. A cibersegurança deve seguir o mesmo caminho, aprendendo com os erros para construir sistemas mais robustos e confiáveis.
+Comparações podem ser feitas com incidentes na aviação, onde falhas em sistemas críticos levaram a grandes avanços na segurança devido a uma análise minuciosa e à implementação de melhorias. A cibersegurança deve seguir o mesmo caminho, aprendendo com os erros pra construir sistemas mais sólidos e confiáveis.
 
 Por mais que sejamos humanos (e humanos erram), determinados erros de certas profissões não podem ser cometidos, principalmente quando estamos falando de profissões que lidam com a vida, por exemplo. Um piloto não pode escolher pilotar desligando seu "transponder", pois ficaria mais fácil de ocorrer uma colisão com outra aeronave. Mesmo tendo 30 anos de piloto e nunca tendo errado, isso não justifica que não deve ser criticado depois de cometer um erro desse.
 
 Quando consideramos os riscos envolvidos em cibersegurança — desde a interrupção de sistemas hospitalares e voos até a paralisia de sistemas bancários — fica claro que alguns erros não podem ser tolerados. A falha da CrowdStrike, embora não seja fatal, atrasou a vida de muitas pessoas e resultou em perdas econômicas significativas. É um tipo de erro que não deve ser tolerado porque suas repercussões são amplas e profundas, afetando não apenas o mundo digital, mas também a vida real e a economia.
 
-Por fim, a falha da CrowdStrike é um lembrete poderoso de que, em um mundo digital cada vez mais interconectado, não podemos nos permitir negligenciar as etapas rigorosas de segurança. A prevenção é fundamental, e uma falha em um componente de software pode ter repercussões que se estendem muito além do domínio digital, afetando vidas e economias. É um chamado para que todos na indústria de tecnologia redobrem seus esforços para garantir a segurança e a confiança nos sistemas de que todos dependemos.
+Por fim, a falha da CrowdStrike é um lembrete forte de que, num mundo digital cada vez mais interconectado, não dá pra negligenciar as etapas rigorosas de segurança. A prevenção é o que importa: uma falha em um único componente de software pode respingar muito além do domínio digital, afetando vidas e economias. É um chamado pra que a indústria de tecnologia redobre o cuidado com a segurança e a confiança nos sistemas de que todo mundo depende.
 
 Para mais detalhes técnicos com uma análise aprofundada, recomendo uma postagem rápida da hakai security [aqui](https://hakaisecurity.io/incidente-do-crowdstrike-uma-rapida-analise-do-pre-apocalipse/research-blog/).

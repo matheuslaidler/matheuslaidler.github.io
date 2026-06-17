@@ -11,7 +11,7 @@ image: /assets/img/covers/modelo-osi.png
 
 ## Redes: Modelo OSI à primeira vista
 
-Se você está entrando no mundo de redes de computadores, provavelmente já ouviu falar do famoso "modelo OSI". É aquele negócio das 7 camadas que aparece em toda prova, certificação e entrevista de emprego na área. Mas calma, não é tão complicado quanto parece - vamos descomplicar isso juntos.
+Se você está começando em redes, com certeza já topou com o famoso "modelo OSI". É aquele negócio das 7 camadas que aparece em toda prova, certificação e entrevista de emprego na área. Mas calma, não é tão complicado quanto parece.
 
 ## O que é esse tal de OSI?
 
@@ -33,7 +33,7 @@ Vou explicar cada camada começando pela mais próxima do usuário (camada 7) at
 
 Os protocolos mais comuns aqui são HTTP/HTTPS (navegação web), FTP (transferência de arquivos), SMTP (envio de emails), POP3/IMAP (recebimento de emails), DNS (tradução de domínios para IPs), DHCP (configuração automática de rede) e SSH (acesso remoto seguro).
 
-Quando você digita `google.com` no navegador, é aqui que a mágica começa.
+Quando você digita `google.com` no navegador, é aqui que tudo começa.
 
 ### Camada 6 - Apresentação
 
@@ -45,15 +45,15 @@ Essa camada cuida da formatação dos dados. Pensa nela como um tradutor: ela pe
 
 Responsável por estabelecer, manter e encerrar as "conversas" entre dois dispositivos. Quando você faz login em um sistema e a conexão fica ativa até você fazer logout, é a camada de sessão gerenciando isso.
 
-Ela também cuida da sincronização - se uma transferência grande cair no meio, ela pode retomar de onde parou ao invés de começar do zero. Protocolos como NetBIOS e RPC trabalham nessa camada, além do gerenciamento de sessões de banco de dados e videoconferências.
+Ela também cuida da sincronização: se uma transferência grande cair no meio, ela pode retomar de onde parou ao invés de começar do zero. Protocolos como NetBIOS e RPC trabalham nessa camada, além do gerenciamento de sessões de banco de dados e videoconferências.
 
 ### Camada 4 - Transporte
 
 Aqui é onde mora a famosa dupla TCP e UDP. A camada de transporte garante que os dados cheguem do ponto A ao ponto B de forma confiável (ou não, no caso do UDP).
 
-**TCP** é orientado à conexão - ele estabelece uma conexão antes de enviar dados, confirma recebimento de cada pacote e retransmite o que se perdeu. É mais lento, mas confiável. Perfeito pra navegação web, emails e download de arquivos.
+**TCP** é orientado à conexão: ele estabelece uma conexão antes de enviar dados, confirma recebimento de cada pacote e retransmite o que se perdeu. É mais lento, mas confiável. Perfeito pra navegação web, emails e download de arquivos.
 
-**UDP** é o oposto: manda os dados e torce pro melhor. Sem confirmação, sem retransmissão. Parece ruim, mas é ótimo pra streaming, jogos online e DNS - situações onde velocidade importa mais que perder um pacote ou outro.
+**UDP** é o oposto: manda os dados e torce pro melhor. Sem confirmação, sem retransmissão. Parece ruim, mas é ótimo pra streaming, jogos online e DNS, situações onde velocidade importa mais que perder um pacote ou outro.
 
 ### Camada 3 - Rede
 
@@ -103,7 +103,7 @@ Na prática, o modelo que realmente usamos é o TCP/IP, que tem só 4 camadas. A
 | Enlace | Acesso à Rede |
 | Física | Acesso à Rede |
 
-O OSI é mais detalhado e bom pra estudar, mas o TCP/IP é o que você encontra no mundo real. Por isso muita gente acha o OSI "teórico demais" - porque ele realmente é mais uma ferramenta didática do que uma implementação literal.
+O OSI é mais detalhado e bom pra estudar, mas o TCP/IP é o que você encontra no mundo real. Por isso muita gente acha o OSI "teórico demais": ele realmente é mais uma ferramenta didática do que uma implementação literal.
 
 ## Exemplo prático: O que acontece quando você acessa um site?
 
@@ -119,7 +119,7 @@ Vamos acompanhar uma requisição HTTP atravessando as camadas pra ver como tudo
 7. Tudo vira sinais elétricos no cabo (Física)
 
 **No servidor (recebendo):**
-O processo inverso acontece - cada camada remove seu cabeçalho e passa pro próximo até a aplicação receber a requisição limpa.
+O processo inverso acontece: cada camada remove seu cabeçalho e passa pro próximo até a aplicação receber a requisição limpa.
 
 É como uma carta que vai ganhando envelopes em cima de envelopes, cada um com seu endereço diferente. Quando chega no destino, os envelopes são removidos na ordem inversa até chegar na carta original.
 

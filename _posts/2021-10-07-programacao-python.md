@@ -13,7 +13,7 @@ image: /assets/img/covers/programacao-python.png
 
 ## Python para Marinheiros de Primeira Viagem
 
-> Documentação completa e definitiva baseada na experiência prática de laboratório e redação na UFRJ. Desde a instalação até conceitos de estruturas de dados, preservando o estilo didático e explicações claras que fizeram desta jornada uma experiência única de aprendizado.
+> Junta os scripts dos labs, trabalhos e projetos pessoais que fiz na UFRJ em 2020-2021, da instalação até estruturas de dados. É o material de consulta que eu queria ter tido na época.
 
 ---
 
@@ -35,7 +35,7 @@ image: /assets/img/covers/programacao-python.png
 
 ## Introdução
 
-Este guia apresenta uma jornada completa pela programação Python, desde conceitos fundamentais até estruturas de dados e projetos práticos como jogos e sistemas completos. O material foi desenvolvido através de 10 laboratórios práticos, um trabalho final e projetos extras que abordam progressivamente todos os aspectos essenciais da linguagem.
+Este guia vai dos conceitos fundamentais às estruturas de dados e projetos práticos, como jogos e sistemas completos. Saiu de 10 laboratórios práticos, um trabalho final e alguns projetos extras que fiz durante o curso, e que vão cobrindo a linguagem aos poucos.
 
 A abordagem aqui é diferente dos manuais tradicionais - usamos analogias do dia a dia, explicações que fazem sentido e exemplos práticos que tornam conceitos abstratos mais concretos. Como sempre dizíamos nas aulas: "É legal deixar claro" cada detalhe, e é exatamente isso que faremos.
 
@@ -212,13 +212,13 @@ Este guia foi criado a partir de aulas reais da UFRJ, mantendo o estilo didátic
 
 Não tenha pressa. Cada seção constrói sobre a anterior. Se algo não fizer sentido, volte e releia - é completamente normal precisar de várias leituras para absorver conceitos novos.
 
-**Dica importante:** Não apenas leia os códigos - digite e execute! Programação se aprende fazendo, não apenas lendo.
+**Dica importante:** Não fique só lendo os códigos - digite e execute! Programação se aprende fazendo.
 
 Agora vamos começar nossa jornada! 🐍
 
 ### Guia Rápido de Símbolos
 
-Antes de mergulhar no código, aqui estão os símbolos que você vai ver muito:
+Antes de ir pro código, aqui estão os símbolos que você vai ver muito:
 
 | Símbolo | Nome | O que faz |
 |---------|------|----------|
@@ -378,7 +378,7 @@ Se você está tendo problemas, aqui estão as soluções mais comuns:
 | Erro de permissão no pip | Use `pip install --user pacote` |
 | Acentos não funcionam | Salve o arquivo como UTF-8 |
 
-**Dica de ouro:** Se algo não funcionar, copie a mensagem de erro e pesquise no Google. 99% das vezes alguém já teve o mesmo problema!
+**Dica:** Se algo não funcionar, copie a mensagem de erro e pesquise no Google. 99% das vezes alguém já teve o mesmo problema!
 
 ---
 
@@ -3171,7 +3171,7 @@ for num in contar_ate(5):
     print(num)  # 1, 2, 3, 4, 5
 ```
 
-**A diferença crucial:** Uma função normal com `return` executa tudo de uma vez. Um generator com `yield` executa até o yield, "pausa", e continua quando você pede o próximo valor.
+**A diferença principal:** Uma função normal com `return` executa tudo de uma vez. Um generator com `yield` executa até o yield, "pausa", e continua quando você pede o próximo valor.
 
 #### Generator para Arquivos Grandes
 
@@ -4047,7 +4047,7 @@ except Exception as e:
 
 ## Conclusão
 
-Esta jornada pela programação Python cobriu desde conceitos fundamentais até projetos práticos completos. Começamos com simples funções e chegamos a desenvolver um sistema de receitas, um jogo de Campo Minado e o PyckageTools, passando por:
+Saímos de funções simples e chegamos no sistema de receitas, no Campo Minado e no PyckageTools. No caminho passamos por:
 
 - **Fundamentos**: Variáveis, tipos, funções, condicionais, loops, indentação
 - **Estruturas de Dados**: Listas, dicionários, tuplas, sets, matrizes

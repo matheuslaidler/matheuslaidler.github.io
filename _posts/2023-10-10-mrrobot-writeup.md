@@ -14,7 +14,7 @@ image: /assets/img/covers/mrrobot-writeup.png
 
 ### WordPress Exploitation, Brute Force, Reverse Shell e Privilege Escalation via SUID
 
-Esta máquina é inspirada na série **Mr. Robot** e está disponível no TryHackMe. É uma excelente introdução a técnicas de enumeração web, exploração de WordPress, quebra de hashes e escalação de privilégios através de binários SUID.
+Esta máquina é inspirada na série **Mr. Robot** e está disponível no TryHackMe. É uma box clássica pra praticar enumeração web, exploração de WordPress, quebra de hashes e escalação de privilégios através de binários SUID.
 
 **Link da sala:** [tryhackme.com/room/mrrobot](https://tryhackme.com/room/mrrobot)
 
@@ -561,20 +561,7 @@ cat key-3-of-3.txt
 
 ### 9.3 Lições de segurança
 
-**Para administradores:**
-
-1. **WordPress hardening:**
-   - Desabilitar edição de arquivos: `define('DISALLOW_FILE_EDIT', true);`
-   - Limitar tentativas de login
-   - Usar plugins de segurança
-
-2. **Permissões de arquivo:**
-   - Nunca expor hashes de senha
-   - Revisar periodicamente binários SUID: `find / -perm -4000`
-
-3. **Princípio do menor privilégio:**
-   - Remover SUID de binários que não precisam
-   - Usuários com permissões mínimas necessárias
+Do lado de quem administra, dá pra ver onde essa máquina escorregou. No WordPress, a edição de arquivos pelo painel devia estar desabilitada com `define('DISALLOW_FILE_EDIT', true);`, somado a limitar tentativas de login e usar um plugin de segurança - isso já matava o brute force e o RCE via tema. Nas permissões de arquivo, nunca deixar uma hash de senha acessível, e revisar periodicamente os binários SUID com `find / -perm -4000`. E o princípio do menor privilégio: tirar o SUID de binário que não precisa (o `nmap` aqui é o exemplo perfeito) e deixar cada usuário só com as permissões que realmente usa.
 
 ---
 
@@ -584,15 +571,7 @@ cat key-3-of-3.txt
 2. `822c73956184f694993bede3eb39f959` (via /home/robot)
 3. `04787ddef27c3dee1ee161b21670b4e4` (via /root)
 
-**Técnicas utilizadas:**
-
-- Web Enumeration / Directory Bruteforce
-- WordPress Exploitation / User Enumeration
-- Brute Force Authentication (Hydra/WPScan)
-- PHP Reverse Shell / Webshell Upload
-- Hash Cracking (MD5)
-- PTY Shell Upgrade
-- SUID Binary Exploitation / Privilege Escalation
+**Técnicas utilizadas:** No caminho passamos por enumeração web e directory bruteforce, exploração de WordPress com enumeração de usuários, brute force de autenticação (Hydra/WPScan), reverse shell PHP via upload de webshell, quebra de hash MD5, upgrade de shell pra PTY e, no fim, exploração de binário SUID pra escalar privilégio.
 
 ### Referências
 

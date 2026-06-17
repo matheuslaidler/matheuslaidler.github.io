@@ -35,7 +35,7 @@ Por exemplo, se um arquivo tem o hash 1234567890abcdef e você muda uma letra, o
 
 ### Principais algoritmos de hash
 
-Existem vários algoritmos de hash, cada um com suas características. O MD5, por exemplo, gera um hash de 128 bits (32 caracteres hexadecimais) e é bem rápido, mas já foi quebrado criptograficamente, então não serve pra segurança séria, só pra conferir integridade simples. O SHA-1 é um pouco mais seguro, gera 160 bits (40 caracteres), mas também já foi comprometido e está sendo deixado de lado. O SHA-256, que faz parte da família SHA-2: gera 256 bits (64 caracteres), é mais seguro que os anteriores e muito usado em blockchain, criptomoedas e investigações forenses. O SHA-3 (Keccak) é a geração mais nova, ainda mais resistente a ataques, com variações de 224, 256, 384 e 512 bits, e deve ser o futuro da criptografia hash.
+Existem vários algoritmos de hash, cada um com suas características. O MD5, por exemplo, gera um hash de 128 bits (32 caracteres hexadecimais) e é bem rápido, mas já foi quebrado criptograficamente, então não serve pra segurança séria, só pra conferir integridade simples. O SHA-1 é um pouco mais seguro, gera 160 bits (40 caracteres), mas também já foi comprometido e está sendo deixado de lado. O SHA-256, que faz parte da família SHA-2, gera 256 bits (64 caracteres), é mais seguro que os anteriores e muito usado em blockchain, criptomoedas e investigações forenses. O SHA-3 (Keccak) é a geração mais nova, ainda mais resistente a ataques, com variações de 224, 256, 384 e 512 bits, e deve ser o futuro da criptografia hash.
 
 Além de garantir integridade, o hashing também serve pra identificar arquivos duplicados ou maliciosos. E tem um detalhe importante: a chamada cadeia de custódia (Chain of Custody). É fundamental manter um registro detalhado de todos os hashes gerados e quando foram criados, pra garantir que as evidências não foram adulteradas durante a investigação.
 
@@ -79,162 +79,51 @@ Algumas das ferramentas mais conhecidas e utilizadas na computação forense par
 
  - **SIFT**: É um programa que oferece uma grande variedade de ferramentas, incluindo _log2timeline_ para gerar uma linha do tempo a partir de logs do sistema, _Scalpel_ para _file carving_ (recuperação/extração de arquivos a partir de suas assinaturas em dados brutos), _Rifiuti_ para examinar a lixeira e muito mais.
 
- >**Atenção**: Tentativas excessivas de recuperação e/ou uso incorreto de ferramentas para recuperação de dados dos discos rígidos, sistemas RAID, pendrives e várias outras mídias de armazenamento de dados, podem agravar o problema nas mídias físicas. Portanto, o **conhecimento de cada ferramenta** para um determinado trabalho e cenário **é crucial para evitar danos adicionais aos dispositivos de armazenamento durante a recuperação de dados**.
+ >**Atenção**: Tentativas excessivas de recuperação e/ou uso incorreto de ferramentas para recuperação de dados dos discos rígidos, sistemas RAID, pendrives e várias outras mídias de armazenamento de dados, podem agravar o problema nas mídias físicas. Portanto, o **conhecimento de cada ferramenta** para um determinado trabalho e cenário **faz toda a diferença para evitar danos adicionais aos dispositivos de armazenamento durante a recuperação de dados**.
 
 ## Live Forensics vs Dead Forensics
 
-### Live Forensics (Forense ao Vivo)
+A **Live Forensics** (forense ao vivo) é a análise feita com o sistema ainda ligado e operando durante a investigação. A grande vantagem disso é capturar os dados voláteis (memória RAM, processos ativos), observar atividade maliciosa em tempo real, preservar o estado das sessões ativas e ainda analisar as conexões de rede que estão de pé. O preço é que você acaba mexendo na cena: a coleta pode alterar evidências, o sistema pode estar comprometido durante a análise, e por isso exige mão experiente.
 
-**Definição**: Análise realizada em sistemas que permanecem ligados e operacionais durante a investigação.
+Já a **Dead Forensics** (forense post-mortem) é a análise feita com o sistema desligado ou em cópias forenses dos dados. Aqui a vantagem é justamente o oposto: as evidências não são alteradas durante a análise, o ambiente é controlado e estável, dá pra fazer uma análise profunda e meticulosa, e é melhor pra documentação legal. Em compensação, você perde os dados voláteis, não consegue observar as atividades dinâmicas e os resultados podem demorar mais.
 
-**Vantagens**:
-- Captura dados voláteis (memória RAM, processos ativos)
-- Observa atividades maliciosas em tempo real
-- Preserva estados de sessões ativas
-- Permite análise de conexões de rede ativas
-
-**Desvantagens**:
-- Pode alterar evidências durante a coleta
-- Sistemas podem ser comprometidos durante a análise
-- Requer especialistas experientes
-
-**Ferramentas comuns**:
-- **Volatility**: Análise de memória RAM
-- **YARA**: Detecção de malware
-- **OSQuery**: Consultas em tempo real do sistema
-
-### Dead Forensics (Forense Post-Mortem)
-
-**Definição**: Análise realizada em sistemas desligados ou em cópias forenses dos dados.
-
-**Vantagens**:
-- Evidências não são alteradas durante análise
-- Ambiente controlado e estável
-- Permite análise profunda e meticulosa
-- Melhor para documentação legal
-
-**Desvantagens**:
-- Perda de dados voláteis
-- Impossibilidade de observar atividades dinâmicas
-- Pode demorar para obter resultados
-
-**Quando usar cada abordagem**:
-- **Live**: Ataques em andamento, sistemas críticos que não podem ser desligados
-- **Dead**: Investigações detalhadas, casos judiciais, análise de malware
+Na live, ferramentas comuns são o **Volatility** (análise de memória RAM), o **YARA** (detecção de malware) e o **OSQuery** (consultas em tempo real do sistema). E na hora de escolher entre uma e outra: live pra ataques em andamento e sistemas críticos que não podem ser desligados; dead pra investigações detalhadas, casos judiciais e análise de malware.
 
 ## Forense Mobile
 
 A computação forense móvel é uma área especializada que lida com a extração e análise de dados de dispositivos móveis como smartphones e tablets.
 
-### Desafios únicos:
+Celular dá um trabalho à parte, com vários desafios próprios. Os aparelhos modernos usam criptografia de hardware forte, cada sistema (iOS, Android, Windows Phone) tem suas peculiaridades, tem PIN, senha, biometria e padrão de bloqueio de tela pra furar, os sistemas e aplicações mudam o tempo todo com as atualizações constantes, e boa parte dos dados já está sincronizada na nuvem automaticamente.
 
-**Criptografia avançada**: Dispositivos modernos usam criptografia de hardware forte
-**Variedade de sistemas**: iOS, Android, Windows Phone, cada um com suas peculiaridades
-**Bloqueios de tela**: PINs, senhas, biometria, padrões
-**Atualizações constantes**: Sistemas e aplicações mudam frequentemente
-**Dados na nuvem**: Sincronização automática com serviços online
+Quanto aos métodos de extração, existem três. A **extração lógica** pega os dados acessíveis pela interface normal do dispositivo: é menos invasiva e mais rápida, mas fica limitada pelos controles de acesso do sistema. A **extração física** é uma cópia bit-a-bit completa da memória, que traz mais dados (incluindo arquivos deletados) porém exige root/jailbreak ou exploits. E a **extração de sistema de arquivos** acessa o filesystem direto, ficando num meio termo entre a lógica e a física.
 
-### Métodos de extração:
-
-**Extração Lógica**:
-- Dados acessíveis através da interface normal do dispositivo
-- Limitada pelos controles de acesso do sistema
-- Menos invasiva, mais rápida
-
-**Extração Física**:
-- Cópia bit-a-bit completa da memória
-- Requer root/jailbreak ou exploits
-- Mais dados, incluindo arquivos deletados
-
-**Extração de Sistema de Arquivos**:
-- Acesso direto ao sistema de arquivos
-- Meio termo entre lógica e física
-
-### Ferramentas especializadas:
-- **Cellebrite UFED**: Padrão da indústria para extração móvel
-- **Oxygen Detective Suite**: Análise forense de dispositivos móveis
-- **XRY**: Extração e análise de telefones celulares
-- **MSAB**: Mobile forensics e análise
+As ferramentas especializadas aqui são o **Cellebrite UFED** (padrão da indústria para extração móvel), o **Oxygen Detective Suite** (análise forense de dispositivos móveis), o **XRY** (extração e análise de telefones celulares) e o **MSAB** (mobile forensics e análise).
 
 ## Forense em Nuvem (Cloud Forensics)
 
 Com a migração massiva para a nuvem, a forense digital precisou se adaptar aos novos desafios dos ambientes distribuídos.
 
-### Características da nuvem que impactam a forense:
+A nuvem complica tudo por algumas características próprias: os dados podem estar espalhados por múltiplos data centers (distribuição geográfica), as instâncias nascem e morrem rapidamente (virtualização), os recursos mudam dinamicamente (elasticidade), a infraestrutura é compartilhada por vários clientes (multi-tenancy) e ainda tem o problema das jurisdições diferentes, já que as leis variam entre países.
 
-**Distribuição geográfica**: Dados podem estar em múltiplos data centers
-**Virtualização**: Instâncias podem ser criadas e destruídas rapidamente
-**Elasticidade**: Recursos mudam dinamicamente
-**Multi-tenancy**: Múltiplos clientes compartilham infraestrutura
-**Jurisdições diferentes**: Leis variam entre países
+Os tipos de forense em nuvem mudam conforme o modelo de serviço. No **Software-as-a-Service (SaaS)** — Gmail, Office 365, Salesforce — o foco vai pros logs de aplicação e dados de usuário. No **Platform-as-a-Service (PaaS)** — Google App Engine, Heroku — você analisa código e configurações de aplicação. E no **Infrastructure-as-a-Service (IaaS)** — AWS, Azure, Google Cloud — entram os snapshots de VMs, logs de sistema e os network flows.
 
-### Tipos de forense em nuvem:
+Cada provedor tem suas ferramentas e técnicas: na **AWS** são o CloudTrail, VPC Flow Logs e S3 access logs; na **Azure**, o Activity Log, NSG Flow Logs e Storage Analytics; no **Google Cloud**, o Cloud Logging, VPC Flow Logs e Access Transparency. E ainda tem as ferramentas terceiras, como CloudFringe e Magnet AXIOM Cloud.
 
-**Software-as-a-Service (SaaS)**:
-- Gmail, Office 365, Salesforce
-- Foco em logs de aplicação e dados de usuário
-
-**Platform-as-a-Service (PaaS)**:
-- Google App Engine, Heroku
-- Análise de código e configurações de aplicação
-
-**Infrastructure-as-a-Service (IaaS)**:
-- AWS, Azure, Google Cloud
-- Snapshots de VMs, logs de sistema, network flows
-
-### Ferramentas e técnicas:
-
-**AWS**: CloudTrail, VPC Flow Logs, S3 access logs
-**Azure**: Activity Log, NSG Flow Logs, Storage Analytics
-**Google Cloud**: Cloud Logging, VPC Flow Logs, Access Transparency
-**Ferramentas terceiras**: CloudFringe, Magnet AXIOM Cloud
-
-### Desafios legais e técnicos:
-
-- **Cadeia de custódia** em ambientes distribuídos
-- **Volatilidade** dos dados em infraestrutura elástica
-- **Acesso limitado** a logs e dados do provedor
-- **Jurisdições múltiplas** e leis conflitantes
+Os desafios legais e técnicos aqui ficam por conta de manter a **cadeia de custódia** em ambientes distribuídos, lidar com a **volatilidade** dos dados numa infraestrutura elástica, o **acesso limitado** a logs e dados do provedor, e as **jurisdições múltiplas** com leis conflitantes.
 
 ## Anti-Forensics
 
 Anti-forensics são técnicas e ferramentas utilizadas para impedir, dificultar ou enganar investigações forenses. É importante que analistas forenses conheçam essas técnicas para melhor combatê-las.
 
-### Categorias de anti-forensics:
+As técnicas caem em alguns grupos. Tem a **ocultação de dados**, que envolve esteganografia (dados escondidos em imagens, áudios), partições ocultas e sistemas de arquivos alternativos. Tem a **destruição de evidências**, com sobrescrita segura de dados, destruição física de mídias e uso de ferramentas como DBAN e Eraser. Tem a **ofuscação**, que usa criptografia forte, nomes de arquivos enganosos e timestamps falsificados. E por fim as **técnicas de detecção de análise**, em que o malware detecta máquinas virtuais, verifica se há ferramentas forenses em execução e se comporta de forma diferente quando percebe que está sendo analisado.
 
-**Ocultação de dados**:
-- Esteganografia (dados escondidos em imagens, áudios)
-- Partições ocultas
-- Sistemas de arquivos alternativos
-
-**Destruição de evidências**:
-- Sobrescrita segura de dados
-- Destruição física de mídias
-- Utilização de ferramentas como DBAN, Eraser
-
-**Ofuscação**:
-- Criptografia forte
-- Nomes de arquivos enganosos
-- Timestamps falsificados
-
-**Técnicas de detecção de análise**:
-- Detecção de máquinas virtuais
-- Verificação de ferramentas forenses em execução
-- Comportamento diferente quando em análise
-
-### Contramedidas para investigadores:
-
-**Documentação rigorosa**: Registrar todos os passos da investigação
-**Múltiplas ferramentas**: Usar diferentes software para validação cruzada
-**Análise de metadados**: Verificar inconsistências temporais
-**Análise comportamental**: Identificar padrões suspeitos
-**Forense de rede**: Capturar comunicações antes da criptografia
+Do outro lado, o investigador tem suas contramedidas. A **documentação rigorosa** registra todos os passos da investigação; as **múltiplas ferramentas** servem pra validação cruzada usando software diferente; a **análise de metadados** procura inconsistências temporais; a **análise comportamental** identifica padrões suspeitos; e a **forense de rede** captura as comunicações antes da criptografia.
 
 ### Ferramentas comuns de anti-forensics:
 
 - **BleachBit**: Limpeza segura de dados
 - **CCleaner**: Remoção de traces
-- **TrueCrypt/VeraCrypt**: Criptografia forte
+- **TrueCrypt/VeraCrypt**: Criptografia forte *(o TrueCrypt foi descontinuado em 2014; hoje o VeraCrypt é o sucessor ativo recomendado)*
 - **Timestomp**: Modificação de timestamps
 
 **Considerações éticas**: Investigadores devem conhecer anti-forensics para defesa, não para obstrução da justiça.
@@ -347,8 +236,8 @@ Além disso tudo, existe uma forma muito simples de esteganografia que qualquer 
 
 Como já devem conhecer, WinRar é um ferramenta que permite compactar e descompactar arquivos em vários formatos, como ZIP ou próprio RAR. Para esconder um arquivo em uma imagem, basta selecionar os dois arquivos no Windows Explorer, clicar com o botão direito do mouse e escolher a opção "Adicionar ao arquivo...". Na janela que se abre, escolher o formato RAR e marcar a opção "Criar arquivo SFX". Isso vai gerar um arquivo executável com a extensão .exe e o ícone da imagem original. Para extrair o arquivo oculto, basta executar o arquivo .exe e escolher a pasta de destino.
 
-Como se pode ver, existem vários métodos e ferramentas para realizar a análise de esteganografia, uma técnica essencial para a computação forense. Essa análise pode revelar informações valiosas para a investigação e solução de crimes cibernéticos, bem como para a proteção da segurança e da privacidade dos usuários. 
-Por isso, é importante estar atento aos sinais de que uma imagem pode conter algo mais do que aparenta, e usar os recursos adequados para desvendar os mistérios da esteganografia.
+Como se pode ver, existem vários métodos e ferramentas para realizar a análise de esteganografia, uma técnica importante na computação forense. Essa análise pode revelar informações valiosas para a investigação e solução de crimes cibernéticos, bem como para a proteção da segurança e da privacidade dos usuários. 
+Por isso, é importante estar atento aos sinais de que uma imagem pode conter algo mais do que aparenta, e usar as ferramentas certas pra achar o que está escondido.
 
 ## Lista de Ferramentas Forense
 

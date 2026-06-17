@@ -12,20 +12,20 @@ comments: true
 
 ## A casa que você não trancou (mas alguém ainda tem a chave)
 
-Imagina que sua empresa contratou um serviço de hospedagem três anos atrás, criou um subdomínio `promo.alvo.com` apontando pra lá, rodou uma campanha, e depois **cancelou o serviço** — mas esqueceu de apagar a placa que dizia "a entrega da `promo.alvo.com` é naquele endereço". A loja fechou, o ponto está vago. Aí chega você: aluga **aquele mesmo endereço vago**, pendura sua própria placa, e agora **tudo que o carteiro entregaria pra `promo.alvo.com` cai na sua mão**. Você não invadiu nada — só ocupou um espaço que a empresa deixou reservado e abandonou.
+Imagina que sua empresa contratou um serviço de hospedagem três anos atrás, criou um subdomínio `promo.alvo.com` apontando pra lá, rodou uma campanha, e depois **cancelou o serviço**, mas esqueceu de apagar a placa que dizia "a entrega da `promo.alvo.com` é naquele endereço". A loja fechou, o ponto está vago. Aí chega você: aluga **aquele mesmo endereço vago**, pendura sua própria placa, e agora **tudo que o carteiro entregaria pra `promo.alvo.com` cai na sua mão**. Você não invadiu nada. Só ocupou um espaço que a empresa deixou reservado e abandonou.
 
-Isso é **Subdomain Takeover**: um registro de DNS "pendurado" (*dangling*) que aponta pra um recurso de terceiro que **ninguém reivindicou de volta**. E tem um primo mais simples, o **Broken Link Hijacking**: a empresa **linka** na própria página um recurso externo (um perfil de rede social, um domínio de parceiro) que **expirou ou foi apagado** — e você registra esse recurso pra falar em nome dela.
+Isso é **Subdomain Takeover**: um registro de DNS "pendurado" (*dangling*) que aponta pra um recurso de terceiro que **ninguém reivindicou de volta**. E tem um primo mais simples, o **Broken Link Hijacking**: a empresa **linka** na própria página um recurso externo (um perfil de rede social, um domínio de parceiro) que **expirou ou foi apagado**, e você registra esse recurso pra falar em nome dela.
 
 Os dois exploram a mesma falha humana: **alguém criou uma referência pra um recurso externo e nunca a removeu quando o recurso morreu.** Neste post a gente vai do "o que é DNS dangling" até provar um takeover de verdade com uma PoC segura, passando por recon, fingerprinting e defesa. Sem saltos.
 
-> 💡 **PoC** (*Proof of Concept*): a prova mínima de que a falha existe — aqui, servir uma página inofensiva sob o domínio da vítima. Detalhe no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
+> 💡 **PoC** (*Proof of Concept*): a prova mínima de que a falha existe. Aqui, servir uma página inofensiva sob o domínio da vítima. Detalhe no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).
 
 ## O que é (e a diferença entre os dois)
 
 Antes de tudo, dois conceitos de DNS que você **precisa** dominar, porque a falha toda mora aqui.
 
-- **Registro A** — diz "este nome aponta pra **este IP**". Ex.: `app.alvo.com → 203.0.113.10`.
-- **Registro CNAME** — diz "este nome é um **apelido** de outro nome". Ex.: `promo.alvo.com → alvo-promo.s3.amazonaws.com`. Quem resolve `promo.alvo.com` é mandado pro nome canônico (a "loja" da Amazon).
+- O **Registro A** diz "este nome aponta pra **este IP**". Ex.: `app.alvo.com → 203.0.113.10`.
+- O **Registro CNAME** diz "este nome é um **apelido** de outro nome". Ex.: `promo.alvo.com → alvo-promo.s3.amazonaws.com`. Quem resolve `promo.alvo.com` é mandado pro nome canônico (a "loja" da Amazon).
 
 > **Analogia do CNAME:** o CNAME é um **encaminhamento de correspondência**. A casa `promo.alvo.com` colocou um aviso nos Correios: "minha correspondência, encaminhem pra `alvo-promo.s3.amazonaws.com`". Enquanto essa caixa postal da Amazon existir e for da empresa, tudo certo. O problema é quando a empresa **fecha a caixa postal** mas **não cancela o encaminhamento**. A correspondência continua chegando num endereço que agora qualquer um pode alugar.
 
@@ -40,27 +40,27 @@ A diferença em uma frase: **Subdomain Takeover é sequestrar um nome que aponta
 
 ## Por que isso importa (e quanto paga)
 
-O estrago vem de uma coisa só: **confiança herdada**. O navegador, o cookie e o usuário confiam em `alvo.com` — e tudo que está sob `*.alvo.com` herda essa confiança.
+O estrago vem de uma coisa só: **confiança herdada**. O navegador, o cookie e o usuário confiam em `alvo.com`, e tudo que está sob `*.alvo.com` herda essa confiança.
 
 - **Servir conteúdo arbitrário sob o domínio legítimo:** HTML/JS controlado por você sendo entregue por `promo.alvo.com`. Defacement (desfiguração da página oficial), phishing convincente ("é o domínio real da empresa, deve ser seguro").
 - **Roubo de cookie / sessão:** se a aplicação setou cookies com `Domain=.alvo.com` (escopo de domínio inteiro, não de host), o subdomínio sequestrado **lê esses cookies**. Daí pode sair ATO (*Account Takeover*, sequestro de conta). (Falamos de roubo de sessão no post [Account Takeover](/posts/account-takeover/).)
-- **Bypass de listas de origem confiáveis:** CORS e CSP (regras do navegador que dizem quais origens podem ler dados ou carregar scripts — ex.: `script-src *.alvo.com`), allowlists de redirect — tudo que confia em "qualquer subdomínio nosso" passa a confiar **em você**. (Mais no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).)
+- **Bypass de listas de origem confiáveis:** CORS e CSP (regras do navegador que dizem quais origens podem ler dados ou carregar scripts, tipo `script-src *.alvo.com`), allowlists de redirect, tudo que confia em "qualquer subdomínio nosso" passa a confiar **em você**. (Mais no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série).)
 - **BLH:** se passar pela marca em redes sociais, capturar tráfego de quem clica em links oficiais antigos, phishing direcionado.
 
 Em programas reais, essa família costuma pagar de **algumas centenas** (takeover sem dado sensível, classificado como informativo/baixo) a **alguns milhares de reais** (subdomínio usado em fluxo de auth, cookies de escopo de domínio, marca grande). Faixa típica: **R$500 a R$5.000**, dependendo do impacto que você **demonstrar**.
 
-> ⚠️ **Realidade da triagem:** muitos programas classificam takeover como **baixo/informativo** se você não mostrar impacto concreto (roubo de cookie, uso em auth). "Consegui servir uma página" às vezes não basta. Pense no **impacto** desde o começo — é o que vimos em [Severidade & Triagem](/posts/severidade-impacto-triagem/).
+> ⚠️ **Realidade da triagem:** muitos programas classificam takeover como **baixo/informativo** se você não mostrar impacto concreto (roubo de cookie, uso em auth). "Consegui servir uma página" às vezes não basta. Pense no **impacto** desde o começo, foi o que vimos em [Severidade & Triagem](/posts/severidade-impacto-triagem/).
 
 ### Como isso pontua (CVSS v3.1 e v4.0)
 
-O score conta a mesma história do mercado: **médio quando é só defacement, alto/crítico quando o subdomínio entra num fluxo de confiança** (cookie de escopo de domínio, CSP/CORS, auth). A peça que segura o número em "Médio" é o **escopo alterado** (`S:C` no v3.1) — o dano não fica no recurso de terceiro, ele atinge o **domínio da vítima e seus usuários**. Leve os dois números no report:
+O score conta a mesma história do mercado: **médio quando é só defacement, alto/crítico quando o subdomínio entra num fluxo de confiança** (cookie de escopo de domínio, CSP/CORS, auth). A peça que segura o número em "Médio" é o **escopo alterado** (`S:C` no v3.1): o dano não fica no recurso de terceiro, ele atinge o **domínio da vítima e seus usuários**. Leve os dois números no report:
 
 | Cenário | CVSS v3.1 | CVSS v4.0 | Leitura |
 |---|---|---|---|
 | **Takeover servindo conteúdo (defacement / phishing)** | **6.1 — Médio**<br>`AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N` | **~5.3 — Médio**<br>`CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:P/VC:N/VI:L/VA:N/SC:N/SI:L/SA:N` | Você controla conteúdo sob o domínio legítimo, mas a vítima precisa **visitar/clicar** (`UI:R` / `UI:P`). O `S:C` (escopo alterado) e o `SI:L` (integridade no sistema **subsequente** — os usuários do domínio) é o que sustenta o Médio. |
 | **Takeover em fluxo de confiança (cookie `Domain=.alvo.com`, CSP `*.alvo.com`, auth) → ATO** | **9.3 — Crítico**<br>`AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:N` | **~8.6 — Alto/Crítico**<br>`CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:P/VC:H/VI:H/VA:N/SC:H/SI:H/SA:N` | O impacto **não é do takeover em si** — é da conta/sessão tomada por roubo de cookie ou XSS de origem confiável. Pontue o **resultado da chain**, não o gadget. |
 
-> 💡 **Por que dois scores?** O **v3.1** ainda é o que a maioria dos programas usa; o **v4.0** ([FIRST, 2023](https://www.first.org/cvss/v4.0/specification-document)) aposentou o `S` (Scope) e separou impacto **no sistema vulnerável** (`VC/VI/VA`) de impacto **subsequente** (`SC/SI/SA`) — o que **descreve melhor um takeover**, em que o dano explode num *outro* lugar (os usuários e a sessão da vítima), não no bucket órfão. Os valores de v4.0 acima são **aproximados** (o v4.0 calcula por tabela de macrovetor, não por fórmula simples — confira no [calculador oficial](https://www.first.org/cvss/calculator/4.0)). Calibre o número conforme o que você **provou**, não o teórico — detalhe em [Severidade & Triagem](/posts/severidade-impacto-triagem/).
+> 💡 **Por que dois scores?** O **v3.1** ainda é o que a maioria dos programas usa; o **v4.0** ([FIRST, 2023](https://www.first.org/cvss/v4.0/specification-document)) aposentou o `S` (Scope) e separou impacto **no sistema vulnerável** (`VC/VI/VA`) de impacto **subsequente** (`SC/SI/SA`), o que **descreve melhor um takeover**, em que o dano explode num *outro* lugar (os usuários e a sessão da vítima), não no bucket órfão. Os valores de v4.0 acima são **aproximados** (o v4.0 calcula por tabela de macrovetor, não por fórmula simples; confira no [calculador oficial](https://www.first.org/cvss/calculator/4.0)). Calibre o número conforme o que você **provou**, não o teórico. Detalhe em [Severidade & Triagem](/posts/severidade-impacto-triagem/).
 
 ## Como funciona por trás
 
@@ -74,14 +74,14 @@ O fluxo de um Subdomain Takeover tem **três peças** que precisam estar alinhad
 
 Quando as três acontecem juntas, está vulnerável. Vamos ver as peças:
 
-**Peça 1 — o CNAME pendurado.** Você consulta o DNS e vê pra onde o subdomínio aponta:
+**Peça 1, o CNAME pendurado.** Você consulta o DNS e vê pra onde o subdomínio aponta:
 
 ```bash
 dig CNAME promo.alvo.com +short
 # alvo-promo.s3.amazonaws.com.   <- o CNAME ainda existe, apontando pra Amazon
 ```
 
-**Peça 2 — o destino morreu.** Você acessa o subdomínio e o **serviço de terceiro** te responde com uma mensagem de "esse recurso não existe aqui":
+**Peça 2, o destino morreu.** Você acessa o subdomínio e o **serviço de terceiro** te responde com uma mensagem de "esse recurso não existe aqui":
 
 ```http
 GET / HTTP/1.1
@@ -96,9 +96,9 @@ Server: AmazonS3
 </Error>
 ```
 
-Essa mensagem é a **fingerprint** (assinatura) — a prova de que o destino está vago **e** de que esse serviço permite reivindicação. Cada serviço tem a sua (tabela mais abaixo).
+Essa mensagem é a **fingerprint** (assinatura): a prova de que o destino está vago **e** de que esse serviço permite reivindicação. Cada serviço tem a sua (tabela mais abaixo).
 
-**Peça 3 — você reivindica.** Cria o bucket `alvo-promo` na **sua** conta AWS. Como o CNAME já manda o tráfego pra lá, agora o seu bucket responde por `promo.alvo.com`. Sobe um arquivo:
+**Peça 3, você reivindica.** Cria o bucket `alvo-promo` na **sua** conta AWS. Como o CNAME já manda o tráfego pra lá, agora o seu bucket responde por `promo.alvo.com`. Sobe um arquivo:
 
 ```http
 GET /poc.html HTTP/1.1
@@ -110,7 +110,7 @@ Server: AmazonS3
 <h1>PoC - controlado pelo pesquisador</h1>   <!-- <- servido pelo domínio da vítima -->
 ```
 
-**Por que o terceiro deixa isso acontecer?** Porque serviços como S3 distribuem recursos por **nome global** ("primeiro que pedir, leva") e **não verificam** se você é dono do domínio `alvo.com` que aponta pra eles. A AWS só te pergunta "esse nome de bucket está livre?", não "você manda em `alvo.com`?". É exatamente esse buraco que o GitHub Pages **fechou** com domínio verificado (veremos na defesa). (O ecossistema S3/AWS — buckets públicos, ACLs, chaves vazadas — tem post próprio: [Cloud & AWS Misconfiguration](/posts/cloud-aws-misconfiguration/).)
+**Por que o terceiro deixa isso acontecer?** Porque serviços como S3 distribuem recursos por **nome global** ("primeiro que pedir, leva") e **não verificam** se você é dono do domínio `alvo.com` que aponta pra eles. A AWS só te pergunta "esse nome de bucket está livre?", não "você manda em `alvo.com`?". É exatamente esse buraco que o GitHub Pages **fechou** com domínio verificado (veremos na defesa). (O ecossistema S3/AWS, com seus buckets públicos, ACLs e chaves vazadas, tem post próprio: [Cloud & AWS Misconfiguration](/posts/cloud-aws-misconfiguration/).)
 
 ## Tipos e variações
 
@@ -130,15 +130,15 @@ A condição muda conforme o serviço de destino. Direto do projeto de referênc
 
 Outras variações além do CNAME clássico:
 
-1. **Subdomain Takeover por NS** — o subdomínio delega DNS (`NS`) pra uma zona em provedor onde a zona foi deletada; quem recriar a zona controla **tudo** abaixo do subdomínio.
-2. **Registro A pendurado** — A record apontando pra IP de uma instância/cloud que foi liberado e pode ser realocado pra você (mais raro, depende do provedor reciclar IPs).
-3. **Host hardcoded em app/binário** — o subdomínio órfão não está nem no DNS público, está **cravado num APK/JS**. (No nosso material, um caso real-fictício veio de um `*.herokuapp.com` hardcoded num APK aberto com `jadx`.)
-4. **Broken Link Hijacking (domínio expirado)** — a página do alvo carrega um `<script src="https://lib-parceiro.com/widget.js">` e `lib-parceiro.com` **expirou**. Você registra o domínio e agora serve **JavaScript** que roda no contexto da página do alvo (vira quase um XSS persistente).
-5. **Broken Link Hijacking (handle social)** — o rodapé linka `instagram.com/marca_oficial` e a conta foi deletada. Você registra o handle e se passa pela marca.
+1. **Subdomain Takeover por NS:** o subdomínio delega DNS (`NS`) pra uma zona em provedor onde a zona foi deletada; quem recriar a zona controla **tudo** abaixo do subdomínio.
+2. **Registro A pendurado:** A record apontando pra IP de uma instância/cloud que foi liberado e pode ser realocado pra você (mais raro, depende do provedor reciclar IPs).
+3. **Host hardcoded em app/binário.** O subdomínio órfão não está nem no DNS público, está **cravado num APK/JS**. (No nosso material, um caso real-fictício veio de um `*.herokuapp.com` hardcoded num APK aberto com `jadx`.)
+4. **Broken Link Hijacking (domínio expirado).** A página do alvo carrega um `<script src="https://lib-parceiro.com/widget.js">` e `lib-parceiro.com` **expirou**. Você registra o domínio e agora serve **JavaScript** que roda no contexto da página do alvo (vira quase um XSS persistente).
+5. **Broken Link Hijacking (handle social).** O rodapé linka `instagram.com/marca_oficial` e a conta foi deletada. Você registra o handle e se passa pela marca.
 
 ## Recon — como encontrar
 
-O takeover é **filho do recon**. Quanto mais subdomínios você enumera, mais "casas abandonadas" encontra. (O pipeline completo de enumeração está no post [Recon & Discovery](/posts/recon-discovery/) — aqui só recapitulo o necessário e foco no que é específico de takeover.)
+O takeover é **filho do recon**. Quanto mais subdomínios você enumera, mais "casas abandonadas" encontra. (O pipeline completo de enumeração está no post [Recon & Discovery](/posts/recon-discovery/); aqui só recapitulo o necessário e foco no que é específico de takeover.)
 
 ### Passo 1 — Enumerar subdomínios (recapitulando)
 
@@ -152,7 +152,7 @@ curl -s "https://crt.sh/?q=%25.alvo.com&output=json" | jq -r '.[].name_value' \
 sort -u subs.txt -o subs.txt
 ```
 
-> 💡 **Por que CT logs ajudam tanto aqui:** todo certificado HTTPS emitido fica registrado em **Certificate Transparency**. Subdomínios de campanhas antigas (`promo`, `staging`, `legacy`, `2019-evento`) costumam ter emitido um cert um dia — e o registro **fica pra sempre**, mesmo que o serviço tenha morrido. CT log é um cemitério de subdomínios esquecidos. Perfeito pra caçar takeover.
+> 💡 **Por que CT logs ajudam tanto aqui:** todo certificado HTTPS emitido fica registrado em **Certificate Transparency**. Subdomínios de campanhas antigas (`promo`, `staging`, `legacy`, `2019-evento`) costumam ter emitido um cert um dia, e o registro **fica pra sempre**, mesmo que o serviço tenha morrido. CT log é um cemitério de subdomínios esquecidos. Perfeito pra caçar takeover.
 
 ### Passo 2 — Olhar o CNAME de cada subdomínio (o sinal de ouro)
 
@@ -166,7 +166,7 @@ while read sub; do
 done < subs.txt | tee cnames.txt
 ```
 
-**`dig`** (*Domain Information Groper*) é o canivete do DNS. `dig +short CNAME nome` te devolve só o destino do apelido — limpo, sem ruído. Procure destinos como `*.s3.amazonaws.com`, `*.herokudns.com`, `*.github.io`, `*.azurewebsites.net`, `*.cloudfront.net`.
+**`dig`** (*Domain Information Groper*) é o canivete do DNS. `dig +short CNAME nome` te devolve só o destino do apelido, limpo, sem ruído. Procure destinos como `*.s3.amazonaws.com`, `*.herokudns.com`, `*.github.io`, `*.azurewebsites.net`, `*.cloudfront.net`.
 
 ```text
 # o que você quer ver em cnames.txt — subdomínios apontando pra terceiros:
@@ -179,7 +179,7 @@ docs.alvo.com     -> alvo.github.io.
 
 Você não vai abrir 800 subdomínios na mão. Duas ferramentas resolvem:
 
-**`nuclei`** — scanner baseado em templates da ProjectDiscovery. Tem uma coleção de templates de takeover que batem a resposta de cada host contra as fingerprints do "Can I take over XYZ".
+O **`nuclei`** é um scanner baseado em templates da ProjectDiscovery. Tem uma coleção de templates de takeover que batem a resposta de cada host contra as fingerprints do "Can I take over XYZ".
 
 ```bash
 # instalar
@@ -190,7 +190,7 @@ nuclei -update-templates   # baixa/atualiza a base de templates
 nuclei -list subs.txt -tags takeover -o takeover-hits.txt
 ```
 
-**`subjack`** — scanner dedicado a takeover, escrito em Go pelo haccer. Lê a lista, checa CNAME + fingerprint e marca os vulneráveis.
+Já o **`subjack`** é um scanner dedicado a takeover, escrito em Go pelo haccer. Lê a lista, checa CNAME + fingerprint e marca os vulneráveis.
 
 ```bash
 # instalar
@@ -213,11 +213,11 @@ Flags do subjack que importam:
 | `-m` | sinaliza CNAMEs "mortos" mesmo sem estarem registrados (bom pra varrer candidatos) |
 | `-v` | verbose (mostra também os não vulneráveis) |
 
-> 💡 **Regra de ouro:** ferramenta **acha candidato**, você **confirma na mão**. Tanto nuclei quanto subjack dão **falso positivo** (fingerprint genérica, serviço que não é reivindicável, cache de CDN). Antes de reportar, rode o `dig` e o acesso HTTP você mesmo, e confira o **status no "Can I take over XYZ"**. (É a mesma lição do [Misconfiguration & CVE hunting](/posts/security-misconfiguration-cve-hunting/): "nem todo achado de scanner é vulnerabilidade — leia o que o template faz".)
+> 💡 **Regra de ouro:** ferramenta **acha candidato**, você **confirma na mão**. Tanto nuclei quanto subjack dão **falso positivo** (fingerprint genérica, serviço que não é reivindicável, cache de CDN). Antes de reportar, rode o `dig` e o acesso HTTP você mesmo, e confira o **status no "Can I take over XYZ"**. (É a mesma lição do [Misconfiguration & CVE hunting](/posts/security-misconfiguration-cve-hunting/): "nem todo achado de scanner é vulnerabilidade, leia o que o template faz".)
 
 ### Recon de Broken Link Hijacking
 
-Aqui você não olha DNS — olha o **HTML/JS** das páginas do alvo atrás de links externos que dão 404 / domínio expirado.
+Aqui você não olha DNS, olha o **HTML/JS** das páginas do alvo atrás de links externos que dão 404 / domínio expirado.
 
 ```bash
 # colete todas as URLs históricas e atuais (gau = URLs do Wayback/Common Crawl)
@@ -254,7 +254,7 @@ Antes de mexer: abra o **[Can I take over XYZ](https://github.com/EdOverflow/can
 
 ### Nível 3 — Reivindicar o recurso (PoC SEGURA)
 
-A regra de ouro da PoC: **prove o controle com o conteúdo mais inofensivo possível.** Nada de JS, nada de roubar nada — só um HTML estático que diz "isto está sob controle do pesquisador".
+A regra da PoC: **prove o controle com o conteúdo mais inofensivo possível.** Nada de JS, nada de roubar nada, só um HTML estático que diz "isto está sob controle do pesquisador".
 
 **Exemplo S3:** o nome do bucket é o que estava no CNAME (`alvo-promo`). Crie na **sua** conta:
 
@@ -278,7 +278,7 @@ curl -s https://promo.alvo.com/
 
 **Exemplo GitHub Pages (edge case):** se `docs.alvo.com → alvo.github.io` der `There isn't a GitHub Pages site here.` **e** o domínio não estiver verificado, cria um repo, sobe um `index.html` e um arquivo `CNAME` com o conteúdo `docs.alvo.com`, e ativa Pages apontando pra ele. O GitHub passa a servir seu repo em `docs.alvo.com`.
 
-> ⚠️ **PoC mínima e datada.** Use um path único (`/poc-<seudata>.html`), conteúdo neutro, e **remova** logo após documentar. Não capture tráfego real, não sirva JS, não colete cookie de ninguém. O objetivo é **provar controle**, não causar dano. Isso é o que separa pesquisa de crime — e o triador percebe a diferença.
+> ⚠️ **PoC mínima e datada.** Use um path único (`/poc-<seudata>.html`), conteúdo neutro, e **remova** logo após documentar. Não capture tráfego real, não sirva JS, não colete cookie de ninguém. O objetivo é **provar controle**, não causar dano. Isso é o que separa pesquisa de crime, e o triador percebe a diferença.
 
 ### Nível 4 — Broken Link Hijacking
 
@@ -292,11 +292,11 @@ Para handle social: registre o `@marca_oficial` que estava 404, ponha um aviso d
 
 ### Nível 5 — Escalando o impacto (sem sair da PoC segura)
 
-Você **não precisa** explorar de verdade pra **argumentar** o impacto no report — basta provar a condição e explicar a cadeia:
+Você **não precisa** explorar de verdade pra **argumentar** o impacto no report. Basta provar a condição e explicar a cadeia:
 
-- **Cookie de escopo de domínio:** cheque se a app seta `Set-Cookie: ...; Domain=.alvo.com`. Se sim, **explique** que o subdomínio sequestrado leria esses cookies (não precisa roubar de ninguém — descreva o vetor).
-- **Uso em CSP/CORS:** se `alvo.com` tem `Content-Security-Policy: script-src *.alvo.com`, seu subdomínio sequestrado serve JS **dentro da política** — argumente o XSS de origem confiável.
-- **BLH com JS:** se o link quebrado era um `<script src>`, o JavaScript que você serve **executa na página do alvo**. Aí o impacto é o de um XSS persistente — descreva, mas mantenha a PoC um `console.log`/`alert` neutro.
+- **Cookie de escopo de domínio:** cheque se a app seta `Set-Cookie: ...; Domain=.alvo.com`. Se sim, **explique** que o subdomínio sequestrado leria esses cookies (não precisa roubar de ninguém, só descrever o vetor).
+- **Uso em CSP/CORS:** se `alvo.com` tem `Content-Security-Policy: script-src *.alvo.com`, seu subdomínio sequestrado serve JS **dentro da política**, então argumente o XSS de origem confiável.
+- **BLH com JS:** se o link quebrado era um `<script src>`, o JavaScript que você serve **executa na página do alvo**. Aí o impacto é o de um XSS persistente; descreva, mas mantenha a PoC um `console.log`/`alert` neutro.
 
 ## Caso real-fictício: S3 órfão em `staging-assets.alvo.com`
 
@@ -308,7 +308,7 @@ Você está no recon de `alvo.com`. O `subfinder` + `crt.sh` cospem ~600 subdom�
 staging-assets.alvo.com -> alvo-staging-assets.s3.amazonaws.com.
 ```
 
-**Passo 1 — Confirmar a fingerprint.** Acessa direto:
+**Passo 1, confirmar a fingerprint.** Acessa direto:
 
 ```http
 GET / HTTP/1.1
@@ -329,9 +329,9 @@ Content-Type: application/xml
 
 `NoSuchBucket` + S3 no "Can I take over XYZ" = **Vulnerável**. As três peças batem.
 
-**Passo 2 — Reivindicar (PoC segura).** Cria o bucket `alvo-staging-assets` na sua conta, marca como público, sobe um `test.html` com o texto `PoC Done - pesquisador`.
+**Passo 2, reivindicar (PoC segura).** Cria o bucket `alvo-staging-assets` na sua conta, marca como público, sobe um `test.html` com o texto `PoC Done - pesquisador`.
 
-**Passo 3 — Provar.** Acessa pelo domínio da vítima:
+**Passo 3, provar.** Acessa pelo domínio da vítima:
 
 ```http
 GET /test.html HTTP/1.1
@@ -345,7 +345,7 @@ PoC Done - pesquisador           <!-- <- conteúdo seu, servido por staging-asse
 
 **O que a tela do Burp/navegador mostraria:** a barra de endereço com `https://staging-assets.alvo.com/test.html` (cadeado, domínio legítimo da empresa) renderizando a sua página de PoC. Lado a lado: o XML `NoSuchBucket` (antes) e o `200 OK` com seu conteúdo (depois), com o `Host` destacado.
 
-**Passo 4 — Report.** Título `[Subdomain Takeover] - Bucket S3 órfão em staging-assets.alvo.com serve conteúdo arbitrário`. Severidade **Média** (CVSS **v3.1 6.1** / **v4.0 ~5.3**) se for só defacement/phishing; sobe pra **Alta/Crítica** (CVSS **v3.1 9.3** / **v4.0 ~8.6**) se você demonstrar cookie de escopo de domínio (`Domain=.alvo.com`) ou uso em auth/CSP — aí o impacto é o da chain. Resumo focado no negócio: *"qualquer pessoa pode servir conteúdo (phishing, JS) sob um subdomínio legítimo da empresa, herdando a confiança do domínio"*. Passos numerados + prints do `dig`, do XML e do `200`. (Como estruturar isso: [Como escrever um report que paga](/posts/como-escrever-report-que-paga/).)
+**Passo 4, report.** Título `[Subdomain Takeover] - Bucket S3 órfão em staging-assets.alvo.com serve conteúdo arbitrário`. Severidade **Média** (CVSS **v3.1 6.1** / **v4.0 ~5.3**) se for só defacement/phishing; sobe pra **Alta/Crítica** (CVSS **v3.1 9.3** / **v4.0 ~8.6**) se você demonstrar cookie de escopo de domínio (`Domain=.alvo.com`) ou uso em auth/CSP, aí o impacto é o da chain. Resumo focado no negócio: *"qualquer pessoa pode servir conteúdo (phishing, JS) sob um subdomínio legítimo da empresa, herdando a confiança do domínio"*. Passos numerados + prints do `dig`, do XML e do `200`. (Como estruturar isso: [Como escrever um report que paga](/posts/como-escrever-report-que-paga/).)
 
 ## Defesa em camadas
 
@@ -361,9 +361,9 @@ ERRADO:                          CORRETO:
 2. (CNAME fica pendurado) X      2. depois liberar o bucket S3
 ```
 
-**2. Verificação de domínio no provedor (quando existe):** use os mecanismos que matam a peça 3 da falha. No **GitHub Pages**, *domínio verificado* faz com que **só repositórios da sua organização** possam publicar naquele domínio e subdomínios — atacante não consegue reivindicar. Habilite onde o serviço oferecer.
+**2. Verificação de domínio no provedor (quando existe):** use os mecanismos que matam a peça 3 da falha. No **GitHub Pages**, *domínio verificado* faz com que **só repositórios da sua organização** possam publicar naquele domínio e subdomínios, então atacante não consegue reivindicar. Habilite onde o serviço oferecer.
 
-**3. Nada de wildcard solto:** evite `*.alvo.com` apontando genericamente pra um provedor — é risco imediato de takeover de qualquer host inventado, mesmo com domínio verificado.
+**3. Nada de wildcard solto:** evite `*.alvo.com` apontando genericamente pra um provedor: é risco imediato de takeover de qualquer host inventado, mesmo com domínio verificado.
 
 **4. Inventário e monitoramento contínuo (IaC + varredura agendada):** trate registros DNS como código, com dono e ciclo de vida. E **rode o scanner contra você mesmo**, periodicamente:
 
@@ -383,15 +383,15 @@ jobs:
 
 **5. Processo de offboarding:** quando um time desliga um serviço, um checklist obriga remover os DNS associados **antes** de cancelar o contrato. Sem processo, o `staging-assets` de 2019 fica pendurado pra sempre.
 
-> ❌ **O que NÃO basta:** apagar o conteúdo do bucket (o nome continua reivindicável); confiar que "ninguém vai achar esse subdomínio" (CT logs acham tudo); deletar o recurso de terceiro deixando o CNAME; e — pra BLH — só remover o link da página atual sem checar páginas antigas/cacheadas que ainda apontam pra lá.
+> ❌ **O que NÃO basta:** apagar o conteúdo do bucket (o nome continua reivindicável); confiar que "ninguém vai achar esse subdomínio" (CT logs acham tudo); deletar o recurso de terceiro deixando o CNAME; e (no caso do BLH) só remover o link da página atual sem checar páginas antigas/cacheadas que ainda apontam pra lá.
 
 ## Ferramentas + labs legais
 
-- **`dig`** — consulta de DNS (CNAME/A/NS). O ponto de partida pra confirmar manualmente.
-- **`subfinder` / `amass` / `crt.sh`** — enumeração de subdomínios (ver [Recon](/posts/recon-discovery/)).
-- **`nuclei` (`-tags takeover`)** e **`subjack`** — fingerprinting automático de takeover.
-- **`gau` / `katana` / `httpx`** — coleta e probing de links externos pra Broken Link Hijacking.
-- **[Can I take over XYZ?](https://github.com/EdOverflow/can-i-take-over-xyz)** — catálogo de fingerprints e status (Vulnerável / edge case / Não). **Consulta obrigatória.**
+- **`dig`**: consulta de DNS (CNAME/A/NS). O ponto de partida pra confirmar manualmente.
+- **`subfinder` / `amass` / `crt.sh`** para enumeração de subdomínios (ver [Recon](/posts/recon-discovery/)).
+- **`nuclei` (`-tags takeover`)** e **`subjack`**: fingerprinting automático de takeover.
+- **`gau` / `katana` / `httpx`** para coleta e probing de links externos pra Broken Link Hijacking.
+- **[Can I take over XYZ?](https://github.com/EdOverflow/can-i-take-over-xyz)**: catálogo de fingerprints e status (Vulnerável / edge case / Não). **Consulta obrigatória.**
 - **Labs / leitura autorizada:** [OWASP WSTG — Test for Subdomain Takeover](https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/02-Configuration_and_Deployment_Management_Testing/10-Test_for_Subdomain_Takeover), [PortSwigger Web Security Academy](https://portswigger.net/web-security/all-topics) (fundamentos web), TryHackMe e HackTheBox (máquinas com takeover). Para praticar **de verdade**, registre subdomínios **da sua própria conta** apontando pra um S3/Heroku seu e treine o ciclo.
 
 ## Checklist do caçador
@@ -409,7 +409,7 @@ jobs:
 
 - **Fingerprint ≠ takeover.** `Fastly error: unknown domain:` parece vulnerável, mas a Fastly **bloqueia** reivindicação não autorizada. Sempre cheque o status.
 - **Cache de CDN engana.** Um `404` cacheado pode sumir ao revalidar. Cheque o DNS ao vivo (`dig`), não só o HTTP.
-- **NXDOMAIN puro nem sempre é takeover.** Subdomínio que não resolve nada pode ser só lixo — o que importa é o **CNAME apontando pra serviço reivindicável**.
+- **NXDOMAIN puro nem sempre é takeover.** Subdomínio que não resolve nada pode ser só lixo. O que importa é o **CNAME apontando pra serviço reivindicável**.
 - **GitHub Pages com domínio verificado não cai.** Se a org verificou o domínio, a fingerprint aparece mas você **não** consegue reivindicar. Edge case = teste, não assuma.
 - **Reivindicar e "deixar lá" é antiético e arriscado.** Faça a PoC, documente e **devolva** (remova o recurso). Segurar o subdomínio da vítima é abuso.
 
@@ -424,7 +424,7 @@ jobs:
 
 ## Nota ética
 
-Tudo aqui é pra **testes autorizados** — bug bounty dentro do escopo, pentests contratados e seus próprios recursos. Reivindicar um subdomínio de terceiro **sem autorização** é abuso, mesmo "só pra provar". Faça a PoC **mínima** (HTML neutro), **documente** e **devolva o recurso** imediatamente; nunca capture tráfego, cookie ou dado de usuário real. O objetivo é proteger e reportar com responsabilidade — não ocupar o que não é seu.
+Tudo aqui é pra **testes autorizados**: bug bounty dentro do escopo, pentests contratados e seus próprios recursos. Reivindicar um subdomínio de terceiro **sem autorização** é abuso, mesmo "só pra provar". Faça a PoC **mínima** (HTML neutro), **documente** e **devolva o recurso** imediatamente; nunca capture tráfego, cookie ou dado de usuário real. O objetivo é proteger e reportar com responsabilidade, não ocupar o que não é seu.
 
 ## Referências
 

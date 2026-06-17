@@ -93,7 +93,7 @@ Com esse contexto legal em mente, vamos entender o que está gerando esses siste
 
 E tem que admitir que é tentador. Você pensa em um sistema, descreve em português, e em minutos tem algo funcionando. Plataformas como Lovable e outras prometem exatamente isso: aplicações completas geradas por IA.
 
-O problema começa quando "funcionando" vira sinônimo de "pronto". A ânsia de lançar um SaaS rápido, faturar logo e "validar a ideia" faz muita gente pular etapas cruciais.
+O problema começa quando "funcionando" vira sinônimo de "pronto". A ânsia de lançar um SaaS rápido, faturar logo e "validar a ideia" faz muita gente pular etapas importantes.
 
 A mentalidade de "empreendedor de sucesso" às vezes vira uma busca por atalhos. Quer construir rápido, quer lucrar rápido, quer escalar rápido. Só que ninguém pensa nas partes chatas: como **vender** esse sistema (e às vezes vender como "seguro" faz parte do marketing)? Como **manter** ele funcionando de forma segura? E principalmente: como **agir** quando der errado? Porque uma hora vai dar. E quando um sistema desses é explorado, não é só o projeto que morre - é a credibilidade, são os processos na justiça, são os dados dos clientes expostos.
 
@@ -207,7 +207,7 @@ Se uma dessas dependências - **qualquer uma delas** - tiver uma vulnerabilidade
 
 O GitHub tem uma ferramenta chamada Dependabot que fica monitorando suas dependências e te avisa quando encontra vulnerabilidades conhecidas. No projeto Escola em Foco, ele encontrou 11:
 
-> **Nota sobre as CVEs:** Todas as vulnerabilidades listadas abaixo são de 2025 - ou seja, são vulnerabilidades recentes, descobertas neste ano. Isso demonstra como o ecossistema de segurança está em constante evolução: bibliotecas que eram "seguras" ontem podem ter falhas críticas descobertas amanhã. Se você está lendo isso no futuro, provavelmente existem ainda mais CVEs além dessas.
+> **Nota sobre as CVEs:** Todas as vulnerabilidades listadas abaixo são de 2025 - ou seja, são vulnerabilidades recentes, descobertas neste ano. Isso mostra como a coisa muda rápido: biblioteca que era "segura" ontem pode ter falha crítica descoberta amanhã. Se você está lendo isso no futuro, provavelmente existem ainda mais CVEs além dessas.
 
 #### 🔴 Críticas (HIGH) - 4 alertas
 
@@ -978,7 +978,7 @@ Isso diz:
 
 Se um atacante conseguir injetar `<script>alert('xss')</script>` na página, o navegador olha pro CSP e diz: "esse script não tá na lista de fontes permitidas" - e **não executa**.
 
-Mesmo que o XSS esteja lá no HTML, ele não roda. É uma segunda linha de defesa crucial.
+Mesmo que o XSS esteja lá no HTML, ele não roda. É uma segunda linha de defesa que faz muita diferença.
 
 **No projeto Escola em Foco:**
 
@@ -1330,7 +1330,7 @@ Essa é a pergunta que inevitavelmente surge: "tá, mas e se eu pedir pra IA faz
 
 É uma pergunta justa. E a resposta honesta é: **ajuda, mas não resolve**.
 
-Vou explicar por quê - e isso é crucial pra entender por que investir em segurança profissional ainda faz sentido mesmo na era da IA.
+Vou explicar por quê - porque é isso que mostra que investir em segurança profissional ainda faz sentido mesmo na era da IA.
 
 ### O que dá pra melhorar via Prompt
 
@@ -1368,7 +1368,7 @@ Isso é só pra **login**... um formulário... agora imagine só o que não prec
 
 ### Vulnerabilidades de Lógica de Negócio
 
-Aqui entra algo que poucos falam: **a maioria das vulnerabilidades críticas não são técnicas - são de lógica de negócio**.
+Aqui entra algo que poucos falam: boa parte das vulnerabilidades críticas nem é "técnica" no sentido clássico. **É de lógica de negócio.**
 
 Segundo dados do [HackerOne 2024 Hacker-Powered Security Report](https://www.hackerone.com/resources/reporting/hacker-powered-security-report), aproximadamente **60% das vulnerabilidades reportadas em programas de bug bounty são relacionadas a falhas de lógica de negócio e controle de acesso** - não são SQLi, XSS ou outras vulnerabilidades "clássicas" que ferramentas automatizadas detectam.
 
@@ -1411,7 +1411,7 @@ Parece certo, né? Verifica se tem ingresso, se tiver, decrementa e cria a reser
 
 O problema: se 100 pessoas clicarem "comprar" no mesmo milissegundo, todas vão passar no `if`, todas vão decrementar de 1, e você vai vender 100 ingressos quando só tinha 1. É um race condition clássico.
 
-A correção envolve transações com locks otimistas ou pessimistas, operações atômicas, ou filas de processamento. Coisas que a IA não vai implementar a menos que você peça explicitamente - e você só pede se souber que o problema existe.
+A correção envolve transações com locks otimistas ou pessimistas, operações atômicas, ou filas de processamento. Coisas que a IA não vai implementar a menos que você peça. E você só pede se souber que o problema existe.
 
 E timing attacks? Quando o tempo de resposta do servidor revela informações sensíveis? Tipo: "usuário não encontrado" responde em 50ms, mas "senha incorreta" responde em 200ms porque calculou o hash. Um atacante pode enumerar usuários válidos só medindo tempo de resposta. A IA não pensa nisso.
 
@@ -1496,7 +1496,7 @@ E se você não tem budget pra tudo isso? Priorize. Comece pelo OWASP Top 10. Co
 
 Lá no início do texto eu mostrei aquele ciclo típico do vibe coding: descreve, gera, "funcionou!", deploy, próxima feature. Agora que você viu todas essas vulnerabilidades, dá pra entender melhor por que esse ciclo é tão perigoso.
 
-Cada uma das falhas que documentei aqui poderia ter sido evitada com uma simples pausa pra perguntar: "o que pode dar errado?". Mas essa pergunta nunca é feita porque quebra a "vibe". O momentum. A magia de ver código aparecendo na tela.
+Cada uma das falhas que documentei aqui poderia ter sido evitada com uma simples pausa pra perguntar: "o que pode dar errado?". Mas essa pergunta nunca é feita porque quebra a "vibe". O momentum. A empolgação de ver código aparecendo na tela.
 
 **O problema real não é a IA** - é a confiança cega. É achar que "funciona" significa "tá pronto". É a mentalidade de "depois eu arrumo" que nunca vira "agora".
 

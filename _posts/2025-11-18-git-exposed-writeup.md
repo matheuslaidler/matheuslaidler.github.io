@@ -165,7 +165,7 @@ nmap -F -Pn -sV -A 10.10.0.14 -vv
 - `-F` (Fast): Escaneia apenas as 100 portas mais comuns
 - `-Pn`: Pula a descoberta de host (assume que está ativo)
 - `-sV`: Detecção de versão dos serviços
-- `-A`: Ativa detecção de OS e execução de scripts NSE
+- `-A` (Aggressive): junta detecção de OS, detecção de versão (`-sV`), scripts NSE padrão e traceroute de uma vez — por isso o `-sV` acima fica redundante aqui
 - `-vv`: Verbose duplo para output detalhado
 
 ### 3.3 Resultados da varredura
