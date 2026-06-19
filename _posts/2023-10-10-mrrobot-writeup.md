@@ -144,6 +144,9 @@ Ao testar o login em `/wp-login.php` com credenciais aleatórias, notamos algo i
 **Vulnerabilidade de enumeração de usuários!**
 O WordPress está nos dizendo exatamente qual campo está errado. Isso permite fazer brute force primeiro no usuário, depois na senha.
 
+> **Entendendo o fluxo (por que a mensagem vaza o usuário):** ao enviar o formulário, o navegador faz um `POST /wp-login.php` com o corpo `log=<usuario>&pwd=<senha>`. No servidor, o WordPress **primeiro procura o usuário** (`log`) no banco; se ele não existe, devolve *"Invalid username"*. Só **se o usuário existe** é que ele compara a senha (`pwd`) com o hash guardado e, errando, devolve *"The password you entered for the username **X** is incorrect"*. Ou seja, a **própria mensagem de erro denuncia em qual etapa o login falhou**, transformando o login num **oráculo de existência de usuário**. É exatamente por isso que dá pra atacar em **duas fases**: primeiro achar um `log` válido (filtrando pela mensagem *"Invalid username"*), depois quebrar só a senha desse usuário. Um login bem feito responde sempre a **mesma** mensagem genérica ("credenciais inválidas"), sem dizer qual campo errou.
+{: .prompt-warning }
+
 ## 3. Brute Force de Credenciais
 
 ### 3.1 Conceito do ataque
@@ -216,6 +219,9 @@ Password: ER28-0652
 ### 4.1 Acessando o painel administrativo
 
 Com as credenciais, fazemos login em `/wp-login.php`. Somos o usuário **Elliot** com privilégios de administrador!
+
+> **Mentalidade:** ter o painel admin do WordPress **já é** RCE esperando pra acontecer. O WordPress executa PHP, e o administrador pode **editar os arquivos `.php` do tema/plugin** pelo próprio painel. Então o plano se desenha sozinho: trocar o conteúdo de um arquivo PHP do tema por uma reverse shell e acessá-lo pelo navegador pra disparar a conexão de volta. Não precisa de exploit. A funcionalidade legítima de "editar tema" já entrega execução de código. Por isso a defesa correta é `define('DISALLOW_FILE_EDIT', true);` no `wp-config.php`.
+{: .prompt-tip }
 
 ### 4.2 Conceito de Reverse Shell
 

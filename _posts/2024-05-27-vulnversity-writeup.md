@@ -283,6 +283,19 @@ Após rodar o ataque no Burp Suite, descobrimos que a extensão `.phtml` é perm
 Resposta: .phtml
 ```
 
+> **Entendendo o fluxo (por que o filtro falha):** ao enviar o formulário, o navegador manda um `POST multipart/form-data` pro `/internal/` com o `filename="arquivo.ext"`. No servidor, alguém precisa decidir se aceita o arquivo, e o erro clássico (o desta máquina) é validar por **blacklist de extensão**: algo como *"se termina em `.php`, bloqueia"*. O problema é que o Apache executa PHP **não só** em `.php`, mas também em `.phtml`, `.php3`, `.php4`, `.php5`, `.phar`… então bloquear *só* `.php` deixa todas as outras passarem. A correção é o oposto: **allowlist** (aceitar só o que é esperado), validar o **MIME real**, renomear o arquivo e guardá-lo **fora** do diretório executável:
+>
+> ```php
+> // ❌ Vulnerável (blacklist, o que esta máquina fez)
+> if (str_ends_with($nome, ".php")) { bloqueia(); }   // .phtml passa direto
+>
+> // ✅ Seguro (allowlist + sem execução)
+> $permitidas = ["jpg","png","gif"];
+> if (!in_array($ext, $permitidas)) { bloqueia(); }
+> // + checar MIME real, renomear o arquivo, salvar fora do webroot / sem permissão de execução
+> ```
+{: .prompt-warning }
+
 ### 3.5 Preparando o Reverse Shell
 
 Agora que sabemos qual extensão usar, vamos preparar nosso payload. A ideia aqui é usar um **reverse shell** - ao invés de tentarmos conectar no servidor (o que provavelmente seria bloqueado por firewall), fazemos o servidor conectar de volta para nossa máquina. É uma técnica muito útil porque bypassa firewalls que bloqueiam conexões de entrada mas permitem conexões de saída.
@@ -537,6 +550,15 @@ Para quem quiser ter uma visão geral do que fizemos, aqui está o fluxo complet
 5. **Enumeração de SUID** - Encontramos `/bin/systemctl` com SUID (algo que não deveria acontecer)
 6. **Privilege escalation** - Criamos um serviço malicioso para setar SUID no bash
 7. **Root** - Executamos bash com privilégios elevados e capturamos a flag
+
+### Tabela de Vulnerabilidades
+
+| Vulnerabilidade | Impacto | Correção |
+|---|---|---|
+| Diretório `/internal/` com upload sem autenticação | Qualquer visitante sobe arquivo | Exigir autenticação/autorização na funcionalidade de upload |
+| Filtro de extensão por **blacklist** (`.php`) | Bypass com `.phtml` → RCE como `www-data` | **Allowlist** de extensão + MIME real, renomear, salvar fora do webroot sem exec |
+| `/bin/systemctl` com bit **SUID** | Escalação local para **root** (serviço malicioso) | Remover SUID de binários não-essenciais; revisar com `find / -perm -4000` |
+| Princípio do menor privilégio violado | Cadeia upload→www-data→root | Cada serviço/binário só com o privilégio que realmente precisa |
 
 ---
 

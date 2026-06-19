@@ -83,7 +83,7 @@ https://thisislegal.com/challenge3/index.php?file=https://thisislegal.com/challe
 
 Esse tipo de falha (incluir arquivos baseado em input do usuário sem validar direito) tem duas variantes: **LFI** (Local File Inclusion), quando você carrega um arquivo que já está no próprio servidor, e **RFI** (Remote File Inclusion), quando você faz a aplicação carregar um arquivo de uma URL remota.
 
-> **Nota:** O desafio tem o nome "LFI", mas repare que o payload acima passa uma **URL completa** (`https://thisislegal.com/...`) no parâmetro `file`. Carregar um arquivo a partir de uma URL externa é, tecnicamente, **RFI (Remote File Inclusion)**, não LFI. O conceito de base é o mesmo (inclusão de arquivo sem validação), mas esse caso específico é RFI. LFI puro seria, por exemplo, carregar `../../../../etc/passwd` — um arquivo local do servidor.
+> **Nota:** O desafio tem o nome "LFI", mas repare que o payload acima passa uma **URL completa** (`https://thisislegal.com/...`) no parâmetro `file`. Carregar um arquivo a partir de uma URL externa é, tecnicamente, **RFI (Remote File Inclusion)**, não LFI. O conceito de base é o mesmo (inclusão de arquivo sem validação), mas esse caso específico é RFI. LFI puro seria, por exemplo, carregar `../../../../etc/passwd`, um arquivo local do servidor.
 
 ### Challenge 4 - Cookie Manipulation
 
